@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dgram</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--include--nameserv.h.html#L436'>dgram</a>             436 src/vfs/smbfs/helpers/include/nameserv.h         struct dgram_packet dgram;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L433'>dgram</a>             433 src/vfs/smbfs/helpers/libsmb/nmblib.c parse_dgram (char *inbuf, int length, struct dgram_packet *dgram)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L438'>dgram</a>             438 src/vfs/smbfs/helpers/libsmb/nmblib.c     memset ((char *) dgram, '\0', sizeof (*dgram));</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L443'>dgram</a>             443 src/vfs/smbfs/helpers/libsmb/nmblib.c     dgram-&gt;header.msg_type = CVAL (inbuf, 0);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L445'>dgram</a>             445 src/vfs/smbfs/helpers/libsmb/nmblib.c     dgram-&gt;header.flags.node_type = (enum node_type) ((flags &gt;&gt; 2) &amp; 3);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L447'>dgram</a>             447 src/vfs/smbfs/helpers/libsmb/nmblib.c         dgram-&gt;header.flags.more = True;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L449'>dgram</a>             449 src/vfs/smbfs/helpers/libsmb/nmblib.c         dgram-&gt;header.flags.first = True;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L450'>dgram</a>             450 src/vfs/smbfs/helpers/libsmb/nmblib.c     dgram-&gt;header.dgm_id = RSVAL (inbuf, 2);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L451'>dgram</a>             451 src/vfs/smbfs/helpers/libsmb/nmblib.c     putip ((char *) &amp;dgram-&gt;header.source_ip, inbuf + 4);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L452'>dgram</a>             452 src/vfs/smbfs/helpers/libsmb/nmblib.c     dgram-&gt;header.source_port = RSVAL (inbuf, 8);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L453'>dgram</a>             453 src/vfs/smbfs/helpers/libsmb/nmblib.c     dgram-&gt;header.dgm_length = RSVAL (inbuf, 10);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L454'>dgram</a>             454 src/vfs/smbfs/helpers/libsmb/nmblib.c     dgram-&gt;header.packet_offset = RSVAL (inbuf, 12);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L458'>dgram</a>             458 src/vfs/smbfs/helpers/libsmb/nmblib.c     if (dgram-&gt;header.msg_type == 0x10 ||</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L459'>dgram</a>             459 src/vfs/smbfs/helpers/libsmb/nmblib.c         dgram-&gt;header.msg_type == 0x11 || dgram-&gt;header.msg_type == 0x12)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L461'>dgram</a>             461 src/vfs/smbfs/helpers/libsmb/nmblib.c         offset += parse_nmb_name (inbuf, offset, length, &amp;dgram-&gt;source_name);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L462'>dgram</a>             462 src/vfs/smbfs/helpers/libsmb/nmblib.c         offset += parse_nmb_name (inbuf, offset, length, &amp;dgram-&gt;dest_name);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L465'>dgram</a>             465 src/vfs/smbfs/helpers/libsmb/nmblib.c     if (offset &gt;= length || ((size_t) length - offset &gt; sizeof (dgram-&gt;data)))</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L468'>dgram</a>             468 src/vfs/smbfs/helpers/libsmb/nmblib.c     dgram-&gt;datasize = length - offset;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L469'>dgram</a>             469 src/vfs/smbfs/helpers/libsmb/nmblib.c     memcpy (dgram-&gt;data, inbuf + offset, dgram-&gt;datasize);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L691'>dgram</a>             691 src/vfs/smbfs/helpers/libsmb/nmblib.c         free_dgram_packet (&amp;packet-&gt;packet.dgram);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L732'>dgram</a>             732 src/vfs/smbfs/helpers/libsmb/nmblib.c         ok = parse_dgram (buf, length, &amp;packet-&gt;packet.dgram);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L791'>dgram</a>             791 src/vfs/smbfs/helpers/libsmb/nmblib.c     struct dgram_packet *dgram = &amp;p-&gt;packet.dgram;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L796'>dgram</a>             796 src/vfs/smbfs/helpers/libsmb/nmblib.c     ubuf[0] = dgram-&gt;header.msg_type;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L797'>dgram</a>             797 src/vfs/smbfs/helpers/libsmb/nmblib.c     ubuf[1] = (((int) dgram-&gt;header.flags.node_type) &lt;&lt; 2);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L798'>dgram</a>             798 src/vfs/smbfs/helpers/libsmb/nmblib.c     if (dgram-&gt;header.flags.more)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L800'>dgram</a>             800 src/vfs/smbfs/helpers/libsmb/nmblib.c     if (dgram-&gt;header.flags.first)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L802'>dgram</a>             802 src/vfs/smbfs/helpers/libsmb/nmblib.c     RSSVAL (ubuf, 2, dgram-&gt;header.dgm_id);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L803'>dgram</a>             803 src/vfs/smbfs/helpers/libsmb/nmblib.c     putip (ubuf + 4, (char *) &amp;dgram-&gt;header.source_ip);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L804'>dgram</a>             804 src/vfs/smbfs/helpers/libsmb/nmblib.c     RSSVAL (ubuf, 8, dgram-&gt;header.source_port);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L805'>dgram</a>             805 src/vfs/smbfs/helpers/libsmb/nmblib.c     RSSVAL (ubuf, 12, dgram-&gt;header.packet_offset);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L809'>dgram</a>             809 src/vfs/smbfs/helpers/libsmb/nmblib.c     if (dgram-&gt;header.msg_type == 0x10 ||</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L810'>dgram</a>             810 src/vfs/smbfs/helpers/libsmb/nmblib.c         dgram-&gt;header.msg_type == 0x11 || dgram-&gt;header.msg_type == 0x12)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L812'>dgram</a>             812 src/vfs/smbfs/helpers/libsmb/nmblib.c         offset += put_nmb_name ((char *) ubuf, offset, &amp;dgram-&gt;source_name);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L813'>dgram</a>             813 src/vfs/smbfs/helpers/libsmb/nmblib.c         offset += put_nmb_name ((char *) ubuf, offset, &amp;dgram-&gt;dest_name);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L816'>dgram</a>             816 src/vfs/smbfs/helpers/libsmb/nmblib.c     memcpy (ubuf + offset, dgram-&gt;data, dgram-&gt;datasize);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L817'>dgram</a>             817 src/vfs/smbfs/helpers/libsmb/nmblib.c     offset += dgram-&gt;datasize;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L820'>dgram</a>             820 src/vfs/smbfs/helpers/libsmb/nmblib.c     dgram-&gt;header.dgm_length = offset;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L821'>dgram</a>             821 src/vfs/smbfs/helpers/libsmb/nmblib.c     RSSVAL (ubuf, 10, dgram-&gt;header.dgm_length);</span>
+</pre>
+</body>
+</html>

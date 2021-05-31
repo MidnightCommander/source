@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/smbfs/helpers/internals.doc</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/internals.doc</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/internals.doc</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/smbfs/helpers/internals.doc'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>internals.txt, 8 May 1996
+<a id='L2' name='L2'></a>Written by David Chappell &lt;David.Chappell@mail.trincoll.edu&gt;.
+<a id='L3' name='L3'></a> 
+<a id='L4' name='L4'></a>This document describes some of the internal functions which must be
+<a id='L5' name='L5'></a>understood by anyone wishing to add features to Samba.
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>=============================================================================
+<a id='L12' name='L12'></a>This section describes the macros defined in byteorder.h.  These macros 
+<a id='L13' name='L13'></a>are used extensively in the Samba code.
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>-----------------------------------------------------------------------------
+<a id='L16' name='L16'></a>CVAL(buf,pos)
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>returns the byte at offset pos within buffer buf as an unsigned character.
+<a id='L19' name='L19'></a> 
+<a id='L20' name='L20'></a>-----------------------------------------------------------------------------
+<a id='L21' name='L21'></a>PVAL(buf,pos)
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a>returns the value of CVAL(buf,pos) cast to type unsigned integer.
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a>-----------------------------------------------------------------------------
+<a id='L26' name='L26'></a>SCVAL(buf,pos,val)
+<a id='L27' name='L27'></a> 
+<a id='L28' name='L28'></a>sets the byte at offset pos within buffer buf to value val.
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>-----------------------------------------------------------------------------
+<a id='L31' name='L31'></a>SVAL(buf,pos)
+<a id='L32' name='L32'></a> 
+<a id='L33' name='L33'></a>returns the value of the unsigned short (16 bit) little-endian integer at 
+<a id='L34' name='L34'></a>offset pos within buffer buf.  An integer of this type is sometimes
+<a id='L35' name='L35'></a>referred to as "USHORT".
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>-----------------------------------------------------------------------------
+<a id='L38' name='L38'></a>IVAL(buf,pos)
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>returns the value of the unsigned 32 bit little-endian integer at offset 
+<a id='L41' name='L41'></a>pos within buffer buf.
+<a id='L42' name='L42'></a> 
+<a id='L43' name='L43'></a>-----------------------------------------------------------------------------
+<a id='L44' name='L44'></a>SVALS(buf,pos)
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>returns the value of the signed short (16 bit) little-endian integer at 
+<a id='L47' name='L47'></a>offset pos within buffer buf.
+<a id='L48' name='L48'></a> 
+<a id='L49' name='L49'></a>-----------------------------------------------------------------------------
+<a id='L50' name='L50'></a>IVALS(buf,pos)
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>returns the value of the signed 32 bit little-endian integer at offset pos
+<a id='L53' name='L53'></a>within buffer buf.
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>-----------------------------------------------------------------------------
+<a id='L56' name='L56'></a>SSVAL(buf,pos,val)
+<a id='L57' name='L57'></a> 
+<a id='L58' name='L58'></a>sets the unsigned short (16 bit) little-endian integer at offset pos within 
+<a id='L59' name='L59'></a>buffer buf to value val.
+<a id='L60' name='L60'></a> 
+<a id='L61' name='L61'></a>-----------------------------------------------------------------------------
+<a id='L62' name='L62'></a>SIVAL(buf,pos,val)
+<a id='L63' name='L63'></a> 
+<a id='L64' name='L64'></a>sets the unsigned 32 bit little-endian integer at offset pos within buffer 
+<a id='L65' name='L65'></a>buf to the value val.
+<a id='L66' name='L66'></a> 
+<a id='L67' name='L67'></a>-----------------------------------------------------------------------------
+<a id='L68' name='L68'></a>SSVALS(buf,pos,val)
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a>sets the short (16 bit) signed little-endian integer at offset pos within 
+<a id='L71' name='L71'></a>buffer buf to the value val.
+<a id='L72' name='L72'></a> 
+<a id='L73' name='L73'></a>-----------------------------------------------------------------------------
+<a id='L74' name='L74'></a>SIVALS(buf,pos,val)
+<a id='L75' name='L75'></a> 
+<a id='L76' name='L76'></a>sets the signed 32 bit little-endian integer at offset pos withing buffer
+<a id='L77' name='L77'></a>buf to the value val.
+<a id='L78' name='L78'></a> 
+<a id='L79' name='L79'></a>-----------------------------------------------------------------------------
+<a id='L80' name='L80'></a>RSVAL(buf,pos)
+<a id='L81' name='L81'></a> 
+<a id='L82' name='L82'></a>returns the value of the unsigned short (16 bit) big-endian integer at 
+<a id='L83' name='L83'></a>offset pos within buffer buf.
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>-----------------------------------------------------------------------------
+<a id='L86' name='L86'></a>RIVAL(buf,pos)
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a>returns the value of the unsigned 32 bit big-endian integer at offset 
+<a id='L89' name='L89'></a>pos within buffer buf.
+<a id='L90' name='L90'></a> 
+<a id='L91' name='L91'></a>-----------------------------------------------------------------------------
+<a id='L92' name='L92'></a>RSSVAL(buf,pos,val)
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>sets the value of the unsigned short (16 bit) big-endian integer at 
+<a id='L95' name='L95'></a>offset pos within buffer buf to value val.
+<a id='L96' name='L96'></a>referred to as "USHORT".
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>-----------------------------------------------------------------------------
+<a id='L99' name='L99'></a>RSIVAL(buf,pos,val)
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>sets the value of the unsigned 32 bit big-endian integer at offset 
+<a id='L102' name='L102'></a>pos within buffer buf to value val.
+<a id='L103' name='L103'></a> 
+<a id='L104' name='L104'></a> 
+<a id='L105' name='L105'></a> 
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a>=============================================================================
+<a id='L109' name='L109'></a>This section describes the functions need to make a LAN Manager RPC call.
+<a id='L110' name='L110'></a>This information had been obtained by examining the Samba code and the LAN
+<a id='L111' name='L111'></a>Manager 2.0 API documentation.  It should not be considered entirely
+<a id='L112' name='L112'></a>reliable.
+<a id='L113' name='L113'></a> 
+<a id='L114' name='L114'></a>-----------------------------------------------------------------------------
+<a id='L115' name='L115'></a>call_api(int prcnt, int drcnt, int mprcnt, int mdrcnt, 
+<a id='L116' name='L116'></a>        char *param, char *data, char **rparam, char **rdata);
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a>This function is defined in client.c.  It uses an SMB transaction to call a
+<a id='L119' name='L119'></a>remote api.
+<a id='L120' name='L120'></a> 
+<a id='L121' name='L121'></a>The parameters are as follows:
+<a id='L122' name='L122'></a> 
+<a id='L123' name='L123'></a>prcnt:   the number of bytes of parameters begin sent.
+<a id='L124' name='L124'></a>drcnt:   the number of bytes of data begin sent.
+<a id='L125' name='L125'></a>mprcnt:  the maximum number of bytes of parameters which should be returned
+<a id='L126' name='L126'></a>mdrcnt:  the maximum number of bytes of data which should be returned
+<a id='L127' name='L127'></a>param:   a pointer to the parameters to be sent.
+<a id='L128' name='L128'></a>data:    a pointer to the data to be sent.
+<a id='L129' name='L129'></a>rparam:  a pointer to a pointer which will be set to point to the returned
+<a id='L130' name='L130'></a>         parameters.  The caller of call_api() must deallocate this memory.
+<a id='L131' name='L131'></a>rdata:   a pointer to a pointer which will be set to point to the returned 
+<a id='L132' name='L132'></a>         data.  The caller of call_api() must deallocate this memory.
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a>-----------------------------------------------------------------------------
+<a id='L135' name='L135'></a>These are the parameters which you ought to send, in the order of their
+<a id='L136' name='L136'></a>appearance in the parameter block:
+<a id='L137' name='L137'></a> 
+<a id='L138' name='L138'></a>* An unsigned 16 bit integer API number.  You should set this value with
+<a id='L139' name='L139'></a>SSVAL().  I do not know where these numbers are described.
+<a id='L140' name='L140'></a> 
+<a id='L141' name='L141'></a>* An ASCIIZ string describing the parameters to the API function as defined
+<a id='L142' name='L142'></a>in the LAN Manager documentation.  The first parameter, which is the server
+<a id='L143' name='L143'></a>name, is omitted.  This string is based uppon the API function as described
+<a id='L144' name='L144'></a>in the manual, not the data which is actually passed.
+<a id='L145' name='L145'></a> 
+<a id='L146' name='L146'></a>* An ASCIIZ string describing the data structure which ought to be returned.
+<a id='L147' name='L147'></a> 
+<a id='L148' name='L148'></a>* Any parameters which appear in the function call, as defined in the LAN
+<a id='L149' name='L149'></a>Manager API documentation, after the "Server" and up to and including the
+<a id='L150' name='L150'></a>"uLevel" parameters.
+<a id='L151' name='L151'></a> 
+<a id='L152' name='L152'></a>* An unsigned 16 bit integer which gives the size in bytes of the buffer we
+<a id='L153' name='L153'></a>will use to receive the returned array of data structures.  Presumably this
+<a id='L154' name='L154'></a>should be the same as mdrcnt.  This value should be set with SSVAL().
+<a id='L155' name='L155'></a> 
+<a id='L156' name='L156'></a>* An ASCIIZ string describing substructures which should be returned.  If no 
+<a id='L157' name='L157'></a>substructures apply, this string is of zero length.
+<a id='L158' name='L158'></a> 
+<a id='L159' name='L159'></a>-----------------------------------------------------------------------------
+<a id='L160' name='L160'></a>The code in client.c always calls call_api() with no data.  It is unclear
+<a id='L161' name='L161'></a>when a non-zero length data buffer would be sent.
+<a id='L162' name='L162'></a> 
+<a id='L163' name='L163'></a>-----------------------------------------------------------------------------
+<a id='L164' name='L164'></a>The returned parameters (pointed to by rparam), in their order of appearance
+<a id='L165' name='L165'></a>are:
+<a id='L166' name='L166'></a> 
+<a id='L167' name='L167'></a>* An unsigned 16 bit integer which contains the API function's return code. 
+<a id='L168' name='L168'></a>This value should be read with SVAL().
+<a id='L169' name='L169'></a> 
+<a id='L170' name='L170'></a>* An adjustment which tells the amount by which pointers in the returned
+<a id='L171' name='L171'></a>data should be adjusted.  This value should be read with SVAL().  Basically, 
+<a id='L172' name='L172'></a>the address of the start of the returned data buffer should have the returned
+<a id='L173' name='L173'></a>pointer value added to it and then have this value subtracted from it in
+<a id='L174' name='L174'></a>order to obtain the currect offset into the returned data buffer.
+<a id='L175' name='L175'></a> 
+<a id='L176' name='L176'></a>* A count of the number of elements in the array of structures returned. 
+<a id='L177' name='L177'></a>It is also possible that this may sometimes be the number of bytes returned.
+<a id='L178' name='L178'></a> 
+<a id='L179' name='L179'></a>-----------------------------------------------------------------------------
+<a id='L180' name='L180'></a>When call_api() returns, rparam points to the returned parameters.  The
+<a id='L181' name='L181'></a>first if these is the result code.  It will be zero if the API call
+<a id='L182' name='L182'></a>suceeded.  This value by be read with "SVAL(rparam,0)".
+<a id='L183' name='L183'></a> 
+<a id='L184' name='L184'></a>The second parameter may be read as "SVAL(rparam,2)".  It is a 16 bit offset
+<a id='L185' name='L185'></a>which indicates what the base address of the returned data buffer was when
+<a id='L186' name='L186'></a>it was built on the server.  It should be used to correct pointer before
+<a id='L187' name='L187'></a>use.
+<a id='L188' name='L188'></a> 
+<a id='L189' name='L189'></a>The returned data buffer contains the array of returned data structures. 
+<a id='L190' name='L190'></a>Note that all pointers must be adjusted before use.  The function
+<a id='L191' name='L191'></a>fix_char_ptr() in client.c can be used for this purpose.
+<a id='L192' name='L192'></a> 
+<a id='L193' name='L193'></a>The third parameter (which may be read as "SVAL(rparam,4)") has something to
+<a id='L194' name='L194'></a>do with indicating the amount of data returned or possibly the amount of
+<a id='L195' name='L195'></a>data which can be returned if enough buffer space is allowed.
+<a id='L196' name='L196'></a> 
+<a id='L197' name='L197'></a>-----------------------------------------------------------------------------
+<a id='L198' name='L198'></a>Certain data structures are described by means of ASCIIz strings containing
+<a id='L199' name='L199'></a>code characters.  These are the code characters:
+<a id='L200' name='L200'></a> 
+<a id='L201' name='L201'></a>W       a type byte little-endian unsigned integer
+<a id='L202' name='L202'></a>N       a count of substructures which follow
+<a id='L203' name='L203'></a>D       a four byte little-endian unsigned integer
+<a id='L204' name='L204'></a>B       a byte (with optional count expressed as trailing ASCII digits)
+<a id='L205' name='L205'></a>z       a four byte offset to a NULL terminated string
+<a id='L206' name='L206'></a>l       a four byte offset to non-string user data
+<a id='L207' name='L207'></a>b       an offset to data (with count expressed as trailing ASCII digits)
+<a id='L208' name='L208'></a>r       pointer to returned data buffer???
+<a id='L209' name='L209'></a>L       length in bytes of returned data buffer???
+<a id='L210' name='L210'></a>h       number of bytes of information available???
+<a id='L211' name='L211'></a> 
+<a id='L212' name='L212'></a>----------------------------------------------------------------------------
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+212 src/vfs/smbfs/helpers/internals.doc'  /> */</em>
+</body>
+</html>

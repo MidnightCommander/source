@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/dx_doxygen.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/dx_doxygen.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/dx_doxygen.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/dx_doxygen.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#
+<a id='L2' name='L2'></a># Copyright 2007 Oren Ben-Kiki
+<a id='L3' name='L3'></a>#
+<a id='L4' name='L4'></a># Licensed under the Apache License, Version 2.0 (the "License");
+<a id='L5' name='L5'></a># you may not use this file except in compliance with the License.
+<a id='L6' name='L6'></a># You may obtain a copy of the License at
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a>#         http://www.apache.org/licenses/LICENSE-2.0
+<a id='L9' name='L9'></a>#
+<a id='L10' name='L10'></a># Unless required by applicable law or agreed to in writing,
+<a id='L11' name='L11'></a># software distributed under the License is distributed on an "AS IS" BASIS,
+<a id='L12' name='L12'></a># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+<a id='L13' name='L13'></a># implied.  See the License for the specific language governing
+<a id='L14' name='L14'></a># permissions and limitations under the License.
+<a id='L15' name='L15'></a>#
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a># Generate automatic documentation using Doxygen. Works in concert with the
+<a id='L19' name='L19'></a># aminclude.m4 file and a compatible doxygen configuration file. Defines the
+<a id='L20' name='L20'></a># following public macros:
+<a id='L21' name='L21'></a>#
+<a id='L22' name='L22'></a># DX_???_FEATURE(ON|OFF) - control the default setting fo a Doxygen feature.
+<a id='L23' name='L23'></a># Supported features are 'DOXYGEN' itself, 'DOT' for generating graphics,
+<a id='L24' name='L24'></a># 'HTML' for plain HTML, 'CHM' for compressed HTML help (for MS users), 'CHI'
+<a id='L25' name='L25'></a># for generating a separate .chi file by the .chm file, and 'MAN', 'RTF',
+<a id='L26' name='L26'></a># 'XML', 'PDF' and 'PS' for the appropriate output formats. The environment
+<a id='L27' name='L27'></a># variable DOXYGEN_PAPER_SIZE may be specified to override the default 'a4wide'
+<a id='L28' name='L28'></a># paper size.
+<a id='L29' name='L29'></a>#
+<a id='L30' name='L30'></a># By default, HTML, PDF and PS documentation is generated as this seems to be
+<a id='L31' name='L31'></a># the most popular and portable combination. MAN pages created by Doxygen are
+<a id='L32' name='L32'></a># usually problematic, though by picking an appropriate subset and doing some
+<a id='L33' name='L33'></a># massaging they might be better than nothing. CHM and RTF are specific for MS
+<a id='L34' name='L34'></a># (note that you can't generate both HTML and CHM at the same time). The XML is
+<a id='L35' name='L35'></a># rather useless unless you apply specialized post-processing to it.
+<a id='L36' name='L36'></a>#
+<a id='L37' name='L37'></a># The macro mainly controls the default state of the feature. The use can
+<a id='L38' name='L38'></a># override the default by specifying --enable or --disable. The macros ensure
+<a id='L39' name='L39'></a># that contradictory flags are not given (e.g., --enable-doxygen-html and
+<a id='L40' name='L40'></a># --enable-doxygen-chm, --enable-doxygen-anything with --disable-doxygen, etc.)
+<a id='L41' name='L41'></a># Finally, each feature will be automatically disabled (with a warning) if the
+<a id='L42' name='L42'></a># required programs are missing.
+<a id='L43' name='L43'></a>#
+<a id='L44' name='L44'></a># Once all the feature defaults have been specified, call DX_INIT_DOXYGEN with
+<a id='L45' name='L45'></a># the following parameters: a one-word name for the project for use as a
+<a id='L46' name='L46'></a># filename base etc., an optional configuration file name (the default is
+<a id='L47' name='L47'></a># 'Doxyfile', the same as Doxygen's default), and an optional output directory
+<a id='L48' name='L48'></a># name (the default is 'doxygen-doc').
+<a id='L49' name='L49'></a> 
+<a id='L50' name='L50'></a>## ----------##
+<a id='L51' name='L51'></a>## Defaults. ##
+<a id='L52' name='L52'></a>## ----------##
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a>DX_ENV=""
+<a id='L55' name='L55'></a>AC_DEFUN([DX_FEATURE_doc],  ON)
+<a id='L56' name='L56'></a>AC_DEFUN([DX_FEATURE_dot],  ON)
+<a id='L57' name='L57'></a>AC_DEFUN([DX_FEATURE_man],  OFF)
+<a id='L58' name='L58'></a>AC_DEFUN([DX_FEATURE_html], ON)
+<a id='L59' name='L59'></a>AC_DEFUN([DX_FEATURE_chm],  OFF)
+<a id='L60' name='L60'></a>AC_DEFUN([DX_FEATURE_chi],  OFF)
+<a id='L61' name='L61'></a>AC_DEFUN([DX_FEATURE_rtf],  OFF)
+<a id='L62' name='L62'></a>AC_DEFUN([DX_FEATURE_xml],  OFF)
+<a id='L63' name='L63'></a>AC_DEFUN([DX_FEATURE_pdf],  ON)
+<a id='L64' name='L64'></a>AC_DEFUN([DX_FEATURE_ps],   ON)
+<a id='L65' name='L65'></a> 
+<a id='L66' name='L66'></a>## --------------- ##
+<a id='L67' name='L67'></a>## Private macros. ##
+<a id='L68' name='L68'></a>## --------------- ##
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a># DX_ENV_APPEND(VARIABLE, VALUE)
+<a id='L71' name='L71'></a># ------------------------------
+<a id='L72' name='L72'></a># Append VARIABLE="VALUE" to DX_ENV for invoking doxygen.
+<a id='L73' name='L73'></a>AC_DEFUN([DX_ENV_APPEND], [AC_SUBST([DX_ENV], ["$DX_ENV $1='$2'"])])
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a># DX_DIRNAME_EXPR
+<a id='L76' name='L76'></a># ---------------
+<a id='L77' name='L77'></a># Expand into a shell expression prints the directory part of a path.
+<a id='L78' name='L78'></a>AC_DEFUN([DX_DIRNAME_EXPR],
+<a id='L79' name='L79'></a>         [[expr ".$1" : '\(\.\)[^/]*$' \| "x$1" : 'x\(.*\)/[^/]*$']])
+<a id='L80' name='L80'></a> 
+<a id='L81' name='L81'></a># DX_IF_FEATURE(FEATURE, IF-ON, IF-OFF)
+<a id='L82' name='L82'></a># -------------------------------------
+<a id='L83' name='L83'></a># Expands according to the M4 (static) status of the feature.
+<a id='L84' name='L84'></a>AC_DEFUN([DX_IF_FEATURE], [ifelse(DX_FEATURE_$1, ON, [$2], [$3])])
+<a id='L85' name='L85'></a> 
+<a id='L86' name='L86'></a># DX_REQUIRE_PROG(VARIABLE, PROGRAM)
+<a id='L87' name='L87'></a># ----------------------------------
+<a id='L88' name='L88'></a># Require the specified program to be found for the DX_CURRENT_FEATURE to work.
+<a id='L89' name='L89'></a>AC_DEFUN([DX_REQUIRE_PROG], [
+<a id='L90' name='L90'></a>AC_PATH_TOOL([$1], [$2])
+<a id='L91' name='L91'></a>if test x"$DX_FLAG_[]DX_CURRENT_FEATURE$$1" = x1; then
+<a id='L92' name='L92'></a>    AC_MSG_WARN([$2 not found - will not DX_CURRENT_DESCRIPTION])
+<a id='L93' name='L93'></a>    AC_SUBST([DX_FLAG_]DX_CURRENT_FEATURE, 0)
+<a id='L94' name='L94'></a>fi
+<a id='L95' name='L95'></a>])
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a># DX_TEST_FEATURE(FEATURE)
+<a id='L98' name='L98'></a># ------------------------
+<a id='L99' name='L99'></a># Expand to a shell expression testing whether the feature is active.
+<a id='L100' name='L100'></a>AC_DEFUN([DX_TEST_FEATURE], [test "$DX_FLAG_$1" = 1])
+<a id='L101' name='L101'></a> 
+<a id='L102' name='L102'></a># DX_CHECK_DEPEND(REQUIRED_FEATURE, REQUIRED_STATE)
+<a id='L103' name='L103'></a># -------------------------------------------------
+<a id='L104' name='L104'></a># Verify that a required features has the right state before trying to turn on
+<a id='L105' name='L105'></a># the DX_CURRENT_FEATURE.
+<a id='L106' name='L106'></a>AC_DEFUN([DX_CHECK_DEPEND], [
+<a id='L107' name='L107'></a>test x"$DX_FLAG_$1" = x"$2" \
+<a id='L108' name='L108'></a>|| AC_MSG_ERROR([doxygen-DX_CURRENT_FEATURE ifelse([$2], 1,
+<a id='L109' name='L109'></a>                            requires, contradicts) doxygen-DX_CURRENT_FEATURE])
+<a id='L110' name='L110'></a>])
+<a id='L111' name='L111'></a> 
+<a id='L112' name='L112'></a># DX_CLEAR_DEPEND(FEATURE, REQUIRED_FEATURE, REQUIRED_STATE)
+<a id='L113' name='L113'></a># ----------------------------------------------------------
+<a id='L114' name='L114'></a># Turn off the DX_CURRENT_FEATURE if the required feature is off.
+<a id='L115' name='L115'></a>AC_DEFUN([DX_CLEAR_DEPEND], [
+<a id='L116' name='L116'></a>test x"$DX_FLAG_$1" = x"$2" || AC_SUBST([DX_FLAG_]DX_CURRENT_FEATURE, 0)
+<a id='L117' name='L117'></a>])
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a># DX_FEATURE_ARG(FEATURE, DESCRIPTION,
+<a id='L120' name='L120'></a>#                CHECK_DEPEND, CLEAR_DEPEND,
+<a id='L121' name='L121'></a>#                REQUIRE, DO-IF-ON, DO-IF-OFF)
+<a id='L122' name='L122'></a># --------------------------------------------
+<a id='L123' name='L123'></a># Parse the command-line option controlling a feature. CHECK_DEPEND is called
+<a id='L124' name='L124'></a># if the user explicitly turns the feature on (and invokes DX_CHECK_DEPEND),
+<a id='L125' name='L125'></a># otherwise CLEAR_DEPEND is called to turn off the default state if a required
+<a id='L126' name='L126'></a># feature is disabled (using DX_CLEAR_DEPEND). REQUIRE performs additional
+<a id='L127' name='L127'></a># requirement tests (DX_REQUIRE_PROG). Finally, an automake flag is set and
+<a id='L128' name='L128'></a># DO-IF-ON or DO-IF-OFF are called according to the final state of the feature.
+<a id='L129' name='L129'></a>AC_DEFUN([DX_ARG_ABLE], [
+<a id='L130' name='L130'></a>    AC_DEFUN([DX_CURRENT_FEATURE], [$1])
+<a id='L131' name='L131'></a>    AC_DEFUN([DX_CURRENT_DESCRIPTION], [$2])
+<a id='L132' name='L132'></a>    AC_ARG_ENABLE(doxygen-$1,
+<a id='L133' name='L133'></a>                  [AS_HELP_STRING(DX_IF_FEATURE([$1], [--disable-doxygen-$1],
+<a id='L134' name='L134'></a>                                                      [--enable-doxygen-$1]),
+<a id='L135' name='L135'></a>                                  DX_IF_FEATURE([$1], [don't $2], [$2]))],
+<a id='L136' name='L136'></a>                  [
+<a id='L137' name='L137'></a>case "$enableval" in
+<a id='L138' name='L138'></a>#(
+<a id='L139' name='L139'></a>y|Y|yes|Yes|YES)
+<a id='L140' name='L140'></a>    AC_SUBST([DX_FLAG_$1], 1)
+<a id='L141' name='L141'></a>    $3
+<a id='L142' name='L142'></a>;; #(
+<a id='L143' name='L143'></a>n|N|no|No|NO)
+<a id='L144' name='L144'></a>    AC_SUBST([DX_FLAG_$1], 0)
+<a id='L145' name='L145'></a>;; #(
+<a id='L146' name='L146'></a>*)
+<a id='L147' name='L147'></a>    AC_MSG_ERROR([invalid value '$enableval' given to doxygen-$1])
+<a id='L148' name='L148'></a>;;
+<a id='L149' name='L149'></a>esac
+<a id='L150' name='L150'></a>], [
+<a id='L151' name='L151'></a>AC_SUBST([DX_FLAG_$1], [DX_IF_FEATURE([$1], 1, 0)])
+<a id='L152' name='L152'></a>$4
+<a id='L153' name='L153'></a>])
+<a id='L154' name='L154'></a>if DX_TEST_FEATURE([$1]); then
+<a id='L155' name='L155'></a>    $5
+<a id='L156' name='L156'></a>    :
+<a id='L157' name='L157'></a>fi
+<a id='L158' name='L158'></a>if DX_TEST_FEATURE([$1]); then
+<a id='L159' name='L159'></a>    AM_CONDITIONAL(DX_COND_$1, :)
+<a id='L160' name='L160'></a>    $6
+<a id='L161' name='L161'></a>    :
+<a id='L162' name='L162'></a>else
+<a id='L163' name='L163'></a>    AM_CONDITIONAL(DX_COND_$1, false)
+<a id='L164' name='L164'></a>    $7
+<a id='L165' name='L165'></a>    :
+<a id='L166' name='L166'></a>fi
+<a id='L167' name='L167'></a>])
+<a id='L168' name='L168'></a> 
+<a id='L169' name='L169'></a>## -------------- ##
+<a id='L170' name='L170'></a>## Public macros. ##
+<a id='L171' name='L171'></a>## -------------- ##
+<a id='L172' name='L172'></a> 
+<a id='L173' name='L173'></a># DX_XXX_FEATURE(DEFAULT_STATE)
+<a id='L174' name='L174'></a># -----------------------------
+<a id='L175' name='L175'></a>AC_DEFUN([DX_DOXYGEN_FEATURE], [AC_DEFUN([DX_FEATURE_doc],  [$1])])
+<a id='L176' name='L176'></a>AC_DEFUN([DX_MAN_FEATURE],     [AC_DEFUN([DX_FEATURE_man],  [$1])])
+<a id='L177' name='L177'></a>AC_DEFUN([DX_HTML_FEATURE],    [AC_DEFUN([DX_FEATURE_html], [$1])])
+<a id='L178' name='L178'></a>AC_DEFUN([DX_CHM_FEATURE],     [AC_DEFUN([DX_FEATURE_chm],  [$1])])
+<a id='L179' name='L179'></a>AC_DEFUN([DX_CHI_FEATURE],     [AC_DEFUN([DX_FEATURE_chi],  [$1])])
+<a id='L180' name='L180'></a>AC_DEFUN([DX_RTF_FEATURE],     [AC_DEFUN([DX_FEATURE_rtf],  [$1])])
+<a id='L181' name='L181'></a>AC_DEFUN([DX_XML_FEATURE],     [AC_DEFUN([DX_FEATURE_xml],  [$1])])
+<a id='L182' name='L182'></a>AC_DEFUN([DX_XML_FEATURE],     [AC_DEFUN([DX_FEATURE_xml],  [$1])])
+<a id='L183' name='L183'></a>AC_DEFUN([DX_PDF_FEATURE],     [AC_DEFUN([DX_FEATURE_pdf],  [$1])])
+<a id='L184' name='L184'></a>AC_DEFUN([DX_PS_FEATURE],      [AC_DEFUN([DX_FEATURE_ps],   [$1])])
+<a id='L185' name='L185'></a> 
+<a id='L186' name='L186'></a># DX_INIT_DOXYGEN(PROJECT, [CONFIG-FILE], [OUTPUT-DOC-DIR])
+<a id='L187' name='L187'></a># ---------------------------------------------------------
+<a id='L188' name='L188'></a># PROJECT also serves as the base name for the documentation files.
+<a id='L189' name='L189'></a># The default CONFIG-FILE is "Doxyfile" and OUTPUT-DOC-DIR is "doxygen-doc".
+<a id='L190' name='L190'></a>AC_DEFUN([DX_INIT_DOXYGEN], [
+<a id='L191' name='L191'></a> 
+<a id='L192' name='L192'></a># Files:
+<a id='L193' name='L193'></a>AC_SUBST([DX_PROJECT], [$1])
+<a id='L194' name='L194'></a>AC_SUBST([DX_CONFIG], [ifelse([$2], [], Doxyfile, [$2])])
+<a id='L195' name='L195'></a>AC_SUBST([DX_DOCDIR], [ifelse([$3], [], doxygen-doc, [$3])])
+<a id='L196' name='L196'></a> 
+<a id='L197' name='L197'></a># Environment variables used inside doxygen.cfg:
+<a id='L198' name='L198'></a>SRCDIR=`cd $srcdir; pwd`
+<a id='L199' name='L199'></a>DX_ENV_APPEND(SRCDIR, $SRCDIR)
+<a id='L200' name='L200'></a>DX_ENV_APPEND(PROJECT, $DX_PROJECT)
+<a id='L201' name='L201'></a>DX_ENV_APPEND(DOCDIR, $DX_DOCDIR)
+<a id='L202' name='L202'></a>DX_ENV_APPEND(VERSION, $PACKAGE_VERSION)
+<a id='L203' name='L203'></a> 
+<a id='L204' name='L204'></a># Doxygen itself:
+<a id='L205' name='L205'></a>DX_ARG_ABLE(doc, [generate any doxygen documentation],
+<a id='L206' name='L206'></a>            [],
+<a id='L207' name='L207'></a>            [],
+<a id='L208' name='L208'></a>            [DX_REQUIRE_PROG([DX_DOXYGEN], doxygen)
+<a id='L209' name='L209'></a>             DX_REQUIRE_PROG([DX_PERL], perl)],
+<a id='L210' name='L210'></a>            [DX_ENV_APPEND(PERL_PATH, $DX_PERL)])
+<a id='L211' name='L211'></a> 
+<a id='L212' name='L212'></a># Dot for graphics:
+<a id='L213' name='L213'></a>DX_ARG_ABLE(dot, [generate graphics for doxygen documentation],
+<a id='L214' name='L214'></a>            [DX_CHECK_DEPEND(doc, 1)],
+<a id='L215' name='L215'></a>            [DX_CLEAR_DEPEND(doc, 1)],
+<a id='L216' name='L216'></a>            [DX_REQUIRE_PROG([DX_DOT], dot)],
+<a id='L217' name='L217'></a>            [DX_ENV_APPEND(HAVE_DOT, YES)
+<a id='L218' name='L218'></a>             DX_ENV_APPEND(DOT_PATH, [`DX_DIRNAME_EXPR($DX_DOT)`])],
+<a id='L219' name='L219'></a>            [DX_ENV_APPEND(HAVE_DOT, NO)])
+<a id='L220' name='L220'></a> 
+<a id='L221' name='L221'></a># Man pages generation:
+<a id='L222' name='L222'></a>DX_ARG_ABLE(man, [generate doxygen manual pages],
+<a id='L223' name='L223'></a>            [DX_CHECK_DEPEND(doc, 1)],
+<a id='L224' name='L224'></a>            [DX_CLEAR_DEPEND(doc, 1)],
+<a id='L225' name='L225'></a>            [],
+<a id='L226' name='L226'></a>            [DX_ENV_APPEND(GENERATE_MAN, YES)],
+<a id='L227' name='L227'></a>            [DX_ENV_APPEND(GENERATE_MAN, NO)])
+<a id='L228' name='L228'></a> 
+<a id='L229' name='L229'></a># RTF file generation:
+<a id='L230' name='L230'></a>DX_ARG_ABLE(rtf, [generate doxygen RTF documentation],
+<a id='L231' name='L231'></a>            [DX_CHECK_DEPEND(doc, 1)],
+<a id='L232' name='L232'></a>            [DX_CLEAR_DEPEND(doc, 1)],
+<a id='L233' name='L233'></a>            [],
+<a id='L234' name='L234'></a>            [DX_ENV_APPEND(GENERATE_RTF, YES)],
+<a id='L235' name='L235'></a>            [DX_ENV_APPEND(GENERATE_RTF, NO)])
+<a id='L236' name='L236'></a> 
+<a id='L237' name='L237'></a># XML file generation:
+<a id='L238' name='L238'></a>DX_ARG_ABLE(xml, [generate doxygen XML documentation],
+<a id='L239' name='L239'></a>            [DX_CHECK_DEPEND(doc, 1)],
+<a id='L240' name='L240'></a>            [DX_CLEAR_DEPEND(doc, 1)],
+<a id='L241' name='L241'></a>            [],
+<a id='L242' name='L242'></a>            [DX_ENV_APPEND(GENERATE_XML, YES)],
+<a id='L243' name='L243'></a>            [DX_ENV_APPEND(GENERATE_XML, NO)])
+<a id='L244' name='L244'></a> 
+<a id='L245' name='L245'></a># (Compressed) HTML help generation:
+<a id='L246' name='L246'></a>DX_ARG_ABLE(chm, [generate doxygen compressed HTML help documentation],
+<a id='L247' name='L247'></a>            [DX_CHECK_DEPEND(doc, 1)],
+<a id='L248' name='L248'></a>            [DX_CLEAR_DEPEND(doc, 1)],
+<a id='L249' name='L249'></a>            [DX_REQUIRE_PROG([DX_HHC], hhc)],
+<a id='L250' name='L250'></a>            [DX_ENV_APPEND(HHC_PATH, $DX_HHC)
+<a id='L251' name='L251'></a>             DX_ENV_APPEND(GENERATE_HTML, YES)
+<a id='L252' name='L252'></a>             DX_ENV_APPEND(GENERATE_HTMLHELP, YES)],
+<a id='L253' name='L253'></a>            [DX_ENV_APPEND(GENERATE_HTMLHELP, NO)])
+<a id='L254' name='L254'></a> 
+<a id='L255' name='L255'></a># Separate CHI file generation.
+<a id='L256' name='L256'></a>DX_ARG_ABLE(chi, [generate doxygen separate compressed HTML help index file],
+<a id='L257' name='L257'></a>            [DX_CHECK_DEPEND(chm, 1)],
+<a id='L258' name='L258'></a>            [DX_CLEAR_DEPEND(chm, 1)],
+<a id='L259' name='L259'></a>            [],
+<a id='L260' name='L260'></a>            [DX_ENV_APPEND(GENERATE_CHI, YES)],
+<a id='L261' name='L261'></a>            [DX_ENV_APPEND(GENERATE_CHI, NO)])
+<a id='L262' name='L262'></a> 
+<a id='L263' name='L263'></a># Plain HTML pages generation:
+<a id='L264' name='L264'></a>DX_ARG_ABLE(html, [generate doxygen plain HTML documentation],
+<a id='L265' name='L265'></a>            [DX_CHECK_DEPEND(doc, 1) DX_CHECK_DEPEND(chm, 0)],
+<a id='L266' name='L266'></a>            [DX_CLEAR_DEPEND(doc, 1) DX_CLEAR_DEPEND(chm, 0)],
+<a id='L267' name='L267'></a>            [],
+<a id='L268' name='L268'></a>            [DX_ENV_APPEND(GENERATE_HTML, YES)],
+<a id='L269' name='L269'></a>            [DX_TEST_FEATURE(chm) || DX_ENV_APPEND(GENERATE_HTML, NO)])
+<a id='L270' name='L270'></a> 
+<a id='L271' name='L271'></a># PostScript file generation:
+<a id='L272' name='L272'></a>DX_ARG_ABLE(ps, [generate doxygen PostScript documentation],
+<a id='L273' name='L273'></a>            [DX_CHECK_DEPEND(doc, 1)],
+<a id='L274' name='L274'></a>            [DX_CLEAR_DEPEND(doc, 1)],
+<a id='L275' name='L275'></a>            [DX_REQUIRE_PROG([DX_LATEX], latex)
+<a id='L276' name='L276'></a>             DX_REQUIRE_PROG([DX_MAKEINDEX], makeindex)
+<a id='L277' name='L277'></a>             DX_REQUIRE_PROG([DX_DVIPS], dvips)
+<a id='L278' name='L278'></a>             DX_REQUIRE_PROG([DX_EGREP], egrep)])
+<a id='L279' name='L279'></a> 
+<a id='L280' name='L280'></a># PDF file generation:
+<a id='L281' name='L281'></a>DX_ARG_ABLE(pdf, [generate doxygen PDF documentation],
+<a id='L282' name='L282'></a>            [DX_CHECK_DEPEND(doc, 1)],
+<a id='L283' name='L283'></a>            [DX_CLEAR_DEPEND(doc, 1)],
+<a id='L284' name='L284'></a>            [DX_REQUIRE_PROG([DX_PDFLATEX], pdflatex)
+<a id='L285' name='L285'></a>             DX_REQUIRE_PROG([DX_MAKEINDEX], makeindex)
+<a id='L286' name='L286'></a>             DX_REQUIRE_PROG([DX_EGREP], egrep)])
+<a id='L287' name='L287'></a> 
+<a id='L288' name='L288'></a># LaTeX generation for PS and/or PDF:
+<a id='L289' name='L289'></a>if DX_TEST_FEATURE(ps) || DX_TEST_FEATURE(pdf); then
+<a id='L290' name='L290'></a>    AM_CONDITIONAL(DX_COND_latex, :)
+<a id='L291' name='L291'></a>    DX_ENV_APPEND(GENERATE_LATEX, YES)
+<a id='L292' name='L292'></a>else
+<a id='L293' name='L293'></a>    AM_CONDITIONAL(DX_COND_latex, false)
+<a id='L294' name='L294'></a>    DX_ENV_APPEND(GENERATE_LATEX, NO)
+<a id='L295' name='L295'></a>fi
+<a id='L296' name='L296'></a> 
+<a id='L297' name='L297'></a># Paper size for PS and/or PDF:
+<a id='L298' name='L298'></a>AC_ARG_VAR(DOXYGEN_PAPER_SIZE,
+<a id='L299' name='L299'></a>           [a4wide (default), a4, letter, legal or executive])
+<a id='L300' name='L300'></a>case "$DOXYGEN_PAPER_SIZE" in
+<a id='L301' name='L301'></a>#(
+<a id='L302' name='L302'></a>"")
+<a id='L303' name='L303'></a>    AC_SUBST(DOXYGEN_PAPER_SIZE, "")
+<a id='L304' name='L304'></a>;; #(
+<a id='L305' name='L305'></a>a4wide|a4|letter|legal|executive)
+<a id='L306' name='L306'></a>    DX_ENV_APPEND(PAPER_SIZE, $DOXYGEN_PAPER_SIZE)
+<a id='L307' name='L307'></a>;; #(
+<a id='L308' name='L308'></a>*)
+<a id='L309' name='L309'></a>    AC_MSG_ERROR([unknown DOXYGEN_PAPER_SIZE='$DOXYGEN_PAPER_SIZE'])
+<a id='L310' name='L310'></a>;;
+<a id='L311' name='L311'></a>esac
+<a id='L312' name='L312'></a> 
+<a id='L313' name='L313'></a>#For debugging:
+<a id='L314' name='L314'></a>#echo DX_FLAG_doc=$DX_FLAG_doc
+<a id='L315' name='L315'></a>#echo DX_FLAG_dot=$DX_FLAG_dot
+<a id='L316' name='L316'></a>#echo DX_FLAG_man=$DX_FLAG_man
+<a id='L317' name='L317'></a>#echo DX_FLAG_html=$DX_FLAG_html
+<a id='L318' name='L318'></a>#echo DX_FLAG_chm=$DX_FLAG_chm
+<a id='L319' name='L319'></a>#echo DX_FLAG_chi=$DX_FLAG_chi
+<a id='L320' name='L320'></a>#echo DX_FLAG_rtf=$DX_FLAG_rtf
+<a id='L321' name='L321'></a>#echo DX_FLAG_xml=$DX_FLAG_xml
+<a id='L322' name='L322'></a>#echo DX_FLAG_pdf=$DX_FLAG_pdf
+<a id='L323' name='L323'></a>#echo DX_FLAG_ps=$DX_FLAG_ps
+<a id='L324' name='L324'></a>#echo DX_ENV=$DX_ENV
+<a id='L325' name='L325'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+325 m4.include/dx_doxygen.m4'  /> */</em>
+</body>
+</html>

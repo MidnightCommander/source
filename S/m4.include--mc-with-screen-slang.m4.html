@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/mc-with-screen-slang.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/mc-with-screen-slang.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/mc-with-screen-slang.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/mc-with-screen-slang.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a> 
+<a id='L2' name='L2'></a>dnl Check the header
+<a id='L3' name='L3'></a>AC_DEFUN([mc_CHECK_SLANG_HEADER], [
+<a id='L4' name='L4'></a>    AC_MSG_CHECKING([for slang/slang.h])
+<a id='L5' name='L5'></a>    AC_PREPROC_IFELSE(
+<a id='L6' name='L6'></a>        [
+<a id='L7' name='L7'></a>            AC_LANG_PROGRAM([#include &lt;slang/slang.h&gt;], [return 0;])
+<a id='L8' name='L8'></a>        ],
+<a id='L9' name='L9'></a>        [
+<a id='L10' name='L10'></a>            AC_MSG_RESULT(yes)
+<a id='L11' name='L11'></a>            AC_DEFINE(HAVE_SLANG_SLANG_H, 1, [Define to use slang.h])
+<a id='L12' name='L12'></a>            found_slang=yes
+<a id='L13' name='L13'></a>        ],
+<a id='L14' name='L14'></a>        [
+<a id='L15' name='L15'></a>            AC_MSG_RESULT(no)
+<a id='L16' name='L16'></a>        ]
+<a id='L17' name='L17'></a>    )
+<a id='L18' name='L18'></a>])
+<a id='L19' name='L19'></a> 
+<a id='L20' name='L20'></a>dnl
+<a id='L21' name='L21'></a>dnl Check if the system S-Lang library can be used.
+<a id='L22' name='L22'></a>dnl If not, and $1 is "strict", exit.
+<a id='L23' name='L23'></a>dnl
+<a id='L24' name='L24'></a>AC_DEFUN([mc_CHECK_SLANG_BY_PATH], [
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>    param_slang_inc_path=[$1]
+<a id='L27' name='L27'></a>    param_slang_lib_path=[$2]
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>    if test x"$param_slang_inc_path" != x; then
+<a id='L30' name='L30'></a>        ac_slang_inc_path="-I"$param_slang_inc_path
+<a id='L31' name='L31'></a>    fi
+<a id='L32' name='L32'></a> 
+<a id='L33' name='L33'></a>    if test x"$param_slang_lib_path" != x; then
+<a id='L34' name='L34'></a>        ac_slang_lib_path="-L"$param_slang_lib_path
+<a id='L35' name='L35'></a>    fi
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>    saved_CPPFLAGS="$CPPFLAGS"
+<a id='L38' name='L38'></a>    saved_LDFLAGS="$LDFLAGS"
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>    CPPFLAGS="$saved_CPPFLAGS $ac_slang_inc_path"
+<a id='L41' name='L41'></a>    LDFLAGS="$saved_LDFLAGS $ac_slang_lib_path"
+<a id='L42' name='L42'></a> 
+<a id='L43' name='L43'></a>    AC_MSG_CHECKING([for slang.h])
+<a id='L44' name='L44'></a>    AC_PREPROC_IFELSE(
+<a id='L45' name='L45'></a>        [
+<a id='L46' name='L46'></a>            AC_LANG_PROGRAM([#include &lt;slang.h&gt;], [return 0;])
+<a id='L47' name='L47'></a>        ],
+<a id='L48' name='L48'></a>        [
+<a id='L49' name='L49'></a>            AC_MSG_RESULT(yes)
+<a id='L50' name='L50'></a>            if test x"$ac_slang_inc_path" = x; then
+<a id='L51' name='L51'></a>                ac_slang_inc_path="-I/usr/include"
+<a id='L52' name='L52'></a>            fi
+<a id='L53' name='L53'></a>            if test x"$ac_slang_lib_path" = x; then
+<a id='L54' name='L54'></a>                ac_slang_lib_path="-L/usr/lib"
+<a id='L55' name='L55'></a>            fi
+<a id='L56' name='L56'></a>            found_slang=yes
+<a id='L57' name='L57'></a>            AC_DEFINE(HAVE_SLANG_H, 1, [Define to use slang.h])
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>        ],
+<a id='L60' name='L60'></a>        [
+<a id='L61' name='L61'></a>            AC_MSG_RESULT(no)
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a>            mc_CHECK_SLANG_HEADER
+<a id='L64' name='L64'></a>            if test x"$found_slang" = xno; then
+<a id='L65' name='L65'></a>                error_msg_slang="S-Lang header not found"
+<a id='L66' name='L66'></a>            else
+<a id='L67' name='L67'></a>                if test x"$ac_slang_inc_path" = x; then
+<a id='L68' name='L68'></a>                    ac_slang_inc_path="-I/usr/include"
+<a id='L69' name='L69'></a>                fi
+<a id='L70' name='L70'></a>                if test x"$ac_slang_lib_path" = x; then
+<a id='L71' name='L71'></a>                    ac_slang_lib_path="-L/usr/lib"
+<a id='L72' name='L72'></a>                fi
+<a id='L73' name='L73'></a>                CPPFLAGS="-DHAVE_SLANG_SLANG_H $CPPFLAGS"
+<a id='L74' name='L74'></a>            fi
+<a id='L75' name='L75'></a>        ],
+<a id='L76' name='L76'></a>    )
+<a id='L77' name='L77'></a>    dnl check if S-Lang have version 2.0 or newer
+<a id='L78' name='L78'></a>    if test x"$found_slang" = x"yes"; then
+<a id='L79' name='L79'></a>        AC_MSG_CHECKING([for S-Lang version 2.0 or newer])
+<a id='L80' name='L80'></a>        AC_RUN_IFELSE([AC_LANG_SOURCE([
+<a id='L81' name='L81'></a>#ifdef HAVE_SLANG_SLANG_H
+<a id='L82' name='L82'></a>#include &lt;slang/slang.h&gt;
+<a id='L83' name='L83'></a>#else
+<a id='L84' name='L84'></a>#include &lt;slang.h&gt;
+<a id='L85' name='L85'></a>#endif
+<a id='L86' name='L86'></a>int main (void)
+<a id='L87' name='L87'></a>{
+<a id='L88' name='L88'></a>#if SLANG_VERSION &gt;= 20000
+<a id='L89' name='L89'></a>    return 0;
+<a id='L90' name='L90'></a>#else
+<a id='L91' name='L91'></a>    return 1;
+<a id='L92' name='L92'></a>#endif
+<a id='L93' name='L93'></a>}
+<a id='L94' name='L94'></a>])],
+<a id='L95' name='L95'></a>            [mc_slang_is_valid_version=yes],
+<a id='L96' name='L96'></a>            [mc_slang_is_valid_version=no],
+<a id='L97' name='L97'></a>            [
+<a id='L98' name='L98'></a>            if test -f "$param_slang_inc_path/slang/slang.h" ; then
+<a id='L99' name='L99'></a>                hdr_file="$param_slang_inc_path/slang/slang.h"
+<a id='L100' name='L100'></a>            else
+<a id='L101' name='L101'></a>                hdr_file="$param_slang_inc_path/slang.h"
+<a id='L102' name='L102'></a>            fi
+<a id='L103' name='L103'></a>            mc_slang_is_valid_version=`grep '^#define SLANG_VERSION[[:space:]]' "$hdr_file"| sed s'/^#define SLANG_VERSION[[:space:]]*//'`
+<a id='L104' name='L104'></a>            if test "$mc_slang_is_valid_version" -ge "20000"; then
+<a id='L105' name='L105'></a>                mc_slang_is_valid_version=yes
+<a id='L106' name='L106'></a>            else
+<a id='L107' name='L107'></a>                mc_slang_is_valid_version=no
+<a id='L108' name='L108'></a>            fi
+<a id='L109' name='L109'></a>            ]
+<a id='L110' name='L110'></a>        )
+<a id='L111' name='L111'></a>        if test x$mc_slang_is_valid_version = xno; then
+<a id='L112' name='L112'></a>            found_slang=no
+<a id='L113' name='L113'></a>            error_msg_slang="S-Lang library version 2.0 or newer not found"
+<a id='L114' name='L114'></a>        fi
+<a id='L115' name='L115'></a>        AC_MSG_RESULT($mc_slang_is_valid_version)
+<a id='L116' name='L116'></a>    fi
+<a id='L117' name='L117'></a>    dnl Check if termcap is needed.
+<a id='L118' name='L118'></a>    dnl This check must be done before anything is linked against S-Lang.
+<a id='L119' name='L119'></a>    if test x"$found_slang" = x"yes"; then
+<a id='L120' name='L120'></a>        mc_SLANG_TERMCAP
+<a id='L121' name='L121'></a>        if test x"$mc_cv_slang_termcap"  = x"yes"; then
+<a id='L122' name='L122'></a>            saved_CPPFLAGS="$saved_CPPFLAGS "
+<a id='L123' name='L123'></a>            saved_LDFLAGS="-ltermcap $saved_LDFLAGS"
+<a id='L124' name='L124'></a>        fi
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a>        dnl Check the library
+<a id='L127' name='L127'></a>        unset ac_cv_lib_slang_SLang_init_tty
+<a id='L128' name='L128'></a>        AC_CHECK_LIB(
+<a id='L129' name='L129'></a>            [slang],
+<a id='L130' name='L130'></a>            [SLang_init_tty],
+<a id='L131' name='L131'></a>            [:],
+<a id='L132' name='L132'></a>            [
+<a id='L133' name='L133'></a>                found_slang=no
+<a id='L134' name='L134'></a>                error_msg_slang="S-Lang library not found"
+<a id='L135' name='L135'></a>            ]
+<a id='L136' name='L136'></a>        )
+<a id='L137' name='L137'></a>    fi
+<a id='L138' name='L138'></a> 
+<a id='L139' name='L139'></a>    if test x"$found_slang" = x"yes"; then
+<a id='L140' name='L140'></a>        MCLIBS="$ac_slang_lib_path -lslang $MCLIBS"
+<a id='L141' name='L141'></a>        dnl do not reset CPPFLAGS
+<a id='L142' name='L142'></a>        dnl if CPPFLAGS are reset then cpp does not find the specified header
+<a id='L143' name='L143'></a>        CPPFLAGS="$ac_slang_inc_path $saved_CPPFLAGS"
+<a id='L144' name='L144'></a>        LDFLAGS="$saved_LDFLAGS"
+<a id='L145' name='L145'></a>    else
+<a id='L146' name='L146'></a>        CPPFLAGS="$saved_CPPFLAGS"
+<a id='L147' name='L147'></a>        LDFLAGS="$saved_LDFLAGS"
+<a id='L148' name='L148'></a>    fi
+<a id='L149' name='L149'></a>])
+<a id='L150' name='L150'></a> 
+<a id='L151' name='L151'></a>dnl
+<a id='L152' name='L152'></a>dnl Use the slang library.
+<a id='L153' name='L153'></a>dnl
+<a id='L154' name='L154'></a>AC_DEFUN([mc_WITH_SLANG], [
+<a id='L155' name='L155'></a>    with_screen=slang
+<a id='L156' name='L156'></a>    found_slang=yes
+<a id='L157' name='L157'></a>    error_msg_slang=""
+<a id='L158' name='L158'></a> 
+<a id='L159' name='L159'></a>    AC_ARG_WITH([slang-includes],
+<a id='L160' name='L160'></a>        AS_HELP_STRING([--with-slang-includes=@&lt;:@DIR@:&gt;@],
+<a id='L161' name='L161'></a>            [set path to S-Lang includes @&lt;:@default=/usr/include@:&gt;@; make sense only if --with-screen=slang]
+<a id='L162' name='L162'></a>        ),
+<a id='L163' name='L163'></a>        [ac_slang_inc_path="$withval"],
+<a id='L164' name='L164'></a>        [ac_slang_inc_path=""]
+<a id='L165' name='L165'></a>    )
+<a id='L166' name='L166'></a> 
+<a id='L167' name='L167'></a>    AC_ARG_WITH([slang-libs],
+<a id='L168' name='L168'></a>        AS_HELP_STRING([--with-slang-libs=@&lt;:@DIR@:&gt;@],
+<a id='L169' name='L169'></a>            [set path to S-Lang library @&lt;:@default=/usr/lib@:&gt;@; make sense only if --with-screen=slang]
+<a id='L170' name='L170'></a>        ),
+<a id='L171' name='L171'></a>        [ac_slang_lib_path="$withval"],
+<a id='L172' name='L172'></a>        [ac_slang_lib_path=""]
+<a id='L173' name='L173'></a>    )
+<a id='L174' name='L174'></a>    if test x"$ac_slang_lib_path" != x -o x"$ac_slang_inc_path" != x; then
+<a id='L175' name='L175'></a>        echo 'checking S-Lang headers in specified place ...'
+<a id='L176' name='L176'></a>        mc_CHECK_SLANG_BY_PATH([$ac_slang_inc_path],[$ac_slang_lib_path])
+<a id='L177' name='L177'></a>    else
+<a id='L178' name='L178'></a>        found_slang=no
+<a id='L179' name='L179'></a>        PKG_CHECK_MODULES(SLANG, [slang &gt;= 2.0], [found_slang=yes], [:])
+<a id='L180' name='L180'></a>        if test x"$found_slang" = "xyes"; then
+<a id='L181' name='L181'></a>            MCLIBS="$pkg_cv_SLANG_LIBS $MCLIBS"
+<a id='L182' name='L182'></a>            CPPFLAGS="$pkg_cv_SLANG_CFLAGS $CPPFLAGS"
+<a id='L183' name='L183'></a>        fi
+<a id='L184' name='L184'></a>    fi
+<a id='L185' name='L185'></a> 
+<a id='L186' name='L186'></a>    if test x"$found_slang" = "xno"; then
+<a id='L187' name='L187'></a>        found_slang=yes
+<a id='L188' name='L188'></a>        ac_slang_inc_path="/usr/include"
+<a id='L189' name='L189'></a>        ac_slang_lib_path="/usr/lib"
+<a id='L190' name='L190'></a> 
+<a id='L191' name='L191'></a>        echo 'checking S-Lang headers in /usr ...'
+<a id='L192' name='L192'></a>        mc_CHECK_SLANG_BY_PATH([$ac_slang_inc_path],[$ac_slang_lib_path])
+<a id='L193' name='L193'></a>        if test x"$found_slang" = "xno"; then
+<a id='L194' name='L194'></a>            found_slang=yes
+<a id='L195' name='L195'></a>            ac_slang_inc_path="/usr/local/include"
+<a id='L196' name='L196'></a>            ac_slang_lib_path="/usr/local/lib"
+<a id='L197' name='L197'></a> 
+<a id='L198' name='L198'></a>            echo 'checking S-Lang headers in /usr/local ...'
+<a id='L199' name='L199'></a>            mc_CHECK_SLANG_BY_PATH( $ac_slang_inc_path , $ac_slang_lib_path )
+<a id='L200' name='L200'></a>            if test x"$found_slang" = "xno"; then
+<a id='L201' name='L201'></a>                AC_MSG_ERROR([$error_msg_slang])
+<a id='L202' name='L202'></a>            fi
+<a id='L203' name='L203'></a>        fi
+<a id='L204' name='L204'></a>    fi
+<a id='L205' name='L205'></a> 
+<a id='L206' name='L206'></a>    screen_type=slang
+<a id='L207' name='L207'></a>    screen_msg="S-Lang"
+<a id='L208' name='L208'></a>    AC_DEFINE(HAVE_SLANG, 1, [Define to use S-Lang library for screen management])
+<a id='L209' name='L209'></a> 
+<a id='L210' name='L210'></a>    mc_CHECK_SLANG_HEADER
+<a id='L211' name='L211'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+211 m4.include/mc-with-screen-slang.m4'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/smbfs/helpers/lib/charcnv.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L39'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L255'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/<a href='../files/src--vfs--smbfs--helpers--lib.html'>lib</a>/charcnv.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/<a href='../files/src--vfs--smbfs--helpers--lib.html'>lib</a>/charcnv.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L39' title='Defined at 39.'>initmaps</a></li>
+<li><a href='#L52' title='Defined at 52.'>update_map</a></li>
+<li><a href='#L68' title='Defined at 68.'>init_iso8859_1</a></li>
+<li><a href='#L101' title='Defined at 101.'>init_iso8859_2</a></li>
+<li><a href='#L141' title='Defined at 141.'>init_iso8859_5</a></li>
+<li><a href='#L170' title='Defined at 170.'>init_koi8_r</a></li>
+<li><a href='#L200' title='Defined at 200.'>unix2dos_format</a></li>
+<li><a href='#L227' title='Defined at 227.'>dos2unix_format</a></li>
+<li><a href='#L255' title='Defined at 255.'>interpret_character_set</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Unix SMB/Netbios implementation.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   Version 1.9.</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Character set conversion Extensions</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'></em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>   Copyright (C) Andrew Tridgell 1992-1998</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'></em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Copyright (C) 2011-2021</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'></em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'></em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> "<a href='src--vfs--smbfs--helpers--include--includes.h.html'>includes.h</a>"
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#define</em> <a href='../R/CTRLZ.html' title='Multiple referred from 6 places.'>CTRLZ</a> 26
+<a id='L29' name='L29'></a>  29 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/DEBUGLEVEL.html' title='Multiple used in 35 places.'>DEBUGLEVEL</a>;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> <a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>[1024];
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <strong class='reserved'>static</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a> <a href='../Y/mapsinited.html' title='Multiple used in 8 places.'>mapsinited</a> = 0;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> <a href='../Y/unix2dos.html' title='Multiple used in 8 places.'>unix2dos</a>[256];
+<a id='L36' name='L36'></a>  36 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> <a href='../Y/dos2unix.html' title='Multiple used in 8 places.'>dos2unix</a>[256];
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L39' name='L39'></a>  39 <a href='../R/initmaps.html' title='Multiple referred from 6 places.'>initmaps</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L52'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+39 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L40' name='L40'></a>  40 <em class='brace'>{</em>
+<a id='L41' name='L41'></a>  41     <strong class='reserved'>int</strong> <a href='../Y/k.html' title='Multiple used in 118 places.'>k</a>;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43     <strong class='reserved'>for</strong> (<a href='../Y/k.html' title='Multiple used in 118 places.'>k</a> = 0; <a href='../Y/k.html' title='Multiple used in 118 places.'>k</a> &lt; 256; <a href='../Y/k.html' title='Multiple used in 118 places.'>k</a>++)
+<a id='L44' name='L44'></a>  44         <a href='../Y/unix2dos.html' title='Multiple used in 8 places.'>unix2dos</a>[<a href='../Y/k.html' title='Multiple used in 118 places.'>k</a>] = <a href='../Y/k.html' title='Multiple used in 118 places.'>k</a>;
+<a id='L45' name='L45'></a>  45     <strong class='reserved'>for</strong> (<a href='../Y/k.html' title='Multiple used in 118 places.'>k</a> = 0; <a href='../Y/k.html' title='Multiple used in 118 places.'>k</a> &lt; 256; <a href='../Y/k.html' title='Multiple used in 118 places.'>k</a>++)
+<a id='L46' name='L46'></a>  46         <a href='../Y/dos2unix.html' title='Multiple used in 8 places.'>dos2unix</a>[<a href='../Y/k.html' title='Multiple used in 118 places.'>k</a>] = <a href='../Y/k.html' title='Multiple used in 118 places.'>k</a>;
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48     <a href='../Y/mapsinited.html' title='Multiple used in 8 places.'>mapsinited</a> = <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L17' title='Defined at 17 in src/vfs/smbfs/helpers/include/smb.h.'>True</a>;
+<a id='L49' name='L49'></a>  49 <em class='brace'>}</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L52' name='L52'></a>  52 <a href='../R/update_map.html' title='Multiple referred from 50 places.'>update_map</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>)
+     <em class='comment'>/* <a href='#L39'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L68'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+52 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L53' name='L53'></a>  53 <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>;
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56     <strong class='reserved'>for</strong> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> = <a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>; *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>; <a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>++)
+<a id='L57' name='L57'></a>  57     <em class='brace'>{</em>
+<a id='L58' name='L58'></a>  58         <strong class='reserved'>if</strong> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>[1])
+<a id='L59' name='L59'></a>  59         <em class='brace'>{</em>
+<a id='L60' name='L60'></a>  60             <a href='../Y/unix2dos.html' title='Multiple used in 8 places.'>unix2dos</a>[(<strong class='reserved'>unsigned</strong> <strong class='reserved'>char</strong>) *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>] = <a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>[1];
+<a id='L61' name='L61'></a>  61             <a href='../Y/dos2unix.html' title='Multiple used in 8 places.'>dos2unix</a>[(<strong class='reserved'>unsigned</strong> <strong class='reserved'>char</strong>) <a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>[1]] = *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>;
+<a id='L62' name='L62'></a>  62             <a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>++;
+<a id='L63' name='L63'></a>  63         <em class='brace'>}</em>
+<a id='L64' name='L64'></a>  64     <em class='brace'>}</em>
+<a id='L65' name='L65'></a>  65 <em class='brace'>}</em>
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L68' name='L68'></a>  68 <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L259' title='Referred from 259 in src/vfs/smbfs/helpers/lib/charcnv.c.'>init_iso8859_1</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L52'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L101'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+68 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L69' name='L69'></a>  69 <em class='brace'>{</em>
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L72' name='L72'></a>  72     <strong class='reserved'>if</strong> (!<a href='../Y/mapsinited.html' title='Multiple used in 8 places.'>mapsinited</a>)
+<a id='L73' name='L73'></a>  73         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L39' title='Defined at 39 in src/vfs/smbfs/helpers/lib/charcnv.c.'>initmaps</a> ();
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     <em class='comment'>/* Do not map undefined characters to some accidental code */</em>
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = 128; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> &lt; 256; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>++)
+<a id='L77' name='L77'></a>  77     <em class='brace'>{</em>
+<a id='L78' name='L78'></a>  78         <a href='../Y/unix2dos.html' title='Multiple used in 8 places.'>unix2dos</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>] = <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/lib/charcnv.c.'>CTRLZ</a>;
+<a id='L79' name='L79'></a>  79         <a href='../Y/dos2unix.html' title='Multiple used in 8 places.'>dos2unix</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>] = <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/lib/charcnv.c.'>CTRLZ</a>;
+<a id='L80' name='L80'></a>  80     <em class='brace'>}</em>
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82     <em class='comment'>/* MSDOS Code Page 850 -&gt; ISO-8859 */</em>
+<a id='L83' name='L83'></a>  83     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\240\377\241\255\242\275\243\234\244\317\245\276\246\335\247\365");
+<a id='L84' name='L84'></a>  84     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\250\371\251\270\252\246\253\256\254\252\255\360\256\251\257\356");
+<a id='L85' name='L85'></a>  85     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\260\370\261\361\262\375\263\374\264\357\265\346\266\364\267\372");
+<a id='L86' name='L86'></a>  86     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\270\367\271\373\272\247\273\257\274\254\275\253\276\363\277\250");
+<a id='L87' name='L87'></a>  87     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\300\267\301\265\302\266\303\307\304\216\305\217\306\222\307\200");
+<a id='L88' name='L88'></a>  88     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\310\324\311\220\312\322\313\323\314\336\315\326\316\327\317\330");
+<a id='L89' name='L89'></a>  89     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\320\321\321\245\322\343\323\340\324\342\325\345\326\231\327\236");
+<a id='L90' name='L90'></a>  90     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\330\235\331\353\332\351\333\352\334\232\335\355\336\350\337\341");
+<a id='L91' name='L91'></a>  91     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\340\205\341\240\342\203\343\306\344\204\345\206\346\221\347\207");
+<a id='L92' name='L92'></a>  92     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\350\212\351\202\352\210\353\211\354\215\355\241\356\214\357\213");
+<a id='L93' name='L93'></a>  93     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\360\320\361\244\362\225\363\242\364\223\365\344\366\224\367\366");
+<a id='L94' name='L94'></a>  94     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\370\233\371\227\372\243\373\226\374\201\375\354\376\347\377\230");
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96 <em class='brace'>}</em>
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98 <em class='comment'>/* Init for eastern european languages. */</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L101' name='L101'></a> 101 <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L263' title='Referred from 263 in src/vfs/smbfs/helpers/lib/charcnv.c.'>init_iso8859_2</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L68'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L141'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+101 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L102' name='L102'></a> 102 <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L105' name='L105'></a> 105     <strong class='reserved'>if</strong> (!<a href='../Y/mapsinited.html' title='Multiple used in 8 places.'>mapsinited</a>)
+<a id='L106' name='L106'></a> 106         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L39' title='Defined at 39 in src/vfs/smbfs/helpers/lib/charcnv.c.'>initmaps</a> ();
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108     <em class='comment'>/* Do not map undefined characters to some accidental code */</em>
+<a id='L109' name='L109'></a> 109     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = 128; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> &lt; 256; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>++)
+<a id='L110' name='L110'></a> 110     <em class='brace'>{</em>
+<a id='L111' name='L111'></a> 111         <a href='../Y/unix2dos.html' title='Multiple used in 8 places.'>unix2dos</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>] = <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/lib/charcnv.c.'>CTRLZ</a>;
+<a id='L112' name='L112'></a> 112         <a href='../Y/dos2unix.html' title='Multiple used in 8 places.'>dos2unix</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>] = <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/lib/charcnv.c.'>CTRLZ</a>;
+<a id='L113' name='L113'></a> 113     <em class='brace'>}</em>
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115     <em class='comment'>/*</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'>     * Tranlation table created by Petr Hubeny &lt;psh@capitol.cz&gt;</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'>     * Requires client code page = 852</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'>     * and character set = ISO8859-2 in smb.conf</em>
+<a id='L119' name='L119'></a> 119 <em class='comment'>     */</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121     <em class='comment'>/* MSDOS Code Page 852 -&gt; ISO-8859-2 */</em>
+<a id='L122' name='L122'></a> 122     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\241\244\242\364\243\235\244\317\245\225\246\227\247\365");
+<a id='L123' name='L123'></a> 123     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\250\371\251\346\252\270\253\233\254\215\256\246\257\275");
+<a id='L124' name='L124'></a> 124     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\261\245\262\362\263\210\264\357\265\226\266\230\267\363");
+<a id='L125' name='L125'></a> 125     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\270\367\271\347\272\255\273\234\274\253\275\361\276\247\277\276");
+<a id='L126' name='L126'></a> 126     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\300\350\301\265\302\266\303\306\304\216\305\221\306\217\307\200");
+<a id='L127' name='L127'></a> 127     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\310\254\311\220\312\250\313\323\314\267\315\326\316\327\317\322");
+<a id='L128' name='L128'></a> 128     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\320\321\321\343\322\325\323\340\324\342\325\212\326\231\327\236");
+<a id='L129' name='L129'></a> 129     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\330\374\331\336\332\351\333\353\334\232\335\355\336\335\337\341");
+<a id='L130' name='L130'></a> 130     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\340\352\341\240\342\203\343\307\344\204\345\222\346\206\347\207");
+<a id='L131' name='L131'></a> 131     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\350\237\351\202\352\251\353\211\354\330\355\241\356\214\357\324");
+<a id='L132' name='L132'></a> 132     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\360\320\361\344\362\345\363\242\364\223\365\213\366\224\367\366");
+<a id='L133' name='L133'></a> 133     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\370\375\371\205\372\243\373\373\374\201\375\354\376\356\377\372");
+<a id='L134' name='L134'></a> 134 <em class='brace'>}</em>
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136 <em class='comment'>/* Init for russian language (iso8859-5) */</em>
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138 <em class='comment'>/* Added by Max Khon &lt;max@iclub.nsu.ru&gt; */</em>
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L141' name='L141'></a> 141 <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L267' title='Referred from 267 in src/vfs/smbfs/helpers/lib/charcnv.c.'>init_iso8859_5</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L101'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L170'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+141 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L142' name='L142'></a> 142 <em class='brace'>{</em>
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>if</strong> (!<a href='../Y/mapsinited.html' title='Multiple used in 8 places.'>mapsinited</a>)
+<a id='L145' name='L145'></a> 145         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L39' title='Defined at 39 in src/vfs/smbfs/helpers/lib/charcnv.c.'>initmaps</a> ();
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147     <em class='comment'>/* Do not map undefined characters to some accidental code */</em>
+<a id='L148' name='L148'></a> 148     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = 128; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> &lt; 256; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>++)
+<a id='L149' name='L149'></a> 149     <em class='brace'>{</em>
+<a id='L150' name='L150'></a> 150         <a href='../Y/unix2dos.html' title='Multiple used in 8 places.'>unix2dos</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>] = <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/lib/charcnv.c.'>CTRLZ</a>;
+<a id='L151' name='L151'></a> 151         <a href='../Y/dos2unix.html' title='Multiple used in 8 places.'>dos2unix</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>] = <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/lib/charcnv.c.'>CTRLZ</a>;
+<a id='L152' name='L152'></a> 152     <em class='brace'>}</em>
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154     <em class='comment'>/* MSDOS Code Page 866 -&gt; ISO8859-5 */</em>
+<a id='L155' name='L155'></a> 155     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\260\200\261\201\262\202\263\203\264\204\265\205\266\206\267\207");
+<a id='L156' name='L156'></a> 156     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\270\210\271\211\272\212\273\213\274\214\275\215\276\216\277\217");
+<a id='L157' name='L157'></a> 157     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\300\220\301\221\302\222\303\223\304\224\305\225\306\226\307\227");
+<a id='L158' name='L158'></a> 158     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\310\230\311\231\312\232\313\233\314\234\315\235\316\236\317\237");
+<a id='L159' name='L159'></a> 159     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\320\240\321\241\322\242\323\243\324\244\325\245\326\246\327\247");
+<a id='L160' name='L160'></a> 160     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\330\250\331\251\332\252\333\253\334\254\335\255\336\256\337\257");
+<a id='L161' name='L161'></a> 161     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\340\340\341\341\342\342\343\343\344\344\345\345\346\346\347\347");
+<a id='L162' name='L162'></a> 162     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\350\350\351\351\352\352\353\353\354\354\355\355\356\356\357\357");
+<a id='L163' name='L163'></a> 163     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\241\360\361\361\244\362\364\363\247\364\367\365\256\366\376\367");
+<a id='L164' name='L164'></a> 164     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\360\374\240\377");
+<a id='L165' name='L165'></a> 165 <em class='brace'>}</em>
+<a id='L166' name='L166'></a> 166 
+<a id='L167' name='L167'></a> 167 <em class='comment'>/* Init for russian language (koi8) */</em>
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L170' name='L170'></a> 170 <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L271' title='Referred from 271 in src/vfs/smbfs/helpers/lib/charcnv.c.'>init_koi8_r</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L141'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L200'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+170 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L171' name='L171'></a> 171 <em class='brace'>{</em>
+<a id='L172' name='L172'></a> 172     <strong class='reserved'>if</strong> (!<a href='../Y/mapsinited.html' title='Multiple used in 8 places.'>mapsinited</a>)
+<a id='L173' name='L173'></a> 173         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L39' title='Defined at 39 in src/vfs/smbfs/helpers/lib/charcnv.c.'>initmaps</a> ();
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175     <em class='comment'>/* There aren't undefined characters between 128 and 255 */</em>
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177     <em class='comment'>/* MSDOS Code Page 866 -&gt; KOI8-R */</em>
+<a id='L178' name='L178'></a> 178     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\200\304\201\263\202\332\203\277\204\300\205\331\206\303\207\264");
+<a id='L179' name='L179'></a> 179     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\210\302\211\301\212\305\213\337\214\334\215\333\216\335\217\336");
+<a id='L180' name='L180'></a> 180     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\220\260\221\261\222\262\223\364\224\376\225\371\226\373\227\367");
+<a id='L181' name='L181'></a> 181     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\230\363\231\362\232\377\233\365\234\370\235\375\236\372\237\366");
+<a id='L182' name='L182'></a> 182     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\240\315\241\272\242\325\243\361\244\326\245\311\246\270\247\267");
+<a id='L183' name='L183'></a> 183     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\250\273\251\324\252\323\253\310\254\276\255\275\256\274\257\306");
+<a id='L184' name='L184'></a> 184     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\260\307\261\314\262\265\263\360\264\266\265\271\266\321\267\322");
+<a id='L185' name='L185'></a> 185     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\270\313\271\317\272\320\273\312\274\330\275\327\276\316\277\374");
+<a id='L186' name='L186'></a> 186     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\300\356\301\240\302\241\303\346\304\244\305\245\306\344\307\243");
+<a id='L187' name='L187'></a> 187     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\310\345\311\250\312\251\313\252\314\253\315\254\316\255\317\256");
+<a id='L188' name='L188'></a> 188     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\320\257\321\357\322\340\323\341\324\342\325\343\326\246\327\242");
+<a id='L189' name='L189'></a> 189     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\330\354\331\353\332\247\333\350\334\355\335\351\336\347\337\352");
+<a id='L190' name='L190'></a> 190     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\340\236\341\200\342\201\343\226\344\204\345\205\346\224\347\203");
+<a id='L191' name='L191'></a> 191     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\350\225\351\210\352\211\353\212\354\213\355\214\356\215\357\216");
+<a id='L192' name='L192'></a> 192     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\360\217\361\237\362\220\363\221\364\222\365\223\366\206\367\202");
+<a id='L193' name='L193'></a> 193     <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L52' title='Defined at 52 in src/vfs/smbfs/helpers/lib/charcnv.c.'>update_map</a> ("\370\234\371\233\372\207\373\230\374\235\375\231\376\227\377\232");
+<a id='L194' name='L194'></a> 194 <em class='brace'>}</em>
+<a id='L195' name='L195'></a> 195 
+<a id='L196' name='L196'></a> 196 <em class='comment'>/*</em>
+<a id='L197' name='L197'></a> 197 <em class='comment'> * Convert unix to dos</em>
+<a id='L198' name='L198'></a> 198 <em class='comment'> */</em>
+<a id='L199' name='L199'></a> 199 <strong class='reserved'>char</strong> *
+<a id='L200' name='L200'></a> 200 <a href='../R/unix2dos_format.html' title='Multiple referred from 3 places.'>unix2dos_format</a> (<strong class='reserved'>char</strong> *<a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>, <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a> <a href='../Y/overwrite.html' title='Multiple used in 41 places.'>overwrite</a>)
+     <em class='comment'>/* <a href='#L170'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L227'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+200 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L201' name='L201'></a> 201 <em class='brace'>{</em>
+<a id='L202' name='L202'></a> 202     <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>;
+<a id='L203' name='L203'></a> 203     <strong class='reserved'>char</strong> *<a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a>;
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205     <strong class='reserved'>if</strong> (!<a href='../Y/mapsinited.html' title='Multiple used in 8 places.'>mapsinited</a>)
+<a id='L206' name='L206'></a> 206         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L39' title='Defined at 39 in src/vfs/smbfs/helpers/lib/charcnv.c.'>initmaps</a> ();
+<a id='L207' name='L207'></a> 207 
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>if</strong> (<a href='../Y/overwrite.html' title='Multiple used in 41 places.'>overwrite</a>)
+<a id='L209' name='L209'></a> 209     <em class='brace'>{</em>
+<a id='L210' name='L210'></a> 210         <strong class='reserved'>for</strong> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> = <a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>; *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>; <a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>++)
+<a id='L211' name='L211'></a> 211             *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> = <a href='../Y/unix2dos.html' title='Multiple used in 8 places.'>unix2dos</a>[(<strong class='reserved'>unsigned</strong> <strong class='reserved'>char</strong>) *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>];
+<a id='L212' name='L212'></a> 212         <strong class='reserved'>return</strong> <a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>;
+<a id='L213' name='L213'></a> 213     <em class='brace'>}</em>
+<a id='L214' name='L214'></a> 214     <strong class='reserved'>else</strong>
+<a id='L215' name='L215'></a> 215     <em class='brace'>{</em>
+<a id='L216' name='L216'></a> 216         <strong class='reserved'>for</strong> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> = <a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>, <a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a> = <a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>; *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> &amp;&amp; <a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a> &lt; &amp;(<a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>[<strong class='reserved'>sizeof</strong> (<a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>) - 1]); <a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>++, <a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a>++)
+<a id='L217' name='L217'></a> 217             *<a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a> = <a href='../Y/unix2dos.html' title='Multiple used in 8 places.'>unix2dos</a>[(<strong class='reserved'>unsigned</strong> <strong class='reserved'>char</strong>) *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>];
+<a id='L218' name='L218'></a> 218         *<a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a> = 0;
+<a id='L219' name='L219'></a> 219         <strong class='reserved'>return</strong> <a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>;
+<a id='L220' name='L220'></a> 220     <em class='brace'>}</em>
+<a id='L221' name='L221'></a> 221 <em class='brace'>}</em>
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223 <em class='comment'>/*</em>
+<a id='L224' name='L224'></a> 224 <em class='comment'> * Convert dos to unix</em>
+<a id='L225' name='L225'></a> 225 <em class='comment'> */</em>
+<a id='L226' name='L226'></a> 226 <strong class='reserved'>char</strong> *
+<a id='L227' name='L227'></a> 227 <a href='../R/dos2unix_format.html' title='Multiple referred from 3 places.'>dos2unix_format</a> (<strong class='reserved'>char</strong> *<a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>, <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a> <a href='../Y/overwrite.html' title='Multiple used in 41 places.'>overwrite</a>)
+     <em class='comment'>/* <a href='#L200'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L255'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+227 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L228' name='L228'></a> 228 <em class='brace'>{</em>
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>;
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>char</strong> *<a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a>;
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232     <strong class='reserved'>if</strong> (!<a href='../Y/mapsinited.html' title='Multiple used in 8 places.'>mapsinited</a>)
+<a id='L233' name='L233'></a> 233         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L39' title='Defined at 39 in src/vfs/smbfs/helpers/lib/charcnv.c.'>initmaps</a> ();
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235     <strong class='reserved'>if</strong> (<a href='../Y/overwrite.html' title='Multiple used in 41 places.'>overwrite</a>)
+<a id='L236' name='L236'></a> 236     <em class='brace'>{</em>
+<a id='L237' name='L237'></a> 237         <strong class='reserved'>for</strong> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> = <a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>; *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>; <a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>++)
+<a id='L238' name='L238'></a> 238             *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> = <a href='../Y/dos2unix.html' title='Multiple used in 8 places.'>dos2unix</a>[(<strong class='reserved'>unsigned</strong> <strong class='reserved'>char</strong>) *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>];
+<a id='L239' name='L239'></a> 239         <strong class='reserved'>return</strong> <a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>;
+<a id='L240' name='L240'></a> 240     <em class='brace'>}</em>
+<a id='L241' name='L241'></a> 241     <strong class='reserved'>else</strong>
+<a id='L242' name='L242'></a> 242     <em class='brace'>{</em>
+<a id='L243' name='L243'></a> 243         <strong class='reserved'>for</strong> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> = <a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>, <a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a> = <a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>; *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> &amp;&amp; <a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a> &lt; &amp;(<a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>[<strong class='reserved'>sizeof</strong> (<a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>) - 1]); <a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>++, <a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a>++)
+<a id='L244' name='L244'></a> 244             *<a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a> = <a href='../Y/dos2unix.html' title='Multiple used in 8 places.'>dos2unix</a>[(<strong class='reserved'>unsigned</strong> <strong class='reserved'>char</strong>) *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>];
+<a id='L245' name='L245'></a> 245         *<a href='../Y/dp.html' title='Multiple used in 75 places.'>dp</a> = 0;
+<a id='L246' name='L246'></a> 246         <strong class='reserved'>return</strong> <a href='../Y/cvtbuf.html' title='Multiple used in 44 places.'>cvtbuf</a>;
+<a id='L247' name='L247'></a> 247     <em class='brace'>}</em>
+<a id='L248' name='L248'></a> 248 <em class='brace'>}</em>
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251 <em class='comment'>/*</em>
+<a id='L252' name='L252'></a> 252 <em class='comment'> * Interpret character set.</em>
+<a id='L253' name='L253'></a> 253 <em class='comment'> */</em>
+<a id='L254' name='L254'></a> 254 <strong class='reserved'>void</strong>
+<a id='L255' name='L255'></a> 255 <a href='../R/interpret_character_set.html' title='Multiple referred from 2 places.'>interpret_character_set</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>)
+     <em class='comment'>/* <a href='#L227'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+255 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+<a id='L256' name='L256'></a> 256 <em class='brace'>{</em>
+<a id='L257' name='L257'></a> 257     <strong class='reserved'>if</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util_str.c.html#L305' title='Defined at 305 in src/vfs/smbfs/helpers/lib/util_str.c.'>strequal</a> (<a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>, "iso8859-1"))
+<a id='L258' name='L258'></a> 258     <em class='brace'>{</em>
+<a id='L259' name='L259'></a> 259         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L68' title='Defined at 68 in src/vfs/smbfs/helpers/lib/charcnv.c.'>init_iso8859_1</a> ();
+<a id='L260' name='L260'></a> 260     <em class='brace'>}</em>
+<a id='L261' name='L261'></a> 261     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util_str.c.html#L305' title='Defined at 305 in src/vfs/smbfs/helpers/lib/util_str.c.'>strequal</a> (<a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>, "iso8859-2"))
+<a id='L262' name='L262'></a> 262     <em class='brace'>{</em>
+<a id='L263' name='L263'></a> 263         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L101' title='Defined at 101 in src/vfs/smbfs/helpers/lib/charcnv.c.'>init_iso8859_2</a> ();
+<a id='L264' name='L264'></a> 264     <em class='brace'>}</em>
+<a id='L265' name='L265'></a> 265     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util_str.c.html#L305' title='Defined at 305 in src/vfs/smbfs/helpers/lib/util_str.c.'>strequal</a> (<a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>, "iso8859-5"))
+<a id='L266' name='L266'></a> 266     <em class='brace'>{</em>
+<a id='L267' name='L267'></a> 267         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L141' title='Defined at 141 in src/vfs/smbfs/helpers/lib/charcnv.c.'>init_iso8859_5</a> ();
+<a id='L268' name='L268'></a> 268     <em class='brace'>}</em>
+<a id='L269' name='L269'></a> 269     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util_str.c.html#L305' title='Defined at 305 in src/vfs/smbfs/helpers/lib/util_str.c.'>strequal</a> (<a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>, "koi8-r"))
+<a id='L270' name='L270'></a> 270     <em class='brace'>{</em>
+<a id='L271' name='L271'></a> 271         <a href='../S/src--vfs--smbfs--helpers--lib--charcnv.c.html#L170' title='Defined at 170 in src/vfs/smbfs/helpers/lib/charcnv.c.'>init_koi8_r</a> ();
+<a id='L272' name='L272'></a> 272     <em class='brace'>}</em>
+<a id='L273' name='L273'></a> 273     <strong class='reserved'>else</strong>
+<a id='L274' name='L274'></a> 274     <em class='brace'>{</em>
+<a id='L275' name='L275'></a> 275         <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (0, ("unrecognized character set %s\n", <a href='../Y/str.html' title='Multiple used in 720 places.'>str</a>));
+<a id='L276' name='L276'></a> 276     <em class='brace'>}</em>
+<a id='L277' name='L277'></a> 277 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L39'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L255'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+277 src/vfs/smbfs/helpers/lib/charcnv.c'  /> */</em>
+</body>
+</html>

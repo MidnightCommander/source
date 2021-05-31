@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>recs</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L343'>recs</a>              343 src/vfs/smbfs/helpers/libsmb/nmblib.c parse_alloc_res_rec (char *inbuf, int *offset, int length, struct res_rec **recs, int count)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L346'>recs</a>              346 src/vfs/smbfs/helpers/libsmb/nmblib.c     *recs = (struct res_rec *) malloc (sizeof (**recs) * count);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L347'>recs</a>              347 src/vfs/smbfs/helpers/libsmb/nmblib.c     if (!*recs)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L350'>recs</a>              350 src/vfs/smbfs/helpers/libsmb/nmblib.c     memset ((char *) *recs, '\0', sizeof (**recs) * count);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L354'>recs</a>              354 src/vfs/smbfs/helpers/libsmb/nmblib.c         int l = parse_nmb_name (inbuf, *offset, length, &amp;(*recs)[i].rr_name);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L358'>recs</a>              358 src/vfs/smbfs/helpers/libsmb/nmblib.c             free (*recs);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L361'>recs</a>              361 src/vfs/smbfs/helpers/libsmb/nmblib.c         (*recs)[i].rr_type = RSVAL (inbuf, (*offset));</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L362'>recs</a>              362 src/vfs/smbfs/helpers/libsmb/nmblib.c         (*recs)[i].rr_class = RSVAL (inbuf, (*offset) + 2);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L363'>recs</a>              363 src/vfs/smbfs/helpers/libsmb/nmblib.c         (*recs)[i].ttl = RIVAL (inbuf, (*offset) + 4);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L364'>recs</a>              364 src/vfs/smbfs/helpers/libsmb/nmblib.c         (*recs)[i].rdlength = RSVAL (inbuf, (*offset) + 8);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L366'>recs</a>              366 src/vfs/smbfs/helpers/libsmb/nmblib.c         if ((size_t) (*recs)[i].rdlength &gt; sizeof ((*recs)[i].rdata) ||</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L367'>recs</a>              367 src/vfs/smbfs/helpers/libsmb/nmblib.c             (*offset) + (*recs)[i].rdlength &gt; length)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L369'>recs</a>              369 src/vfs/smbfs/helpers/libsmb/nmblib.c             free (*recs);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L372'>recs</a>              372 src/vfs/smbfs/helpers/libsmb/nmblib.c         memcpy ((*recs)[i].rdata, inbuf + (*offset), (*recs)[i].rdlength);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L373'>recs</a>              373 src/vfs/smbfs/helpers/libsmb/nmblib.c         (*offset) += (*recs)[i].rdlength;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L382'>recs</a>              382 src/vfs/smbfs/helpers/libsmb/nmblib.c put_res_rec (char *buf, int offset, struct res_rec *recs, int count)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L389'>recs</a>              389 src/vfs/smbfs/helpers/libsmb/nmblib.c         int l = put_nmb_name (buf, offset, &amp;recs[i].rr_name);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L392'>recs</a>              392 src/vfs/smbfs/helpers/libsmb/nmblib.c         RSSVAL (buf, offset, recs[i].rr_type);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L393'>recs</a>              393 src/vfs/smbfs/helpers/libsmb/nmblib.c         RSSVAL (buf, offset + 2, recs[i].rr_class);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L394'>recs</a>              394 src/vfs/smbfs/helpers/libsmb/nmblib.c         RSIVAL (buf, offset + 4, recs[i].ttl);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L395'>recs</a>              395 src/vfs/smbfs/helpers/libsmb/nmblib.c         RSSVAL (buf, offset + 8, recs[i].rdlength);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L396'>recs</a>              396 src/vfs/smbfs/helpers/libsmb/nmblib.c         memcpy (buf + offset + 10, recs[i].rdata, recs[i].rdlength);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L397'>recs</a>              397 src/vfs/smbfs/helpers/libsmb/nmblib.c         offset += 10 + recs[i].rdlength;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--libsmb--nmblib.c.html#L398'>recs</a>              398 src/vfs/smbfs/helpers/libsmb/nmblib.c         ret += 10 + recs[i].rdlength;</span>
+</pre>
+</body>
+</html>

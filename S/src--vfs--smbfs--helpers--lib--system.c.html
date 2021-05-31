@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/smbfs/helpers/lib/system.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L54'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L272'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/<a href='../files/src--vfs--smbfs--helpers--lib.html'>lib</a>/system.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/<a href='../files/src--vfs--smbfs--helpers--lib.html'>lib</a>/system.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L54' title='Defined at 54.'>pollfd</a></li>
+<li><a href='#L70' title='Defined at 70.'>sys_select</a></li>
+<li><a href='#L105' title='Defined at 105.'>sys_select</a></li>
+<li><a href='#L165' title='Defined at 165.'>sys_stat</a></li>
+<li><a href='#L175' title='Defined at 175.'>sys_lstat</a></li>
+<li><a href='#L185' title='Defined at 185.'>sys_fseek</a></li>
+<li><a href='#L195' title='Defined at 195.'>sys_ftell</a></li>
+<li><a href='#L205' title='Defined at 205.'>sys_open</a></li>
+<li><a href='#L216' title='Defined at 216.'>sys_fopen</a></li>
+<li><a href='#L227' title='Defined at 227.'>sys_readdir</a></li>
+<li><a href='#L236' title='Defined at 236.'>sys_getwd</a></li>
+<li><a href='#L252' title='Defined at 252.'>sys_chown</a></li>
+<li><a href='#L272' title='Defined at 272.'>sys_gethostbyname</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Unix SMB/Netbios implementation.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   Version 1.9.</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Samba system utilities</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'></em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>   Copyright (C) Andrew Tridgell 1992-1998</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'></em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Copyright (C) 2011-2021</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'></em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'></em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> "<a href='src--vfs--smbfs--helpers--include--includes.h.html'>includes.h</a>"
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/DEBUGLEVEL.html' title='Multiple used in 35 places.'>DEBUGLEVEL</a>;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='comment'>/*</em>
+<a id='L32' name='L32'></a>  32 <em class='comment'>   The idea is that this file will eventually have wrappers around all</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'>   important system calls in samba. The aims are:</em>
+<a id='L34' name='L34'></a>  34 <em class='comment'></em>
+<a id='L35' name='L35'></a>  35 <em class='comment'>   - to enable easier porting by putting OS dependent stuff in here</em>
+<a id='L36' name='L36'></a>  36 <em class='comment'></em>
+<a id='L37' name='L37'></a>  37 <em class='comment'>   - to allow for hooks into other "pseudo-filesystems"</em>
+<a id='L38' name='L38'></a>  38 <em class='comment'></em>
+<a id='L39' name='L39'></a>  39 <em class='comment'>   - to allow easier integration of things like the japanese extensions</em>
+<a id='L40' name='L40'></a>  40 <em class='comment'></em>
+<a id='L41' name='L41'></a>  41 <em class='comment'>   - to support the philosophy of Samba to expose the features of</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'>   the OS within the SMB model. In general whatever file/printer/variable</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'>   expansions/etc make sense to the OS should be acceptable to Samba.</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'> */</em>
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='comment'>/*******************************************************************</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'>this replaces the normal select() system call</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>return if some data has arrived on one of the file descriptors</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'>return -1 means error</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'>********************************************************************/</em>
+<a id='L52' name='L52'></a>  52 <em class='sharp'>#ifndef</em> HAVE_SELECT
+<a id='L53' name='L53'></a>  53 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L54' name='L54'></a>  54 <a href='../R/pollfd.html' title='Multiple referred from 3 places.'>pollfd</a> (<strong class='reserved'>int</strong> <a href='../Y/fd.html' title='Multiple used in 424 places.'>fd</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L70'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+54 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L55' name='L55'></a>  55 <em class='brace'>{</em>
+<a id='L56' name='L56'></a>  56     <strong class='reserved'>int</strong> <a href='../Y/r.html' title='Multiple used in 354 places.'>r</a> = 0;
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <em class='sharp'>#ifdef</em> HAS_RDCHK
+<a id='L59' name='L59'></a>  59     <a href='../Y/r.html' title='Multiple used in 354 places.'>r</a> = rdchk (<a href='../Y/fd.html' title='Multiple used in 424 places.'>fd</a>);
+<a id='L60' name='L60'></a>  60 <em class='sharp'>#elif</em> <strong class='reserved'>defined</strong>(<a href='../Y/TCRDCHK.html' title='Multiple used in 2 places.'>TCRDCHK</a>)
+<a id='L61' name='L61'></a>  61     (<strong class='reserved'>void</strong>) <a href='../Y/ioctl.html' title='Multiple used in 25 places.'>ioctl</a> (<a href='../Y/fd.html' title='Multiple used in 424 places.'>fd</a>, <a href='../Y/TCRDCHK.html' title='Multiple used in 2 places.'>TCRDCHK</a>, &amp;<a href='../Y/r.html' title='Multiple used in 354 places.'>r</a>);
+<a id='L62' name='L62'></a>  62 <em class='sharp'>#else</em>
+<a id='L63' name='L63'></a>  63     (<strong class='reserved'>void</strong>) <a href='../Y/ioctl.html' title='Multiple used in 25 places.'>ioctl</a> (<a href='../Y/fd.html' title='Multiple used in 424 places.'>fd</a>, FIONREAD, &amp;<a href='../Y/r.html' title='Multiple used in 354 places.'>r</a>);
+<a id='L64' name='L64'></a>  64 <em class='sharp'>#endif</em>
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66     <strong class='reserved'>return</strong> (<a href='../Y/r.html' title='Multiple used in 354 places.'>r</a>);
+<a id='L67' name='L67'></a>  67 <em class='brace'>}</em>
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>int</strong>
+<a id='L70' name='L70'></a>  70 <a href='../R/sys_select.html' title='Multiple referred from 4 places.'>sys_select</a> (<strong class='reserved'>int</strong> <a href='../Y/maxfd.html' title='Multiple used in 12 places.'>maxfd</a>, <a href='../Y/fd_set.html' title='Multiple used in 28 places.'>fd_set</a> * <a href='../Y/fds.html' title='Multiple used in 34 places.'>fds</a>, <strong class='reserved'>struct</strong> <a href='../Y/timeval.html' title='Multiple used in 44 places.'>timeval</a> *<a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a>)
+     <em class='comment'>/* <a href='#L54'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L105'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+70 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L71' name='L71'></a>  71 <em class='brace'>{</em>
+<a id='L72' name='L72'></a>  72     <a href='../Y/fd_set.html' title='Multiple used in 28 places.'>fd_set</a> <a href='../Y/fds2.html' title='Multiple used in 4 places.'>fds2</a>;
+<a id='L73' name='L73'></a>  73     <strong class='reserved'>int</strong> <a href='../Y/counter.html' title='Multiple used in 8 places.'>counter</a> = 0;
+<a id='L74' name='L74'></a>  74     <strong class='reserved'>int</strong> <a href='../Y/found.html' title='Multiple used in 63 places.'>found</a> = 0;
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76     <a href='../Y/FD_ZERO.html' title='Multiple used in 22 places.'>FD_ZERO</a> (&amp;<a href='../Y/fds2.html' title='Multiple used in 4 places.'>fds2</a>);
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>while</strong> (1)
+<a id='L79' name='L79'></a>  79     <em class='brace'>{</em>
+<a id='L80' name='L80'></a>  80         <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L81' name='L81'></a>  81         <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> &lt; <a href='../Y/maxfd.html' title='Multiple used in 12 places.'>maxfd</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>++)
+<a id='L82' name='L82'></a>  82         <em class='brace'>{</em>
+<a id='L83' name='L83'></a>  83             <strong class='reserved'>if</strong> (<a href='../Y/FD_ISSET.html' title='Multiple used in 18 places.'>FD_ISSET</a> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>, <a href='../Y/fds.html' title='Multiple used in 34 places.'>fds</a>) &amp;&amp; <a href='../S/src--vfs--smbfs--helpers--lib--system.c.html#L54' title='Defined at 54 in src/vfs/smbfs/helpers/lib/system.c.'>pollfd</a> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>) &gt; 0)
+<a id='L84' name='L84'></a>  84             <em class='brace'>{</em>
+<a id='L85' name='L85'></a>  85                 <a href='../Y/found.html' title='Multiple used in 63 places.'>found</a>++;
+<a id='L86' name='L86'></a>  86                 <a href='../Y/FD_SET.html' title='Multiple used in 28 places.'>FD_SET</a> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>, &amp;<a href='../Y/fds2.html' title='Multiple used in 4 places.'>fds2</a>);
+<a id='L87' name='L87'></a>  87             <em class='brace'>}</em>
+<a id='L88' name='L88'></a>  88         <em class='brace'>}</em>
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90         <strong class='reserved'>if</strong> (<a href='../Y/found.html' title='Multiple used in 63 places.'>found</a>)
+<a id='L91' name='L91'></a>  91         <em class='brace'>{</em>
+<a id='L92' name='L92'></a>  92             <a href='../Y/memcpy.html' title='Multiple used in 85 places.'>memcpy</a> ((<strong class='reserved'>void</strong> *) <a href='../Y/fds.html' title='Multiple used in 34 places.'>fds</a>, (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/fds2.html' title='Multiple used in 4 places.'>fds2</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/fds2.html' title='Multiple used in 4 places.'>fds2</a>));
+<a id='L93' name='L93'></a>  93             <strong class='reserved'>return</strong> (<a href='../Y/found.html' title='Multiple used in 63 places.'>found</a>);
+<a id='L94' name='L94'></a>  94         <em class='brace'>}</em>
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96         <strong class='reserved'>if</strong> (<a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a> &amp;&amp; <a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a>-&gt;<a href='../Y/tv_sec.html' title='Multiple used in 47 places.'>tv_sec</a> &lt; <a href='../Y/counter.html' title='Multiple used in 8 places.'>counter</a>)
+<a id='L97' name='L97'></a>  97             <strong class='reserved'>return</strong> (0);
+<a id='L98' name='L98'></a>  98         <a href='../Y/sleep.html' title='Multiple used in 2 places.'>sleep</a> (1);
+<a id='L99' name='L99'></a>  99         <a href='../Y/counter.html' title='Multiple used in 8 places.'>counter</a>++;
+<a id='L100' name='L100'></a> 100     <em class='brace'>}</em>
+<a id='L101' name='L101'></a> 101 <em class='brace'>}</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103 <em class='sharp'>#else</em> <em class='comment'>/* !NO_SELECT */</em>
+<a id='L104' name='L104'></a> 104 <strong class='reserved'>int</strong>
+<a id='L105' name='L105'></a> 105 <a href='../R/sys_select.html' title='Multiple referred from 4 places.'>sys_select</a> (<strong class='reserved'>int</strong> <a href='../Y/maxfd.html' title='Multiple used in 12 places.'>maxfd</a>, <a href='../Y/fd_set.html' title='Multiple used in 28 places.'>fd_set</a> * <a href='../Y/fds.html' title='Multiple used in 34 places.'>fds</a>, <strong class='reserved'>struct</strong> <a href='../Y/timeval.html' title='Multiple used in 44 places.'>timeval</a> *<a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a>)
+     <em class='comment'>/* <a href='#L70'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L165'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+105 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L106' name='L106'></a> 106 <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107 <em class='sharp'>#ifdef</em> USE_POLL
+<a id='L108' name='L108'></a> 108     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--lib--system.c.html#L54' title='Defined at 54 in src/vfs/smbfs/helpers/lib/system.c.'>pollfd</a> <a href='../Y/pfd.html' title='Multiple used in 5 places.'>pfd</a>[256];
+<a id='L109' name='L109'></a> 109     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>int</strong> <a href='../Y/maxpoll.html' title='Multiple used in 5 places.'>maxpoll</a>;
+<a id='L111' name='L111'></a> 111     <strong class='reserved'>int</strong> <a href='../Y/timeout.html' title='Multiple used in 46 places.'>timeout</a>;
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>int</strong> <a href='../Y/pollrtn.html' title='Multiple used in 4 places.'>pollrtn</a>;
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <a href='../Y/maxpoll.html' title='Multiple used in 5 places.'>maxpoll</a> = 0;
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> &lt; <a href='../Y/maxfd.html' title='Multiple used in 12 places.'>maxfd</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>++)
+<a id='L116' name='L116'></a> 116     <em class='brace'>{</em>
+<a id='L117' name='L117'></a> 117         <strong class='reserved'>if</strong> (<a href='../Y/FD_ISSET.html' title='Multiple used in 18 places.'>FD_ISSET</a> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>, <a href='../Y/fds.html' title='Multiple used in 34 places.'>fds</a>))
+<a id='L118' name='L118'></a> 118         <em class='brace'>{</em>
+<a id='L119' name='L119'></a> 119             <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--lib--system.c.html#L54' title='Defined at 54 in src/vfs/smbfs/helpers/lib/system.c.'>pollfd</a> *<a href='../Y/pfdp.html' title='Multiple used in 4 places.'>pfdp</a> = &amp;<a href='../Y/pfd.html' title='Multiple used in 5 places.'>pfd</a>[<a href='../Y/maxpoll.html' title='Multiple used in 5 places.'>maxpoll</a>++];
+<a id='L120' name='L120'></a> 120             <a href='../Y/pfdp.html' title='Multiple used in 4 places.'>pfdp</a>-&gt;<a href='../Y/fd.html' title='Multiple used in 424 places.'>fd</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L121' name='L121'></a> 121             <a href='../Y/pfdp.html' title='Multiple used in 4 places.'>pfdp</a>-&gt;<a href='../Y/events.html' title='Multiple used in 6 places.'>events</a> = <a href='../Y/POLLIN.html' title='Multiple used in 2 places.'>POLLIN</a>;
+<a id='L122' name='L122'></a> 122             <a href='../Y/pfdp.html' title='Multiple used in 4 places.'>pfdp</a>-&gt;<a href='../Y/revents.html' title='Multiple used in 2 places.'>revents</a> = 0;
+<a id='L123' name='L123'></a> 123         <em class='brace'>}</em>
+<a id='L124' name='L124'></a> 124     <em class='brace'>}</em>
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126     <a href='../Y/timeout.html' title='Multiple used in 46 places.'>timeout</a> = (<a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a> != <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>) ? (<a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a>-&gt;<a href='../Y/tv_sec.html' title='Multiple used in 47 places.'>tv_sec</a> * 1000) + (<a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a>-&gt;<a href='../Y/tv_usec.html' title='Multiple used in 29 places.'>tv_usec</a> / 1000) : -1;
+<a id='L127' name='L127'></a> 127     <a href='../Y/errno.html' title='Multiple used in 245 places.'>errno</a> = 0;
+<a id='L128' name='L128'></a> 128     <strong class='reserved'>do</strong>
+<a id='L129' name='L129'></a> 129     <em class='brace'>{</em>
+<a id='L130' name='L130'></a> 130         <a href='../Y/pollrtn.html' title='Multiple used in 4 places.'>pollrtn</a> = poll (&amp;<a href='../Y/pfd.html' title='Multiple used in 5 places.'>pfd</a>[0], <a href='../Y/maxpoll.html' title='Multiple used in 5 places.'>maxpoll</a>, <a href='../Y/timeout.html' title='Multiple used in 46 places.'>timeout</a>);
+<a id='L131' name='L131'></a> 131     <em class='brace'>}</em>
+<a id='L132' name='L132'></a> 132     <strong class='reserved'>while</strong> (<a href='../Y/pollrtn.html' title='Multiple used in 4 places.'>pollrtn</a> &lt; 0 &amp;&amp; <a href='../Y/errno.html' title='Multiple used in 245 places.'>errno</a> == <a href='../Y/EINTR.html' title='Multiple used in 44 places.'>EINTR</a>);
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134     <a href='../Y/FD_ZERO.html' title='Multiple used in 22 places.'>FD_ZERO</a> (<a href='../Y/fds.html' title='Multiple used in 34 places.'>fds</a>);
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> &lt; <a href='../Y/maxpoll.html' title='Multiple used in 5 places.'>maxpoll</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>++)
+<a id='L137' name='L137'></a> 137         <strong class='reserved'>if</strong> (<a href='../Y/pfd.html' title='Multiple used in 5 places.'>pfd</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/revents.html' title='Multiple used in 2 places.'>revents</a> &amp; <a href='../Y/POLLIN.html' title='Multiple used in 2 places.'>POLLIN</a>)
+<a id='L138' name='L138'></a> 138             <a href='../Y/FD_SET.html' title='Multiple used in 28 places.'>FD_SET</a> (<a href='../Y/pfd.html' title='Multiple used in 5 places.'>pfd</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/fd.html' title='Multiple used in 424 places.'>fd</a>, <a href='../Y/fds.html' title='Multiple used in 34 places.'>fds</a>);
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140     <strong class='reserved'>return</strong> <a href='../Y/pollrtn.html' title='Multiple used in 4 places.'>pollrtn</a>;
+<a id='L141' name='L141'></a> 141 <em class='sharp'>#else</em> <em class='comment'>/* USE_POLL */</em>
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>struct</strong> <a href='../Y/timeval.html' title='Multiple used in 44 places.'>timeval</a> <a href='../Y/t2.html' title='Multiple used in 65 places.'>t2</a>;
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>int</strong> <a href='../Y/selrtn.html' title='Multiple used in 8 places.'>selrtn</a>;
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146     <strong class='reserved'>do</strong>
+<a id='L147' name='L147'></a> 147     <em class='brace'>{</em>
+<a id='L148' name='L148'></a> 148         <strong class='reserved'>if</strong> (<a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a>)
+<a id='L149' name='L149'></a> 149             <a href='../Y/memcpy.html' title='Multiple used in 85 places.'>memcpy</a> ((<strong class='reserved'>void</strong> *) &amp;<a href='../Y/t2.html' title='Multiple used in 65 places.'>t2</a>, (<strong class='reserved'>void</strong> *) <a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/t2.html' title='Multiple used in 65 places.'>t2</a>));
+<a id='L150' name='L150'></a> 150         <a href='../Y/errno.html' title='Multiple used in 245 places.'>errno</a> = 0;
+<a id='L151' name='L151'></a> 151         <a href='../Y/selrtn.html' title='Multiple used in 8 places.'>selrtn</a> = <a href='../Y/select.html' title='Multiple used in 22 places.'>select</a> (<a href='../Y/maxfd.html' title='Multiple used in 12 places.'>maxfd</a>, <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L1370' title='Defined at 1370 in src/vfs/smbfs/helpers/include/smb.h.'>SELECT_CAST</a> <a href='../Y/fds.html' title='Multiple used in 34 places.'>fds</a>, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>, <a href='../Y/tval.html' title='Multiple used in 20 places.'>tval</a> ? &amp;<a href='../Y/t2.html' title='Multiple used in 65 places.'>t2</a> : <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>);
+<a id='L152' name='L152'></a> 152     <em class='brace'>}</em>
+<a id='L153' name='L153'></a> 153     <strong class='reserved'>while</strong> (<a href='../Y/selrtn.html' title='Multiple used in 8 places.'>selrtn</a> &lt; 0 &amp;&amp; <a href='../Y/errno.html' title='Multiple used in 245 places.'>errno</a> == <a href='../Y/EINTR.html' title='Multiple used in 44 places.'>EINTR</a>);
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>return</strong> (<a href='../Y/selrtn.html' title='Multiple used in 8 places.'>selrtn</a>);
+<a id='L156' name='L156'></a> 156 <em class='sharp'>#endif</em> <em class='comment'>/* USE_POLL */</em>
+<a id='L157' name='L157'></a> 157 <em class='brace'>}</em>
+<a id='L158' name='L158'></a> 158 <em class='sharp'>#endif</em> <em class='comment'>/* NO_SELECT */</em>
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160 <em class='comment'>/*******************************************************************</em>
+<a id='L161' name='L161'></a> 161 <em class='comment'>A stat() wrapper that will deal with 64 bit filesizes.</em>
+<a id='L162' name='L162'></a> 162 <em class='comment'>********************************************************************/</em>
+<a id='L163' name='L163'></a> 163 
+<a id='L164' name='L164'></a> 164 <strong class='reserved'>int</strong>
+<a id='L165' name='L165'></a> 165 <a href='../R/sys_stat.html' title='Multiple referred from 6 places.'>sys_stat</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/fname.html' title='Multiple used in 354 places.'>fname</a>, <a href='../S/src--vfs--smbfs--helpers--include--includes.h.html#L376' title='Defined at 376 in src/vfs/smbfs/helpers/include/includes.h.'>SMB_STRUCT_STAT</a> * <a href='../Y/sbuf.html' title='Multiple used in 12 places.'>sbuf</a>)
+     <em class='comment'>/* <a href='#L105'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L175'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+165 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L166' name='L166'></a> 166 <em class='brace'>{</em>
+<a id='L167' name='L167'></a> 167     <strong class='reserved'>return</strong> <a href='../Y/stat.html' title='Multiple used in 274 places.'>stat</a> (<a href='../Y/fname.html' title='Multiple used in 354 places.'>fname</a>, <a href='../Y/sbuf.html' title='Multiple used in 12 places.'>sbuf</a>);
+<a id='L168' name='L168'></a> 168 <em class='brace'>}</em>
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170 <em class='comment'>/*******************************************************************</em>
+<a id='L171' name='L171'></a> 171 <em class='comment'> An lstat() wrapper that will deal with 64 bit filesizes.</em>
+<a id='L172' name='L172'></a> 172 <em class='comment'>********************************************************************/</em>
+<a id='L173' name='L173'></a> 173 <em class='sharp'>#if</em> 0
+<a id='L174' name='L174'></a> 174 <strong class='reserved'>int</strong>
+<a id='L175' name='L175'></a> 175 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L59' title='Referred from 59 in src/vfs/smbfs/helpers/include/proto.h.'>sys_lstat</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/fname.html' title='Multiple used in 354 places.'>fname</a>, <a href='../S/src--vfs--smbfs--helpers--include--includes.h.html#L376' title='Defined at 376 in src/vfs/smbfs/helpers/include/includes.h.'>SMB_STRUCT_STAT</a> * <a href='../Y/sbuf.html' title='Multiple used in 12 places.'>sbuf</a>)
+     <em class='comment'>/* <a href='#L165'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L185'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+175 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L176' name='L176'></a> 176 <em class='brace'>{</em>
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>return</strong> <a href='../Y/lstat.html' title='Multiple used in 19 places.'>lstat</a> (<a href='../Y/fname.html' title='Multiple used in 354 places.'>fname</a>, <a href='../Y/sbuf.html' title='Multiple used in 12 places.'>sbuf</a>);
+<a id='L178' name='L178'></a> 178 <em class='brace'>}</em>
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180 <em class='comment'>/*******************************************************************</em>
+<a id='L181' name='L181'></a> 181 <em class='comment'> An fseek() wrapper that will deal with 64 bit filesizes.</em>
+<a id='L182' name='L182'></a> 182 <em class='comment'>********************************************************************/</em>
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184 <strong class='reserved'>int</strong>
+<a id='L185' name='L185'></a> 185 <a href='../R/sys_fseek.html' title='Multiple referred from 2 places.'>sys_fseek</a> (<a href='../Y/FILE.html' title='Multiple used in 101 places.'>FILE</a> * <a href='../Y/fp.html' title='Multiple used in 100 places.'>fp</a>, <a href='../S/src--vfs--smbfs--helpers--include--includes.h.html#L349' title='Defined at 349 in src/vfs/smbfs/helpers/include/includes.h.'>SMB_OFF_T</a> <a href='../Y/offset.html' title='Multiple used in 366 places.'>offset</a>, <strong class='reserved'>int</strong> <a href='../Y/whence.html' title='Multiple used in 30 places.'>whence</a>)
+     <em class='comment'>/* <a href='#L175'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L195'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+185 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L186' name='L186'></a> 186 <em class='brace'>{</em>
+<a id='L187' name='L187'></a> 187     <strong class='reserved'>return</strong> fseek (<a href='../Y/fp.html' title='Multiple used in 100 places.'>fp</a>, <a href='../Y/offset.html' title='Multiple used in 366 places.'>offset</a>, <a href='../Y/whence.html' title='Multiple used in 30 places.'>whence</a>);
+<a id='L188' name='L188'></a> 188 <em class='brace'>}</em>
+<a id='L189' name='L189'></a> 189 
+<a id='L190' name='L190'></a> 190 <em class='comment'>/*******************************************************************</em>
+<a id='L191' name='L191'></a> 191 <em class='comment'> An ftell() wrapper that will deal with 64 bit filesizes.</em>
+<a id='L192' name='L192'></a> 192 <em class='comment'>********************************************************************/</em>
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194 <a href='../S/src--vfs--smbfs--helpers--include--includes.h.html#L349' title='Defined at 349 in src/vfs/smbfs/helpers/include/includes.h.'>SMB_OFF_T</a>
+<a id='L195' name='L195'></a> 195 <a href='../R/sys_ftell.html' title='Multiple referred from 2 places.'>sys_ftell</a> (<a href='../Y/FILE.html' title='Multiple used in 101 places.'>FILE</a> * <a href='../Y/fp.html' title='Multiple used in 100 places.'>fp</a>)
+     <em class='comment'>/* <a href='#L185'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L205'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+195 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L196' name='L196'></a> 196 <em class='brace'>{</em>
+<a id='L197' name='L197'></a> 197     <strong class='reserved'>return</strong> (<a href='../S/src--vfs--smbfs--helpers--include--includes.h.html#L349' title='Defined at 349 in src/vfs/smbfs/helpers/include/includes.h.'>SMB_OFF_T</a>) ftell (<a href='../Y/fp.html' title='Multiple used in 100 places.'>fp</a>);
+<a id='L198' name='L198'></a> 198 <em class='brace'>}</em>
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200 <em class='comment'>/*******************************************************************</em>
+<a id='L201' name='L201'></a> 201 <em class='comment'> An open() wrapper that will deal with 64 bit filesizes.</em>
+<a id='L202' name='L202'></a> 202 <em class='comment'>********************************************************************/</em>
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204 <strong class='reserved'>int</strong>
+<a id='L205' name='L205'></a> 205 <a href='../R/sys_open.html' title='Multiple referred from 3 places.'>sys_open</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/path.html' title='Multiple used in 493 places.'>path</a>, <strong class='reserved'>int</strong> <a href='../Y/oflag.html' title='Multiple used in 3 places.'>oflag</a>, <a href='../Y/mode_t.html' title='Multiple used in 106 places.'>mode_t</a> <a href='../Y/mode.html' title='Multiple used in 245 places.'>mode</a>)
+     <em class='comment'>/* <a href='#L195'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L216'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+205 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L206' name='L206'></a> 206 <em class='brace'>{</em>
+<a id='L207' name='L207'></a> 207     <strong class='reserved'>return</strong> <a href='../Y/open.html' title='Multiple used in 47 places.'>open</a> (<a href='../Y/path.html' title='Multiple used in 493 places.'>path</a>, <a href='../Y/oflag.html' title='Multiple used in 3 places.'>oflag</a>, <a href='../Y/mode.html' title='Multiple used in 245 places.'>mode</a>);
+<a id='L208' name='L208'></a> 208 <em class='brace'>}</em>
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210 <em class='comment'>/*******************************************************************</em>
+<a id='L211' name='L211'></a> 211 <em class='comment'> An fopen() wrapper that will deal with 64 bit filesizes.</em>
+<a id='L212' name='L212'></a> 212 <em class='comment'>********************************************************************/</em>
+<a id='L213' name='L213'></a> 213 <em class='sharp'>#endif</em> <em class='comment'>/* 0 */</em>
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215 <a href='../Y/FILE.html' title='Multiple used in 101 places.'>FILE</a> *
+<a id='L216' name='L216'></a> 216 <a href='../R/sys_fopen.html' title='Multiple referred from 8 places.'>sys_fopen</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/path.html' title='Multiple used in 493 places.'>path</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/type.html' title='Multiple used in 318 places.'>type</a>)
+     <em class='comment'>/* <a href='#L205'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L227'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+216 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L217' name='L217'></a> 217 <em class='brace'>{</em>
+<a id='L218' name='L218'></a> 218     <strong class='reserved'>return</strong> <a href='../Y/fopen.html' title='Multiple used in 49 places.'>fopen</a> (<a href='../Y/path.html' title='Multiple used in 493 places.'>path</a>, <a href='../Y/type.html' title='Multiple used in 318 places.'>type</a>);
+<a id='L219' name='L219'></a> 219 <em class='brace'>}</em>
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221 <em class='sharp'>#if</em> 0
+<a id='L222' name='L222'></a> 222 <em class='comment'>/*******************************************************************</em>
+<a id='L223' name='L223'></a> 223 <em class='comment'> A readdir wrapper that will deal with 64 bit filesizes.</em>
+<a id='L224' name='L224'></a> 224 <em class='comment'>********************************************************************/</em>
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226 <a href='../S/src--vfs--smbfs--helpers--include--includes.h.html#L384' title='Defined at 384 in src/vfs/smbfs/helpers/include/includes.h.'>SMB_STRUCT_DIRENT</a> *
+<a id='L227' name='L227'></a> 227 <a href='../R/sys_readdir.html' title='Multiple referred from 2 places.'>sys_readdir</a> (<a href='../Y/DIR.html' title='Multiple used in 28 places.'>DIR</a> * <a href='../Y/dirp.html' title='Multiple used in 47 places.'>dirp</a>)
+     <em class='comment'>/* <a href='#L216'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L236'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+227 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L228' name='L228'></a> 228 <em class='brace'>{</em>
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>return</strong> <a href='../Y/readdir.html' title='Multiple used in 14 places.'>readdir</a> (<a href='../Y/dirp.html' title='Multiple used in 47 places.'>dirp</a>);
+<a id='L230' name='L230'></a> 230 <em class='brace'>}</em>
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232 <em class='comment'>/*******************************************************************</em>
+<a id='L233' name='L233'></a> 233 <em class='comment'>system wrapper for getwd</em>
+<a id='L234' name='L234'></a> 234 <em class='comment'>********************************************************************/</em>
+<a id='L235' name='L235'></a> 235 <strong class='reserved'>char</strong> *
+<a id='L236' name='L236'></a> 236 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L65' title='Referred from 65 in src/vfs/smbfs/helpers/include/proto.h.'>sys_getwd</a> (<strong class='reserved'>char</strong> *<a href='../Y/s.html' title='Multiple used in 1094 places.'>s</a>)
+     <em class='comment'>/* <a href='#L227'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L252'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+236 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L237' name='L237'></a> 237 <em class='brace'>{</em>
+<a id='L238' name='L238'></a> 238     <strong class='reserved'>char</strong> *<a href='../Y/wd.html' title='Multiple used in 59 places.'>wd</a>;
+<a id='L239' name='L239'></a> 239 <em class='sharp'>#ifdef</em> HAVE_GETCWD
+<a id='L240' name='L240'></a> 240     <a href='../Y/wd.html' title='Multiple used in 59 places.'>wd</a> = (<strong class='reserved'>char</strong> *) <a href='../Y/getcwd.html' title='Multiple used in 2 places.'>getcwd</a> (<a href='../Y/s.html' title='Multiple used in 1094 places.'>s</a>, <strong class='reserved'>sizeof</strong> (<a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L316' title='Defined at 316 in src/vfs/smbfs/helpers/include/smb.h.'>pstring</a>));
+<a id='L241' name='L241'></a> 241 <em class='sharp'>#else</em>
+<a id='L242' name='L242'></a> 242     <a href='../Y/wd.html' title='Multiple used in 59 places.'>wd</a> = (<strong class='reserved'>char</strong> *) getwd (<a href='../Y/s.html' title='Multiple used in 1094 places.'>s</a>);
+<a id='L243' name='L243'></a> 243 <em class='sharp'>#endif</em>
+<a id='L244' name='L244'></a> 244     <strong class='reserved'>return</strong> <a href='../Y/wd.html' title='Multiple used in 59 places.'>wd</a>;
+<a id='L245' name='L245'></a> 245 <em class='brace'>}</em>
+<a id='L246' name='L246'></a> 246 
+<a id='L247' name='L247'></a> 247 <em class='comment'>/*******************************************************************</em>
+<a id='L248' name='L248'></a> 248 <em class='comment'>chown isn't used much but OS/2 doesn't have it</em>
+<a id='L249' name='L249'></a> 249 <em class='comment'>********************************************************************/</em>
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251 <strong class='reserved'>int</strong>
+<a id='L252' name='L252'></a> 252 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L66' title='Referred from 66 in src/vfs/smbfs/helpers/include/proto.h.'>sys_chown</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/fname.html' title='Multiple used in 354 places.'>fname</a>, <a href='../Y/uid_t.html' title='Multiple used in 51 places.'>uid_t</a> <a href='../Y/uid.html' title='Multiple used in 41 places.'>uid</a>, <a href='../Y/gid_t.html' title='Multiple used in 50 places.'>gid_t</a> <a href='../Y/gid.html' title='Multiple used in 29 places.'>gid</a>)
+     <em class='comment'>/* <a href='#L236'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L272'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+252 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L253' name='L253'></a> 253 <em class='brace'>{</em>
+<a id='L254' name='L254'></a> 254 <em class='sharp'>#ifndef</em> HAVE_CHOWN
+<a id='L255' name='L255'></a> 255     <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/done.html' title='Multiple used in 55 places.'>done</a>;
+<a id='L256' name='L256'></a> 256     <strong class='reserved'>if</strong> (!<a href='../Y/done.html' title='Multiple used in 55 places.'>done</a>)
+<a id='L257' name='L257'></a> 257     <em class='brace'>{</em>
+<a id='L258' name='L258'></a> 258         <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (1, ("WARNING: no chown!\n"));
+<a id='L259' name='L259'></a> 259         <a href='../Y/done.html' title='Multiple used in 55 places.'>done</a> = 1;
+<a id='L260' name='L260'></a> 260     <em class='brace'>}</em>
+<a id='L261' name='L261'></a> 261 <em class='sharp'>#else</em>
+<a id='L262' name='L262'></a> 262     <strong class='reserved'>return</strong> (<a href='../Y/chown.html' title='Multiple used in 12 places.'>chown</a> (<a href='../Y/fname.html' title='Multiple used in 354 places.'>fname</a>, <a href='../Y/uid.html' title='Multiple used in 41 places.'>uid</a>, <a href='../Y/gid.html' title='Multiple used in 29 places.'>gid</a>));
+<a id='L263' name='L263'></a> 263 <em class='sharp'>#endif</em>
+<a id='L264' name='L264'></a> 264 <em class='brace'>}</em>
+<a id='L265' name='L265'></a> 265 <em class='sharp'>#endif</em> <em class='comment'>/* 0 */</em>
+<a id='L266' name='L266'></a> 266 <em class='comment'>/**************************************************************************</em>
+<a id='L267' name='L267'></a> 267 <em class='comment'>A wrapper for gethostbyname() that tries avoids looking up hostnames </em>
+<a id='L268' name='L268'></a> 268 <em class='comment'>in the root domain, which can cause dial-on-demand links to come up for no</em>
+<a id='L269' name='L269'></a> 269 <em class='comment'>apparent reason.</em>
+<a id='L270' name='L270'></a> 270 <em class='comment'>****************************************************************************/</em>
+<a id='L271' name='L271'></a> 271 <strong class='reserved'>struct</strong> <a href='../Y/hostent.html' title='Multiple used in 12 places.'>hostent</a> *
+<a id='L272' name='L272'></a> 272 <a href='../R/sys_gethostbyname.html' title='Multiple referred from 4 places.'>sys_gethostbyname</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>)
+     <em class='comment'>/* <a href='#L252'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+272 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+<a id='L273' name='L273'></a> 273 <em class='brace'>{</em>
+<a id='L274' name='L274'></a> 274 <em class='sharp'>#ifdef</em> REDUCE_ROOT_DNS_LOOKUPS
+<a id='L275' name='L275'></a> 275     <strong class='reserved'>char</strong> <a href='../Y/query.html' title='Multiple used in 8 places.'>query</a>[256], <a href='../Y/hostname.html' title='Multiple used in 18 places.'>hostname</a>[256];
+<a id='L276' name='L276'></a> 276     <strong class='reserved'>char</strong> *<a href='../Y/domain.html' title='Multiple used in 51 places.'>domain</a>;
+<a id='L277' name='L277'></a> 277 
+<a id='L278' name='L278'></a> 278     <em class='comment'>/* Does this name have any dots in it? If so, make no change */</em>
+<a id='L279' name='L279'></a> 279 
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>if</strong> (<a href='../D/strchr.html' title='Multiple defined in 2 places.'>strchr</a> (<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>, '.'))
+<a id='L281' name='L281'></a> 281         <strong class='reserved'>return</strong> (<a href='../Y/gethostbyname.html' title='Multiple used in 6 places.'>gethostbyname</a> (<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>));
+<a id='L282' name='L282'></a> 282 
+<a id='L283' name='L283'></a> 283     <em class='comment'>/* Get my hostname, which should have domain name </em>
+<a id='L284' name='L284'></a> 284 <em class='comment'>       attached. If not, just do the gethostname on the</em>
+<a id='L285' name='L285'></a> 285 <em class='comment'>       original string. </em>
+<a id='L286' name='L286'></a> 286 <em class='comment'>     */</em>
+<a id='L287' name='L287'></a> 287 
+<a id='L288' name='L288'></a> 288     <a href='../Y/gethostname.html' title='Multiple used in 7 places.'>gethostname</a> (<a href='../Y/hostname.html' title='Multiple used in 18 places.'>hostname</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/hostname.html' title='Multiple used in 18 places.'>hostname</a>) - 1);
+<a id='L289' name='L289'></a> 289     <a href='../Y/hostname.html' title='Multiple used in 18 places.'>hostname</a>[<strong class='reserved'>sizeof</strong> (<a href='../Y/hostname.html' title='Multiple used in 18 places.'>hostname</a>) - 1] = 0;
+<a id='L290' name='L290'></a> 290     <strong class='reserved'>if</strong> ((<a href='../Y/domain.html' title='Multiple used in 51 places.'>domain</a> = <a href='../D/strchr.html' title='Multiple defined in 2 places.'>strchr</a> (<a href='../Y/hostname.html' title='Multiple used in 18 places.'>hostname</a>, '.')) == <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>)
+<a id='L291' name='L291'></a> 291         <strong class='reserved'>return</strong> (<a href='../Y/gethostbyname.html' title='Multiple used in 6 places.'>gethostbyname</a> (<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>));
+<a id='L292' name='L292'></a> 292 
+<a id='L293' name='L293'></a> 293     <em class='comment'>/* Attach domain name to query and do modified query.</em>
+<a id='L294' name='L294'></a> 294 <em class='comment'>       If names too large, just do gethostname on the</em>
+<a id='L295' name='L295'></a> 295 <em class='comment'>       original string.</em>
+<a id='L296' name='L296'></a> 296 <em class='comment'>     */</em>
+<a id='L297' name='L297'></a> 297 
+<a id='L298' name='L298'></a> 298     <strong class='reserved'>if</strong> ((<a href='../Y/strlen.html' title='Multiple used in 279 places.'>strlen</a> (<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>) + <a href='../Y/strlen.html' title='Multiple used in 279 places.'>strlen</a> (<a href='../Y/domain.html' title='Multiple used in 51 places.'>domain</a>)) &gt;= <strong class='reserved'>sizeof</strong> (<a href='../Y/query.html' title='Multiple used in 8 places.'>query</a>))
+<a id='L299' name='L299'></a> 299         <strong class='reserved'>return</strong> (<a href='../Y/gethostbyname.html' title='Multiple used in 6 places.'>gethostbyname</a> (<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>));
+<a id='L300' name='L300'></a> 300 
+<a id='L301' name='L301'></a> 301     <a href='../D/slprintf.html' title='Multiple defined in 2 places.'>slprintf</a> (<a href='../Y/query.html' title='Multiple used in 8 places.'>query</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/query.html' title='Multiple used in 8 places.'>query</a>) - 1, "%s%s", <a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>, <a href='../Y/domain.html' title='Multiple used in 51 places.'>domain</a>);
+<a id='L302' name='L302'></a> 302     <strong class='reserved'>return</strong> (<a href='../Y/gethostbyname.html' title='Multiple used in 6 places.'>gethostbyname</a> (<a href='../Y/query.html' title='Multiple used in 8 places.'>query</a>));
+<a id='L303' name='L303'></a> 303 <em class='sharp'>#else</em> <em class='comment'>/* REDUCE_ROOT_DNS_LOOKUPS */</em>
+<a id='L304' name='L304'></a> 304     <strong class='reserved'>return</strong> (<a href='../Y/gethostbyname.html' title='Multiple used in 6 places.'>gethostbyname</a> (<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>));
+<a id='L305' name='L305'></a> 305 <em class='sharp'>#endif</em> <em class='comment'>/* REDUCE_ROOT_DNS_LOOKUPS */</em>
+<a id='L306' name='L306'></a> 306 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L54'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L272'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+306 src/vfs/smbfs/helpers/lib/system.c'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/deb.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/deb.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/deb.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/deb.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Written by Fernando Alegre &lt;alegre@debian.org&gt; 1996
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a># Applied patch by Dimitri Maziuk &lt;emaziuk@curtin.edu.au&gt; 1997
+<a id='L6' name='L6'></a>#         (to handle new tar format)
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a># Modified by Fernando Alegre &lt;alegre@debian.org&gt; 1997
+<a id='L9' name='L9'></a>#         (to handle both new and old tar formats)
+<a id='L10' name='L10'></a>#
+<a id='L11' name='L11'></a># Modified by Patrik Rak &lt;prak@post.cz&gt; 1998
+<a id='L12' name='L12'></a>#         (add by Michael Bramer Debian-mc-maintainer &lt;grisu@debian.org&gt;)
+<a id='L13' name='L13'></a>#         (to allow access to package control files)
+<a id='L14' name='L14'></a>#
+<a id='L15' name='L15'></a># Modified by Martin Bialasinski &lt;martinb@debian.org&gt; 1999
+<a id='L16' name='L16'></a>#         (deal with change in tar format)
+<a id='L17' name='L17'></a>#
+<a id='L18' name='L18'></a>#
+<a id='L19' name='L19'></a># Copyright (C) 1997 Free Software Foundation
+<a id='L20' name='L20'></a>#
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a>sub quote {
+<a id='L23' name='L23'></a>    $_ = shift(@_);
+<a id='L24' name='L24'></a>    s/([^\w\/.+-])/\\$1/g;
+<a id='L25' name='L25'></a>    return($_);
+<a id='L26' name='L26'></a>}
+<a id='L27' name='L27'></a> 
+<a id='L28' name='L28'></a>sub mcdebfs_list
+<a id='L29' name='L29'></a>{
+<a id='L30' name='L30'></a>#
+<a id='L31' name='L31'></a>#       CAVEAT: Hard links are listed as if they were symlinks
+<a id='L32' name='L32'></a>#               Empty directories do not appear at all
+<a id='L33' name='L33'></a>#
+<a id='L34' name='L34'></a>        local($archivename)=@_;
+<a id='L35' name='L35'></a>        local $qarchivename = quote($archivename);
+<a id='L36' name='L36'></a>        chop($date=`LC_ALL=C date "+%b %d %H:%M"`);
+<a id='L37' name='L37'></a>        chop($info_size=`dpkg -I $qarchivename | wc -c`);
+<a id='L38' name='L38'></a>        $install_size=length($pressinstall);
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>        print "dr-xr-xr-x   1 root     root     0 $date CONTENTS\n";
+<a id='L41' name='L41'></a>        print "dr-xr-xr-x   1 root     root     0 $date DEBIAN\n";
+<a id='L42' name='L42'></a>        print "-r--r--r--   1 root     root     $info_size $date INFO\n";
+<a id='L43' name='L43'></a>        print "-r-xr--r--   1 root     root     $install_size $date INSTALL\n";
+<a id='L44' name='L44'></a> 
+<a id='L45' name='L45'></a>        if ( open(PIPEIN, "LC_ALL=C dpkg-deb -c $qarchivename |") )
+<a id='L46' name='L46'></a>        {
+<a id='L47' name='L47'></a>                while(&lt;PIPEIN&gt;)
+<a id='L48' name='L48'></a>                {
+<a id='L49' name='L49'></a>                        @_ = split;
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>                        $perm=$_[0]; $owgr=$_[1]; $size=$_[2];
+<a id='L52' name='L52'></a>                        if($_[3] =~ /^\d\d\d\d\-/) { # New tar format
+<a id='L53' name='L53'></a>                                
+<a id='L54' name='L54'></a>                                ($year,$mon,$day) = split(/-/,$_[3]);
+<a id='L55' name='L55'></a>                                $month = ("Gee","Jan","Feb","Mar","Apr","May","Jun",
+<a id='L56' name='L56'></a>                                                  "Jul","Aug","Sep","Oct","Nov","Dec")[$mon] || "Gee";
+<a id='L57' name='L57'></a>                                $time=$_[4];
+<a id='L58' name='L58'></a>                                $pathindex=5;
+<a id='L59' name='L59'></a>                        }
+<a id='L60' name='L60'></a>                        else {
+<a id='L61' name='L61'></a>                                $mstring='GeeJanFebMarAprMayJunJulAugSepOctNovDec';
+<a id='L62' name='L62'></a>                                $month=$_[3];
+<a id='L63' name='L63'></a>                                $mon=index($mstring,$month) / 3;
+<a id='L64' name='L64'></a>                                $day=$_[4];
+<a id='L65' name='L65'></a>                                $time=$_[5];
+<a id='L66' name='L66'></a>                                $year=$_[6];
+<a id='L67' name='L67'></a>                                $pathindex=7;
+<a id='L68' name='L68'></a>                        }
+<a id='L69' name='L69'></a>                        
+<a id='L70' name='L70'></a>                        $path=$_[$pathindex++];
+<a id='L71' name='L71'></a>                        # remove leading ./
+<a id='L72' name='L72'></a>                        $path=~s/^\.\///;
+<a id='L73' name='L73'></a>                        next if ($path eq '');
+<a id='L74' name='L74'></a>                        $arrow=$_[$pathindex++];
+<a id='L75' name='L75'></a>                        $link=$_[$pathindex++];
+<a id='L76' name='L76'></a>                        $link2=$_[$pathindex++];
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>                        $owgr=~s!/! !;
+<a id='L79' name='L79'></a>                        if($arrow eq 'link')
+<a id='L80' name='L80'></a>                        {
+<a id='L81' name='L81'></a># report hard links as soft links
+<a id='L82' name='L82'></a>                                $arrow='-&gt;'; $link="/$link2"; 
+<a id='L83' name='L83'></a>                                substr($perm, 0, 1) = "l";
+<a id='L84' name='L84'></a>                        }
+<a id='L85' name='L85'></a>                        if($arrow ne '')
+<a id='L86' name='L86'></a>                        {
+<a id='L87' name='L87'></a>                                $arrow=' ' . $arrow;
+<a id='L88' name='L88'></a>                                $link= ' ' . $link;
+<a id='L89' name='L89'></a>                        }
+<a id='L90' name='L90'></a>                        $now=`date "+%Y %m"`;
+<a id='L91' name='L91'></a>                        ($thisyear, $thismon) = split(/ /, $now);
+<a id='L92' name='L92'></a>                        # show time for files younger than 6 months
+<a id='L93' name='L93'></a>                        # but not for files with dates in the future
+<a id='L94' name='L94'></a>                        if ($year * 12 + $mon &gt; $thisyear * 12 + $thismon - 6 &amp;&amp;
+<a id='L95' name='L95'></a>                                $year * 12 + $mon &lt;= $thisyear * 12 + $thismon) {
+<a id='L96' name='L96'></a>                                print "$perm 1 $owgr $size $month $day $time CONTENTS/$path$arrow$link\n";
+<a id='L97' name='L97'></a>                        } else {
+<a id='L98' name='L98'></a>                                print "$perm 1 $owgr $size $month $day $year CONTENTS/$path$arrow$link\n";
+<a id='L99' name='L99'></a>                        }
+<a id='L100' name='L100'></a>                }
+<a id='L101' name='L101'></a>        }
+<a id='L102' name='L102'></a>        if ( open(PIPEIN, "LC_ALL=C dpkg-deb -I $qarchivename |") )
+<a id='L103' name='L103'></a>        {
+<a id='L104' name='L104'></a>               while(&lt;PIPEIN&gt;)
+<a id='L105' name='L105'></a>               {
+<a id='L106' name='L106'></a>                       @_ = split;
+<a id='L107' name='L107'></a>                       $size=$_[0];
+<a id='L108' name='L108'></a>                       last if $size =~ /:/;
+<a id='L109' name='L109'></a>                       next if $size !~ /\d+/;
+<a id='L110' name='L110'></a>                       if($_[4] eq '*')
+<a id='L111' name='L111'></a>                       {
+<a id='L112' name='L112'></a>                           $perm='-r-xr-xr-x';
+<a id='L113' name='L113'></a>                           $name=$_[5];
+<a id='L114' name='L114'></a>                       }
+<a id='L115' name='L115'></a>                       else
+<a id='L116' name='L116'></a>                       {
+<a id='L117' name='L117'></a>                           $perm='-r--r--r--';
+<a id='L118' name='L118'></a>                           $name=$_[4];
+<a id='L119' name='L119'></a>                       }
+<a id='L120' name='L120'></a>                       print "$perm 1 root root $size $date DEBIAN/$name\n";
+<a id='L121' name='L121'></a>               }
+<a id='L122' name='L122'></a>        }
+<a id='L123' name='L123'></a>}
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>sub mcdebfs_copyout
+<a id='L126' name='L126'></a>{
+<a id='L127' name='L127'></a>        local($archive,$filename,$destfile)=@_;
+<a id='L128' name='L128'></a>        local $qarchive = quote($archive);
+<a id='L129' name='L129'></a>        local $qfilename = quote($filename);
+<a id='L130' name='L130'></a>        local $qdestfile = quote($destfile);
+<a id='L131' name='L131'></a> 
+<a id='L132' name='L132'></a>        if($filename eq "INFO")
+<a id='L133' name='L133'></a>        {
+<a id='L134' name='L134'></a>                system("dpkg-deb -I $qarchive &gt; $qdestfile");
+<a id='L135' name='L135'></a>        }
+<a id='L136' name='L136'></a>        elsif($filename =~ /^DEBIAN/)
+<a id='L137' name='L137'></a>        {
+<a id='L138' name='L138'></a>               $qfilename=~s!^DEBIAN/!!;
+<a id='L139' name='L139'></a>               system("dpkg-deb -I $qarchive $qfilename &gt; $qdestfile");
+<a id='L140' name='L140'></a>        }
+<a id='L141' name='L141'></a>        elsif($filename eq "INSTALL")
+<a id='L142' name='L142'></a>        {
+<a id='L143' name='L143'></a>                if ( open(FILEOUT,"&gt;$destfile") )
+<a id='L144' name='L144'></a>                {
+<a id='L145' name='L145'></a>                        print FILEOUT $pressinstall;
+<a id='L146' name='L146'></a>                        close FILEOUT;
+<a id='L147' name='L147'></a>                        system("chmod a+x $qdestfile");
+<a id='L148' name='L148'></a>                }
+<a id='L149' name='L149'></a>        }
+<a id='L150' name='L150'></a>        else
+<a id='L151' name='L151'></a>        {
+<a id='L152' name='L152'></a>        # files can be prepended with ./ or not, depending on the version of tar
+<a id='L153' name='L153'></a>                $qfilename=~s!^CONTENTS/!!;
+<a id='L154' name='L154'></a>                system("dpkg-deb --fsys-tarfile $qarchive | tar xOf - $qfilename ./$qfilename &gt; $qdestfile 2&gt;/dev/null");
+<a id='L155' name='L155'></a>        }
+<a id='L156' name='L156'></a>}
+<a id='L157' name='L157'></a> 
+<a id='L158' name='L158'></a>sub mcdebfs_run
+<a id='L159' name='L159'></a>{
+<a id='L160' name='L160'></a>        local($archive,$filename)=@_;
+<a id='L161' name='L161'></a>        local $qarchive = quote($archive);
+<a id='L162' name='L162'></a>        if($filename eq "INSTALL")
+<a id='L163' name='L163'></a>        {
+<a id='L164' name='L164'></a>                print "Installing $archive\n";
+<a id='L165' name='L165'></a>                system("dpkg -i $qarchive");
+<a id='L166' name='L166'></a>        }
+<a id='L167' name='L167'></a>        else
+<a id='L168' name='L168'></a>        {
+<a id='L169' name='L169'></a>                use File::Temp qw(mkdtemp);
+<a id='L170' name='L170'></a>                my $template = "/tmp/mcdebfs.run.XXXXXX";
+<a id='L171' name='L171'></a>                $template="$ENV{MC_TMPDIR}/mcdebfs.XXXXXX" if ($ENV{MC_TMPDIR});
+<a id='L172' name='L172'></a>                $tmpdir = mkdtemp($template);
+<a id='L173' name='L173'></a>                $tmpcmd="$tmpdir/run";
+<a id='L174' name='L174'></a>                &amp;mcdebfs_copyout($archive, $filename, $tmpcmd);
+<a id='L175' name='L175'></a>                system("chmod u+x $tmpcmd");
+<a id='L176' name='L176'></a>                system($tmpcmd);
+<a id='L177' name='L177'></a>                unlink($tmpcmd);
+<a id='L178' name='L178'></a>                rmdir($tmpdir);
+<a id='L179' name='L179'></a>        }
+<a id='L180' name='L180'></a>}
+<a id='L181' name='L181'></a> 
+<a id='L182' name='L182'></a>$pressinstall=&lt;&lt;EOInstall;
+<a id='L183' name='L183'></a> 
+<a id='L184' name='L184'></a>                              WARNING
+<a id='L185' name='L185'></a>     Don\'t use this method if you are not willing to reinstall everything...
+<a id='L186' name='L186'></a> 
+<a id='L187' name='L187'></a>This is not a real file. It is a way to install the package you are browsing.
+<a id='L188' name='L188'></a> 
+<a id='L189' name='L189'></a>To install this package go back to the panel and press Enter on this file.
+<a id='L190' name='L190'></a> 
+<a id='L191' name='L191'></a>In Debian systems, a package is automatically upgraded when you install a new
+<a id='L192' name='L192'></a>version of it. There is no special upgrade option. Install always works.
+<a id='L193' name='L193'></a> 
+<a id='L194' name='L194'></a>EOInstall
+<a id='L195' name='L195'></a> 
+<a id='L196' name='L196'></a>umask 077;
+<a id='L197' name='L197'></a> 
+<a id='L198' name='L198'></a>if($ARGV[0] eq "list") { shift; &amp;mcdebfs_list(@ARGV); exit 0; }
+<a id='L199' name='L199'></a>elsif($ARGV[0] eq "copyout") { shift; &amp;mcdebfs_copyout(@ARGV); exit 0; }
+<a id='L200' name='L200'></a>elsif($ARGV[0] eq "run") { shift; &amp;mcdebfs_run(@ARGV); exit 0; }
+<a id='L201' name='L201'></a> 
+<a id='L202' name='L202'></a>exit 1;
+<a id='L203' name='L203'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+203 src/vfs/extfs/helpers/deb.in'  /> */</em>
+</body>
+</html>

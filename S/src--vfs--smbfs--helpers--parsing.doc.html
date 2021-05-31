@@ -1,0 +1,394 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/smbfs/helpers/parsing.doc</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/parsing.doc</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/parsing.doc</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/smbfs/helpers/parsing.doc'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>Chris Hertel, Samba Team
+<a id='L2' name='L2'></a>November 1997
+<a id='L3' name='L3'></a> 
+<a id='L4' name='L4'></a>This is a quick overview of the lexical analysis, syntax, and semantics
+<a id='L5' name='L5'></a>of the smb.conf file.
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a>Lexical Analysis:
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>  Basically, the file is processed on a line by line basis.  There are
+<a id='L10' name='L10'></a>  four types of lines that are recognized by the lexical analyzer
+<a id='L11' name='L11'></a>  (params.c):
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>  Blank lines           - Lines containing only whitespace.
+<a id='L14' name='L14'></a>  Comment lines         - Lines beginning with either a semi-colon or a
+<a id='L15' name='L15'></a>                          pound sign (';' or '#').
+<a id='L16' name='L16'></a>  Section header lines  - Lines beginning with an open square bracket
+<a id='L17' name='L17'></a>                          ('[').
+<a id='L18' name='L18'></a>  Parameter lines       - Lines beginning with any other character.
+<a id='L19' name='L19'></a>                          (The default line type.)
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>  The first two are handled exclusively by the lexical analyzer, which
+<a id='L22' name='L22'></a>  ignores them.  The latter two line types are scanned for
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>  - Section names
+<a id='L25' name='L25'></a>  - Parameter names
+<a id='L26' name='L26'></a>  - Parameter values
+<a id='L27' name='L27'></a> 
+<a id='L28' name='L28'></a>  These are the only tokens passed to the parameter loader
+<a id='L29' name='L29'></a>  (loadparm.c).  Parameter names and values are divided from one
+<a id='L30' name='L30'></a>  another by an equal sign: '='.
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a> 
+<a id='L33' name='L33'></a>  Handling of Whitespace:
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>  Whitespace is defined as all characters recognized by the isspace()
+<a id='L36' name='L36'></a>  function (see ctype(3C)) except for the newline character ('\n')
+<a id='L37' name='L37'></a>  The newline is excluded because it identifies the end of the line.
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a>  - The lexical analyzer scans past white space at the beginning of a
+<a id='L40' name='L40'></a>    line.
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>  - Section and parameter names may contain internal white space.  All
+<a id='L43' name='L43'></a>    whitespace within a name is compressed to a single space character. 
+<a id='L44' name='L44'></a> 
+<a id='L45' name='L45'></a>  - Internal whitespace within a parameter value is kept verbatim with
+<a id='L46' name='L46'></a>    the exception of carriage return characters ('\r'), all of which
+<a id='L47' name='L47'></a>    are removed.
+<a id='L48' name='L48'></a> 
+<a id='L49' name='L49'></a>  - Leading and trailing whitespace is removed from names and values.
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>  Handling of Line Continuation:
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a>  Long section header and parameter lines may be extended across
+<a id='L55' name='L55'></a>  multiple lines by use of the backslash character ('\\').  Line
+<a id='L56' name='L56'></a>  continuation is ignored for blank and comment lines.
+<a id='L57' name='L57'></a> 
+<a id='L58' name='L58'></a>  If the last (non-whitespace) character within a section header or on
+<a id='L59' name='L59'></a>  a parameter line is a backslash, then the next line will be
+<a id='L60' name='L60'></a>  (logically) concatonated with the current line by the lexical
+<a id='L61' name='L61'></a>  analyzer.  For example:
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a>    param name = parameter value string \
+<a id='L64' name='L64'></a>    with line continuation.
+<a id='L65' name='L65'></a> 
+<a id='L66' name='L66'></a>  Would be read as
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a>    param name = parameter value string     with line continuation.
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a>  Note that there are five spaces following the word 'string',
+<a id='L71' name='L71'></a>  representing the one space between 'string' and '\\' in the top
+<a id='L72' name='L72'></a>  line, plus the four preceding the word 'with' in the second line.
+<a id='L73' name='L73'></a>  (Yes, I'm counting the indentation.)
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a>  Line continuation characters are ignored on blank lines and at the end
+<a id='L76' name='L76'></a>  of comments.  They are *only* recognized within section and parameter
+<a id='L77' name='L77'></a>  lines.
+<a id='L78' name='L78'></a> 
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a>  Line Continuation Quirks:
+<a id='L81' name='L81'></a>  
+<a id='L82' name='L82'></a>  Note the following example:
+<a id='L83' name='L83'></a> 
+<a id='L84' name='L84'></a>    param name = parameter value string \
+<a id='L85' name='L85'></a>    \
+<a id='L86' name='L86'></a>    with line continuation.
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a>  The middle line is *not* parsed as a blank line because it is first
+<a id='L89' name='L89'></a>  concatonated with the top line.  The result is
+<a id='L90' name='L90'></a> 
+<a id='L91' name='L91'></a>    param name = parameter value string         with line continuation.
+<a id='L92' name='L92'></a> 
+<a id='L93' name='L93'></a>  The same is true for comment lines.
+<a id='L94' name='L94'></a> 
+<a id='L95' name='L95'></a>    param name = parameter value string \
+<a id='L96' name='L96'></a>    ; comment \
+<a id='L97' name='L97'></a>    with a comment.
+<a id='L98' name='L98'></a> 
+<a id='L99' name='L99'></a>  This becomes:
+<a id='L100' name='L100'></a>  
+<a id='L101' name='L101'></a>    param name = parameter value string     ; comment     with a comment.
+<a id='L102' name='L102'></a> 
+<a id='L103' name='L103'></a>  On a section header line, the closing bracket (']') is considered a
+<a id='L104' name='L104'></a>  terminating character, and the rest of the line is ignored.  The lines
+<a id='L105' name='L105'></a>  
+<a id='L106' name='L106'></a>    [ section   name ] garbage \
+<a id='L107' name='L107'></a>    param  name  = value
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a>  are read as
+<a id='L110' name='L110'></a> 
+<a id='L111' name='L111'></a>    [section name]
+<a id='L112' name='L112'></a>    param name = value
+<a id='L113' name='L113'></a> 
+<a id='L114' name='L114'></a> 
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>Syntax:
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a>  The syntax of the smb.conf file is as follows:
+<a id='L119' name='L119'></a> 
+<a id='L120' name='L120'></a>  &lt;file&gt;            :==  { &lt;section&gt; } EOF
+<a id='L121' name='L121'></a> 
+<a id='L122' name='L122'></a>  &lt;section&gt;         :==  &lt;section header&gt; { &lt;parameter line&gt; }
+<a id='L123' name='L123'></a> 
+<a id='L124' name='L124'></a>  &lt;section header&gt;  :==  '[' NAME ']'
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a>  &lt;parameter line&gt;  :==  NAME '=' VALUE NL
+<a id='L127' name='L127'></a> 
+<a id='L128' name='L128'></a> 
+<a id='L129' name='L129'></a>  Basically, this means that
+<a id='L130' name='L130'></a>  
+<a id='L131' name='L131'></a>    - a file is made up of zero or more sections, and is terminated by
+<a id='L132' name='L132'></a>      an EOF (we knew that).
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a>    - A section is made up of a section header followed by zero or more
+<a id='L135' name='L135'></a>      parameter lines.
+<a id='L136' name='L136'></a> 
+<a id='L137' name='L137'></a>    - A section header is identified by an opening bracket and
+<a id='L138' name='L138'></a>      terminated by the closing bracket.  The enclosed NAME identifies
+<a id='L139' name='L139'></a>      the section.
+<a id='L140' name='L140'></a> 
+<a id='L141' name='L141'></a>    - A parameter line is divided into a NAME and a VALUE.  The *first*
+<a id='L142' name='L142'></a>      equal sign on the line separates the NAME from the VALUE.  The
+<a id='L143' name='L143'></a>      VALUE is terminated by a newline character (NL = '\n').
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a> 
+<a id='L146' name='L146'></a>About params.c:
+<a id='L147' name='L147'></a> 
+<a id='L148' name='L148'></a>  The parsing of the config file is a bit unusual if you are used to
+<a id='L149' name='L149'></a>  lex, yacc, bison, etc.  Both lexical analysis (scanning) and parsing
+<a id='L150' name='L150'></a>  are performed by params.c.  Values are loaded via callbacks to
+<a id='L151' name='L151'></a>  loadparm.c.
+<a id='L152' name='L152'></a> 
+<a id='L153' name='L153'></a>--------------------------------------------------------------------------
+<a id='L154' name='L154'></a> 
+<a id='L155' name='L155'></a>                                  Samba DEBUG
+<a id='L156' name='L156'></a>                                       
+<a id='L157' name='L157'></a>Chris Hertel, Samba Team
+<a id='L158' name='L158'></a>July, 1998
+<a id='L159' name='L159'></a>   
+<a id='L160' name='L160'></a>   Here's the scoop on the update to the DEBUG() system.
+<a id='L161' name='L161'></a>   
+<a id='L162' name='L162'></a>   First, my goals are:
+<a id='L163' name='L163'></a>     * Backward compatibility (ie., I don't want to break any Samba code
+<a id='L164' name='L164'></a>       that already works).
+<a id='L165' name='L165'></a>     * Debug output should be timestamped and easy to read (format-wise).
+<a id='L166' name='L166'></a>     * Debug output should be parsable by software.
+<a id='L167' name='L167'></a>     * There should be convenient tools for composing debug messages.
+<a id='L168' name='L168'></a>       
+<a id='L169' name='L169'></a>   NOTE: the Debug functionality has been moved from util.c to the new
+<a id='L170' name='L170'></a>   debug.c module.
+<a id='L171' name='L171'></a>   
+<a id='L172' name='L172'></a>New Output Syntax
+<a id='L173' name='L173'></a> 
+<a id='L174' name='L174'></a>   The syntax of a debugging log file is represented as:
+<a id='L175' name='L175'></a>  &lt;debugfile&gt; :== { &lt;debugmsg&gt; }
+<a id='L176' name='L176'></a> 
+<a id='L177' name='L177'></a>  &lt;debugmsg&gt;  :== &lt;debughdr&gt; '\n' &lt;debugtext&gt;
+<a id='L178' name='L178'></a> 
+<a id='L179' name='L179'></a>  &lt;debughdr&gt;  :== '[' TIME ',' LEVEL ']' FILE ':' [FUNCTION] '(' LINE ')'
+<a id='L180' name='L180'></a> 
+<a id='L181' name='L181'></a>  &lt;debugtext&gt; :== { &lt;debugline&gt; }
+<a id='L182' name='L182'></a> 
+<a id='L183' name='L183'></a>  &lt;debugline&gt; :== TEXT '\n'
+<a id='L184' name='L184'></a> 
+<a id='L185' name='L185'></a>   TEXT is a string of characters excluding the newline character.
+<a id='L186' name='L186'></a>   LEVEL is the DEBUG level of the message (an integer in the range
+<a id='L187' name='L187'></a>   0..10).
+<a id='L188' name='L188'></a>   TIME is a timestamp.
+<a id='L189' name='L189'></a>   FILE is the name of the file from which the debug message was
+<a id='L190' name='L190'></a>   generated.
+<a id='L191' name='L191'></a>   FUNCTION is the function from which the debug message was generated.
+<a id='L192' name='L192'></a>   LINE is the line number of the debug statement that generated the
+<a id='L193' name='L193'></a>   message.
+<a id='L194' name='L194'></a>   
+<a id='L195' name='L195'></a>   Basically, what that all means is:
+<a id='L196' name='L196'></a>     * A debugging log file is made up of debug messages.
+<a id='L197' name='L197'></a>     * Each debug message is made up of a header and text. The header is
+<a id='L198' name='L198'></a>       separated from the text by a newline.
+<a id='L199' name='L199'></a>     * The header begins with the timestamp and debug level of the
+<a id='L200' name='L200'></a>       message enclosed in brackets. The filename, function, and line
+<a id='L201' name='L201'></a>       number at which the message was generated follow. The filename is
+<a id='L202' name='L202'></a>       terminated by a colon, and the function name is terminated by the
+<a id='L203' name='L203'></a>       parenthesis which contain the line number. Depending upon the
+<a id='L204' name='L204'></a>       compiler, the function name may be missing (it is generated by the
+<a id='L205' name='L205'></a>       __FUNCTION__ macro, which is not universally implemented, dangit).
+<a id='L206' name='L206'></a>     * The message text is made up of zero or more lines, each terminated
+<a id='L207' name='L207'></a>       by a newline.
+<a id='L208' name='L208'></a>       
+<a id='L209' name='L209'></a>   Here's some example output:
+<a id='L210' name='L210'></a> 
+<a id='L211' name='L211'></a>    [1998/08/03 12:55:25, 1] nmbd.c:(659)
+<a id='L212' name='L212'></a>      Netbios nameserver version 1.9.19-prealpha started.
+<a id='L213' name='L213'></a>      Copyright Andrew Tridgell 1994-1997
+<a id='L214' name='L214'></a>    [1998/08/03 12:55:25, 3] loadparm.c:(763)
+<a id='L215' name='L215'></a>      Initializing global parameters
+<a id='L216' name='L216'></a> 
+<a id='L217' name='L217'></a>   Note that in the above example the function names are not listed on
+<a id='L218' name='L218'></a>   the header line. That's because the example above was generated on an
+<a id='L219' name='L219'></a>   SGI Indy, and the SGI compiler doesn't support the __FUNCTION__ macro.
+<a id='L220' name='L220'></a>   
+<a id='L221' name='L221'></a>The DEBUG() Macro
+<a id='L222' name='L222'></a> 
+<a id='L223' name='L223'></a>   Use of the DEBUG() macro is unchanged. DEBUG() takes two parameters.
+<a id='L224' name='L224'></a>   The first is the message level, the second is the body of a function
+<a id='L225' name='L225'></a>   call to the Debug1() function.
+<a id='L226' name='L226'></a>   
+<a id='L227' name='L227'></a>   That's confusing.
+<a id='L228' name='L228'></a>   
+<a id='L229' name='L229'></a>   Here's an example which may help a bit. If you would write
+<a id='L230' name='L230'></a> 
+<a id='L231' name='L231'></a>     printf( "This is a %s message.\n", "debug" );
+<a id='L232' name='L232'></a> 
+<a id='L233' name='L233'></a>   to send the output to stdout, then you would write
+<a id='L234' name='L234'></a> 
+<a id='L235' name='L235'></a>     DEBUG( 0, ( "This is a %s message.\n", "debug" ) );
+<a id='L236' name='L236'></a> 
+<a id='L237' name='L237'></a>   to send the output to the debug file.  All of the normal printf()
+<a id='L238' name='L238'></a>   formatting escapes work.
+<a id='L239' name='L239'></a>   
+<a id='L240' name='L240'></a>   Note that in the above example the DEBUG message level is set to 0.
+<a id='L241' name='L241'></a>   Messages at level 0 always print.  Basically, if the message level is
+<a id='L242' name='L242'></a>   less than or equal to the global value DEBUGLEVEL, then the DEBUG
+<a id='L243' name='L243'></a>   statement is processed.
+<a id='L244' name='L244'></a>   
+<a id='L245' name='L245'></a>   The output of the above example would be something like:
+<a id='L246' name='L246'></a> 
+<a id='L247' name='L247'></a>    [1998/07/30 16:00:51, 0] file.c:function(128)
+<a id='L248' name='L248'></a>      This is a debug message.
+<a id='L249' name='L249'></a> 
+<a id='L250' name='L250'></a>   Each call to DEBUG() creates a new header *unless* the output produced
+<a id='L251' name='L251'></a>   by the previous call to DEBUG() did not end with a '\n'. Output to the
+<a id='L252' name='L252'></a>   debug file is passed through a formatting buffer which is flushed
+<a id='L253' name='L253'></a>   every time a newline is encountered. If the buffer is not empty when
+<a id='L254' name='L254'></a>   DEBUG() is called, the new input is simply appended.
+<a id='L255' name='L255'></a> 
+<a id='L256' name='L256'></a>   ...but that's really just a Kludge. It was put in place because
+<a id='L257' name='L257'></a>   DEBUG() has been used to write partial lines. Here's a simple (dumb)
+<a id='L258' name='L258'></a>   example of the kind of thing I'm talking about:
+<a id='L259' name='L259'></a> 
+<a id='L260' name='L260'></a>    DEBUG( 0, ("The test returned " ) );
+<a id='L261' name='L261'></a>    if( test() )
+<a id='L262' name='L262'></a>      DEBUG(0, ("True") );
+<a id='L263' name='L263'></a>    else
+<a id='L264' name='L264'></a>      DEBUG(0, ("False") );
+<a id='L265' name='L265'></a>    DEBUG(0, (".\n") );
+<a id='L266' name='L266'></a> 
+<a id='L267' name='L267'></a>   Without the format buffer, the output (assuming test() returned true)
+<a id='L268' name='L268'></a>   would look like this:
+<a id='L269' name='L269'></a> 
+<a id='L270' name='L270'></a>    [1998/07/30 16:00:51, 0] file.c:function(256)
+<a id='L271' name='L271'></a>      The test returned
+<a id='L272' name='L272'></a>    [1998/07/30 16:00:51, 0] file.c:function(258)
+<a id='L273' name='L273'></a>      True
+<a id='L274' name='L274'></a>    [1998/07/30 16:00:51, 0] file.c:function(261)
+<a id='L275' name='L275'></a>      .
+<a id='L276' name='L276'></a> 
+<a id='L277' name='L277'></a>   Which isn't much use. The format buffer kludge fixes this problem.
+<a id='L278' name='L278'></a>   
+<a id='L279' name='L279'></a>The DEBUGADD() Macro
+<a id='L280' name='L280'></a> 
+<a id='L281' name='L281'></a>   In addition to the kludgey solution to the broken line problem
+<a id='L282' name='L282'></a>   described above, there is a clean solution. The DEBUGADD() macro never
+<a id='L283' name='L283'></a>   generates a header. It will append new text to the current debug
+<a id='L284' name='L284'></a>   message even if the format buffer is empty. The syntax of the
+<a id='L285' name='L285'></a>   DEBUGADD() macro is the same as that of the DEBUG() macro.
+<a id='L286' name='L286'></a> 
+<a id='L287' name='L287'></a>    DEBUG( 0, ("This is the first line.\n" ) );
+<a id='L288' name='L288'></a>    DEBUGADD( 0, ("This is the second line.\nThis is the third line.\n" ) );
+<a id='L289' name='L289'></a> 
+<a id='L290' name='L290'></a>   Produces
+<a id='L291' name='L291'></a>    [1998/07/30 16:00:51, 0] file.c:function(512)
+<a id='L292' name='L292'></a>      This is the first line.
+<a id='L293' name='L293'></a>      This is the second line.
+<a id='L294' name='L294'></a>      This is the third line.
+<a id='L295' name='L295'></a> 
+<a id='L296' name='L296'></a>The DEBUGLVL() Macro
+<a id='L297' name='L297'></a> 
+<a id='L298' name='L298'></a>   One of the problems with the DEBUG() macro was that DEBUG() lines
+<a id='L299' name='L299'></a>   tended to get a bit long. Consider this example from
+<a id='L300' name='L300'></a>   nmbd_sendannounce.c:
+<a id='L301' name='L301'></a> 
+<a id='L302' name='L302'></a>  DEBUG(3,("send_local_master_announcement: type %x for name %s on subnet %s for workgroup %s\n",
+<a id='L303' name='L303'></a>            type, global_myname, subrec-&gt;subnet_name, work-&gt;work_group));
+<a id='L304' name='L304'></a> 
+<a id='L305' name='L305'></a>   One solution to this is to break it down using DEBUG() and DEBUGADD(),
+<a id='L306' name='L306'></a>   as follows:
+<a id='L307' name='L307'></a> 
+<a id='L308' name='L308'></a>  DEBUG( 3, ( "send_local_master_announcement: " ) );
+<a id='L309' name='L309'></a>  DEBUGADD( 3, ( "type %x for name %s ", type, global_myname ) );
+<a id='L310' name='L310'></a>  DEBUGADD( 3, ( "on subnet %s ", subrec-&gt;subnet_name ) );
+<a id='L311' name='L311'></a>  DEBUGADD( 3, ( "for workgroup %s\n", work-&gt;work_group ) );
+<a id='L312' name='L312'></a> 
+<a id='L313' name='L313'></a>   A similar, but arguably nicer approach is to use the DEBUGLVL() macro.
+<a id='L314' name='L314'></a>   This macro returns True if the message level is less than or equal to
+<a id='L315' name='L315'></a>   the global DEBUGLEVEL value, so:
+<a id='L316' name='L316'></a> 
+<a id='L317' name='L317'></a>  if( DEBUGLVL( 3 ) )
+<a id='L318' name='L318'></a>    {
+<a id='L319' name='L319'></a>    dbgtext( "send_local_master_announcement: " );
+<a id='L320' name='L320'></a>    dbgtext( "type %x for name %s ", type, global_myname );
+<a id='L321' name='L321'></a>    dbgtext( "on subnet %s ", subrec-&gt;subnet_name );
+<a id='L322' name='L322'></a>    dbgtext( "for workgroup %s\n", work-&gt;work_group );
+<a id='L323' name='L323'></a>    }
+<a id='L324' name='L324'></a> 
+<a id='L325' name='L325'></a>   (The dbgtext() function is explained below.)
+<a id='L326' name='L326'></a>   
+<a id='L327' name='L327'></a>   There are a few advantages to this scheme:
+<a id='L328' name='L328'></a>     * The test is performed only once.
+<a id='L329' name='L329'></a>     * You can allocate variables off of the stack that will only be used
+<a id='L330' name='L330'></a>       within the DEBUGLVL() block.
+<a id='L331' name='L331'></a>     * Processing that is only relevant to debug output can be contained
+<a id='L332' name='L332'></a>       within the DEBUGLVL() block.
+<a id='L333' name='L333'></a>       
+<a id='L334' name='L334'></a>New Functions
+<a id='L335' name='L335'></a> 
+<a id='L336' name='L336'></a>   dbgtext()
+<a id='L337' name='L337'></a>          This function prints debug message text to the debug file (and
+<a id='L338' name='L338'></a>          possibly to syslog) via the format buffer. The function uses a
+<a id='L339' name='L339'></a>          variable argument list just like printf() or Debug1(). The
+<a id='L340' name='L340'></a>          input is printed into a buffer using the vslprintf() function,
+<a id='L341' name='L341'></a>          and then passed to format_debug_text().
+<a id='L342' name='L342'></a>          
+<a id='L343' name='L343'></a>          If you use DEBUGLVL() you will probably print the body of the
+<a id='L344' name='L344'></a>          message using dbgtext(). 
+<a id='L345' name='L345'></a>          
+<a id='L346' name='L346'></a>   dbghdr()
+<a id='L347' name='L347'></a>          This is the function that writes a debug message header.
+<a id='L348' name='L348'></a>          Headers are not processed via the format buffer. Also note that
+<a id='L349' name='L349'></a>          if the format buffer is not empty, a call to dbghdr() will not
+<a id='L350' name='L350'></a>          produce any output. See the comments in dbghdr() for more info.
+<a id='L351' name='L351'></a>          
+<a id='L352' name='L352'></a>          It is not likely that this function will be called directly. It
+<a id='L353' name='L353'></a>          is used by DEBUG() and DEBUGADD().
+<a id='L354' name='L354'></a>          
+<a id='L355' name='L355'></a>   format_debug_text()
+<a id='L356' name='L356'></a>          This is a static function in debug.c. It stores the output text
+<a id='L357' name='L357'></a>          for the body of the message in a buffer until it encounters a
+<a id='L358' name='L358'></a>          newline. When the newline character is found, the buffer is
+<a id='L359' name='L359'></a>          written to the debug file via the Debug1() function, and the
+<a id='L360' name='L360'></a>          buffer is reset. This allows us to add the indentation at the
+<a id='L361' name='L361'></a>          beginning of each line of the message body, and also ensures
+<a id='L362' name='L362'></a>          that the output is written a line at a time (which cleans up
+<a id='L363' name='L363'></a>          syslog output).
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+363 src/vfs/smbfs/helpers/parsing.doc'  /> */</em>
+</body>
+</html>

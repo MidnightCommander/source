@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>remote_handle</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2049'>remote_handle</a>    2049 src/vfs/smbfs/smbfs.c smbfs_open_readwrite (smbfs_handle * remote_handle, char *rname, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2058'>remote_handle</a>    2058 src/vfs/smbfs/smbfs.c     remote_handle-&gt;fnum =</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2060'>remote_handle</a>    2060 src/vfs/smbfs/smbfs.c         cli_open (remote_handle-&gt;cli, rname, flags, DENY_NONE);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2062'>remote_handle</a>    2062 src/vfs/smbfs/smbfs.c         cli_open (remote_handle-&gt;cli, rname, ((flags &amp; O_CREAT)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2067'>remote_handle</a>    2067 src/vfs/smbfs/smbfs.c     if (remote_handle-&gt;fnum == -1)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2070'>remote_handle</a>    2070 src/vfs/smbfs/smbfs.c                  cli_errstr (remote_handle-&gt;cli), CNV_LANG (rname));</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2071'>remote_handle</a>    2071 src/vfs/smbfs/smbfs.c         DEBUG (1, ("smbfs_open(rname:%s) error:%s\n", rname, cli_errstr (remote_handle-&gt;cli)));</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2072'>remote_handle</a>    2072 src/vfs/smbfs/smbfs.c         my_errno = cli_error (remote_handle-&gt;cli, NULL, &amp;err, NULL);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2077'>remote_handle</a>    2077 src/vfs/smbfs/smbfs.c         return remote_handle;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2079'>remote_handle</a>    2079 src/vfs/smbfs/smbfs.c     if (!cli_qfileinfo (remote_handle-&gt;cli, remote_handle-&gt;fnum,</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2080'>remote_handle</a>    2080 src/vfs/smbfs/smbfs.c                         &amp;remote_handle-&gt;attr, &amp;size, NULL, NULL, NULL, NULL,</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2082'>remote_handle</a>    2082 src/vfs/smbfs/smbfs.c         &amp;&amp; !cli_getattrE (remote_handle-&gt;cli, remote_handle-&gt;fnum,</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2083'>remote_handle</a>    2083 src/vfs/smbfs/smbfs.c                           &amp;remote_handle-&gt;attr, &amp;size, NULL, NULL, NULL))</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2085'>remote_handle</a>    2085 src/vfs/smbfs/smbfs.c         message (D_ERROR, MSG_ERROR, "getattrib: %s", cli_errstr (remote_handle-&gt;cli));</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2086'>remote_handle</a>    2086 src/vfs/smbfs/smbfs.c         DEBUG (1, ("smbfs_open(rname:%s) getattrib:%s\n", rname, cli_errstr (remote_handle-&gt;cli)));</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2087'>remote_handle</a>    2087 src/vfs/smbfs/smbfs.c         my_errno = cli_error (remote_handle-&gt;cli, NULL, &amp;err, NULL);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2088'>remote_handle</a>    2088 src/vfs/smbfs/smbfs.c         cli_close (remote_handle-&gt;cli, remote_handle-&gt;fnum);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2093'>remote_handle</a>    2093 src/vfs/smbfs/smbfs.c         &amp;&amp; smbfs_lseek (remote_handle, 0, SEEK_END) == -1)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2095'>remote_handle</a>    2095 src/vfs/smbfs/smbfs.c         cli_close (remote_handle-&gt;cli, remote_handle-&gt;fnum);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2099'>remote_handle</a>    2099 src/vfs/smbfs/smbfs.c     return remote_handle;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2110'>remote_handle</a>    2110 src/vfs/smbfs/smbfs.c     smbfs_handle *remote_handle;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2121'>remote_handle</a>    2121 src/vfs/smbfs/smbfs.c     remote_handle = g_new (smbfs_handle, 2);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2122'>remote_handle</a>    2122 src/vfs/smbfs/smbfs.c     remote_handle-&gt;cli = sc-&gt;cli;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2123'>remote_handle</a>    2123 src/vfs/smbfs/smbfs.c     remote_handle-&gt;nread = 0;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2125'>remote_handle</a>    2125 src/vfs/smbfs/smbfs.c     ret = smbfs_open_readwrite (remote_handle, remote_file, flags, mode);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2129'>remote_handle</a>    2129 src/vfs/smbfs/smbfs.c         g_free (remote_handle);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2197'>remote_handle</a>    2197 src/vfs/smbfs/smbfs.c     smbfs_handle *remote_handle = (smbfs_handle *) data;</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--smbfs.c.html#L2199'>remote_handle</a>    2199 src/vfs/smbfs/smbfs.c     DEBUG (3, ("smbfs_fstat(fnum:%d)\n", remote_handle-&gt;fnum));</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/fish/helpers/ls</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--fish.html'>fish</a>/<a href='../files/src--vfs--fish--helpers.html'>helpers</a>/ls</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--fish.html'>fish</a>/<a href='../files/src--vfs--fish--helpers.html'>helpers</a>/ls</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/fish/helpers/ls'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#LIST /${FISH_DIR}
+<a id='L2' name='L2'></a>LC_TIME=C
+<a id='L3' name='L3'></a>export LC_TIME
+<a id='L4' name='L4'></a>perl_res="1"
+<a id='L5' name='L5'></a>fish_list_lsq ()
+<a id='L6' name='L6'></a>{
+<a id='L7' name='L7'></a>FISH_DIR="$1"
+<a id='L8' name='L8'></a>ls -Qlan "${FISH_DIR}" 2&gt;/dev/null | grep '^[^cbt]' | (
+<a id='L9' name='L9'></a>while read p l u g s m d y n; do
+<a id='L10' name='L10'></a>    echo "P$p $u.$g"
+<a id='L11' name='L11'></a>    echo "S$s"
+<a id='L12' name='L12'></a>    echo "d$m $d $y"
+<a id='L13' name='L13'></a>    echo ":$n"
+<a id='L14' name='L14'></a>    echo
+<a id='L15' name='L15'></a>done
+<a id='L16' name='L16'></a>)
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>ls -Qlan "${FISH_DIR}" 2&gt;/dev/null | grep '^[cb]' | (
+<a id='L19' name='L19'></a>while read p l u g a i m d y n; do
+<a id='L20' name='L20'></a>    echo "P$p $u.$g"
+<a id='L21' name='L21'></a>    echo "E$a$i"
+<a id='L22' name='L22'></a>    echo "d$m $d $y"
+<a id='L23' name='L23'></a>    echo ":$n"
+<a id='L24' name='L24'></a>    echo
+<a id='L25' name='L25'></a>done
+<a id='L26' name='L26'></a>)
+<a id='L27' name='L27'></a>echo '### 200'
+<a id='L28' name='L28'></a>}
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>fish_list_sed ()
+<a id='L31' name='L31'></a>{
+<a id='L32' name='L32'></a>FISH_DIR="$1"
+<a id='L33' name='L33'></a>ls -lan "${FISH_DIR}" 2&gt;/dev/null | grep '^[^cbt]' | (
+<a id='L34' name='L34'></a>while read p l u g s rec; do
+<a id='L35' name='L35'></a>    if [ -n "$g" ]; then
+<a id='L36' name='L36'></a>        if [ -n "$FISH_HAVE_DATE_MDYT" ]; then
+<a id='L37' name='L37'></a>            filename=`echo "$rec"| sed 's/[^[:space:]]\+ \+[^[:space:]]\+ \+[^[:space:]]\+ //'`
+<a id='L38' name='L38'></a>            filedate=`echo "$rec"| sed 's/\([^[:space:]]\+ \+[^[:space:]]\+ \+[^[:space:]]\+\) .*/\1/'`
+<a id='L39' name='L39'></a>        else
+<a id='L40' name='L40'></a>            filename=`echo "$rec"| sed 's/[^[:space:]]\+ \+[^[:space:]]\+ //'`
+<a id='L41' name='L41'></a>            filedate=`echo "$rec"| sed 's/\([^[:space:]]\+ \+[^[:space:]]\+\) .*/\1/'`
+<a id='L42' name='L42'></a>        fi
+<a id='L43' name='L43'></a>        pfile=\"`echo "$filename" | sed -e 's#^\(.*\) -&gt; \(.*\)#\1" -&gt; "\2#'`\"
+<a id='L44' name='L44'></a>        echo "P$p $u.$g"
+<a id='L45' name='L45'></a>        echo "S$s"
+<a id='L46' name='L46'></a>        if [ -n "$FISH_HAVE_DATE_MDYT" ]; then
+<a id='L47' name='L47'></a>            echo "d$filedate"
+<a id='L48' name='L48'></a>        else
+<a id='L49' name='L49'></a>            echo "D$filedate"
+<a id='L50' name='L50'></a>        fi
+<a id='L51' name='L51'></a>        echo ":$pfile"
+<a id='L52' name='L52'></a>        echo
+<a id='L53' name='L53'></a>    fi
+<a id='L54' name='L54'></a>done
+<a id='L55' name='L55'></a>)
+<a id='L56' name='L56'></a>ls -lan "${FISH_DIR}" 2&gt;/dev/null | grep '^[cb]' | (
+<a id='L57' name='L57'></a>while read p l u g a i rec; do
+<a id='L58' name='L58'></a>    if [ -n "$g" ]; then
+<a id='L59' name='L59'></a>        if [ -n "$FISH_HAVE_DATE_MDYT" ]; then
+<a id='L60' name='L60'></a>            filename=`echo "$rec"| sed 's/[^[:space:]]\+ \+[^[:space:]]\+ \+[^[:space:]]\+ //'`
+<a id='L61' name='L61'></a>            filedate=`echo "$rec"| sed 's/\([^[:space:]]\+ \+[^[:space:]]\+ \+[^[:space:]]\+\) .*/\1/'`
+<a id='L62' name='L62'></a>        else
+<a id='L63' name='L63'></a>            filename=`echo "$rec"| sed 's/[^[:space:]]\+ \+[^[:space:]]\+ //'`
+<a id='L64' name='L64'></a>            filedate=`echo "$rec"| sed 's/\([^[:space:]]\+ \+[^[:space:]]\+\) .*/\1/'`
+<a id='L65' name='L65'></a>        fi
+<a id='L66' name='L66'></a>        pfile=\"`echo "$filename" | sed -e 's#^\(.*\) -&gt; \(.*\)#\1" -&gt; "\2#'`\"
+<a id='L67' name='L67'></a>        echo "P$p $u.$g"
+<a id='L68' name='L68'></a>        echo "E$a$i"
+<a id='L69' name='L69'></a>        if [ -n "$FISH_HAVE_DATE_MDYT" ]; then
+<a id='L70' name='L70'></a>            echo "d$filedate"
+<a id='L71' name='L71'></a>        else
+<a id='L72' name='L72'></a>            echo "D$filedate"
+<a id='L73' name='L73'></a>        fi
+<a id='L74' name='L74'></a>        echo ":$pfile"
+<a id='L75' name='L75'></a>        echo
+<a id='L76' name='L76'></a>    fi
+<a id='L77' name='L77'></a>done
+<a id='L78' name='L78'></a>)
+<a id='L79' name='L79'></a>echo '### 200'
+<a id='L80' name='L80'></a>}
+<a id='L81' name='L81'></a> 
+<a id='L82' name='L82'></a>fish_list_poor_ls ()
+<a id='L83' name='L83'></a>{
+<a id='L84' name='L84'></a>FISH_DIR="$1"
+<a id='L85' name='L85'></a>ls -lan "${FISH_DIR}" 2&gt;/dev/null | grep '^[^cbt]' | (
+<a id='L86' name='L86'></a>while read p l u g s m d y n n2 n3; do
+<a id='L87' name='L87'></a>    if [ -n "$g" ]; then
+<a id='L88' name='L88'></a>        if [ "$m" = "0" ]; then
+<a id='L89' name='L89'></a>            s=$d; m=$y; d=$n; y=$n2; n=$n3
+<a id='L90' name='L90'></a>        else
+<a id='L91' name='L91'></a>            n=$n" "$n2" "$n3
+<a id='L92' name='L92'></a>        fi
+<a id='L93' name='L93'></a>        echo "P$p $u $g"
+<a id='L94' name='L94'></a>        echo "S$s"
+<a id='L95' name='L95'></a>        echo "d$m $d $y"
+<a id='L96' name='L96'></a>        echo ":"$n
+<a id='L97' name='L97'></a>        echo
+<a id='L98' name='L98'></a>    fi
+<a id='L99' name='L99'></a>done
+<a id='L100' name='L100'></a>)
+<a id='L101' name='L101'></a>ls -lan "${FISH_DIR}" 2&gt;/dev/null | grep '^[cb]' | (
+<a id='L102' name='L102'></a>while read p l u g a i m d y n n2 n3; do
+<a id='L103' name='L103'></a>    if [ -n "$g" ]; then
+<a id='L104' name='L104'></a>        if [ "$a" = "0" ]; then
+<a id='L105' name='L105'></a>            a=$m; i=$d; m=$y; d=$n; y=$n2; n=$n3
+<a id='L106' name='L106'></a>        else
+<a id='L107' name='L107'></a>            n=$n" "$n2" "$n3
+<a id='L108' name='L108'></a>        fi
+<a id='L109' name='L109'></a>        echo "P$p $u $g"
+<a id='L110' name='L110'></a>        echo "E$a$i"
+<a id='L111' name='L111'></a>        echo "d$m $d $y"
+<a id='L112' name='L112'></a>        echo ":"$n
+<a id='L113' name='L113'></a>        echo
+<a id='L114' name='L114'></a>    fi
+<a id='L115' name='L115'></a>done
+<a id='L116' name='L116'></a>)
+<a id='L117' name='L117'></a>echo '### 200'
+<a id='L118' name='L118'></a>}
+<a id='L119' name='L119'></a> 
+<a id='L120' name='L120'></a>fish_list_perl ()
+<a id='L121' name='L121'></a>{
+<a id='L122' name='L122'></a>FISH_DIR=$1
+<a id='L123' name='L123'></a>perl -e '
+<a id='L124' name='L124'></a>use strict;
+<a id='L125' name='L125'></a>use POSIX;
+<a id='L126' name='L126'></a>use Fcntl;
+<a id='L127' name='L127'></a>use POSIX ":fcntl_h"; #S_ISLNK was here until 5.6
+<a id='L128' name='L128'></a>import Fcntl ":mode" unless defined &amp;S_ISLNK; #and is now here
+<a id='L129' name='L129'></a>my $dirname = $ARGV[0];
+<a id='L130' name='L130'></a>if (opendir (DIR, $dirname)) {
+<a id='L131' name='L131'></a>while((my $filename = readdir (DIR))){
+<a id='L132' name='L132'></a>    my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = lstat("$dirname/$filename");
+<a id='L133' name='L133'></a>    my $mloctime= strftime("%m-%d-%Y %H:%M", localtime $mtime);
+<a id='L134' name='L134'></a>    my $strutils_shell_escape_regex = s/([;&lt;&gt;\*\|`&amp;\$!#\(\)\[\]\{\}:'\''"\ \\])/\\$1/g;
+<a id='L135' name='L135'></a>    my $e_filename = $filename;
+<a id='L136' name='L136'></a>    $e_filename =~ $strutils_shell_escape_regex;
+<a id='L137' name='L137'></a>    if (S_ISLNK ($mode)) {
+<a id='L138' name='L138'></a>        my $linkname = readlink ("$dirname/$filename");
+<a id='L139' name='L139'></a>        $linkname =~ $strutils_shell_escape_regex;
+<a id='L140' name='L140'></a>        printf("R%o %o $uid.$gid\nS$size\nd$mloctime\n:\"%s\" -&gt; \"%s\"\n\n", S_IMODE($mode), S_IFMT($mode), $e_filename, $linkname);
+<a id='L141' name='L141'></a>    } elsif (S_ISCHR ($mode) || S_ISBLK ($mode)) {
+<a id='L142' name='L142'></a>        my $minor = $rdev % 256;
+<a id='L143' name='L143'></a>        my $major = int( $rdev / 256 );
+<a id='L144' name='L144'></a>        printf("R%o %o $uid.$gid\nE$major,$minor\nd$mloctime\n:\"%s\"\n\n", S_IMODE($mode), S_IFMT($mode), $e_filename);
+<a id='L145' name='L145'></a>    } else {
+<a id='L146' name='L146'></a>        printf("R%o %o $uid.$gid\nS$size\nd$mloctime\n:\"%s\"\n\n", S_IMODE($mode), S_IFMT($mode), $e_filename);
+<a id='L147' name='L147'></a>    }
+<a id='L148' name='L148'></a>}
+<a id='L149' name='L149'></a>    printf("### 200\n");
+<a id='L150' name='L150'></a>    closedir(DIR);
+<a id='L151' name='L151'></a>} else {
+<a id='L152' name='L152'></a>    printf("### 500\n");
+<a id='L153' name='L153'></a>}
+<a id='L154' name='L154'></a>exit 0
+<a id='L155' name='L155'></a>' "/${FISH_DIR}"
+<a id='L156' name='L156'></a>perl_res=$?
+<a id='L157' name='L157'></a>}
+<a id='L158' name='L158'></a> 
+<a id='L159' name='L159'></a>if [ -n "${FISH_HAVE_PERL}" ]; then
+<a id='L160' name='L160'></a>    fish_list_perl "/${FISH_FILENAME}"
+<a id='L161' name='L161'></a>fi
+<a id='L162' name='L162'></a>if [ "${perl_res}" != "0" ]; then
+<a id='L163' name='L163'></a>    if [ -n "${FISH_HAVE_LSQ}" ]; then
+<a id='L164' name='L164'></a>        fish_list_lsq "/${FISH_FILENAME}"
+<a id='L165' name='L165'></a>    elif [ -n "${FISH_HAVE_SED}" ]; then
+<a id='L166' name='L166'></a>        fish_list_sed "/${FISH_FILENAME}"
+<a id='L167' name='L167'></a>    else
+<a id='L168' name='L168'></a>        fish_list_poor_ls "/${FISH_FILENAME}"
+<a id='L169' name='L169'></a>    fi
+<a id='L170' name='L170'></a>fi
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+170 src/vfs/fish/helpers/ls'  /> */</em>
+</body>
+</html>

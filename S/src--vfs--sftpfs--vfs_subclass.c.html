@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/sftpfs/vfs_subclass.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L59'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L191'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--sftpfs.html'>sftpfs</a>/vfs_subclass.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--sftpfs.html'>sftpfs</a>/vfs_subclass.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L191'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/sftpfs/vfs_subclass.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L59' title='Defined at 59.'>sftpfs_cb_is_equal_connection</a></li>
+<li><a href='#L80' title='Defined at 80.'>sftpfs_cb_init_connection</a></li>
+<li><a href='#L105' title='Defined at 105.'>sftpfs_cb_open_connection</a></li>
+<li><a href='#L149' title='Defined at 149.'>sftpfs_cb_close_connection</a></li>
+<li><a href='#L172' title='Defined at 172.'>sftpfs_cb_dir_load</a></li>
+<li><a href='#L191' title='Defined at 191.'>sftpfs_init_subclass</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/* Virtual File System: SFTP file system.</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   The VFS subclass functions</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2011-2021</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Ilia Maslakov &lt;il.smind@gmail.com&gt;, 2011</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Slava Zanko &lt;slavazanko@gmail.com&gt;, 2011, 2012, 2013</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'></em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'></em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;errno.h&gt;
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;stdlib.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;string.h&gt;             <em class='comment'>/* memset() */</em>
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "<a href='lib--vfs--utilvfs.h.html'>lib/vfs/utilvfs.h</a>"
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> "<a href='../I/internal.h.html'>internal.h</a>"
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'>/**</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'> * Callback for checking if connection is equal to existing connection.</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'> *</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'> * @param vpath_element path element with connetion data</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'> * @param super         data with exists connection</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'> * @param vpath         unused</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'> * @param cookie        unused</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'> * @return TRUE if connections is equal, FALSE otherwise</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'> */</em>
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1782 places.'>gboolean</a>
+<a id='L59' name='L59'></a>  59 <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L193' title='Referred from 193 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_is_equal_connection</a> (<strong class='reserved'>const</strong> <a href='../S/lib--vfs--path.h.html#L54' title='Defined at 54 in lib/vfs/path.h.'>vfs_path_element_t</a> * <a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>, <strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L59' title='Defined at 59 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>,
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L80'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L191'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+59 src/vfs/sftpfs/vfs_subclass.c'  /> */</em>
+<a id='L60' name='L60'></a>  60                                <strong class='reserved'>const</strong> <a href='../S/lib--vfs--path.h.html#L31' title='Defined at 31 in lib/vfs/path.h.'>vfs_path_t</a> * <a href='../Y/vpath.html' title='Multiple used in 995 places.'>vpath</a>, <strong class='reserved'>void</strong> *<a href='../Y/cookie.html' title='Multiple used in 17 places.'>cookie</a>)
+<a id='L61' name='L61'></a>  61 <em class='brace'>{</em>
+<a id='L62' name='L62'></a>  62     <strong class='reserved'>int</strong> <a href='../Y/result.html' title='Multiple used in 789 places.'>result</a>;
+<a id='L63' name='L63'></a>  63     <a href='../S/lib--vfs--path.h.html#L54' title='Defined at 54 in lib/vfs/path.h.'>vfs_path_element_t</a> *<a href='../Y/orig_connect_info.html' title='Multiple used in 5 places.'>orig_connect_info</a>;
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65     (<strong class='reserved'>void</strong>) <a href='../Y/vpath.html' title='Multiple used in 995 places.'>vpath</a>;
+<a id='L66' name='L66'></a>  66     (<strong class='reserved'>void</strong>) <a href='../Y/cookie.html' title='Multiple used in 17 places.'>cookie</a>;
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68     <a href='../Y/orig_connect_info.html' title='Multiple used in 5 places.'>orig_connect_info</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>)-&gt;<a href='../Y/original_connection_info.html' title='Multiple used in 4 places.'>original_connection_info</a>;
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <a href='../Y/result.html' title='Multiple used in 789 places.'>result</a> = ((<a href='../Y/g_strcmp0.html' title='Multiple used in 2 places.'>g_strcmp0</a> (<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 152 places.'>host</a>, <a href='../Y/orig_connect_info.html' title='Multiple used in 5 places.'>orig_connect_info</a>-&gt;<a href='../Y/host.html' title='Multiple used in 152 places.'>host</a>) == 0)
+<a id='L71' name='L71'></a>  71               &amp;&amp; (<a href='../Y/g_strcmp0.html' title='Multiple used in 2 places.'>g_strcmp0</a> (<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 185 places.'>user</a>, <a href='../Y/orig_connect_info.html' title='Multiple used in 5 places.'>orig_connect_info</a>-&gt;<a href='../Y/user.html' title='Multiple used in 185 places.'>user</a>) == 0)
+<a id='L72' name='L72'></a>  72               &amp;&amp; (<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/port.html' title='Multiple used in 111 places.'>port</a> == <a href='../Y/orig_connect_info.html' title='Multiple used in 5 places.'>orig_connect_info</a>-&gt;<a href='../Y/port.html' title='Multiple used in 111 places.'>port</a>));
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74     <strong class='reserved'>return</strong> <a href='../Y/result.html' title='Multiple used in 789 places.'>result</a>;
+<a id='L75' name='L75'></a>  75 <em class='brace'>}</em>
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L59' title='Defined at 59 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *
+<a id='L80' name='L80'></a>  80 <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L194' title='Referred from 194 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_init_connection</a> (<strong class='reserved'>struct</strong> <a href='../D/vfs_class.html' title='Multiple defined in 2 places.'>vfs_class</a> *<a href='../Y/me.html' title='Multiple used in 626 places.'>me</a>)
+     <em class='comment'>/* <a href='#L59'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L105'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L191'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+80 src/vfs/sftpfs/vfs_subclass.c'  /> */</em>
+<a id='L81' name='L81'></a>  81 <em class='brace'>{</em>
+<a id='L82' name='L82'></a>  82     <a href='../S/src--vfs--sftpfs--internal.h.html#L56' title='Defined at 56 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/arch.html' title='Multiple used in 93 places.'>arch</a>;
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84     <a href='../Y/arch.html' title='Multiple used in 93 places.'>arch</a> = <a href='../Y/g_new0.html' title='Multiple used in 79 places.'>g_new0</a> (<a href='../S/src--vfs--sftpfs--internal.h.html#L56' title='Defined at 56 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a>, 1);
+<a id='L85' name='L85'></a>  85     <a href='../Y/arch.html' title='Multiple used in 93 places.'>arch</a>-&gt;<a href='../Y/base.html' title='Multiple used in 107 places.'>base</a>.<a href='../Y/me.html' title='Multiple used in 626 places.'>me</a> = <a href='../Y/me.html' title='Multiple used in 626 places.'>me</a>;
+<a id='L86' name='L86'></a>  86     <a href='../Y/arch.html' title='Multiple used in 93 places.'>arch</a>-&gt;<a href='../Y/base.html' title='Multiple used in 107 places.'>base</a>.<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a> = <a href='../Y/g_strdup.html' title='Multiple used in 443 places.'>g_strdup</a> (<a href='../S/lib--global.h.html#L127' title='Defined at 127 in lib/global.h.'>PATH_SEP_STR</a>);
+<a id='L87' name='L87'></a>  87     <a href='../Y/arch.html' title='Multiple used in 93 places.'>arch</a>-&gt;<a href='../Y/auth_type.html' title='Multiple used in 8 places.'>auth_type</a> = <a href='../D/NONE.html' title='Multiple defined in 3 places.'>NONE</a>;
+<a id='L88' name='L88'></a>  88     <a href='../Y/arch.html' title='Multiple used in 93 places.'>arch</a>-&gt;<a href='../Y/config_auth_type.html' title='Multiple used in 8 places.'>config_auth_type</a> = <a href='../D/NONE.html' title='Multiple defined in 3 places.'>NONE</a>;
+<a id='L89' name='L89'></a>  89     <a href='../Y/arch.html' title='Multiple used in 93 places.'>arch</a>-&gt;<a href='../Y/socket_handle.html' title='Multiple used in 11 places.'>socket_handle</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>;
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <strong class='reserved'>return</strong> <a href='../S/lib--vfs--xdirentry.h.html#L39' title='Defined at 39 in lib/vfs/xdirentry.h.'>VFS_SUPER</a> (<a href='../Y/arch.html' title='Multiple used in 93 places.'>arch</a>);
+<a id='L92' name='L92'></a>  92 <em class='brace'>}</em>
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'>/**</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'> * Callback for opening new connection.</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'> *</em>
+<a id='L98' name='L98'></a>  98 <em class='comment'> * @param super         connection data</em>
+<a id='L99' name='L99'></a>  99 <em class='comment'> * @param vpath         unused</em>
+<a id='L100' name='L100'></a> 100 <em class='comment'> * @param vpath_element path element with connetion data</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'> * @return 0 if success, -1 otherwise</em>
+<a id='L102' name='L102'></a> 102 <em class='comment'> */</em>
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L105' name='L105'></a> 105 <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L195' title='Referred from 195 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_open_connection</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L59' title='Defined at 59 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>,
+     <em class='comment'>/* <a href='#L80'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L149'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L191'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+105 src/vfs/sftpfs/vfs_subclass.c'  /> */</em>
+<a id='L106' name='L106'></a> 106                            <strong class='reserved'>const</strong> <a href='../S/lib--vfs--path.h.html#L31' title='Defined at 31 in lib/vfs/path.h.'>vfs_path_t</a> * <a href='../Y/vpath.html' title='Multiple used in 995 places.'>vpath</a>, <strong class='reserved'>const</strong> <a href='../S/lib--vfs--path.h.html#L54' title='Defined at 54 in lib/vfs/path.h.'>vfs_path_element_t</a> * <a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>)
+<a id='L107' name='L107'></a> 107 <em class='brace'>{</em>
+<a id='L108' name='L108'></a> 108     <a href='../Y/GError.html' title='Multiple used in 181 places.'>GError</a> *<a href='../Y/mcerror.html' title='Multiple used in 375 places.'>mcerror</a> = <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L109' name='L109'></a> 109     <a href='../S/src--vfs--sftpfs--internal.h.html#L56' title='Defined at 56 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 88 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>);
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>int</strong> <a href='../Y/ret_value.html' title='Multiple used in 51 places.'>ret_value</a>;
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112     (<strong class='reserved'>void</strong>) <a href='../Y/vpath.html' title='Multiple used in 995 places.'>vpath</a>;
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <strong class='reserved'>if</strong> (<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 152 places.'>host</a> == <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a> || *<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 152 places.'>host</a> == '\0')
+<a id='L115' name='L115'></a> 115     <em class='brace'>{</em>
+<a id='L116' name='L116'></a> 116         <a href='../S/lib--vfs--vfs.c.html#L617' title='Defined at 617 in lib/vfs/vfs.c.'>vfs_print_message</a> ("%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: Invalid host name."));
+<a id='L117' name='L117'></a> 117         <a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>-&gt;<a href='../Y/verrno.html' title='Multiple used in 36 places.'>verrno</a> = <a href='../Y/EPERM.html' title='Multiple used in 10 places.'>EPERM</a>;
+<a id='L118' name='L118'></a> 118         <strong class='reserved'>return</strong> -1;
+<a id='L119' name='L119'></a> 119     <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121     <a href='../Y/sftpfs_super.html' title='Multiple used in 88 places.'>sftpfs_super</a>-&gt;<a href='../Y/original_connection_info.html' title='Multiple used in 4 places.'>original_connection_info</a> = <a href='../S/lib--vfs--path.c.html#L849' title='Defined at 849 in lib/vfs/path.c.'>vfs_path_element_clone</a> (<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>);
+<a id='L122' name='L122'></a> 122     <a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 571 places.'>path_element</a> = <a href='../S/lib--vfs--path.c.html#L849' title='Defined at 849 in lib/vfs/path.c.'>vfs_path_element_clone</a> (<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>);
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124     <a href='../S/src--vfs--sftpfs--config_parser.c.html#L353' title='Defined at 353 in src/vfs/sftpfs/config_parser.c.'>sftpfs_fill_connection_data_from_config</a> (<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>, &amp;<a href='../Y/mcerror.html' title='Multiple used in 375 places.'>mcerror</a>);
+<a id='L125' name='L125'></a> 125     <strong class='reserved'>if</strong> (<a href='../S/lib--widget--wtools.c.html#L443' title='Defined at 443 in lib/widget/wtools.c.'>mc_error_message</a> (&amp;<a href='../Y/mcerror.html' title='Multiple used in 375 places.'>mcerror</a>, &amp;<a href='../Y/ret_value.html' title='Multiple used in 51 places.'>ret_value</a>))
+<a id='L126' name='L126'></a> 126     <em class='brace'>{</em>
+<a id='L127' name='L127'></a> 127         <a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>-&gt;<a href='../Y/verrno.html' title='Multiple used in 36 places.'>verrno</a> = <a href='../Y/ret_value.html' title='Multiple used in 51 places.'>ret_value</a>;
+<a id='L128' name='L128'></a> 128         <strong class='reserved'>return</strong> -1;
+<a id='L129' name='L129'></a> 129     <em class='brace'>}</em>
+<a id='L130' name='L130'></a> 130 
+<a id='L131' name='L131'></a> 131     <a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>-&gt;<a href='../Y/root.html' title='Multiple used in 75 places.'>root</a> =
+<a id='L132' name='L132'></a> 132         <a href='../S/lib--vfs--direntry.c.html#L883' title='Defined at 883 in lib/vfs/direntry.c.'>vfs_s_new_inode</a> (<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>, <a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>,
+<a id='L133' name='L133'></a> 133                          <a href='../S/lib--vfs--direntry.c.html#L1006' title='Defined at 1006 in lib/vfs/direntry.c.'>vfs_s_default_stat</a> (<a href='../Y/vpath_element.html' title='Multiple used in 51 places.'>vpath_element</a>-&gt;<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>, <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L1377' title='Defined at 1377 in src/vfs/smbfs/helpers/include/smb.h.'>S_IFDIR</a> | 0755));
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135     <a href='../Y/ret_value.html' title='Multiple used in 51 places.'>ret_value</a> = <a href='../S/src--vfs--sftpfs--connection.c.html#L444' title='Defined at 444 in src/vfs/sftpfs/connection.c.'>sftpfs_open_connection</a> (<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>, &amp;<a href='../Y/mcerror.html' title='Multiple used in 375 places.'>mcerror</a>);
+<a id='L136' name='L136'></a> 136     <a href='../S/lib--widget--wtools.c.html#L443' title='Defined at 443 in lib/widget/wtools.c.'>mc_error_message</a> (&amp;<a href='../Y/mcerror.html' title='Multiple used in 375 places.'>mcerror</a>, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>);
+<a id='L137' name='L137'></a> 137     <strong class='reserved'>return</strong> <a href='../Y/ret_value.html' title='Multiple used in 51 places.'>ret_value</a>;
+<a id='L138' name='L138'></a> 138 <em class='brace'>}</em>
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L141' name='L141'></a> 141 <em class='comment'>/**</em>
+<a id='L142' name='L142'></a> 142 <em class='comment'> * Callback for closing connection.</em>
+<a id='L143' name='L143'></a> 143 <em class='comment'> *</em>
+<a id='L144' name='L144'></a> 144 <em class='comment'> * @param me    unused</em>
+<a id='L145' name='L145'></a> 145 <em class='comment'> * @param super connection data</em>
+<a id='L146' name='L146'></a> 146 <em class='comment'> */</em>
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L149' name='L149'></a> 149 <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L196' title='Referred from 196 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_close_connection</a> (<strong class='reserved'>struct</strong> <a href='../D/vfs_class.html' title='Multiple defined in 2 places.'>vfs_class</a> *<a href='../Y/me.html' title='Multiple used in 626 places.'>me</a>, <strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L59' title='Defined at 59 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>)
+     <em class='comment'>/* <a href='#L105'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L172'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L191'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+149 src/vfs/sftpfs/vfs_subclass.c'  /> */</em>
+<a id='L150' name='L150'></a> 150 <em class='brace'>{</em>
+<a id='L151' name='L151'></a> 151     <a href='../Y/GError.html' title='Multiple used in 181 places.'>GError</a> *<a href='../Y/mcerror.html' title='Multiple used in 375 places.'>mcerror</a> = <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L152' name='L152'></a> 152 
+<a id='L153' name='L153'></a> 153     (<strong class='reserved'>void</strong>) <a href='../Y/me.html' title='Multiple used in 626 places.'>me</a>;
+<a id='L154' name='L154'></a> 154     <a href='../S/src--vfs--sftpfs--connection.c.html#L522' title='Defined at 522 in src/vfs/sftpfs/connection.c.'>sftpfs_close_connection</a> (<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>, "Normal Shutdown", &amp;<a href='../Y/mcerror.html' title='Multiple used in 375 places.'>mcerror</a>);
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <a href='../S/lib--vfs--path.c.html#L882' title='Defined at 882 in lib/vfs/path.c.'>vfs_path_element_free</a> (<a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 613 places.'>super</a>)-&gt;<a href='../Y/original_connection_info.html' title='Multiple used in 4 places.'>original_connection_info</a>);
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <a href='../S/lib--widget--wtools.c.html#L443' title='Defined at 443 in lib/widget/wtools.c.'>mc_error_message</a> (&amp;<a href='../Y/mcerror.html' title='Multiple used in 375 places.'>mcerror</a>, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>);
+<a id='L159' name='L159'></a> 159 <em class='brace'>}</em>
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L162' name='L162'></a> 162 <em class='comment'>/**</em>
+<a id='L163' name='L163'></a> 163 <em class='comment'> * Callback for getting directory content.</em>
+<a id='L164' name='L164'></a> 164 <em class='comment'> *</em>
+<a id='L165' name='L165'></a> 165 <em class='comment'> * @param me          unused</em>
+<a id='L166' name='L166'></a> 166 <em class='comment'> * @param dir         unused</em>
+<a id='L167' name='L167'></a> 167 <em class='comment'> * @param remote_path unused</em>
+<a id='L168' name='L168'></a> 168 <em class='comment'> * @return always 0</em>
+<a id='L169' name='L169'></a> 169 <em class='comment'> */</em>
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L172' name='L172'></a> 172 <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L198' title='Referred from 198 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_dir_load</a> (<strong class='reserved'>struct</strong> <a href='../D/vfs_class.html' title='Multiple defined in 2 places.'>vfs_class</a> *<a href='../Y/me.html' title='Multiple used in 626 places.'>me</a>, <strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L84' title='Defined at 84 in lib/vfs/xdirentry.h.'>vfs_s_inode</a> *<a href='../Y/dir.html' title='Multiple used in 458 places.'>dir</a>, <strong class='reserved'>char</strong> *<a href='../Y/remote_path.html' title='Multiple used in 40 places.'>remote_path</a>)
+     <em class='comment'>/* <a href='#L149'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L191'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L191'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+172 src/vfs/sftpfs/vfs_subclass.c'  /> */</em>
+<a id='L173' name='L173'></a> 173 <em class='brace'>{</em>
+<a id='L174' name='L174'></a> 174     (<strong class='reserved'>void</strong>) <a href='../Y/me.html' title='Multiple used in 626 places.'>me</a>;
+<a id='L175' name='L175'></a> 175     (<strong class='reserved'>void</strong>) <a href='../Y/dir.html' title='Multiple used in 458 places.'>dir</a>;
+<a id='L176' name='L176'></a> 176     (<strong class='reserved'>void</strong>) <a href='../Y/remote_path.html' title='Multiple used in 40 places.'>remote_path</a>;
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>return</strong> 0;
+<a id='L179' name='L179'></a> 179 <em class='brace'>}</em>
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L182' name='L182'></a> 182 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L183' name='L183'></a> 183 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L184' name='L184'></a> 184 <em class='comment'>/**</em>
+<a id='L185' name='L185'></a> 185 <em class='comment'> * Initialization of VFS subclass structure.</em>
+<a id='L186' name='L186'></a> 186 <em class='comment'> *</em>
+<a id='L187' name='L187'></a> 187 <em class='comment'> * @return VFS subclass structure.</em>
+<a id='L188' name='L188'></a> 188 <em class='comment'> */</em>
+<a id='L189' name='L189'></a> 189 
+<a id='L190' name='L190'></a> 190 <strong class='reserved'>void</strong>
+<a id='L191' name='L191'></a> 191 <a href='../R/sftpfs_init_subclass.html' title='Multiple referred from 2 places.'>sftpfs_init_subclass</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L172'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+191 src/vfs/sftpfs/vfs_subclass.c'  /> */</em>
+<a id='L192' name='L192'></a> 192 <em class='brace'>{</em>
+<a id='L193' name='L193'></a> 193     <a href='../Y/sftpfs_subclass.html' title='Multiple used in 11 places.'>sftpfs_subclass</a>.<a href='../Y/archive_same.html' title='Multiple used in 9 places.'>archive_same</a> = <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L59' title='Defined at 59 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_is_equal_connection</a>;
+<a id='L194' name='L194'></a> 194     <a href='../Y/sftpfs_subclass.html' title='Multiple used in 11 places.'>sftpfs_subclass</a>.<a href='../Y/new_archive.html' title='Multiple used in 8 places.'>new_archive</a> = <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L80' title='Defined at 80 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_init_connection</a>;
+<a id='L195' name='L195'></a> 195     <a href='../Y/sftpfs_subclass.html' title='Multiple used in 11 places.'>sftpfs_subclass</a>.<a href='../Y/open_archive.html' title='Multiple used in 9 places.'>open_archive</a> = <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L105' title='Defined at 105 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_open_connection</a>;
+<a id='L196' name='L196'></a> 196     <a href='../Y/sftpfs_subclass.html' title='Multiple used in 11 places.'>sftpfs_subclass</a>.<a href='../Y/free_archive.html' title='Multiple used in 8 places.'>free_archive</a> = <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L149' title='Defined at 149 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_close_connection</a>;
+<a id='L197' name='L197'></a> 197     <a href='../Y/sftpfs_subclass.html' title='Multiple used in 11 places.'>sftpfs_subclass</a>.<a href='../Y/fh_new.html' title='Multiple used in 6 places.'>fh_new</a> = <a href='../S/src--vfs--sftpfs--file.c.html#L104' title='Defined at 104 in src/vfs/sftpfs/file.c.'>sftpfs_fh_new</a>;
+<a id='L198' name='L198'></a> 198     <a href='../Y/sftpfs_subclass.html' title='Multiple used in 11 places.'>sftpfs_subclass</a>.<a href='../Y/dir_load.html' title='Multiple used in 5 places.'>dir_load</a> = <a href='../S/src--vfs--sftpfs--vfs_subclass.c.html#L172' title='Defined at 172 in src/vfs/sftpfs/vfs_subclass.c.'>sftpfs_cb_dir_load</a>;
+<a id='L199' name='L199'></a> 199 <em class='brace'>}</em>
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L191'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+201 src/vfs/sftpfs/vfs_subclass.c'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/README.it</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/README.it</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/README.it</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/README.it'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>         Scrivere scripts per il vfs esterno del Midnight Commander
+<a id='L2' name='L2'></a>        (Traduzione a cura di Marco Ciampa (C) GNU 2000 - it@li.org)
+<a id='L3' name='L3'></a> 
+<a id='L4' name='L4'></a>NOTA IMPORTANTE: ci possono essere ancora alcuni bachi in extfs. 
+<a id='L5' name='L5'></a>Buon divertimento.
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a>A cominciare dalla versione 3.1 il Midnight Commander comprende il
+<a id='L8' name='L8'></a>cosiddetto extfs, che altri non è che un filesystem virtuale. Questo
+<a id='L9' name='L9'></a>sistema consente di creare molto semplicemente nuovi filesystem virtuali
+<a id='L10' name='L10'></a>per MC della GNU.
+<a id='L11' name='L11'></a> 
+<a id='L12' name='L12'></a>Tale lavoro è composto di due parti fondamentali:
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>Modifica di $(libdir)/extfs/extfs.ini.
+<a id='L15' name='L15'></a>Creazione di uno script shell/programma per gestire le richieste.
+<a id='L16' name='L16'></a>(Nota: $(libdir) dovrebbe essere sostituita con il percorso libdir 
+<a id='L17' name='L17'></a>corrente memorizzato quando configurato o compilato, come
+<a id='L18' name='L18'></a>/usr/local/lib/mc o /usr/lib/mc).
+<a id='L19' name='L19'></a> 
+<a id='L20' name='L20'></a>La prima è molto facile:
+<a id='L21' name='L21'></a>Assegnate un suffisso vfs. Per esempio, se avete un file .zip e vorreste
+<a id='L22' name='L22'></a>vedere cosa c'è dentro di esso, il percorso sarebbe
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>/qualsiasipercorso/my.zip/uzip://unpercorso/...
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>Poi basta aggiungere una linea nel file extfs.ini contenente solo quella
+<a id='L27' name='L27'></a>estensione. Se il vostro vfs non richiede file di lavoro, aggiungete
+<a id='L28' name='L28'></a>':' alla fine del nome.
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>In questo esempio, .zip è il suffisso, ma è possibile chiamare vfs 'uzip'.
+<a id='L31' name='L31'></a>Perché? Beh, quello che fa vfs è essenzialmente UNzip. UN è troppo lungo
+<a id='L32' name='L32'></a>così è stato scelto U. Notare che in futuro un filesystem come zip potrà
+<a id='L33' name='L33'></a>esistere: prenderà l'intero albero e creerà un file zip da esso. Così
+<a id='L34' name='L34'></a>/usr/zip:// sarà un file zip contenente l'intero albero /usr.
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>La seconda potrebbe richiedere un po' di conoscenza di programmazione shell/c:
+<a id='L37' name='L37'></a>si deve creare un prefisso di programma (con i permessi di esecuzione) in
+<a id='L38' name='L38'></a>$(libdir)/extfs (nel nostro esempio $(libdir)/extfs/uzip).
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a> 
+<a id='L41' name='L41'></a>* Comandi che dovrebbero essere implementati nello script shell
+<a id='L42' name='L42'></a>---------------------------------------------------------------
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>Ritorno di zero dallo script a completamento avvenuto del comando, 
+<a id='L45' name='L45'></a>altrimenti diverso da zero per fallimento o comando non supportato.
+<a id='L46' name='L46'></a> 
+<a id='L47' name='L47'></a>$libdir/extfs/prefix command [arguments]
+<a id='L48' name='L48'></a> 
+<a id='L49' name='L49'></a>* Comando: list nomearchivio
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>Questo comando dovrebbe elencare il contenuto completo dell'archivio nel seguente 
+<a id='L52' name='L52'></a>formato (elenco ls -l un po' modificato)
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a>AAAAAAA NNN OOOOOOOO GGGGGGGG SSSSSSSS DATETIME [PATH/]FILENAME [-&gt; [PATH/]FILENAME[/]]]
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a>dove (le cose in [] sono opzionali):
+<a id='L57' name='L57'></a> 
+<a id='L58' name='L58'></a>AAAAAAA  è la stringa permessi come in ls -l
+<a id='L59' name='L59'></a>NNN      è il numero di collegamenti
+<a id='L60' name='L60'></a>OOOOOOOO è il proprietario (sia UID che nome)
+<a id='L61' name='L61'></a>GGGGGGGG è il gruppo (sia GID che nome)
+<a id='L62' name='L62'></a>SSSSSSSS è la dimensione del file
+<a id='L63' name='L63'></a>FILENAME è il nome del file
+<a id='L64' name='L64'></a>PATH     è il percorso dalla radice dell'archivio senza la slash iniziale (/)
+<a id='L65' name='L65'></a>DATETIME ha uno dei seguenti formati:
+<a id='L66' name='L66'></a>            Mon DD hh:mm, Mon DD YYYY, Mon DD YYYY hh:mm, MM-DD-YY hh:mm
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a>            dove Mon è il nome del mese a tre caratteri in inglese, DD giorno
+<a id='L69' name='L69'></a>            1-31, MM mese 01-12, YY anno a due cifre, YYYY anno a quattro cifre, 
+<a id='L70' name='L70'></a>            hh ore e mm minuti.
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>Se la -&gt; [PATH/]FILENAME parte è presente, significa:
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>Se i permessi cominciano con l (elle) allora è il nome al quale il 
+<a id='L75' name='L75'></a>collegamento simbolico punta. Se questo percorso comincia con un prefisso
+<a id='L76' name='L76'></a>vfs di MC allora è un collegamento simbolico verso l'altro filesystem virtuale
+<a id='L77' name='L77'></a>(se si vuole specificare un percorso dalla radice locale, si usa local:/percorso
+<a id='L78' name='L78'></a>invece di /percorso perchè /percorso significa dalla radice dell'archivio
+<a id='L79' name='L79'></a>elencato).
+<a id='L80' name='L80'></a> 
+<a id='L81' name='L81'></a>Se i permessi non cominciano con l ma un numero di collegamenti maggiore di
+<a id='L82' name='L82'></a>uno allora significa che questo file dovrebbe essere collegato 'hard' con
+<a id='L83' name='L83'></a>l'altro file. 
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>* Comando: copyout nomearchivio nomefilememorizzato estraea
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a>Questo dovrebbe estrarre dall'archivio nomearchivio nel file di
+<a id='L88' name='L88'></a>nome nomefilememorizzato (possibilmente con percorso se non collocato
+<a id='L89' name='L89'></a>nella radice dell'archivio [questo è sbagliato. l'attuale extfs toglie il
+<a id='L90' name='L90'></a>percorso! -- pavel@ucw.cz]) nel file estraea.
+<a id='L91' name='L91'></a> 
+<a id='L92' name='L92'></a>* Comando: copyin nomearchive nomefilememorizzato filesorgente
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>Questo dovrebbe aggiungere a nomearchivio il filesorgente con
+<a id='L95' name='L95'></a>nome nomefilememorizzato nell'archivio.
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a>Nota importante: nomearchivio negli esempi suddetti può non avere
+<a id='L98' name='L98'></a>l'estensione che ci si aspetta, come potrebbe succedere che il nomearchivio
+<a id='L99' name='L99'></a>sia qualcosa del tipo /tmp/f43513254 o qualsiasi altra cosa.
+<a id='L100' name='L100'></a>Ad alcuni archiviatori non piace ciò per cui dovrò trovare qualche
+<a id='L101' name='L101'></a>artifizio.
+<a id='L102' name='L102'></a> 
+<a id='L103' name='L103'></a>* Comando: rm nomearchivio nomefilememorizzato
+<a id='L104' name='L104'></a> 
+<a id='L105' name='L105'></a>Questo dovrebbe rimuovere il nomefilememorizzato da nomearchivio.
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>* Comando: mkdir nomearchivio nomedir
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a>Questo dovrebbe creare una nuova directory chiamata nomedir dentro
+<a id='L110' name='L110'></a>nomearchivio.
+<a id='L111' name='L111'></a> 
+<a id='L112' name='L112'></a>* Comando: rmdir nomearchivio nomedir
+<a id='L113' name='L113'></a> 
+<a id='L114' name='L114'></a>Questo dovrebbe rimuovere un'esistente directory nomedir. Se la directory
+<a id='L115' name='L115'></a>non è vuota, mc la cancellerà ricorsivamente (possibilmente avvertendo).
+<a id='L116' name='L116'></a> 
+<a id='L117' name='L117'></a>* Comando: run
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>Nondocumentato :-)
+<a id='L120' name='L120'></a> 
+<a id='L121' name='L121'></a>---------------------------------------------------------
+<a id='L122' name='L122'></a> 
+<a id='L123' name='L123'></a>Non dimenticate di impostare questo file come eseguibile (con chmod 755 
+<a id='L124' name='L124'></a>QuestoFile per esempio)
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a>Per una struttura generale di eseguibile vedere i filesystems simili
+<a id='L127' name='L127'></a>ai vostri.
+<a id='L128' name='L128'></a> 
+<a id='L129' name='L129'></a>---------------------------------------------------------
+<a id='L130' name='L130'></a> 
+<a id='L131' name='L131'></a>Se nel costruire queste routine verranno fatti degli errori mc non mostrerà
+<a id='L132' name='L132'></a>righe di stampa maldefinite. Questo può fuorviare il programmatore nella
+<a id='L133' name='L133'></a>ricerca dei difetti. Visto che questa routine è uno script shell eseguibile
+<a id='L134' name='L134'></a>essa può essere lanciata dalla riga di comando indipendentemente da mc ed il
+<a id='L135' name='L135'></a>risultato mostrato in console o redirezionato in un file.
+<a id='L136' name='L136'></a> 
+<a id='L137' name='L137'></a>* Messa in uso
+<a id='L138' name='L138'></a>----------------------------------------------------------
+<a id='L139' name='L139'></a>Il file .mc.ext nella directory home e nella directory utente di mc 
+<a id='L140' name='L140'></a>(normalmente /etc/mc), contiene le istruzioni per le operazioni 
+<a id='L141' name='L141'></a>sui files a seconda dell'estensione. E' ben documentato in altri file in 
+<a id='L142' name='L142'></a>questa distribuzione perciò qui si darà solo qualche nota specificatamente
+<a id='L143' name='L143'></a>sull'uso del File System Virtuale che si è appena creato.
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a>Vi sono voci in .mc.ext che definiscono alcune operazioni che possono essere
+<a id='L146' name='L146'></a>svolte su un file da un pannello di mc. Tipicamente sono annotate con un
+<a id='L147' name='L147'></a>simbolo di cancelletto ed un'estensione come questa:
+<a id='L148' name='L148'></a> 
+<a id='L149' name='L149'></a># zip
+<a id='L150' name='L150'></a> 
+<a id='L151' name='L151'></a>Vi deve essere un modo per trovare il file per estensione così la
+<a id='L152' name='L152'></a>prossima linea fa ciò. Essenzialmente dichiara: "identifica la stringa ".zip"
+<a id='L153' name='L153'></a>o (|) ".ZIP" alla fine del nome del file:
+<a id='L154' name='L154'></a> 
+<a id='L155' name='L155'></a>regex/\.(zip|ZIP)$
+<a id='L156' name='L156'></a> 
+<a id='L157' name='L157'></a>Le operazioni seguono. Esse devono essere indentate da almeno uno spazio oppure
+<a id='L158' name='L158'></a>un tabulatore. In particolare l'operazione di apertura  (Open) userà ora il nuovo
+<a id='L159' name='L159'></a>file system virtuale per fare cd su di esso come in questo:
+<a id='L160' name='L160'></a> 
+<a id='L161' name='L161'></a>   Open=%cd zip:%d/%p
+<a id='L162' name='L162'></a> 
+<a id='L163' name='L163'></a>Questa è la linea usata quando un file viene evidenziato in un pannello e
+<a id='L164' name='L164'></a>l'utente preme &lt;Invio&gt;. Il contenuto dell'archivio dovrebbe essere come
+<a id='L165' name='L165'></a>se si fosse in una vera directory e potesse essere manipolata in tal modo.
+<a id='L166' name='L166'></a>Il resto della linea riguarda l'uso del tasto di Vista F3:
+<a id='L167' name='L167'></a> 
+<a id='L168' name='L168'></a>   View=%view{ascii} unzip -v %f
+<a id='L169' name='L169'></a> 
+<a id='L170' name='L170'></a>con un'icona opzionale per X:
+<a id='L171' name='L171'></a> 
+<a id='L172' name='L172'></a>   Icon=zip.xpm
+<a id='L173' name='L173'></a> 
+<a id='L174' name='L174'></a>e con un'operazione per estrarre il contenuto del file preso da una selezione
+<a id='L175' name='L175'></a>file a menu:
+<a id='L176' name='L176'></a> 
+<a id='L177' name='L177'></a>   Extract=unzip %f '*'
+<a id='L178' name='L178'></a> 
+<a id='L179' name='L179'></a>Questo è solo un esempio. La voce corrente per i file .zip ha una selezione
+<a id='L180' name='L180'></a>menu di 'Unzip' che potrebbe essere usata al posto di 'Extract'. Cosa va qui
+<a id='L181' name='L181'></a>dipende da quali voci si hanno o si aggiungono al menu di sistema ed inoltre
+<a id='L182' name='L182'></a>c'è ancora un particolare. La somma di questo è nella voce .mc.ext:
+<a id='L183' name='L183'></a> 
+<a id='L184' name='L184'></a># zip
+<a id='L185' name='L185'></a>regex/\.(zip|ZIP)$
+<a id='L186' name='L186'></a>   Open=%cd %p/uzip://
+<a id='L187' name='L187'></a>   View=%view{ascii} unzip -v %f
+<a id='L188' name='L188'></a>   Icon=zip.xpm
+<a id='L189' name='L189'></a>   Extract=unzip %f '*'
+<a id='L190' name='L190'></a> 
+<a id='L191' name='L191'></a>Aggiungere una voce come questa al file .mc.ext nella directory home dell'utente.
+<a id='L192' name='L192'></a>Se volete che altri la vedano, aggiungetela nel file mc.ext nella directory di
+<a id='L193' name='L193'></a>sistema di mc spesso in /etc/mc/mc.ext. Notare che questo file non
+<a id='L194' name='L194'></a>ha un punto iniziale.
+<a id='L195' name='L195'></a> 
+<a id='L196' name='L196'></a>Una volta che tutto questo è fatto e le cose sono al loro posto, uscite da mc
+<a id='L197' name='L197'></a>se lo state usando e fatelo ripartire dimodoche possa prendere le nuove
+<a id='L198' name='L198'></a>impostazioni.
+<a id='L199' name='L199'></a> 
+<a id='L200' name='L200'></a>Questo è tutto. La parte più dura è fare una funzione di elenco che ordini
+<a id='L201' name='L201'></a>l'uscita di un comando di listato di sistema e lo converta in un formato che
+<a id='L202' name='L202'></a>permetta ad mc di poterlo usare. Attualmente viene usato awk (o gawk) perché
+<a id='L203' name='L203'></a>quasi tutti i sistemi ne sono provvisti. Si può usare anche un'altro linguaggio
+<a id='L204' name='L204'></a>di scripting come il perl, se è disponibile.
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+204 src/vfs/extfs/helpers/README.it'  /> */</em>
+</body>
+</html>

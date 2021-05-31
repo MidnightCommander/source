@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>fs</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L97'>fs</a>                 97 src/diffviewer/ydiff.c #define FILE_DIRTY(fs) \</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L100'>fs</a>                100 src/diffviewer/ydiff.c     (fs)-&gt;pos = 0; \</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L101'>fs</a>                101 src/diffviewer/ydiff.c     (fs)-&gt;len = 0;  \</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L196'>fs</a>                196 src/diffviewer/ydiff.c     FBUF *fs;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L201'>fs</a>                201 src/diffviewer/ydiff.c     fs = g_try_malloc (sizeof (FBUF));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L202'>fs</a>                202 src/diffviewer/ydiff.c     if (fs == NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L205'>fs</a>                205 src/diffviewer/ydiff.c     fs-&gt;buf = g_try_malloc (FILE_READ_BUF);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L206'>fs</a>                206 src/diffviewer/ydiff.c     if (fs-&gt;buf == NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L208'>fs</a>                208 src/diffviewer/ydiff.c         g_free (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L212'>fs</a>                212 src/diffviewer/ydiff.c     fs-&gt;fd = fd;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L213'>fs</a>                213 src/diffviewer/ydiff.c     FILE_DIRTY (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L214'>fs</a>                214 src/diffviewer/ydiff.c     fs-&gt;flags = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L215'>fs</a>                215 src/diffviewer/ydiff.c     fs-&gt;data = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L217'>fs</a>                217 src/diffviewer/ydiff.c     return fs;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L230'>fs</a>                230 src/diffviewer/ydiff.c f_free (FBUF * fs)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L234'>fs</a>                234 src/diffviewer/ydiff.c     if (fs-&gt;flags &amp; FILE_FLAG_TEMP)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L236'>fs</a>                236 src/diffviewer/ydiff.c         rv = unlink (fs-&gt;data);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L237'>fs</a>                237 src/diffviewer/ydiff.c         g_free (fs-&gt;data);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L239'>fs</a>                239 src/diffviewer/ydiff.c     g_free (fs-&gt;buf);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L240'>fs</a>                240 src/diffviewer/ydiff.c     g_free (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L256'>fs</a>                256 src/diffviewer/ydiff.c     FBUF *fs;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L258'>fs</a>                258 src/diffviewer/ydiff.c     fs = f_dopen (0);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L259'>fs</a>                259 src/diffviewer/ydiff.c     if (fs == NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L262'>fs</a>                262 src/diffviewer/ydiff.c     fd = open_temp (&amp;fs-&gt;data);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L265'>fs</a>                265 src/diffviewer/ydiff.c         f_free (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L269'>fs</a>                269 src/diffviewer/ydiff.c     fs-&gt;fd = fd;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L270'>fs</a>                270 src/diffviewer/ydiff.c     fs-&gt;flags = FILE_FLAG_TEMP;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L271'>fs</a>                271 src/diffviewer/ydiff.c     return fs;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L289'>fs</a>                289 src/diffviewer/ydiff.c     FBUF *fs;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L291'>fs</a>                291 src/diffviewer/ydiff.c     fs = f_dopen (0);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L292'>fs</a>                292 src/diffviewer/ydiff.c     if (fs == NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L298'>fs</a>                298 src/diffviewer/ydiff.c         f_free (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L302'>fs</a>                302 src/diffviewer/ydiff.c     fs-&gt;fd = fd;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L303'>fs</a>                303 src/diffviewer/ydiff.c     return fs;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L321'>fs</a>                321 src/diffviewer/ydiff.c f_gets (char *buf, size_t size, FBUF * fs)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L330'>fs</a>                330 src/diffviewer/ydiff.c         for (i = fs-&gt;pos; j &lt; size &amp;&amp; i &lt; fs-&gt;len &amp;&amp; !stop; i++, j++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L332'>fs</a>                332 src/diffviewer/ydiff.c             buf[j] = fs-&gt;buf[i];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L336'>fs</a>                336 src/diffviewer/ydiff.c         fs-&gt;pos = i;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L341'>fs</a>                341 src/diffviewer/ydiff.c         fs-&gt;pos = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L342'>fs</a>                342 src/diffviewer/ydiff.c         fs-&gt;len = read (fs-&gt;fd, fs-&gt;buf, FILE_READ_BUF);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L344'>fs</a>                344 src/diffviewer/ydiff.c     while (fs-&gt;len &gt; 0);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L363'>fs</a>                363 src/diffviewer/ydiff.c f_seek (FBUF * fs, off_t off, int whence)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L367'>fs</a>                367 src/diffviewer/ydiff.c     if (fs-&gt;len &amp;&amp; whence != SEEK_END)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L369'>fs</a>                369 src/diffviewer/ydiff.c         rv = lseek (fs-&gt;fd, 0, SEEK_CUR);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L375'>fs</a>                375 src/diffviewer/ydiff.c                 off += rv - fs-&gt;len + fs-&gt;pos;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L377'>fs</a>                377 src/diffviewer/ydiff.c             if (off - rv &gt;= -fs-&gt;len &amp;&amp; off - rv &lt;= 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L379'>fs</a>                379 src/diffviewer/ydiff.c                 fs-&gt;pos = fs-&gt;len + off - rv;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L385'>fs</a>                385 src/diffviewer/ydiff.c     rv = lseek (fs-&gt;fd, off, whence);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L387'>fs</a>                387 src/diffviewer/ydiff.c         FILE_DIRTY (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L402'>fs</a>                402 src/diffviewer/ydiff.c f_reset (FBUF * fs)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L406'>fs</a>                406 src/diffviewer/ydiff.c     rv = lseek (fs-&gt;fd, 0, SEEK_SET);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L408'>fs</a>                408 src/diffviewer/ydiff.c         FILE_DIRTY (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L426'>fs</a>                426 src/diffviewer/ydiff.c f_write (FBUF * fs, const char *buf, size_t size)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L430'>fs</a>                430 src/diffviewer/ydiff.c     rv = write (fs-&gt;fd, buf, size);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L432'>fs</a>                432 src/diffviewer/ydiff.c         FILE_DIRTY (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L448'>fs</a>                448 src/diffviewer/ydiff.c f_trunc (FBUF * fs)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L452'>fs</a>                452 src/diffviewer/ydiff.c     off = lseek (fs-&gt;fd, 0, SEEK_CUR);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L457'>fs</a>                457 src/diffviewer/ydiff.c         rv = ftruncate (fs-&gt;fd, off);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L461'>fs</a>                461 src/diffviewer/ydiff.c             FILE_DIRTY (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L477'>fs</a>                477 src/diffviewer/ydiff.c f_close (FBUF * fs)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L481'>fs</a>                481 src/diffviewer/ydiff.c     if (fs != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L483'>fs</a>                483 src/diffviewer/ydiff.c         rv = close (fs-&gt;fd);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L484'>fs</a>                484 src/diffviewer/ydiff.c         f_free (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L505'>fs</a>                505 src/diffviewer/ydiff.c     FBUF *fs;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L516'>fs</a>                516 src/diffviewer/ydiff.c     fs = f_dopen (0);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L517'>fs</a>                517 src/diffviewer/ydiff.c     if (fs == NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L523'>fs</a>                523 src/diffviewer/ydiff.c         f_free (fs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L527'>fs</a>                527 src/diffviewer/ydiff.c     fs-&gt;fd = fileno (f);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L528'>fs</a>                528 src/diffviewer/ydiff.c     fs-&gt;data = f;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L529'>fs</a>                529 src/diffviewer/ydiff.c     return fs;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L542'>fs</a>                542 src/diffviewer/ydiff.c p_close (FBUF * fs)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L546'>fs</a>                546 src/diffviewer/ydiff.c     if (fs != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L548'>fs</a>                548 src/diffviewer/ydiff.c         rv = pclose (fs-&gt;data);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L549'>fs</a>                549 src/diffviewer/ydiff.c         f_free (fs);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1240'>fs</a>               1240 src/filemanager/mountlist.c     struct statfs fs;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L118'>fs</a>                118 src/vfs/undelfs/undelfs.c static ext2_filsys fs = NULL;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L137'>fs</a>                137 src/vfs/undelfs/undelfs.c     if (fs)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L138'>fs</a>                138 src/vfs/undelfs/undelfs.c         ext2fs_close (fs);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L139'>fs</a>                139 src/vfs/undelfs/undelfs.c     fs = NULL;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L243'>fs</a>                243 src/vfs/undelfs/undelfs.c     block_buf = g_try_malloc (fs-&gt;blocksize * 3);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L249'>fs</a>                249 src/vfs/undelfs/undelfs.c     retval = ext2fs_open_inode_scan (fs, 0, &amp;scan);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L277'>fs</a>                277 src/vfs/undelfs/undelfs.c         retval = ext2fs_block_iterate (fs, ino, 0, block_buf, undelfs_lsdel_proc, &amp;lsd);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L361'>fs</a>                361 src/vfs/undelfs/undelfs.c         return fs;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L364'>fs</a>                364 src/vfs/undelfs/undelfs.c     if (ext2fs_open (ext2_fname, 0, 0, 0, unix_io_manager, &amp;fs))</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L370'>fs</a>                370 src/vfs/undelfs/undelfs.c     if (ext2fs_read_inode_bitmap (fs))</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L376'>fs</a>                376 src/vfs/undelfs/undelfs.c     if (ext2fs_read_block_bitmap (fs))</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L385'>fs</a>                385 src/vfs/undelfs/undelfs.c     return fs;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L388'>fs</a>                388 src/vfs/undelfs/undelfs.c     ext2fs_close (fs);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L389'>fs</a>                389 src/vfs/undelfs/undelfs.c     fs = NULL;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L400'>fs</a>                400 src/vfs/undelfs/undelfs.c     if (vfs_info != fs)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L474'>fs</a>                474 src/vfs/undelfs/undelfs.c         p-&gt;buf = g_try_malloc (fs-&gt;blocksize);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L596'>fs</a>                596 src/vfs/undelfs/undelfs.c     retval = ext2fs_block_iterate (fs, p-&gt;inode, 0, NULL, undelfs_dump_read, p);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L759'>fs</a>                759 src/vfs/undelfs/undelfs.c     return ok ? (vfsid) fs : NULL;</span>
+</pre>
+</body>
+</html>

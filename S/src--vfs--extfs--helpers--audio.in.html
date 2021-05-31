@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/audio.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/audio.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/audio.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/audio.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Written by Pavel Machek
+<a id='L4' name='L4'></a># CDDB support by Adam Byrtek
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># (C) 2000 The Free Software Foundation.
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>set -e
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>CDDB_SERVER="http://freedb.freedb.org"
+<a id='L12' name='L12'></a>CDDB_HANDSHAKE="hello=user+localhost+mc+1.0&amp;proto=1"
+<a id='L13' name='L13'></a>CDDB_TIMEOUT=20 # in seconds
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>audiofs_list()
+<a id='L16' name='L16'></a>{
+<a id='L17' name='L17'></a>    DATE=`date +"%b %d %H:%M"`
+<a id='L18' name='L18'></a>    echo "-r--r--r-- 1 0 0 0 $DATE CDDB"
+<a id='L19' name='L19'></a>    cdparanoia -Q -d "$1" 2&gt;&amp;1 | grep '^[ 0-9][ 0-9][ 0-9]\.' | while read A B C
+<a id='L20' name='L20'></a>    do
+<a id='L21' name='L21'></a>        A=`echo "$A" | sed -e 's/\.//' -e 's/^\(.\)$/0\1/'`
+<a id='L22' name='L22'></a>        SIZE=`expr 44 + $B \* 2352`
+<a id='L23' name='L23'></a>        echo "-r--r--r-- 1 0 0 $SIZE $DATE track-${A}.wav"
+<a id='L24' name='L24'></a>    done
+<a id='L25' name='L25'></a>}
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>audiofs_copyout()
+<a id='L28' name='L28'></a>{
+<a id='L29' name='L29'></a>    if [ x"$2" = x"CDDB" ]; then
+<a id='L30' name='L30'></a>        DISCID=`cd-discid "$1" | tr " " "+"`
+<a id='L31' name='L31'></a>        if [ -z "$DISCID" ]; then
+<a id='L32' name='L32'></a>            exit 1
+<a id='L33' name='L33'></a>        fi
+<a id='L34' name='L34'></a>        RESPONSE=`wget -q -T $CDDB_TIMEOUT -O - "$CDDB_SERVER/~cddb/cddb.cgi?cmd=cddb+query+$DISCID&amp;$CDDB_HANDSHAKE" | tee "$3" | @AWK@ '/^200/ { print $2,$3; }'`
+<a id='L35' name='L35'></a>        wget -q -T $CDDB_TIMEOUT -O - "$CDDB_SERVER/~cddb/cddb.cgi?cmd=cddb+read+$RESPONSE&amp;$CDDB_HANDSHAKE" | grep -v "^#" &gt;&gt; "$3"
+<a id='L36' name='L36'></a>    else
+<a id='L37' name='L37'></a>        TRACK=`echo "$2" | sed 's/track-0*//' | sed 's/\.wav//'`
+<a id='L38' name='L38'></a>        cdparanoia -q -d "$1" "$TRACK" "$3" &gt;/dev/null
+<a id='L39' name='L39'></a>    fi
+<a id='L40' name='L40'></a>}
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>if [ ! -b "$2" ]
+<a id='L43' name='L43'></a>then
+<a id='L44' name='L44'></a>    BASE="/dev/cdrom"
+<a id='L45' name='L45'></a>else
+<a id='L46' name='L46'></a>    BASE="$2"
+<a id='L47' name='L47'></a>fi
+<a id='L48' name='L48'></a> 
+<a id='L49' name='L49'></a>case "$1" in
+<a id='L50' name='L50'></a>  list) audiofs_list "$BASE"; exit 0;;
+<a id='L51' name='L51'></a>  copyout) audiofs_copyout "$BASE" "$3" "$4"; exit 0;;
+<a id='L52' name='L52'></a>esac
+<a id='L53' name='L53'></a>exit 1
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+53 src/vfs/extfs/helpers/audio.in'  /> */</em>
+</body>
+</html>

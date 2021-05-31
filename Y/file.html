@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>file</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L558'>file</a>              558 lib/vfs/direntry.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L561'>file</a>              561 lib/vfs/direntry.c     if (file-&gt;linear == LS_LINEAR_PREOPEN)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L563'>file</a>              563 lib/vfs/direntry.c         if (VFS_SUBCLASS (me)-&gt;linear_start (me, file, file-&gt;pos) == 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L567'>file</a>              567 lib/vfs/direntry.c     if (file-&gt;linear == LS_LINEAR_CLOSED)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L570'>file</a>              570 lib/vfs/direntry.c     if (file-&gt;linear == LS_LINEAR_OPEN)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L571'>file</a>              571 lib/vfs/direntry.c         return VFS_SUBCLASS (me)-&gt;linear_read (me, file, buffer, count);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L573'>file</a>              573 lib/vfs/direntry.c     if (file-&gt;handle != -1)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L577'>file</a>              577 lib/vfs/direntry.c         n = read (file-&gt;handle, buffer, count);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L591'>file</a>              591 lib/vfs/direntry.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L594'>file</a>              594 lib/vfs/direntry.c     if (file-&gt;linear != LS_NOT_LINEAR)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L597'>file</a>              597 lib/vfs/direntry.c     file-&gt;changed = TRUE;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L598'>file</a>              598 lib/vfs/direntry.c     if (file-&gt;handle != -1)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L602'>file</a>              602 lib/vfs/direntry.c         n = write (file-&gt;handle, buffer, count);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L616'>file</a>              616 lib/vfs/direntry.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L617'>file</a>              617 lib/vfs/direntry.c     off_t size = file-&gt;ino-&gt;st.st_size;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L619'>file</a>              619 lib/vfs/direntry.c     if (file-&gt;linear == LS_LINEAR_OPEN)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L622'>file</a>              622 lib/vfs/direntry.c     if (file-&gt;handle != -1)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L626'>file</a>              626 lib/vfs/direntry.c         retval = lseek (file-&gt;handle, offset, whence);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L635'>file</a>              635 lib/vfs/direntry.c         offset += file-&gt;pos;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L644'>file</a>              644 lib/vfs/direntry.c         file-&gt;pos = 0;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L646'>file</a>              646 lib/vfs/direntry.c         file-&gt;pos = offset;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L648'>file</a>              648 lib/vfs/direntry.c         file-&gt;pos = size;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L649'>file</a>              649 lib/vfs/direntry.c     return file-&gt;pos;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L657'>file</a>              657 lib/vfs/direntry.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L670'>file</a>              670 lib/vfs/direntry.c     if (file-&gt;linear == LS_LINEAR_OPEN)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L674'>file</a>              674 lib/vfs/direntry.c     if ((me-&gt;flags &amp; VFSF_USETMP) != 0 &amp;&amp; file-&gt;changed &amp;&amp; sub-&gt;file_store != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L678'>file</a>              678 lib/vfs/direntry.c         s = vfs_s_fullpath (me, file-&gt;ino);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L684'>file</a>              684 lib/vfs/direntry.c             res = sub-&gt;file_store (me, fh, s, file-&gt;ino-&gt;localname);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L690'>file</a>              690 lib/vfs/direntry.c     if (file-&gt;handle != -1)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L692'>file</a>              692 lib/vfs/direntry.c         close (file-&gt;handle);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L693'>file</a>              693 lib/vfs/direntry.c         file-&gt;handle = -1;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L696'>file</a>              696 lib/vfs/direntry.c     vfs_s_free_inode (me, file-&gt;ino);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L399'>file</a>              399 lib/widget/input_complete.c     FILE *file;</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L405'>file</a>              405 lib/widget/input_complete.c     file = fopen (filename, "r");</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L406'>file</a>              406 lib/widget/input_complete.c     if (file == NULL)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L409'>file</a>              409 lib/widget/input_complete.c     while (fgets (buffer, sizeof (buffer) - 1, file) != NULL)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L486'>file</a>              486 lib/widget/input_complete.c     fclose (file);</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L102'>file</a>              102 src/clipboard.c     int file = -1;</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L143'>file</a>              143 src/clipboard.c             if (file &lt; 0)</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L148'>file</a>              148 src/clipboard.c                 file = mc_open (fname_vpath, clip_open_flags, clip_open_mode);</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L151'>file</a>              151 src/clipboard.c                 if (file &lt; 0)</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L155'>file</a>              155 src/clipboard.c             nwrite = mc_write (file, p-&gt;out.buf, p-&gt;out.len);</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L160'>file</a>              160 src/clipboard.c     if (file &gt;= 0)</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L161'>file</a>              161 src/clipboard.c         mc_close (file);</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L175'>file</a>              175 src/clipboard.c     int file;</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L188'>file</a>              188 src/clipboard.c     file = mc_open (fname_vpath, clip_open_flags, clip_open_mode);</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L191'>file</a>              191 src/clipboard.c     if (file == -1)</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L198'>file</a>              198 src/clipboard.c         ret = mc_write (file, text, str_len);</span>
+<span class='curline'><a href='../S/src--clipboard.c.html#L201'>file</a>              201 src/clipboard.c     mc_close (file);</span>
+<span class='curline'><a href='../S/src--diffviewer--internal.h.html#L90'>file</a>               90 src/diffviewer/internal.h     const char *file[DIFF_COUNT];       /* filenames */</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1765'>file</a>             1765 src/diffviewer/ydiff.c     ndiff = dff_execute (dview-&gt;args, extra, dview-&gt;file[DIFF_LEFT], dview-&gt;file[DIFF_RIGHT], ops);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1778'>file</a>             1778 src/diffviewer/ydiff.c     rv |= dff_reparse (DIFF_LEFT, dview-&gt;file[DIFF_LEFT], ops, printer, &amp;ctx);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1782'>file</a>             1782 src/diffviewer/ydiff.c     rv |= dff_reparse (DIFF_RIGHT, dview-&gt;file[DIFF_RIGHT], ops, printer, &amp;ctx);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2051'>file</a>             2051 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2053'>file</a>             2053 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2093'>file</a>             2093 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2094'>file</a>             2094 src/diffviewer/ydiff.c         f1 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2098'>file</a>             2098 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2099'>file</a>             2099 src/diffviewer/ydiff.c         f1 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2146'>file</a>             2146 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2147'>file</a>             2147 src/diffviewer/ydiff.c         f1 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2151'>file</a>             2151 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2152'>file</a>             2152 src/diffviewer/ydiff.c         f1 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2204'>file</a>             2204 src/diffviewer/ydiff.c             dview-&gt;merged[n_merge] = mc_util_make_backup_if_possible (dview-&gt;file[n_merge], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2209'>file</a>             2209 src/diffviewer/ydiff.c                          dview-&gt;file[n_merge], "~~~", unix_error_string (errno));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2249'>file</a>             2249 src/diffviewer/ydiff.c             res = rewrite_backup_content (merge_file_name_vpath, dview-&gt;file[n_merge]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2430'>file</a>             2430 src/diffviewer/ydiff.c     dview-&gt;file[DIFF_LEFT] = file1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2431'>file</a>             2431 src/diffviewer/ydiff.c     dview-&gt;file[DIFF_RIGHT] = file2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2906'>file</a>             2906 src/diffviewer/ydiff.c         tmp_vpath = vfs_path_from_str (dview-&gt;file[ord]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2991'>file</a>             2991 src/diffviewer/ydiff.c         res = mc_util_unlink_backup_if_possible (dview-&gt;file[DIFF_LEFT], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2996'>file</a>             2996 src/diffviewer/ydiff.c         res = mc_util_unlink_backup_if_possible (dview-&gt;file[DIFF_RIGHT], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3105'>file</a>             3105 src/diffviewer/ydiff.c         if (mc_util_restore_from_backup_if_possible (dview-&gt;file[DIFF_LEFT], "~~~"))</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3106'>file</a>             3106 src/diffviewer/ydiff.c             res = mc_util_unlink_backup_if_possible (dview-&gt;file[DIFF_LEFT], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3107'>file</a>             3107 src/diffviewer/ydiff.c         if (mc_util_restore_from_backup_if_possible (dview-&gt;file[DIFF_RIGHT], "~~~"))</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3108'>file</a>             3108 src/diffviewer/ydiff.c             res = mc_util_unlink_backup_if_possible (dview-&gt;file[DIFF_RIGHT], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3485'>file</a>             3485 src/diffviewer/ydiff.c     real_file##n = file##n; \</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3486'>file</a>             3486 src/diffviewer/ydiff.c     if (!vfs_file_is_local (file##n)) \</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3488'>file</a>             3488 src/diffviewer/ydiff.c         real_file##n = mc_getlocalcopy (file##n); \</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3512'>file</a>             3512 src/diffviewer/ydiff.c         mc_ungetlocalcopy (file##n, real_file##n, changed); \</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L181'>file</a>              181 src/editor/edit.c     int file;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L186'>file</a>              186 src/editor/edit.c     file = mc_open (filename_vpath, O_RDONLY | O_BINARY);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L187'>file</a>              187 src/editor/edit.c     if (file &lt; 0)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L205'>file</a>              205 src/editor/edit.c     ret = (edit_buffer_read_file (buf, file, buf-&gt;size, &amp;rsm, &amp;aborted) == buf-&gt;size);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L218'>file</a>              218 src/editor/edit.c     mc_close (file);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L294'>file</a>              294 src/editor/edit.c     int file;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L299'>file</a>              299 src/editor/edit.c     file = mc_open (filename_vpath, O_NONBLOCK | O_RDONLY | O_BINARY, 0666);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L300'>file</a>              300 src/editor/edit.c     if (file &lt; 0)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L306'>file</a>              306 src/editor/edit.c         file = mc_open (filename_vpath, O_NONBLOCK | O_RDONLY | O_BINARY | O_CREAT | O_EXCL, 0666);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L307'>file</a>              307 src/editor/edit.c         if (file &lt; 0)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L319'>file</a>              319 src/editor/edit.c     if (mc_fstat (file, st) &lt; 0)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L366'>file</a>              366 src/editor/edit.c     (void) mc_close (file);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L1690'>file</a>             1690 src/editor/edit.c edit_insert_column_from_file (WEdit * edit, int file, off_t * start_pos, off_t * end_pos,</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L1702'>file</a>             1702 src/editor/edit.c     while ((blocklen = mc_read (file, (char *) data, TEMP_BUF_LEN)) &gt; 0)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L1995'>file</a>             1995 src/editor/edit.c         int file;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2000'>file</a>             2000 src/editor/edit.c         file = mc_open (filename_vpath, O_RDONLY | O_BINARY);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2001'>file</a>             2001 src/editor/edit.c         if (file == -1)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2005'>file</a>             2005 src/editor/edit.c         blocklen = mc_read (file, buf, sizeof (VERTICAL_MAGIC));</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2012'>file</a>             2012 src/editor/edit.c                 mc_lseek (file, 0, SEEK_SET);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2020'>file</a>             2020 src/editor/edit.c             blocklen = edit_insert_column_from_file (edit, file, &amp;mark1, &amp;mark2, &amp;c1, &amp;c2);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2035'>file</a>             2035 src/editor/edit.c             while ((blocklen = mc_read (file, (char *) buf, TEMP_BUF_LEN)) &gt; 0)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2059'>file</a>             2059 src/editor/edit.c         mc_close (file);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L302'>file</a>              302 src/editor/editcmd.c         FILE *file;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L305'>file</a>              305 src/editor/editcmd.c         file = (FILE *) popen (p, "w");</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L307'>file</a>              307 src/editor/editcmd.c         if (file != NULL)</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L309'>file</a>              309 src/editor/editcmd.c             filelen = edit_write_stream (edit, file);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L311'>file</a>              311 src/editor/editcmd.c             pclose (file);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L313'>file</a>              313 src/editor/editcmd.c             if (pclose (file) != 0)</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L352'>file</a>              352 src/editor/editcmd.c         FILE *file;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L358'>file</a>              358 src/editor/editcmd.c         file = (FILE *) fopen (path_element-&gt;path, "w");</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L359'>file</a>              359 src/editor/editcmd.c         if (file != NULL)</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L361'>file</a>              361 src/editor/editcmd.c             filelen = edit_write_stream (edit, file);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L362'>file</a>              362 src/editor/editcmd.c             fclose (file);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1771'>file</a>             1771 src/editor/editcmd.c             int file;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1783'>file</a>             1783 src/editor/editcmd.c             file = mc_open (exp_vpath, O_RDONLY | O_BINARY);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1785'>file</a>             1785 src/editor/editcmd.c             if (file == -1)</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1790'>file</a>             1790 src/editor/editcmd.c                 mc_close (file);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L3000'>file</a>             3000 src/editor/editcmd.c     int file;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L3005'>file</a>             3005 src/editor/editcmd.c     file = mc_open (vpath, O_CREAT | O_WRONLY | O_TRUNC,</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L3008'>file</a>             3008 src/editor/editcmd.c     if (file == -1)</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L3015'>file</a>             3015 src/editor/editcmd.c         r = mc_write (file, VERTICAL_MAGIC, sizeof (VERTICAL_MAGIC));</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L3023'>file</a>             3023 src/editor/editcmd.c                 r = mc_write (file, p, len);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L3046'>file</a>             3046 src/editor/editcmd.c             len -= mc_write (file, (char *) buf, end - start);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L3051'>file</a>             3051 src/editor/editcmd.c     mc_close (file);</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1221'>file</a>             1221 src/editor/editwidget.c     const GList *file;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1268'>file</a>             1268 src/editor/editwidget.c     for (file = files; file != NULL; file = g_list_next (file))</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1270'>file</a>             1270 src/editor/editwidget.c         mcedit_arg_t *f = (mcedit_arg_t *) file-&gt;data;</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L681'>file</a>              681 src/filemanager/dir.c if_link_is_exe (const vfs_path_t * full_name_vpath, const file_entry_t * file)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L685'>file</a>              685 src/filemanager/dir.c     if (S_ISLNK (file-&gt;st.st_mode) &amp;&amp; mc_stat (full_name_vpath, &amp;b) == 0)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L84'>file</a>               84 src/filemanager/dir.h gboolean if_link_is_exe (const vfs_path_t * full_name, const file_entry_t * file);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L89'>file</a>               89 src/filemanager/dir.h link_isdir (const file_entry_t * file)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L91'>file</a>               91 src/filemanager/dir.h     return (gboolean) file-&gt;f.link_to_dir;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3462'>file</a>             3462 src/filemanager/file.c file_error (gboolean allow_retry, const char *format, const char *file)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3466'>file</a>             3466 src/filemanager/file.c     g_snprintf (buf, sizeof (buf), format, path_trunc (file, 30), unix_error_string (errno));</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L60'>file</a>               60 src/filemanager/file.h FileProgressStatus file_error (gboolean allow_retry, const char *format, const char *file);</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L381'>file</a>              381 src/filemanager/find.c get_list_info (char **file, char **dir, gsize * start, gsize * end)</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L385'>file</a>              385 src/filemanager/find.c     listbox_get_current (find_list, file, (void **) &amp;location);</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L916'>file</a>              916 src/filemanager/find.c insert_file (const char *dir, const char *file, gsize start, gsize end)</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L940'>file</a>              940 src/filemanager/find.c     tmp_name = g_strdup_printf ("    %s", file);</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L952'>file</a>              952 src/filemanager/find.c find_add_match (const char *dir, const char *file, gsize start, gsize end)</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L954'>file</a>              954 src/filemanager/find.c     insert_file (dir, file, start, end);</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L1440'>file</a>             1440 src/filemanager/find.c find_do_view_edit (gboolean unparsed_view, gboolean edit, char *dir, char *file, off_t search_start,</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L1449'>file</a>             1449 src/filemanager/find.c         filename = strchr (file + 4, ':') + 1;</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L1450'>file</a>             1450 src/filemanager/find.c         line = atoi (file + 4);</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L1454'>file</a>             1454 src/filemanager/find.c         filename = file + 4;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1337'>file</a>             1337 src/filemanager/mountlist.c get_fs_usage (char const *file, char const *disk, struct fs_usage *fsp)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1345'>file</a>             1345 src/filemanager/mountlist.c         if (statvfs (file, &amp;vfsd) &lt; 0)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1368'>file</a>             1368 src/filemanager/mountlist.c         if (statvfs64 (file, &amp;fsd) &lt; 0)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1382'>file</a>             1382 src/filemanager/mountlist.c         if (statfs (file, &amp;fsd, sizeof (struct statfs)) != 0)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1391'>file</a>             1391 src/filemanager/mountlist.c         if (statfs (file, &amp;fsd) &lt; 0)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1402'>file</a>             1402 src/filemanager/mountlist.c         if (statfs (file, &amp;fsd) &lt; 0)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1426'>file</a>             1426 src/filemanager/mountlist.c         if (statfs (file, &amp;fsd) &lt; 0)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1435'>file</a>             1435 src/filemanager/mountlist.c         if (statfs (file, &amp;fsd, sizeof (fsd), 0) &lt; 0)</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L2622'>file</a>             2622 src/filemanager/panel.c         file_entry_t *file = &amp;panel-&gt;dir.list[i];</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L2624'>file</a>             2624 src/filemanager/panel.c         if (!panels_options.reverse_files_only || !S_ISDIR (file-&gt;st.st_mode))</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L2625'>file</a>             2625 src/filemanager/panel.c             do_file_mark (panel, i, file-&gt;f.marked ? 0 : 1);</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L213'>file</a>              213 src/filemanager/treestore.c     FILE *file;</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L221'>file</a>              221 src/filemanager/treestore.c     file = fopen (name, "r");</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L223'>file</a>              223 src/filemanager/treestore.c     if (file != NULL</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L224'>file</a>              224 src/filemanager/treestore.c         &amp;&amp; (fgets (buffer, sizeof (buffer), file) == NULL</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L227'>file</a>              227 src/filemanager/treestore.c         fclose (file);</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L228'>file</a>              228 src/filemanager/treestore.c         file = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L231'>file</a>              231 src/filemanager/treestore.c     if (file != NULL)</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L238'>file</a>              238 src/filemanager/treestore.c         while (fgets (buffer, MC_MAXPATHLEN, file))</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L302'>file</a>              302 src/filemanager/treestore.c         fclose (file);</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L335'>file</a>              335 src/filemanager/treestore.c     FILE *file;</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L337'>file</a>              337 src/filemanager/treestore.c     file = fopen (name, "w");</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L338'>file</a>              338 src/filemanager/treestore.c     if (file == NULL)</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L341'>file</a>              341 src/filemanager/treestore.c     fprintf (file, "%s\n", TREE_SIGNATURE);</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L355'>file</a>              355 src/filemanager/treestore.c                 i = fprintf (file, "%d:%d %s\n", current-&gt;scanned ? 1 : 0, common, encoded);</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L363'>file</a>              363 src/filemanager/treestore.c                 i = fprintf (file, "%d:%s\n", current-&gt;scanned ? 1 : 0, encoded);</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L376'>file</a>              376 src/filemanager/treestore.c     fclose (file);</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L532'>file</a>              532 src/filemanager/treestore.c process_special_dirs (GList ** special_dirs, const char *file)</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L537'>file</a>              537 src/filemanager/treestore.c     cfg = mc_config_init (file, TRUE);</span>
+<span class='curline'><a href='../S/src--usermenu.c.html#L857'>file</a>              857 src/usermenu.c             char *file;</span>
+<span class='curline'><a href='../S/src--usermenu.c.html#L859'>file</a>              859 src/usermenu.c             file = mc_config_get_full_path (EDIT_HOME_BLOCK_FILE);</span>
+<span class='curline'><a href='../S/src--usermenu.c.html#L860'>file</a>              860 src/usermenu.c             result = quote_func (file, FALSE);</span>
+<span class='curline'><a href='../S/src--usermenu.c.html#L861'>file</a>              861 src/usermenu.c             g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L854'>file</a>              854 src/vfs/cpio/cpio.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L857'>file</a>              857 src/vfs/cpio/cpio.c     off_t begin = file-&gt;ino-&gt;data_offset;</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L860'>file</a>              860 src/vfs/cpio/cpio.c     if (mc_lseek (fd, begin + file-&gt;pos, SEEK_SET) != begin + file-&gt;pos)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L863'>file</a>              863 src/vfs/cpio/cpio.c     count = MIN (count, (size_t) (file-&gt;ino-&gt;st.st_size - file-&gt;pos));</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L869'>file</a>              869 src/vfs/cpio/cpio.c     file-&gt;pos += res;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L915'>file</a>              915 src/vfs/extfs/extfs.c     char *file;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L925'>file</a>              925 src/vfs/extfs/extfs.c     file = extfs_get_path_from_entry (entry);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L926'>file</a>              926 src/vfs/extfs/extfs.c     quoted_file = name_quote (file, FALSE);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L927'>file</a>              927 src/vfs/extfs/extfs.c     g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L930'>file</a>              930 src/vfs/extfs/extfs.c     file = extfs_skip_leading_dotslash (quoted_file);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L938'>file</a>              938 src/vfs/extfs/extfs.c                        quoted_archive_name, " ", file, " ", quoted_localname, (char *) NULL);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1080'>file</a>             1080 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1082'>file</a>             1082 src/vfs/extfs/extfs.c     return read (file-&gt;handle, buffer, count);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1090'>file</a>             1090 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1093'>file</a>             1093 src/vfs/extfs/extfs.c     close (file-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1094'>file</a>             1094 src/vfs/extfs/extfs.c     file-&gt;handle = -1;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1097'>file</a>             1097 src/vfs/extfs/extfs.c     if (file-&gt;changed)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1102'>file</a>             1102 src/vfs/extfs/extfs.c             (" copyin ", EXTFS_SUPER (VFS_FILE_HANDLER_SUPER (fh)), file-&gt;ino-&gt;ent,</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1103'>file</a>             1103 src/vfs/extfs/extfs.c              file-&gt;ino-&gt;localname))</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1106'>file</a>             1106 src/vfs/extfs/extfs.c         if (stat (file-&gt;ino-&gt;localname, &amp;file_status) != 0)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1109'>file</a>             1109 src/vfs/extfs/extfs.c             file-&gt;ino-&gt;st.st_size = file_status.st_size;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1111'>file</a>             1111 src/vfs/extfs/extfs.c         file-&gt;ino-&gt;st.st_mtime = time (NULL);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1253'>file</a>             1253 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1255'>file</a>             1255 src/vfs/extfs/extfs.c     extfs_stat_move (buf, file-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1320'>file</a>             1320 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1322'>file</a>             1322 src/vfs/extfs/extfs.c     file-&gt;changed = TRUE;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1323'>file</a>             1323 src/vfs/extfs/extfs.c     return write (file-&gt;handle, buf, nbyte);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1470'>file</a>             1470 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1472'>file</a>             1472 src/vfs/extfs/extfs.c     return lseek (file-&gt;handle, offset, whence);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1206'>file</a>             1206 src/vfs/fish/fish.c             vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1209'>file</a>             1209 src/vfs/fish/fish.c             if (file-&gt;linear == LS_NOT_LINEAR)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1211'>file</a>             1211 src/vfs/fish/fish.c             if (file-&gt;linear == LS_LINEAR_CLOSED || file-&gt;linear == LS_LINEAR_PREOPEN)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2037'>file</a>             2037 src/vfs/ftpfs/ftpfs.c             vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2040'>file</a>             2040 src/vfs/ftpfs/ftpfs.c             if (file-&gt;linear == LS_NOT_LINEAR)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2042'>file</a>             2042 src/vfs/ftpfs/ftpfs.c             if (file-&gt;linear == LS_LINEAR_CLOSED || file-&gt;linear == LS_LINEAR_PREOPEN)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L69'>file</a>               69 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L75'>file</a>               75 src/vfs/sftpfs/file.c     flags = file-&gt;flags;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L76'>file</a>               76 src/vfs/sftpfs/file.c     mode = file-&gt;mode;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L131'>file</a>              131 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L167'>file</a>              167 src/vfs/sftpfs/file.c         file-&gt;handle =</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L170'>file</a>              170 src/vfs/sftpfs/file.c         if (file-&gt;handle != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L178'>file</a>              178 src/vfs/sftpfs/file.c             g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L185'>file</a>              185 src/vfs/sftpfs/file.c     file-&gt;flags = flags;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L186'>file</a>              186 src/vfs/sftpfs/file.c     file-&gt;mode = mode;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L206'>file</a>              206 src/vfs/sftpfs/file.c             libssh2_sftp_seek64 (file-&gt;handle, file_info.st_size);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L271'>file</a>              271 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L289'>file</a>              289 src/vfs/sftpfs/file.c         rc = libssh2_sftp_read (file-&gt;handle, buffer, count);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L299'>file</a>              299 src/vfs/sftpfs/file.c     fh-&gt;pos = (off_t) libssh2_sftp_tell64 (file-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L321'>file</a>              321 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L326'>file</a>              326 src/vfs/sftpfs/file.c     fh-&gt;pos = (off_t) libssh2_sftp_tell64 (file-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L332'>file</a>              332 src/vfs/sftpfs/file.c         rc = libssh2_sftp_write (file-&gt;handle, buffer, count);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L384'>file</a>              384 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L417'>file</a>              417 src/vfs/sftpfs/file.c     libssh2_sftp_seek64 (file-&gt;handle, fh-&gt;pos);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L418'>file</a>              418 src/vfs/sftpfs/file.c     fh-&gt;pos = (off_t) libssh2_sftp_tell64 (file-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L21'>file</a>               21 src/vfs/smbfs/helpers/include/proto.h BOOL dbghdr (int level, const char *file, const char *func, int line);</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L671'>file</a>              671 src/vfs/smbfs/helpers/include/smb.h     char file[100];</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--lib--debug.c.html#L316'>file</a>              316 src/vfs/smbfs/helpers/lib/debug.c dbghdr (int level, const char *file, const char *func, int line)</span>
+<span class='curline'><a href='../S/src--vfs--smbfs--helpers--lib--debug.c.html#L342'>file</a>              342 src/vfs/smbfs/helpers/lib/debug.c         (void) Debug1 ("[%s, %d] %s:%s(%d)\n", timestring (), level, file, func, line);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L959'>file</a>              959 src/vfs/tar/tar.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L960'>file</a>              960 src/vfs/tar/tar.c     off_t begin = file-&gt;ino-&gt;data_offset;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L964'>file</a>              964 src/vfs/tar/tar.c     if (mc_lseek (fd, begin + file-&gt;pos, SEEK_SET) != begin + file-&gt;pos)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L967'>file</a>              967 src/vfs/tar/tar.c     count = MIN (count, (size_t) (file-&gt;ino-&gt;st.st_size - file-&gt;pos));</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L973'>file</a>              973 src/vfs/tar/tar.c     file-&gt;pos += res;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L148'>file</a>              148 src/vfs/undelfs/undelfs.c undelfs_get_path (const vfs_path_t * vpath, char **fsname, char **file)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L188'>file</a>              188 src/vfs/undelfs/undelfs.c             *file = g_strdup (p + 1);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L196'>file</a>              196 src/vfs/undelfs/undelfs.c     *file = g_strdup ("");</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L337'>file</a>              337 src/vfs/undelfs/undelfs.c     char *file, *f = NULL;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L341'>file</a>              341 src/vfs/undelfs/undelfs.c     undelfs_get_path (vpath, &amp;file, &amp;f);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L342'>file</a>              342 src/vfs/undelfs/undelfs.c     if (file == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L351'>file</a>              351 src/vfs/undelfs/undelfs.c     if (!ext2_fname || strcmp (ext2_fname, file))</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L354'>file</a>              354 src/vfs/undelfs/undelfs.c         ext2_fname = file;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L360'>file</a>              360 src/vfs/undelfs/undelfs.c         g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L437'>file</a>              437 src/vfs/undelfs/undelfs.c     char *file, *f = NULL;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L444'>file</a>              444 src/vfs/undelfs/undelfs.c     undelfs_get_path (vpath, &amp;file, &amp;f);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L445'>file</a>              445 src/vfs/undelfs/undelfs.c     if (file == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L451'>file</a>              451 src/vfs/undelfs/undelfs.c     if (!ext2_fname || strcmp (ext2_fname, file))</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L454'>file</a>              454 src/vfs/undelfs/undelfs.c         g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L470'>file</a>              470 src/vfs/undelfs/undelfs.c             g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L478'>file</a>              478 src/vfs/undelfs/undelfs.c             g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L489'>file</a>              489 src/vfs/undelfs/undelfs.c     g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L651'>file</a>              651 src/vfs/undelfs/undelfs.c     char *file, *f = NULL;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L653'>file</a>              653 src/vfs/undelfs/undelfs.c     undelfs_get_path (vpath, &amp;file, &amp;f);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L654'>file</a>              654 src/vfs/undelfs/undelfs.c     if (file == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L668'>file</a>              668 src/vfs/undelfs/undelfs.c         g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L673'>file</a>              673 src/vfs/undelfs/undelfs.c     if (!ext2_fname || strcmp (ext2_fname, file))</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L675'>file</a>              675 src/vfs/undelfs/undelfs.c         g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L681'>file</a>              681 src/vfs/undelfs/undelfs.c     g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L705'>file</a>              705 src/vfs/undelfs/undelfs.c     char *file, *f = NULL;</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L708'>file</a>              708 src/vfs/undelfs/undelfs.c     undelfs_get_path (vpath, &amp;file, &amp;f);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L709'>file</a>              709 src/vfs/undelfs/undelfs.c     if (file == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L718'>file</a>              718 src/vfs/undelfs/undelfs.c     fd = open (file, O_RDONLY);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L721'>file</a>              721 src/vfs/undelfs/undelfs.c         message (D_ERROR, undelfserr, _("Cannot open file \"%s\""), file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L723'>file</a>              723 src/vfs/undelfs/undelfs.c         g_free (file);</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L728'>file</a>              728 src/vfs/undelfs/undelfs.c     g_free (file);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L278'>file</a>              278 src/viewer/mcviewer.c mcview_load (WView * view, const char *command, const char *file, int start_line,</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L286'>file</a>              286 src/viewer/mcviewer.c     view-&gt;filename_vpath = vfs_path_from_str (file);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L289'>file</a>              289 src/viewer/mcviewer.c     if (file != NULL &amp;&amp; file[0] != '\0')</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L293'>file</a>              293 src/viewer/mcviewer.c         if (!g_path_is_absolute (file))</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L298'>file</a>              298 src/viewer/mcviewer.c             view-&gt;workdir_vpath = vfs_path_append_new (p, file, (char *) NULL);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L307'>file</a>              307 src/viewer/mcviewer.c             fname = x_basename (file);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L308'>file</a>              308 src/viewer/mcviewer.c             dir = g_strndup (file, (size_t) (fname - file));</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L321'>file</a>              321 src/viewer/mcviewer.c     if (command != NULL &amp;&amp; (view-&gt;mode_flags.magic || file == NULL || file[0] == '\0'))</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L323'>file</a>              323 src/viewer/mcviewer.c     else if (file != NULL &amp;&amp; file[0] != '\0')</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L330'>file</a>              330 src/viewer/mcviewer.c         vpath = vfs_path_from_str (file);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L335'>file</a>              335 src/viewer/mcviewer.c                         file, unix_error_string (errno));</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L350'>file</a>              350 src/viewer/mcviewer.c                         file, unix_error_string (errno));</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L383'>file</a>              383 src/viewer/mcviewer.c                 type = get_compression_type (fd, file);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L391'>file</a>              391 src/viewer/mcviewer.c                     tmp_filename = g_strconcat (file, decompress_extension (type), (char *) NULL);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L400'>file</a>              400 src/viewer/mcviewer.c                                     file, unix_error_string (errno));</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.h.html#L51'>file</a>               51 src/viewer/mcviewer.h extern gboolean mcview_load (WView * view, const char *command, const char *file, int start_line,</span>
+<span class='curline'><a href='../S/tests--lib--utilunix__my_system-common.c.html#L211'>file</a>              211 tests/lib/utilunix__my_system-common.c execvp (const char *file, char *const argv[])</span>
+<span class='curline'><a href='../S/tests--lib--utilunix__my_system-common.c.html#L214'>file</a>              214 tests/lib/utilunix__my_system-common.c     execvp__file__captured = g_strdup (file);</span>
+</pre>
+</body>
+</html>

@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>fh</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L367'>fh</a>                367 lib/vfs/direntry.c     vfs_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L369'>fh</a>                369 lib/vfs/direntry.c     fh = g_new0 (vfs_file_handler_t, 1);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L370'>fh</a>                370 lib/vfs/direntry.c     vfs_s_init_fh (fh, ino, changed);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L372'>fh</a>                372 lib/vfs/direntry.c     return fh;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L378'>fh</a>                378 lib/vfs/direntry.c vfs_s_free_fh (struct vfs_s_subclass *s, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L381'>fh</a>                381 lib/vfs/direntry.c         s-&gt;fh_free (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L383'>fh</a>                383 lib/vfs/direntry.c     g_free (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L556'>fh</a>                556 lib/vfs/direntry.c vfs_s_read (void *fh, char *buffer, size_t count)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L558'>fh</a>                558 lib/vfs/direntry.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L559'>fh</a>                559 lib/vfs/direntry.c     struct vfs_class *me = VFS_FILE_HANDLER_SUPER (fh)-&gt;me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L589'>fh</a>                589 lib/vfs/direntry.c vfs_s_write (void *fh, const char *buffer, size_t count)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L591'>fh</a>                591 lib/vfs/direntry.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L592'>fh</a>                592 lib/vfs/direntry.c     struct vfs_class *me = VFS_FILE_HANDLER_SUPER (fh)-&gt;me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L614'>fh</a>                614 lib/vfs/direntry.c vfs_s_lseek (void *fh, off_t offset, int whence)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L616'>fh</a>                616 lib/vfs/direntry.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L628'>fh</a>                628 lib/vfs/direntry.c             VFS_FILE_HANDLER_SUPER (fh)-&gt;me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L655'>fh</a>                655 lib/vfs/direntry.c vfs_s_close (void *fh)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L657'>fh</a>                657 lib/vfs/direntry.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L658'>fh</a>                658 lib/vfs/direntry.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L668'>fh</a>                668 lib/vfs/direntry.c         vfs_stamp_create (me, VFS_FILE_HANDLER_SUPER (fh));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L671'>fh</a>                671 lib/vfs/direntry.c         sub-&gt;linear_close (me, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L673'>fh</a>                673 lib/vfs/direntry.c         res = sub-&gt;fh_close (me, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L684'>fh</a>                684 lib/vfs/direntry.c             res = sub-&gt;file_store (me, fh, s, file-&gt;ino-&gt;localname);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L697'>fh</a>                697 lib/vfs/direntry.c     vfs_s_free_fh (sub, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L753'>fh</a>                753 lib/vfs/direntry.c     vfs_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L759'>fh</a>                759 lib/vfs/direntry.c     fh = vfs_s_open (vpath, O_RDONLY, 0);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L761'>fh</a>                761 lib/vfs/direntry.c     if (fh != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L766'>fh</a>                766 lib/vfs/direntry.c         if ((me-&gt;flags &amp; VFSF_USETMP) != 0 &amp;&amp; fh-&gt;ino != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L767'>fh</a>                767 lib/vfs/direntry.c             local = vfs_path_from_str_flags (fh-&gt;ino-&gt;localname, VPF_NO_CANON);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L769'>fh</a>                769 lib/vfs/direntry.c         vfs_s_close (fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1281'>fh</a>               1281 lib/vfs/direntry.c vfs_s_init_fh (vfs_file_handler_t * fh, struct vfs_s_inode *ino, gboolean changed)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1283'>fh</a>               1283 lib/vfs/direntry.c     fh-&gt;ino = ino;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1284'>fh</a>               1284 lib/vfs/direntry.c     fh-&gt;handle = -1;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1285'>fh</a>               1285 lib/vfs/direntry.c     fh-&gt;changed = changed;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1286'>fh</a>               1286 lib/vfs/direntry.c     fh-&gt;linear = LS_NOT_LINEAR;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1296'>fh</a>               1296 lib/vfs/direntry.c     vfs_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1368'>fh</a>               1368 lib/vfs/direntry.c     fh = s-&gt;fh_new != NULL ? s-&gt;fh_new (ino, was_changed) : vfs_s_new_fh (ino, was_changed);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1375'>fh</a>               1375 lib/vfs/direntry.c             fh-&gt;linear = LS_LINEAR_PREOPEN;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1380'>fh</a>               1380 lib/vfs/direntry.c         if (s-&gt;fh_open != NULL &amp;&amp; s-&gt;fh_open (path_element-&gt;class, fh, flags, mode) != 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1382'>fh</a>               1382 lib/vfs/direntry.c             vfs_s_free_fh (s, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1387'>fh</a>               1387 lib/vfs/direntry.c     if ((VFS_CLASS (s)-&gt;flags &amp; VFSF_USETMP) != 0 &amp;&amp; fh-&gt;ino-&gt;localname != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1389'>fh</a>               1389 lib/vfs/direntry.c         fh-&gt;handle = open (fh-&gt;ino-&gt;localname, NO_LINEAR (flags), mode);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1390'>fh</a>               1390 lib/vfs/direntry.c         if (fh-&gt;handle == -1)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1392'>fh</a>               1392 lib/vfs/direntry.c             vfs_s_free_fh (s, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1401'>fh</a>               1401 lib/vfs/direntry.c     fh-&gt;ino-&gt;st.st_nlink++;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1402'>fh</a>               1402 lib/vfs/direntry.c     return fh;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1424'>fh</a>               1424 lib/vfs/direntry.c vfs_s_fstat (void *fh, struct stat *buf)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1426'>fh</a>               1426 lib/vfs/direntry.c     *buf = VFS_FILE_HANDLER (fh)-&gt;ino-&gt;st;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1441'>fh</a>               1441 lib/vfs/direntry.c     vfs_file_handler_t *fh = NULL;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1456'>fh</a>               1456 lib/vfs/direntry.c     fh = s-&gt;fh_new != NULL ? s-&gt;fh_new (ino, FALSE) : vfs_s_new_fh (ino, FALSE);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1458'>fh</a>               1458 lib/vfs/direntry.c     if (s-&gt;linear_start (me, fh, 0) == 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1465'>fh</a>               1465 lib/vfs/direntry.c     while ((n = s-&gt;linear_read (me, fh, buffer, sizeof (buffer))) != 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1486'>fh</a>               1486 lib/vfs/direntry.c     s-&gt;linear_close (me, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1490'>fh</a>               1490 lib/vfs/direntry.c     vfs_s_free_fh (s, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1494'>fh</a>               1494 lib/vfs/direntry.c     s-&gt;linear_close (me, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1501'>fh</a>               1501 lib/vfs/direntry.c     if (fh != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1502'>fh</a>               1502 lib/vfs/direntry.c         vfs_s_free_fh (s, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L243'>fh</a>                243 lib/vfs/vfs.h  int vfs_s_fstat (void *fh, struct stat *buf);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L134'>fh</a>                134 lib/vfs/xdirentry.h     int (*fh_open) (struct vfs_class * me, vfs_file_handler_t * fh, int flags, mode_t mode);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L135'>fh</a>                135 lib/vfs/xdirentry.h     int (*fh_close) (struct vfs_class * me, vfs_file_handler_t * fh);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L136'>fh</a>                136 lib/vfs/xdirentry.h     void (*fh_free) (vfs_file_handler_t * fh);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L143'>fh</a>                143 lib/vfs/xdirentry.h     int (*file_store) (struct vfs_class * me, vfs_file_handler_t * fh, char *path, char *localname);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L145'>fh</a>                145 lib/vfs/xdirentry.h     int (*linear_start) (struct vfs_class * me, vfs_file_handler_t * fh, off_t from);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L146'>fh</a>                146 lib/vfs/xdirentry.h     ssize_t (*linear_read) (struct vfs_class * me, vfs_file_handler_t * fh, void *buf, size_t len);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L147'>fh</a>                147 lib/vfs/xdirentry.h     void (*linear_close) (struct vfs_class * me, vfs_file_handler_t * fh);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L183'>fh</a>                183 lib/vfs/xdirentry.h void vfs_s_init_fh (vfs_file_handler_t * fh, struct vfs_s_inode *ino, gboolean changed);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L157'>fh</a>                157 src/vfs/cpio/cpio.c static ssize_t cpio_read (void *fh, char *buffer, size_t count);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L852'>fh</a>                852 src/vfs/cpio/cpio.c cpio_read (void *fh, char *buffer, size_t count)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L854'>fh</a>                854 src/vfs/cpio/cpio.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L855'>fh</a>                855 src/vfs/cpio/cpio.c     struct vfs_class *me = VFS_FILE_HANDLER_SUPER (fh)-&gt;me;</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L856'>fh</a>                856 src/vfs/cpio/cpio.c     int fd = CPIO_SUPER (VFS_FILE_HANDLER_SUPER (fh))-&gt;fd;</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L876'>fh</a>                876 src/vfs/cpio/cpio.c cpio_fh_open (struct vfs_class *me, vfs_file_handler_t * fh, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L878'>fh</a>                878 src/vfs/cpio/cpio.c     (void) fh;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1078'>fh</a>               1078 src/vfs/extfs/extfs.c extfs_read (void *fh, char *buffer, size_t count)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1080'>fh</a>               1080 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1088'>fh</a>               1088 src/vfs/extfs/extfs.c extfs_close (void *fh)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1090'>fh</a>               1090 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1102'>fh</a>               1102 src/vfs/extfs/extfs.c             (" copyin ", EXTFS_SUPER (VFS_FILE_HANDLER_SUPER (fh)), file-&gt;ino-&gt;ent,</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1114'>fh</a>               1114 src/vfs/extfs/extfs.c     if (--VFS_FILE_HANDLER_SUPER (fh)-&gt;fd_usage == 0)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1115'>fh</a>               1115 src/vfs/extfs/extfs.c         vfs_stamp_create (vfs_extfs_ops, VFS_FILE_HANDLER_SUPER (fh));</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1117'>fh</a>               1117 src/vfs/extfs/extfs.c     g_free (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1251'>fh</a>               1251 src/vfs/extfs/extfs.c extfs_fstat (void *fh, struct stat *buf)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1253'>fh</a>               1253 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1318'>fh</a>               1318 src/vfs/extfs/extfs.c extfs_write (void *fh, const char *buf, size_t nbyte)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1320'>fh</a>               1320 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1468'>fh</a>               1468 src/vfs/extfs/extfs.c extfs_lseek (void *fh, off_t offset, int whence)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1470'>fh</a>               1470 src/vfs/extfs/extfs.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1492'>fh</a>               1492 src/vfs/extfs/extfs.c     vfs_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1495'>fh</a>               1495 src/vfs/extfs/extfs.c     fh = VFS_FILE_HANDLER (extfs_open (vpath, O_RDONLY, 0));</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1496'>fh</a>               1496 src/vfs/extfs/extfs.c     if (fh == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1498'>fh</a>               1498 src/vfs/extfs/extfs.c     if (fh-&gt;ino-&gt;localname == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1500'>fh</a>               1500 src/vfs/extfs/extfs.c         extfs_close ((void *) fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1503'>fh</a>               1503 src/vfs/extfs/extfs.c     p = vfs_path_from_str (fh-&gt;ino-&gt;localname);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1504'>fh</a>               1504 src/vfs/extfs/extfs.c     VFS_FILE_HANDLER_SUPER (fh)-&gt;fd_usage++;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1505'>fh</a>               1505 src/vfs/extfs/extfs.c     extfs_close ((void *) fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1514'>fh</a>               1514 src/vfs/extfs/extfs.c     vfs_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1516'>fh</a>               1516 src/vfs/extfs/extfs.c     fh = VFS_FILE_HANDLER (extfs_open (vpath, O_RDONLY, 0));</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1517'>fh</a>               1517 src/vfs/extfs/extfs.c     if (fh == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1520'>fh</a>               1520 src/vfs/extfs/extfs.c     if (strcmp (fh-&gt;ino-&gt;localname, vfs_path_get_last_path_str (local)) == 0)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1522'>fh</a>               1522 src/vfs/extfs/extfs.c         VFS_FILE_HANDLER_SUPER (fh)-&gt;fd_usage--;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1524'>fh</a>               1524 src/vfs/extfs/extfs.c             fh-&gt;changed = TRUE;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1525'>fh</a>               1525 src/vfs/extfs/extfs.c         extfs_close ((void *) fh);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1531'>fh</a>               1531 src/vfs/extfs/extfs.c         extfs_close ((void *) fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L120'>fh</a>                120 src/vfs/fish/fish.c #define FISH_FILE_HANDLER(fh) ((fish_file_handler_t *) fh)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L966'>fh</a>                966 src/vfs/fish/fish.c fish_file_store (struct vfs_class *me, vfs_file_handler_t * fh, char *name, char *localname)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L968'>fh</a>                968 src/vfs/fish/fish.c     fish_file_handler_t *fish = FISH_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L969'>fh</a>                969 src/vfs/fish/fish.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1078'>fh</a>               1078 src/vfs/fish/fish.c fish_linear_start (struct vfs_class *me, vfs_file_handler_t * fh, off_t offset)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1080'>fh</a>               1080 src/vfs/fish/fish.c     fish_file_handler_t *fish = FISH_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1081'>fh</a>               1081 src/vfs/fish/fish.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1085'>fh</a>               1085 src/vfs/fish/fish.c     name = vfs_s_fullpath (me, fh-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1107'>fh</a>               1107 src/vfs/fish/fish.c     fh-&gt;linear = LS_LINEAR_OPEN;</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1123'>fh</a>               1123 src/vfs/fish/fish.c fish_linear_abort (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1125'>fh</a>               1125 src/vfs/fish/fish.c     fish_file_handler_t *fish = FISH_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1126'>fh</a>               1126 src/vfs/fish/fish.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1154'>fh</a>               1154 src/vfs/fish/fish.c fish_linear_read (struct vfs_class *me, vfs_file_handler_t * fh, void *buf, size_t len)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1156'>fh</a>               1156 src/vfs/fish/fish.c     fish_file_handler_t *fish = FISH_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1157'>fh</a>               1157 src/vfs/fish/fish.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1173'>fh</a>               1173 src/vfs/fish/fish.c         fish_linear_abort (me, fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1182'>fh</a>               1182 src/vfs/fish/fish.c fish_linear_close (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1184'>fh</a>               1184 src/vfs/fish/fish.c     fish_file_handler_t *fish = FISH_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1187'>fh</a>               1187 src/vfs/fish/fish.c         fish_linear_abort (me, fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1193'>fh</a>               1193 src/vfs/fish/fish.c fish_ctl (void *fh, int ctlop, void *arg)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1196'>fh</a>               1196 src/vfs/fish/fish.c     (void) fh;</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1206'>fh</a>               1206 src/vfs/fish/fish.c             vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1214'>fh</a>               1214 src/vfs/fish/fish.c             v = vfs_s_select_on_two (VFS_FILE_HANDLER_SUPER (fh)-&gt;u.fish.sockr, 0);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1639'>fh</a>               1639 src/vfs/fish/fish.c     fish_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1641'>fh</a>               1641 src/vfs/fish/fish.c     fh = g_new0 (fish_file_handler_t, 1);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1642'>fh</a>               1642 src/vfs/fish/fish.c     vfs_s_init_fh (VFS_FILE_HANDLER (fh), ino, changed);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1644'>fh</a>               1644 src/vfs/fish/fish.c     return VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1650'>fh</a>               1650 src/vfs/fish/fish.c fish_fh_open (struct vfs_class *me, vfs_file_handler_t * fh, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1652'>fh</a>               1652 src/vfs/fish/fish.c     fish_file_handler_t *fish = FISH_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1663'>fh</a>               1663 src/vfs/fish/fish.c         if (fh-&gt;ino-&gt;localname == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1668'>fh</a>               1668 src/vfs/fish/fish.c             tmp_handle = vfs_mkstemps (&amp;vpath, me-&gt;name, fh-&gt;ino-&gt;ent-&gt;name);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1672'>fh</a>               1672 src/vfs/fish/fish.c             fh-&gt;ino-&gt;localname = vfs_path_free (vpath, FALSE);</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1678'>fh</a>               1678 src/vfs/fish/fish.c     if (fh-&gt;ino-&gt;localname == NULL &amp;&amp; vfs_s_retrieve_file (me, fh-&gt;ino) == -1)</span>
+<span class='curline'><a href='../S/src--vfs--fish--fish.c.html#L1681'>fh</a>               1681 src/vfs/fish/fish.c     if (fh-&gt;ino-&gt;localname == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L157'>fh</a>                157 src/vfs/ftpfs/ftpfs.c #define FTP_FILE_HANDLER(fh) ((ftp_file_handler_t *) (fh))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L158'>fh</a>                158 src/vfs/ftpfs/ftpfs.c #define FH_SOCK FTP_FILE_HANDLER(fh)-&gt;sock</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1457'>fh</a>               1457 src/vfs/ftpfs/ftpfs.c ftpfs_linear_abort (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1459'>fh</a>               1459 src/vfs/ftpfs/ftpfs.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1860'>fh</a>               1860 src/vfs/ftpfs/ftpfs.c ftpfs_file_store (struct vfs_class *me, vfs_file_handler_t * fh, char *name, char *localname)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1862'>fh</a>               1862 src/vfs/ftpfs/ftpfs.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1864'>fh</a>               1864 src/vfs/ftpfs/ftpfs.c     ftp_file_handler_t *ftp = FTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1967'>fh</a>               1967 src/vfs/ftpfs/ftpfs.c ftpfs_linear_start (struct vfs_class *me, vfs_file_handler_t * fh, off_t offset)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1971'>fh</a>               1971 src/vfs/ftpfs/ftpfs.c     name = vfs_s_fullpath (me, fh-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1976'>fh</a>               1976 src/vfs/ftpfs/ftpfs.c         ftpfs_open_data_connection (me, VFS_FILE_HANDLER_SUPER (fh), "RETR", name, TYPE_BINARY,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1982'>fh</a>               1982 src/vfs/ftpfs/ftpfs.c     fh-&gt;linear = LS_LINEAR_OPEN;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1983'>fh</a>               1983 src/vfs/ftpfs/ftpfs.c     FTP_FILE_HANDLER (fh)-&gt;append = FALSE;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1990'>fh</a>               1990 src/vfs/ftpfs/ftpfs.c ftpfs_linear_read (struct vfs_class *me, vfs_file_handler_t * fh, void *buf, size_t len)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1993'>fh</a>               1993 src/vfs/ftpfs/ftpfs.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2003'>fh</a>               2003 src/vfs/ftpfs/ftpfs.c         ftpfs_linear_abort (me, fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2020'>fh</a>               2020 src/vfs/ftpfs/ftpfs.c ftpfs_linear_close (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2023'>fh</a>               2023 src/vfs/ftpfs/ftpfs.c         ftpfs_linear_abort (me, fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2029'>fh</a>               2029 src/vfs/ftpfs/ftpfs.c ftpfs_ctl (void *fh, int ctlop, void *arg)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2037'>fh</a>               2037 src/vfs/ftpfs/ftpfs.c             vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2237'>fh</a>               2237 src/vfs/ftpfs/ftpfs.c     ftp_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2239'>fh</a>               2239 src/vfs/ftpfs/ftpfs.c     fh = g_new0 (ftp_file_handler_t, 1);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2240'>fh</a>               2240 src/vfs/ftpfs/ftpfs.c     vfs_s_init_fh (VFS_FILE_HANDLER (fh), ino, changed);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2241'>fh</a>               2241 src/vfs/ftpfs/ftpfs.c     fh-&gt;sock = -1;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2243'>fh</a>               2243 src/vfs/ftpfs/ftpfs.c     return VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2249'>fh</a>               2249 src/vfs/ftpfs/ftpfs.c ftpfs_fh_open (struct vfs_class *me, vfs_file_handler_t * fh, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2251'>fh</a>               2251 src/vfs/ftpfs/ftpfs.c     ftp_file_handler_t *ftp = FTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2269'>fh</a>               2269 src/vfs/ftpfs/ftpfs.c         if (FTP_SUPER (VFS_FILE_HANDLER_SUPER (fh))-&gt;ctl_connection_busy)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2271'>fh</a>               2271 src/vfs/ftpfs/ftpfs.c             if (fh-&gt;ino-&gt;localname == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2276'>fh</a>               2276 src/vfs/ftpfs/ftpfs.c                 handle = vfs_mkstemps (&amp;vpath, me-&gt;name, fh-&gt;ino-&gt;ent-&gt;name);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2281'>fh</a>               2281 src/vfs/ftpfs/ftpfs.c                 fh-&gt;ino-&gt;localname = vfs_path_free (vpath, FALSE);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2286'>fh</a>               2286 src/vfs/ftpfs/ftpfs.c         name = vfs_s_fullpath (me, fh-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2290'>fh</a>               2290 src/vfs/ftpfs/ftpfs.c         fh-&gt;handle =</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2291'>fh</a>               2291 src/vfs/ftpfs/ftpfs.c             ftpfs_open_data_connection (me, VFS_FILE_HANDLER_SUPER (fh),</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2296'>fh</a>               2296 src/vfs/ftpfs/ftpfs.c         if (fh-&gt;handle &lt; 0)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2303'>fh</a>               2303 src/vfs/ftpfs/ftpfs.c         setsockopt (fh-&gt;handle, SOL_SOCKET, SO_LINGER, &amp;li, sizeof (li));</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2305'>fh</a>               2305 src/vfs/ftpfs/ftpfs.c         if (fh-&gt;ino-&gt;localname != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2307'>fh</a>               2307 src/vfs/ftpfs/ftpfs.c             unlink (fh-&gt;ino-&gt;localname);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2308'>fh</a>               2308 src/vfs/ftpfs/ftpfs.c             MC_PTR_FREE (fh-&gt;ino-&gt;localname);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2313'>fh</a>               2313 src/vfs/ftpfs/ftpfs.c     if (fh-&gt;ino-&gt;localname == NULL &amp;&amp; vfs_s_retrieve_file (me, fh-&gt;ino) == -1)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2316'>fh</a>               2316 src/vfs/ftpfs/ftpfs.c     if (fh-&gt;ino-&gt;localname == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2324'>fh</a>               2324 src/vfs/ftpfs/ftpfs.c ftpfs_fh_close (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2326'>fh</a>               2326 src/vfs/ftpfs/ftpfs.c     if (fh-&gt;handle != -1 &amp;&amp; fh-&gt;ino-&gt;localname == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2328'>fh</a>               2328 src/vfs/ftpfs/ftpfs.c         ftp_super_t *ftp = FTP_SUPER (VFS_FILE_HANDLER_SUPER (fh));</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2330'>fh</a>               2330 src/vfs/ftpfs/ftpfs.c         close (fh-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2331'>fh</a>               2331 src/vfs/ftpfs/ftpfs.c         fh-&gt;handle = -1;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2336'>fh</a>               2336 src/vfs/ftpfs/ftpfs.c         fh-&gt;changed = FALSE;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2339'>fh</a>               2339 src/vfs/ftpfs/ftpfs.c         vfs_s_invalidate (me, VFS_FILE_HANDLER_SUPER (fh));</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L67'>fh</a>                 67 src/vfs/sftpfs/file.c sftpfs_reopen (vfs_file_handler_t * fh, GError ** mcerror)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L69'>fh</a>                 69 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L78'>fh</a>                 78 src/vfs/sftpfs/file.c     sftpfs_close_file (fh, mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L79'>fh</a>                 79 src/vfs/sftpfs/file.c     sftpfs_open_file (fh, flags, mode, mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L106'>fh</a>                106 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L108'>fh</a>                108 src/vfs/sftpfs/file.c     fh = g_new0 (sftpfs_file_handler_t, 1);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L109'>fh</a>                109 src/vfs/sftpfs/file.c     vfs_s_init_fh (VFS_FILE_HANDLER (fh), ino, changed);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L111'>fh</a>                111 src/vfs/sftpfs/file.c     return VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L126'>fh</a>                126 src/vfs/sftpfs/file.c sftpfs_open_file (vfs_file_handler_t * fh, int flags, mode_t mode, GError ** mcerror)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L131'>fh</a>                131 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L132'>fh</a>                132 src/vfs/sftpfs/file.c     sftpfs_super_t *super = SFTP_SUPER (fh-&gt;ino-&gt;super);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L138'>fh</a>                138 src/vfs/sftpfs/file.c     name = vfs_s_fullpath (sftpfs_class, fh-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L205'>fh</a>                205 src/vfs/sftpfs/file.c         if (sftpfs_fstat (fh, &amp;file_info, mcerror) == 0)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L226'>fh</a>                226 src/vfs/sftpfs/file.c     vfs_file_handler_t *fh = VFS_FILE_HANDLER (data);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L228'>fh</a>                228 src/vfs/sftpfs/file.c     struct vfs_s_super *super = VFS_FILE_HANDLER_SUPER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L268'>fh</a>                268 src/vfs/sftpfs/file.c sftpfs_read_file (vfs_file_handler_t * fh, char *buffer, size_t count, GError ** mcerror)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L271'>fh</a>                271 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L276'>fh</a>                276 src/vfs/sftpfs/file.c     if (fh == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L283'>fh</a>                283 src/vfs/sftpfs/file.c     super = SFTP_SUPER (VFS_FILE_HANDLER_SUPER (fh));</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L299'>fh</a>                299 src/vfs/sftpfs/file.c     fh-&gt;pos = (off_t) libssh2_sftp_tell64 (file-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L318'>fh</a>                318 src/vfs/sftpfs/file.c sftpfs_write_file (vfs_file_handler_t * fh, const char *buffer, size_t count, GError ** mcerror)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L321'>fh</a>                321 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L322'>fh</a>                322 src/vfs/sftpfs/file.c     sftpfs_super_t *super = SFTP_SUPER (VFS_FILE_HANDLER_SUPER (fh));</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L326'>fh</a>                326 src/vfs/sftpfs/file.c     fh-&gt;pos = (off_t) libssh2_sftp_tell64 (file-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L357'>fh</a>                357 src/vfs/sftpfs/file.c sftpfs_close_file (vfs_file_handler_t * fh, GError ** mcerror)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L363'>fh</a>                363 src/vfs/sftpfs/file.c     ret = libssh2_sftp_close (SFTP_FILE_HANDLER (fh)-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L382'>fh</a>                382 src/vfs/sftpfs/file.c sftpfs_lseek (vfs_file_handler_t * fh, off_t offset, int whence, GError ** mcerror)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L384'>fh</a>                384 src/vfs/sftpfs/file.c     sftpfs_file_handler_t *file = SFTP_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L395'>fh</a>                395 src/vfs/sftpfs/file.c         if (fh-&gt;pos &gt; offset || offset == 0)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L397'>fh</a>                397 src/vfs/sftpfs/file.c             sftpfs_reopen (fh, mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L400'>fh</a>                400 src/vfs/sftpfs/file.c         fh-&gt;pos = offset;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L403'>fh</a>                403 src/vfs/sftpfs/file.c         fh-&gt;pos += offset;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L406'>fh</a>                406 src/vfs/sftpfs/file.c         if (fh-&gt;pos &gt; fh-&gt;ino-&gt;st.st_size - offset)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L408'>fh</a>                408 src/vfs/sftpfs/file.c             sftpfs_reopen (fh, mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L411'>fh</a>                411 src/vfs/sftpfs/file.c         fh-&gt;pos = fh-&gt;ino-&gt;st.st_size - offset;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L417'>fh</a>                417 src/vfs/sftpfs/file.c     libssh2_sftp_seek64 (file-&gt;handle, fh-&gt;pos);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L418'>fh</a>                418 src/vfs/sftpfs/file.c     fh-&gt;pos = (off_t) libssh2_sftp_tell64 (file-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L420'>fh</a>                420 src/vfs/sftpfs/file.c     return fh-&gt;pos;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--internal.h.html#L99'>fh</a>                 99 src/vfs/sftpfs/internal.h gboolean sftpfs_open_file (vfs_file_handler_t * fh, int flags, mode_t mode, GError ** mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--internal.h.html#L100'>fh</a>                100 src/vfs/sftpfs/internal.h ssize_t sftpfs_read_file (vfs_file_handler_t * fh, char *buffer, size_t count, GError ** mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--internal.h.html#L101'>fh</a>                101 src/vfs/sftpfs/internal.h ssize_t sftpfs_write_file (vfs_file_handler_t * fh, const char *buffer, size_t count,</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--internal.h.html#L103'>fh</a>                103 src/vfs/sftpfs/internal.h int sftpfs_close_file (vfs_file_handler_t * fh, GError ** mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--internal.h.html#L105'>fh</a>                105 src/vfs/sftpfs/internal.h off_t sftpfs_lseek (vfs_file_handler_t * fh, off_t offset, int whence, GError ** mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L96'>fh</a>                 96 src/vfs/sftpfs/vfs_class.c     vfs_file_handler_t *fh;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L146'>fh</a>                146 src/vfs/sftpfs/vfs_class.c     fh = sftpfs_fh_new (path_inode, is_changed);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L148'>fh</a>                148 src/vfs/sftpfs/vfs_class.c     if (!sftpfs_open_file (fh, flags, mode, &amp;mcerror))</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L151'>fh</a>                151 src/vfs/sftpfs/vfs_class.c         g_free (fh);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L157'>fh</a>                157 src/vfs/sftpfs/vfs_class.c     fh-&gt;ino-&gt;st.st_nlink++;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L158'>fh</a>                158 src/vfs/sftpfs/vfs_class.c     return fh;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L435'>fh</a>                435 src/vfs/sftpfs/vfs_class.c     vfs_file_handler_t *fh = VFS_FILE_HANDLER (data);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L443'>fh</a>                443 src/vfs/sftpfs/vfs_class.c     rc = sftpfs_read_file (fh, buffer, count, &amp;mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L463'>fh</a>                463 src/vfs/sftpfs/vfs_class.c     vfs_file_handler_t *fh = VFS_FILE_HANDLER (data);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L465'>fh</a>                465 src/vfs/sftpfs/vfs_class.c     rc = sftpfs_write_file (fh, buf, nbyte, &amp;mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L484'>fh</a>                484 src/vfs/sftpfs/vfs_class.c     vfs_file_handler_t *fh = VFS_FILE_HANDLER (data);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L490'>fh</a>                490 src/vfs/sftpfs/vfs_class.c     rc = sftpfs_close_file (fh, &amp;mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L493'>fh</a>                493 src/vfs/sftpfs/vfs_class.c     if (fh-&gt;handle != -1)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L494'>fh</a>                494 src/vfs/sftpfs/vfs_class.c         close (fh-&gt;handle);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L496'>fh</a>                496 src/vfs/sftpfs/vfs_class.c     vfs_s_free_inode (sftpfs_class, fh-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L574'>fh</a>                574 src/vfs/sftpfs/vfs_class.c     vfs_file_handler_t *fh = VFS_FILE_HANDLER (data);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--vfs_class.c.html#L577'>fh</a>                577 src/vfs/sftpfs/vfs_class.c     ret_offset = sftpfs_lseek (fh, offset, whence, &amp;mcerror);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L956'>fh</a>                956 src/vfs/tar/tar.c tar_read (void *fh, char *buffer, size_t count)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L958'>fh</a>                958 src/vfs/tar/tar.c     struct vfs_class *me = VFS_FILE_HANDLER_SUPER (fh)-&gt;me;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L959'>fh</a>                959 src/vfs/tar/tar.c     vfs_file_handler_t *file = VFS_FILE_HANDLER (fh);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L961'>fh</a>                961 src/vfs/tar/tar.c     int fd = TAR_SUPER (VFS_FILE_HANDLER_SUPER (fh))-&gt;fd;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L980'>fh</a>                980 src/vfs/tar/tar.c tar_fh_open (struct vfs_class *me, vfs_file_handler_t * fh, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L982'>fh</a>                982 src/vfs/tar/tar.c     (void) fh;</span>
+</pre>
+</body>
+</html>

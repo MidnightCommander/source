@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/smbfs/helpers/Makefile.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/Makefile.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/Makefile.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/smbfs/helpers/Makefile.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>###########################################################################
+<a id='L2' name='L2'></a># Makefile.in for Samba - rewritten for autoconf support
+<a id='L3' name='L3'></a># Copyright Andrew Tridgell 1992-1998
+<a id='L4' name='L4'></a>###########################################################################
+<a id='L5' name='L5'></a> 
+<a id='L6' name='L6'></a>prefix=@prefix@
+<a id='L7' name='L7'></a>exec_prefix=@exec_prefix@
+<a id='L8' name='L8'></a>mandir=@mandir@
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a>CC=@CC@
+<a id='L11' name='L11'></a>CFLAGS=@CFLAGS@
+<a id='L12' name='L12'></a>CPPFLAGS=@CPPFLAGS@
+<a id='L13' name='L13'></a>LDFLAGS=@LDFLAGS@
+<a id='L14' name='L14'></a>AWK=@AWK@
+<a id='L15' name='L15'></a>AR=@AR@
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a>INSTALLCMD=@INSTALL@
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>VPATH=@srcdir@
+<a id='L20' name='L20'></a>srcdir=@srcdir@
+<a id='L21' name='L21'></a>builddir=@builddir@
+<a id='L22' name='L22'></a>SHELL=@SHELL@
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>BASEDIR= @prefix@
+<a id='L25' name='L25'></a>LIBDIR = @libdir@
+<a id='L26' name='L26'></a>VARDIR = @localstatedir@
+<a id='L27' name='L27'></a> 
+<a id='L28' name='L28'></a># The permissions to give the executables
+<a id='L29' name='L29'></a>INSTALLPERMS = 0755
+<a id='L30' name='L30'></a> 
+<a id='L31' name='L31'></a># set these to where to find various files
+<a id='L32' name='L32'></a># These can be overridden by command line switches (see smbd(8))
+<a id='L33' name='L33'></a># or in smb.conf (see smb.conf(5))
+<a id='L34' name='L34'></a>CONFIGFILE = @configdir@/smb.conf
+<a id='L35' name='L35'></a>LMHOSTSFILE = @configdir@/lmhosts
+<a id='L36' name='L36'></a>DRIVERFILE = $(LIBDIR)/printers.def
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a># The directory where code page definition files go
+<a id='L39' name='L39'></a>CODEPAGEDIR = @codepagedir@
+<a id='L40' name='L40'></a> 
+<a id='L41' name='L41'></a>FLAGS1 = $(CFLAGS) -Iinclude -I$(srcdir)/include $(CPPFLAGS)
+<a id='L42' name='L42'></a>FLAGS2 = -DCONFIGFILE=\"$(CONFIGFILE)\" -DLMHOSTSFILE=\"$(LMHOSTSFILE)\"
+<a id='L43' name='L43'></a>FLAGS3 = -DCODEPAGEDIR=\"$(CODEPAGEDIR)\"
+<a id='L44' name='L44'></a>FLAGS4 = -DDRIVERFILE=\"$(DRIVERFILE)\"
+<a id='L45' name='L45'></a>FLAGS = $(ISA) $(FLAGS1) $(FLAGS2) $(FLAGS3) $(FLAGS4) -DHAVE_INCLUDES_H
+<a id='L46' name='L46'></a> 
+<a id='L47' name='L47'></a>######################################################################
+<a id='L48' name='L48'></a># object file lists
+<a id='L49' name='L49'></a>######################################################################
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>SAMBAFILES=                     \
+<a id='L52' name='L52'></a>        param/loadparm.o        \
+<a id='L53' name='L53'></a>        param/params.o  \
+<a id='L54' name='L54'></a>        lib/time.o      \
+<a id='L55' name='L55'></a>        lib/slprintf.o  \
+<a id='L56' name='L56'></a>        lib/util.o      \
+<a id='L57' name='L57'></a>        lib/debug.o     \
+<a id='L58' name='L58'></a>        lib/system.o    \
+<a id='L59' name='L59'></a>        lib/util_str.o  \
+<a id='L60' name='L60'></a>        lib/kanji.o     \
+<a id='L61' name='L61'></a>        lib/charcnv.o   \
+<a id='L62' name='L62'></a>        lib/charset.o   \
+<a id='L63' name='L63'></a>        lib/username.o  \
+<a id='L64' name='L64'></a>        lib/util_file.o         \
+<a id='L65' name='L65'></a>        lib/util_sock.o         \
+<a id='L66' name='L66'></a>        lib/md4.o       \
+<a id='L67' name='L67'></a>        lib/interface.o         \
+<a id='L68' name='L68'></a>        lib/netmask.o   \
+<a id='L69' name='L69'></a>        libsmb/clientgen.o      \
+<a id='L70' name='L70'></a>        libsmb/pwd_cache.o      \
+<a id='L71' name='L71'></a>        libsmb/smbencrypt.o     \
+<a id='L72' name='L72'></a>        libsmb/smbdes.o         \
+<a id='L73' name='L73'></a>        libsmb/nmblib.o         \
+<a id='L74' name='L74'></a>        libsmb/namequery.o\
+<a id='L75' name='L75'></a>        libsmb/nterr.o  \
+<a id='L76' name='L76'></a>        libsmb/smberr.o
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>######################################################################
+<a id='L79' name='L79'></a># now the rules...
+<a id='L80' name='L80'></a>######################################################################
+<a id='L81' name='L81'></a> 
+<a id='L82' name='L82'></a>all : CHECK libsamba.a
+<a id='L83' name='L83'></a> 
+<a id='L84' name='L84'></a>.SUFFIXES:
+<a id='L85' name='L85'></a>.SUFFIXES: .c .o
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a>CHECK:
+<a id='L88' name='L88'></a>        @echo "Using FLAGS = $(FLAGS)"
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>MAKEDIR = || exec false; \
+<a id='L91' name='L91'></a>          if test -d "$$dir"; then :; else \
+<a id='L92' name='L92'></a>          echo mkdir "$$dir"; \
+<a id='L93' name='L93'></a>          mkdir -p "$$dir" &gt;/dev/null 2&gt;&amp;1 || \
+<a id='L94' name='L94'></a>          test -d "$$dir" || \
+<a id='L95' name='L95'></a>          mkdir "$$dir" || \
+<a id='L96' name='L96'></a>          exec false; fi || exec false
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>libsamba.a: $(SAMBAFILES)
+<a id='L99' name='L99'></a>        $(AR) cr libsamba.a $(SAMBAFILES)
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>.c.o:
+<a id='L102' name='L102'></a>        @if (: &gt;&gt; $@ || : &gt; $@) &gt;/dev/null 2&gt;&amp;1; then rm -f $@; else \
+<a id='L103' name='L103'></a>         dir=`echo $@ | sed 's,/[^/]*$$,,;s,^$$,.,'` $(MAKEDIR); fi
+<a id='L104' name='L104'></a>        @echo Compiling $*.c
+<a id='L105' name='L105'></a>        @$(CC) -I. -I$(srcdir) $(FLAGS) -c $&lt; \
+<a id='L106' name='L106'></a>          -o $@
+<a id='L107' name='L107'></a>@BROKEN_CC@     -mv `echo $@ | sed 's%^.*/%%g'` $@
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a>etags:
+<a id='L110' name='L110'></a>        etags `find . -name "*.[ch]"`
+<a id='L111' name='L111'></a> 
+<a id='L112' name='L112'></a>ctags:
+<a id='L113' name='L113'></a>        ctags `find . -name "*.[ch]"`
+<a id='L114' name='L114'></a> 
+<a id='L115' name='L115'></a>mostlyclean:
+<a id='L116' name='L116'></a>        rm -f core */*~ *~ */*.o config.log
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a>clean: mostlyclean
+<a id='L119' name='L119'></a>        rm -f *.a
+<a id='L120' name='L120'></a> 
+<a id='L121' name='L121'></a>distclean: clean
+<a id='L122' name='L122'></a>        rm -f config.log
+<a id='L123' name='L123'></a>        rm -f include/config.h include/stamp-h Makefile
+<a id='L124' name='L124'></a>        rm -f config.status config.cache so_locations
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a># this target is really just for my use. It only works on a limited
+<a id='L127' name='L127'></a># range of machines and is used to produce a list of potentially
+<a id='L128' name='L128'></a># dead (ie. unused) functions in the code. (tridge)
+<a id='L129' name='L129'></a>finddead:
+<a id='L130' name='L130'></a>        nm */*.o |grep 'U ' | awk '{print $$2}' | sort -u &gt; nmused.txt
+<a id='L131' name='L131'></a>        nm */*.o |grep 'T ' | awk '{print $$3}' | sort -u &gt; nmfns.txt
+<a id='L132' name='L132'></a>        comm -13 nmused.txt nmfns.txt 
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a># Rules for maintainers (--enable-maintainer-mode)
+<a id='L135' name='L135'></a>AUTOCONF=@AUTOCONF@
+<a id='L136' name='L136'></a>AUTOHEADER=@AUTOHEADER@
+<a id='L137' name='L137'></a> 
+<a id='L138' name='L138'></a># when configure.ac is updated, reconfigure
+<a id='L139' name='L139'></a>$(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(srcdir)/aclocal.m4
+<a id='L140' name='L140'></a>        cd $(srcdir) &amp;&amp; $(AUTOCONF)
+<a id='L141' name='L141'></a> 
+<a id='L142' name='L142'></a>config.status: $(srcdir)/configure
+<a id='L143' name='L143'></a>        $(SHELL) ./config.status --recheck
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a>Makefile: $(srcdir)/Makefile.in config.status \
+<a id='L146' name='L146'></a>          include/stamp-h # just to ensure that config.h is up-to-date
+<a id='L147' name='L147'></a>        CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+<a id='L148' name='L148'></a> 
+<a id='L149' name='L149'></a># note that nothing depends on config.h, so will probably be rebuilt
+<a id='L150' name='L150'></a># only when explicitly requested, unless dependency tracking is enabled
+<a id='L151' name='L151'></a>include/config.h: include/stamp-h
+<a id='L152' name='L152'></a>        @:
+<a id='L153' name='L153'></a> 
+<a id='L154' name='L154'></a>include/stamp-h: $(srcdir)/include/config.h.in config.status
+<a id='L155' name='L155'></a>        CONFIG_FILES= CONFIG_HEADERS=include/config.h $(SHELL) ./config.status
+<a id='L156' name='L156'></a>        @echo &gt; include/stamp-h
+<a id='L157' name='L157'></a> 
+<a id='L158' name='L158'></a>$(srcdir)/include/config.h.in: $(srcdir)/include/stamp-h.in
+<a id='L159' name='L159'></a>        @:
+<a id='L160' name='L160'></a> 
+<a id='L161' name='L161'></a>$(srcdir)/include/stamp-h.in: @MAINT@ $(srcdir)/configure.ac
+<a id='L162' name='L162'></a>        cd $(srcdir) &amp;&amp; $(AUTOHEADER)
+<a id='L163' name='L163'></a>        @date -u &gt; $@
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a># Added for compatibility with Automake-generated makefiles
+<a id='L166' name='L166'></a>distdir:
+<a id='L167' name='L167'></a>dvi:
+<a id='L168' name='L168'></a>check:
+<a id='L169' name='L169'></a>install:
+<a id='L170' name='L170'></a>installcheck:
+<a id='L171' name='L171'></a>uninstall:
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+171 src/vfs/smbfs/helpers/Makefile.in'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/smbfs/helpers/configure.ac</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/configure.ac</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/configure.ac</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/smbfs/helpers/configure.ac'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>dnl Process this file with autoconf to produce a configure script.
+<a id='L2' name='L2'></a>AC_INIT(include/includes.h)
+<a id='L3' name='L3'></a>AC_PREREQ(2.52)
+<a id='L4' name='L4'></a>AC_CONFIG_HEADER(include/config.h)
+<a id='L5' name='L5'></a>AC_CONFIG_AUX_DIR(../../../../config)
+<a id='L6' name='L6'></a># we want to be compatibe with older versions of Samba
+<a id='L7' name='L7'></a>AC_PREFIX_DEFAULT(/usr/local/samba)
+<a id='L8' name='L8'></a>AC_SYS_LARGEFILE
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a>dnl Unique-to-Samba variables we'll be playing with.
+<a id='L11' name='L11'></a>AC_SUBST(SHELL)
+<a id='L12' name='L12'></a>AC_SUBST(MPROGS)
+<a id='L13' name='L13'></a>AC_SUBST(LDSHFLAGS)
+<a id='L14' name='L14'></a>AC_SUBST(HOST_OS)
+<a id='L15' name='L15'></a>AC_SUBST(WRAP)
+<a id='L16' name='L16'></a>AC_SUBST(WRAP32)
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a># compile with optimization and without debugging by default
+<a id='L19' name='L19'></a>CFLAGS=${CFLAGS-"-O"}
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>dnl Checks for programs.
+<a id='L22' name='L22'></a>AC_PROG_CC
+<a id='L23' name='L23'></a>AC_PROG_INSTALL
+<a id='L24' name='L24'></a>AC_PROG_AWK
+<a id='L25' name='L25'></a>AC_CHECK_TOOL(AR, ar, ar)
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>dnl Check if C compiler understands -c and -o at the same time
+<a id='L28' name='L28'></a>AC_PROG_CC_C_O
+<a id='L29' name='L29'></a>if eval "test \"`echo '$ac_cv_prog_cc_'${ac_cc}_c_o`\" = no"; then
+<a id='L30' name='L30'></a>      BROKEN_CC=
+<a id='L31' name='L31'></a>else
+<a id='L32' name='L32'></a>      BROKEN_CC=#
+<a id='L33' name='L33'></a>fi
+<a id='L34' name='L34'></a>AC_SUBST(BROKEN_CC)
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>AC_CANONICAL_HOST
+<a id='L37' name='L37'></a>AC_VALIDATE_CACHE_SYSTEM_TYPE
+<a id='L38' name='L38'></a>SAMBA_MAINTAINER_MODE
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>AC_INLINE
+<a id='L41' name='L41'></a>AC_HEADER_DIRENT
+<a id='L42' name='L42'></a>AC_HEADER_TIME
+<a id='L43' name='L43'></a>AC_CHECK_HEADERS(arpa/inet.h sys/fcntl.h sys/select.h fcntl.h sys/time.h sys/unistd.h)
+<a id='L44' name='L44'></a>AC_CHECK_HEADERS(unistd.h utime.h sys/id.h limits.h memory.h net/if.h)
+<a id='L45' name='L45'></a>AC_CHECK_HEADERS(compat.h rpc/rpc.h rpcsvc/nis.h rpcsvc/yp_prot.h rpcsvc/ypclnt.h)
+<a id='L46' name='L46'></a>AC_CHECK_HEADERS(sys/param.h ctype.h sys/resource.h sys/ioctl.h sys/mode.h)
+<a id='L47' name='L47'></a>AC_CHECK_HEADERS(sys/mman.h sys/filio.h sys/priv.h string.h strings.h sys/socket.h)
+<a id='L48' name='L48'></a>AC_CHECK_HEADERS(sys/mount.h sys/vfs.h sys/fs/s5param.h sys/filsys.h)
+<a id='L49' name='L49'></a>AC_CHECK_HEADERS(sys/statfs.h sys/dustat.h sys/statvfs.h stdarg.h sys/sockio.h)
+<a id='L50' name='L50'></a>AC_CHECK_HEADERS(netinet/tcp.h netinet/in_systm.h netinet/in_ip.h)
+<a id='L51' name='L51'></a>AC_CHECK_HEADERS(sys/security.h security/pam_appl.h)
+<a id='L52' name='L52'></a>AC_CHECK_HEADERS(stropts.h poll.h syscall.h sys/syscall.h)
+<a id='L53' name='L53'></a>AC_CHECK_HEADERS(sys/acl.h sys/cdefs.h)
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>AC_CHECK_SIZEOF(int)
+<a id='L56' name='L56'></a>AC_CHECK_SIZEOF(long)
+<a id='L57' name='L57'></a>AC_CHECK_SIZEOF(short)
+<a id='L58' name='L58'></a>AC_CHECK_SIZEOF(off_t)
+<a id='L59' name='L59'></a>AC_CHECK_SIZEOF(ino_t)
+<a id='L60' name='L60'></a> 
+<a id='L61' name='L61'></a>AC_C_CONST
+<a id='L62' name='L62'></a>AC_C_INLINE
+<a id='L63' name='L63'></a>AC_C_BIGENDIAN
+<a id='L64' name='L64'></a>AC_C_CHAR_UNSIGNED
+<a id='L65' name='L65'></a> 
+<a id='L66' name='L66'></a>AC_TYPE_SIGNAL
+<a id='L67' name='L67'></a>AC_TYPE_UID_T
+<a id='L68' name='L68'></a>AC_TYPE_MODE_T
+<a id='L69' name='L69'></a>AC_TYPE_OFF_T
+<a id='L70' name='L70'></a>AC_TYPE_SIZE_T
+<a id='L71' name='L71'></a>AC_TYPE_PID_T
+<a id='L72' name='L72'></a>AC_CHECK_TYPE(ino_t,unsigned)
+<a id='L73' name='L73'></a>AC_CHECK_TYPE(loff_t,off_t)
+<a id='L74' name='L74'></a>AC_CHECK_TYPE(offset_t,off_t)
+<a id='L75' name='L75'></a>AC_CHECK_TYPE(ssize_t, int)
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a># we need libdl for PAM and the new VFS code
+<a id='L78' name='L78'></a>AC_CHECK_LIB(dl,main)
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a># stupid glibc has the functions but no declaration. grrrr.
+<a id='L81' name='L81'></a>AC_CACHE_CHECK([for crypt declaration],samba_cv_have_crypt_decl,[
+<a id='L82' name='L82'></a>    AC_TRY_COMPILE([#include &lt;unistd.h&gt;],[int i = (int)crypt],
+<a id='L83' name='L83'></a>        samba_cv_have_crypt_decl=yes,samba_cv_have_crypt_decl=no)])
+<a id='L84' name='L84'></a>if test x"$samba_cv_have_crypt_decl" = x"yes"; then
+<a id='L85' name='L85'></a>    AC_DEFINE(HAVE_CRYPT_DECL, 1, [Define if crypt() is declared])
+<a id='L86' name='L86'></a>fi
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a>AC_FUNC_MEMCMP
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>###############################################
+<a id='L91' name='L91'></a># test for where we get crypt() from
+<a id='L92' name='L92'></a>AC_CHECK_FUNCS(crypt)
+<a id='L93' name='L93'></a>if test x"$ac_cv_func_crypt" = x"no"; then
+<a id='L94' name='L94'></a>    AC_CHECK_LIB(crypt, crypt, [LIBS="$LIBS -lcrypt";
+<a id='L95' name='L95'></a>        AC_DEFINE(HAVE_CRYPT)])
+<a id='L96' name='L96'></a>fi
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a> 
+<a id='L99' name='L99'></a># The following test taken from the cvs sources
+<a id='L100' name='L100'></a># If we can't find connect, try looking in -lsocket, -lnsl, and -linet.
+<a id='L101' name='L101'></a># The Irix 5 libc.so has connect and gethostbyname, but Irix 5 also has
+<a id='L102' name='L102'></a># libsocket.so which has a bad implementation of gethostbyname (it
+<a id='L103' name='L103'></a># only looks in /etc/hosts), so we only look for -lsocket if we need
+<a id='L104' name='L104'></a># it.
+<a id='L105' name='L105'></a>AC_CHECK_FUNCS(connect)
+<a id='L106' name='L106'></a>if test x"$ac_cv_func_connect" = x"no"; then
+<a id='L107' name='L107'></a>    case "$LIBS" in
+<a id='L108' name='L108'></a>    *-lnsl*) ;;
+<a id='L109' name='L109'></a>    *) AC_CHECK_LIB(nsl_s, printf) ;;
+<a id='L110' name='L110'></a>    esac
+<a id='L111' name='L111'></a>    case "$LIBS" in
+<a id='L112' name='L112'></a>    *-lnsl*) ;;
+<a id='L113' name='L113'></a>    *) AC_CHECK_LIB(nsl, printf) ;;
+<a id='L114' name='L114'></a>    esac
+<a id='L115' name='L115'></a>    case "$LIBS" in
+<a id='L116' name='L116'></a>    *-lsocket*) ;;
+<a id='L117' name='L117'></a>    *) AC_CHECK_LIB(socket, connect) ;;
+<a id='L118' name='L118'></a>    esac
+<a id='L119' name='L119'></a>    case "$LIBS" in
+<a id='L120' name='L120'></a>    *-linet*) ;;
+<a id='L121' name='L121'></a>    *) AC_CHECK_LIB(inet, connect) ;;
+<a id='L122' name='L122'></a>    esac
+<a id='L123' name='L123'></a>    dnl We can't just call AC_CHECK_FUNCS(connect) here, because the value
+<a id='L124' name='L124'></a>    dnl has been cached.
+<a id='L125' name='L125'></a>    if test x"$ac_cv_lib_socket_connect" = x"yes" || 
+<a id='L126' name='L126'></a>       test x"$ac_cv_lib_inet_connect" = x"yes"; then
+<a id='L127' name='L127'></a>        # ac_cv_func_connect=yes
+<a id='L128' name='L128'></a>        # don't!  it would cause AC_CHECK_FUNC to succeed next time configure is run
+<a id='L129' name='L129'></a>        AC_DEFINE(HAVE_CONNECT)
+<a id='L130' name='L130'></a>    fi
+<a id='L131' name='L131'></a>fi
+<a id='L132' name='L132'></a> 
+<a id='L133' name='L133'></a>AC_CHECK_FUNCS(waitpid getcwd strtoul chown chmod)
+<a id='L134' name='L134'></a>AC_CHECK_FUNCS(fstat utime utimes getrlimit fsync memset)
+<a id='L135' name='L135'></a>AC_CHECK_FUNCS(memmove vsnprintf snprintf setsid pipe crypt16 getauthuid)
+<a id='L136' name='L136'></a>AC_CHECK_FUNCS(sigprocmask sigblock sigaction innetgr setnetgrent getnetgrent endnetgrent)
+<a id='L137' name='L137'></a>AC_CHECK_FUNCS(initgroups select rdchk getgrnam pathconf)
+<a id='L138' name='L138'></a>AC_CHECK_FUNCS(setpriv setgidx setuidx setgroups mktime rename)
+<a id='L139' name='L139'></a>AC_CHECK_FUNCS(grantpt dup2 yp_get_default_domain getpwanam)
+<a id='L140' name='L140'></a>AC_CHECK_FUNCS(srandom random srand rand setenv usleep strcasecmp)
+<a id='L141' name='L141'></a> 
+<a id='L142' name='L142'></a>AC_CHECK_FUNCS(getdents)
+<a id='L143' name='L143'></a>AC_CHECK_FUNCS(llseek)
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a>#
+<a id='L146' name='L146'></a># If no strcasecmp, check for it in some known places
+<a id='L147' name='L147'></a># It is in -lresolv on ReliantUNIX and UnixWare
+<a id='L148' name='L148'></a>#   -lresolve *must* follow -lnsl for name resolution to work properly
+<a id='L149' name='L149'></a>#
+<a id='L150' name='L150'></a> 
+<a id='L151' name='L151'></a>if test x$ac_cv_func_strcasecmp = xno ; then
+<a id='L152' name='L152'></a>        AC_CHECK_LIB(resolv,strcasecmp,[LIBS="$LIBS -lresolv"]
+<a id='L153' name='L153'></a>                AC_DEFINE(HAVE_STRCASECMP))
+<a id='L154' name='L154'></a>fi
+<a id='L155' name='L155'></a> 
+<a id='L156' name='L156'></a>#
+<a id='L157' name='L157'></a># Check for the functions putprpwnam, set_auth_parameters,
+<a id='L158' name='L158'></a># getspnam, bigcrypt and getprpwnam in -lsec and -lsecurity
+<a id='L159' name='L159'></a># Needed for OSF1 and HPUX.
+<a id='L160' name='L160'></a>#
+<a id='L161' name='L161'></a> 
+<a id='L162' name='L162'></a>AC_LIBTESTFUNC(security, putprpwnam)
+<a id='L163' name='L163'></a>AC_LIBTESTFUNC(sec, putprpwnam)
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a>AC_LIBTESTFUNC(security, set_auth_parameters)
+<a id='L166' name='L166'></a>AC_LIBTESTFUNC(sec, set_auth_parameters)
+<a id='L167' name='L167'></a> 
+<a id='L168' name='L168'></a>AC_LIBTESTFUNC(security, getspnam)
+<a id='L169' name='L169'></a>AC_LIBTESTFUNC(sec, getspnam)
+<a id='L170' name='L170'></a> 
+<a id='L171' name='L171'></a>AC_LIBTESTFUNC(security, bigcrypt)
+<a id='L172' name='L172'></a>AC_LIBTESTFUNC(sec, bigcrypt)
+<a id='L173' name='L173'></a> 
+<a id='L174' name='L174'></a>AC_LIBTESTFUNC(security, getprpwnam)
+<a id='L175' name='L175'></a>AC_LIBTESTFUNC(sec, getprpwnam)
+<a id='L176' name='L176'></a> 
+<a id='L177' name='L177'></a># this bit needs to be modified for each OS that is suported by
+<a id='L178' name='L178'></a># smbwrapper. You need to specify how to created a shared library and
+<a id='L179' name='L179'></a># how to compile C code to produce PIC object files
+<a id='L180' name='L180'></a> 
+<a id='L181' name='L181'></a># these are the defaults, good for lots of systems
+<a id='L182' name='L182'></a>HOST_OS="$host_os"
+<a id='L183' name='L183'></a>LDSHFLAGS="-shared"
+<a id='L184' name='L184'></a> 
+<a id='L185' name='L185'></a># and these are for particular systems
+<a id='L186' name='L186'></a>case "$host_os" in
+<a id='L187' name='L187'></a>                *linux*)   AC_DEFINE(LINUX, 1, [Define on Linux]);;
+<a id='L188' name='L188'></a>                *solaris*) AC_DEFINE(SUNOS5, 1, [Define on SunOS 5 (Solaris)])
+<a id='L189' name='L189'></a>                                        LDSHFLAGS="-G"
+<a id='L190' name='L190'></a>                ;;
+<a id='L191' name='L191'></a>                *sunos*) AC_DEFINE(SUNOS4, 1, [Define on SunOS 4])
+<a id='L192' name='L192'></a>                                        LDSHFLAGS=""
+<a id='L193' name='L193'></a>                ;;
+<a id='L194' name='L194'></a>                *bsd*) LDSHFLAGS="-shared -Bshareable"
+<a id='L195' name='L195'></a>                ;;
+<a id='L196' name='L196'></a>                *irix*) AC_DEFINE(IRIX, 1, [Define on IRIX])
+<a id='L197' name='L197'></a>                        case "$host_os" in
+<a id='L198' name='L198'></a>                        *irix6*) AC_DEFINE(IRIX6, 1, [Define on IRIX 6])
+<a id='L199' name='L199'></a>                        ;;
+<a id='L200' name='L200'></a>                        esac
+<a id='L201' name='L201'></a>                        ATTEMPT_WRAP32_BUILD=yes
+<a id='L202' name='L202'></a>                ;;
+<a id='L203' name='L203'></a>                *aix*) AC_DEFINE(AIX, 1, [Define on AIX]);;
+<a id='L204' name='L204'></a>                *hpux*) AC_DEFINE(HPUX, 1, [Define on HP-UX]);;
+<a id='L205' name='L205'></a>                *qnx*) AC_DEFINE(QNX, 1, [Define on QNX]);;
+<a id='L206' name='L206'></a>                *osf*) AC_DEFINE(OSF1, 1, [Define on OSF1]);;
+<a id='L207' name='L207'></a>                *sco*) AC_DEFINE(SCO, 1, [Define on SCO]);;
+<a id='L208' name='L208'></a>                *next2*) AC_DEFINE(NEXT2, 1, [Define on NeXT 2]);;
+<a id='L209' name='L209'></a>                *dgux*) AC_CHECK_PROG( ROFF, groff, [groff -etpsR -Tascii -man]);;
+<a id='L210' name='L210'></a>                *sysv4*)
+<a id='L211' name='L211'></a>                        case "$host" in
+<a id='L212' name='L212'></a>                                *-univel-*)     if [ test "$GCC" != yes ]; then
+<a id='L213' name='L213'></a>                                                                        AC_DEFINE(HAVE_MEMSET)
+<a id='L214' name='L214'></a>                                                                fi
+<a id='L215' name='L215'></a>                                                                LDSHFLAGS="-G"
+<a id='L216' name='L216'></a>                                ;;
+<a id='L217' name='L217'></a>                        esac
+<a id='L218' name='L218'></a>                        ;;
+<a id='L219' name='L219'></a>                *sysv5*)
+<a id='L220' name='L220'></a>                        if [ test "$GCC" != yes ]; then
+<a id='L221' name='L221'></a>                                AC_DEFINE(HAVE_MEMSET)
+<a id='L222' name='L222'></a>                        fi
+<a id='L223' name='L223'></a>                        LDSHFLAGS="-G"
+<a id='L224' name='L224'></a>                        ;;
+<a id='L225' name='L225'></a>esac
+<a id='L226' name='L226'></a> 
+<a id='L227' name='L227'></a>################
+<a id='L228' name='L228'></a> 
+<a id='L229' name='L229'></a>AC_CACHE_CHECK([for long long],samba_cv_have_longlong,[
+<a id='L230' name='L230'></a>AC_TRY_RUN([
+<a id='L231' name='L231'></a>#include &lt;stdio.h&gt;
+<a id='L232' name='L232'></a>#include &lt;stdlib.h&gt;
+<a id='L233' name='L233'></a>main() { long long x = 1000000; x *= x; exit(((x/1000000) == 1000000)? 0: 1); }],
+<a id='L234' name='L234'></a>samba_cv_have_longlong=yes,samba_cv_have_longlong=no,samba_cv_have_longlong=cross)])
+<a id='L235' name='L235'></a>if test x"$samba_cv_have_longlong" = x"yes"; then
+<a id='L236' name='L236'></a>    AC_DEFINE(HAVE_LONGLONG, 1, [Define if long long is usable])
+<a id='L237' name='L237'></a>fi
+<a id='L238' name='L238'></a> 
+<a id='L239' name='L239'></a>AC_CACHE_CHECK([for sin_len in sock],samba_cv_HAVE_SOCK_SIN_LEN,[
+<a id='L240' name='L240'></a>AC_TRY_COMPILE([#include &lt;sys/types.h&gt;
+<a id='L241' name='L241'></a>#include &lt;sys/socket.h&gt;
+<a id='L242' name='L242'></a>#include &lt;netinet/in.h&gt;],
+<a id='L243' name='L243'></a>[struct sockaddr_in sock; sock.sin_len = sizeof(sock);],
+<a id='L244' name='L244'></a>samba_cv_HAVE_SOCK_SIN_LEN=yes,samba_cv_HAVE_SOCK_SIN_LEN=no)])
+<a id='L245' name='L245'></a>if test x"$samba_cv_HAVE_SOCK_SIN_LEN" = x"yes"; then
+<a id='L246' name='L246'></a>    AC_DEFINE(HAVE_SOCK_SIN_LEN, 1, [Define if struct sockaddr_in has sin_len field])
+<a id='L247' name='L247'></a>fi
+<a id='L248' name='L248'></a> 
+<a id='L249' name='L249'></a>AC_CACHE_CHECK([for __FILE__ macro],samba_cv_HAVE_FILE_MACRO,[
+<a id='L250' name='L250'></a>AC_TRY_COMPILE([#include &lt;stdio.h&gt;], [printf("%s\n", __FILE__);],
+<a id='L251' name='L251'></a>samba_cv_HAVE_FILE_MACRO=yes,samba_cv_HAVE_FILE_MACRO=no)])
+<a id='L252' name='L252'></a>if test x"$samba_cv_HAVE_FILE_MACRO" = x"yes"; then
+<a id='L253' name='L253'></a>    AC_DEFINE(HAVE_FILE_MACRO, 1, [Define if __FILE__ macro is supported])
+<a id='L254' name='L254'></a>fi
+<a id='L255' name='L255'></a> 
+<a id='L256' name='L256'></a>AC_CACHE_CHECK([for __FUNCTION__ macro],samba_cv_HAVE_FUNCTION_MACRO,[
+<a id='L257' name='L257'></a>AC_TRY_COMPILE([#include &lt;stdio.h&gt;], [printf("%s\n", __FUNCTION__);],
+<a id='L258' name='L258'></a>samba_cv_HAVE_FUNCTION_MACRO=yes,samba_cv_HAVE_FUNCTION_MACRO=no)])
+<a id='L259' name='L259'></a>if test x"$samba_cv_HAVE_FUNCTION_MACRO" = x"yes"; then
+<a id='L260' name='L260'></a>    AC_DEFINE(HAVE_FUNCTION_MACRO, 1, [Define if __FUNCTION__ macro is supported])
+<a id='L261' name='L261'></a>fi
+<a id='L262' name='L262'></a> 
+<a id='L263' name='L263'></a>AC_CACHE_CHECK([if gettimeofday takes tz argument],samba_cv_HAVE_GETTIMEOFDAY_TZ,[
+<a id='L264' name='L264'></a>AC_TRY_RUN([
+<a id='L265' name='L265'></a>#include &lt;sys/time.h&gt;
+<a id='L266' name='L266'></a>#include &lt;unistd.h&gt;
+<a id='L267' name='L267'></a>#include &lt;stdlib.h&gt;
+<a id='L268' name='L268'></a>main() { struct timeval tv; exit(gettimeofday(&amp;tv, NULL));}],
+<a id='L269' name='L269'></a>           samba_cv_HAVE_GETTIMEOFDAY_TZ=yes,samba_cv_HAVE_GETTIMEOFDAY_TZ=no,samba_cv_HAVE_GETTIMEOFDAY_TZ=cross)])
+<a id='L270' name='L270'></a>if test x"$samba_cv_HAVE_GETTIMEOFDAY_TZ" = x"yes"; then
+<a id='L271' name='L271'></a>    AC_DEFINE(HAVE_GETTIMEOFDAY_TZ, 1, [Define if gettimeofday takes tz argument])
+<a id='L272' name='L272'></a>fi
+<a id='L273' name='L273'></a> 
+<a id='L274' name='L274'></a> 
+<a id='L275' name='L275'></a>AC_CACHE_CHECK([for broken readdir],samba_cv_HAVE_BROKEN_READDIR,[
+<a id='L276' name='L276'></a>AC_TRY_RUN([
+<a id='L277' name='L277'></a>#include &lt;sys/types.h&gt;
+<a id='L278' name='L278'></a>#include &lt;stdlib.h&gt;
+<a id='L279' name='L279'></a>#include &lt;dirent.h&gt;
+<a id='L280' name='L280'></a>main() { struct dirent *di; DIR *d = opendir("."); di = readdir(d);
+<a id='L281' name='L281'></a>if (di &amp;&amp; di-&gt;d_name[-2] == '.' &amp;&amp; di-&gt;d_name[-1] == 0 &amp;&amp;
+<a id='L282' name='L282'></a>di-&gt;d_name[0] == 0) exit(0); exit(1);} ],
+<a id='L283' name='L283'></a>samba_cv_HAVE_BROKEN_READDIR=yes,samba_cv_HAVE_BROKEN_READDIR=no,samba_cv_HAVE_BROKEN_READDIR=cross)])
+<a id='L284' name='L284'></a>if test x"$samba_cv_HAVE_BROKEN_READDIR" = x"yes"; then
+<a id='L285' name='L285'></a>    AC_DEFINE(HAVE_BROKEN_READDIR, 1, [Define if readdir() is broken])
+<a id='L286' name='L286'></a>fi
+<a id='L287' name='L287'></a> 
+<a id='L288' name='L288'></a>AC_CACHE_CHECK([for kernel oplock type definitions],samba_cv_HAVE_KERNEL_OPLOCKS,[
+<a id='L289' name='L289'></a>AC_TRY_COMPILE([#include &lt;sys/types.h&gt;
+<a id='L290' name='L290'></a>#include &lt;fcntl.h&gt;],
+<a id='L291' name='L291'></a>[oplock_stat_t t; t.os_state = OP_REVOKE; t.os_dev = 1; t.os_ino = 1;],
+<a id='L292' name='L292'></a>samba_cv_HAVE_KERNEL_OPLOCKS=yes,samba_cv_HAVE_KERNEL_OPLOCKS=no)])
+<a id='L293' name='L293'></a>if test x"$samba_cv_HAVE_KERNEL_OPLOCKS" = x"yes"; then
+<a id='L294' name='L294'></a>    AC_DEFINE(HAVE_KERNEL_OPLOCKS, 1, [Define to use kernel oplock capabilities])
+<a id='L295' name='L295'></a>fi
+<a id='L296' name='L296'></a> 
+<a id='L297' name='L297'></a>#
+<a id='L298' name='L298'></a># Check for int16, uint16, int32 and uint32 in rpc/types.h included from rpc/rpc.h
+<a id='L299' name='L299'></a># This is *really* broken but some systems (DEC OSF1) do this.... JRA.
+<a id='L300' name='L300'></a>#
+<a id='L301' name='L301'></a> 
+<a id='L302' name='L302'></a>AC_CACHE_CHECK([for int16 typedef included by rpc/rpc.h],samba_cv_HAVE_INT16_FROM_RPC_RPC_H,[
+<a id='L303' name='L303'></a>AC_TRY_COMPILE([#include &lt;sys/types.h&gt;
+<a id='L304' name='L304'></a>#if defined(HAVE_RPC_RPC_H)
+<a id='L305' name='L305'></a>#include &lt;rpc/rpc.h&gt;
+<a id='L306' name='L306'></a>#endif],
+<a id='L307' name='L307'></a>[int16 testvar;],
+<a id='L308' name='L308'></a>samba_cv_HAVE_INT16_FROM_RPC_RPC_H=yes,samba_cv_HAVE_INT16_FROM_RPC_RPC_H=no)])
+<a id='L309' name='L309'></a>if test x"$samba_cv_HAVE_INT16_FROM_RPC_RPC_H" = x"yes"; then
+<a id='L310' name='L310'></a>    AC_DEFINE(HAVE_INT16_FROM_RPC_RPC_H, 1, [Define if rpc/rpc.h defines int16])
+<a id='L311' name='L311'></a>fi
+<a id='L312' name='L312'></a> 
+<a id='L313' name='L313'></a>AC_CACHE_CHECK([for uint16 typedef included by rpc/rpc.h],samba_cv_HAVE_UINT16_FROM_RPC_RPC_H,[
+<a id='L314' name='L314'></a>AC_TRY_COMPILE([#include &lt;sys/types.h&gt;
+<a id='L315' name='L315'></a>#if defined(HAVE_RPC_RPC_H)
+<a id='L316' name='L316'></a>#include &lt;rpc/rpc.h&gt;
+<a id='L317' name='L317'></a>#endif],
+<a id='L318' name='L318'></a>[uint16 testvar;],
+<a id='L319' name='L319'></a>samba_cv_HAVE_UINT16_FROM_RPC_RPC_H=yes,samba_cv_HAVE_UINT16_FROM_RPC_RPC_H=no)])
+<a id='L320' name='L320'></a>if test x"$samba_cv_HAVE_UINT16_FROM_RPC_RPC_H" = x"yes"; then
+<a id='L321' name='L321'></a>    AC_DEFINE(HAVE_UINT16_FROM_RPC_RPC_H, 1, [Define if rpc/rpc.h defines uint16])
+<a id='L322' name='L322'></a>fi
+<a id='L323' name='L323'></a> 
+<a id='L324' name='L324'></a>AC_CACHE_CHECK([for int32 typedef included by rpc/rpc.h],samba_cv_HAVE_INT32_FROM_RPC_RPC_H,[
+<a id='L325' name='L325'></a>AC_TRY_COMPILE([#include &lt;sys/types.h&gt;
+<a id='L326' name='L326'></a>#if defined(HAVE_RPC_RPC_H)
+<a id='L327' name='L327'></a>#include &lt;rpc/rpc.h&gt;
+<a id='L328' name='L328'></a>#endif],
+<a id='L329' name='L329'></a>[int32 testvar;],
+<a id='L330' name='L330'></a>samba_cv_HAVE_INT32_FROM_RPC_RPC_H=yes,samba_cv_HAVE_INT32_FROM_RPC_RPC_H=no)])
+<a id='L331' name='L331'></a>if test x"$samba_cv_HAVE_INT32_FROM_RPC_RPC_H" = x"yes"; then
+<a id='L332' name='L332'></a>    AC_DEFINE(HAVE_INT32_FROM_RPC_RPC_H, 1, [Define if rpc/rpc.h defines int32])
+<a id='L333' name='L333'></a>fi
+<a id='L334' name='L334'></a> 
+<a id='L335' name='L335'></a>AC_CACHE_CHECK([for uint32 typedef included by rpc/rpc.h],samba_cv_HAVE_UINT32_FROM_RPC_RPC_H,[
+<a id='L336' name='L336'></a>AC_TRY_COMPILE([#include &lt;sys/types.h&gt;
+<a id='L337' name='L337'></a>#if defined(HAVE_RPC_RPC_H)
+<a id='L338' name='L338'></a>#include &lt;rpc/rpc.h&gt;
+<a id='L339' name='L339'></a>#endif],
+<a id='L340' name='L340'></a>[uint32 testvar;],
+<a id='L341' name='L341'></a>samba_cv_HAVE_UINT32_FROM_RPC_RPC_H=yes,samba_cv_HAVE_UINT32_FROM_RPC_RPC_H=no)])
+<a id='L342' name='L342'></a>if test x"$samba_cv_HAVE_UINT32_FROM_RPC_RPC_H" = x"yes"; then
+<a id='L343' name='L343'></a>    AC_DEFINE(HAVE_UINT32_FROM_RPC_RPC_H, 1, [Define if rpc/rpc.h defines uint32])
+<a id='L344' name='L344'></a>fi
+<a id='L345' name='L345'></a> 
+<a id='L346' name='L346'></a>dnl
+<a id='L347' name='L347'></a>dnl Some systems (SCO) have a problem including
+<a id='L348' name='L348'></a>dnl &lt;prot.h&gt; and &lt;rpc/rpc.h&gt; due to AUTH_ERROR being defined
+<a id='L349' name='L349'></a>dnl as a #define in &lt;prot.h&gt; and as part of an enum
+<a id='L350' name='L350'></a>dnl in &lt;rpc/rpc.h&gt;.
+<a id='L351' name='L351'></a>dnl
+<a id='L352' name='L352'></a> 
+<a id='L353' name='L353'></a>AC_CACHE_CHECK([for conflicting AUTH_ERROR define in rpc/rpc.h],samba_cv_HAVE_RPC_AUTH_ERROR_CONFLICT,[
+<a id='L354' name='L354'></a>AC_TRY_COMPILE([#include &lt;sys/types.h&gt;
+<a id='L355' name='L355'></a>#ifdef HAVE_SYS_SECURITY_H
+<a id='L356' name='L356'></a>#include &lt;sys/security.h&gt;
+<a id='L357' name='L357'></a>#include &lt;prot.h&gt;
+<a id='L358' name='L358'></a>#endif  /* HAVE_SYS_SECURITY_H */
+<a id='L359' name='L359'></a>#if defined(HAVE_RPC_RPC_H)
+<a id='L360' name='L360'></a>#include &lt;rpc/rpc.h&gt;
+<a id='L361' name='L361'></a>#endif],
+<a id='L362' name='L362'></a>[int testvar;],
+<a id='L363' name='L363'></a>samba_cv_HAVE_RPC_AUTH_ERROR_CONFLICT=no,samba_cv_HAVE_RPC_AUTH_ERROR_CONFLICT=yes)])
+<a id='L364' name='L364'></a>if test x"$samba_cv_HAVE_RPC_AUTH_ERROR_CONFLICT" = x"yes"; then
+<a id='L365' name='L365'></a>    AC_DEFINE(HAVE_RPC_AUTH_ERROR_CONFLICT, 1, [Define if rpc/rpc.h defines AUTH_ERROR])
+<a id='L366' name='L366'></a>fi
+<a id='L367' name='L367'></a> 
+<a id='L368' name='L368'></a>netmask=no;
+<a id='L369' name='L369'></a>AC_CACHE_CHECK([for netmask ifconf],samba_cv_HAVE_NETMASK_IFCONF,[
+<a id='L370' name='L370'></a>AC_TRY_RUN([
+<a id='L371' name='L371'></a>#define HAVE_NETMASK_IFCONF 1
+<a id='L372' name='L372'></a>#define AUTOCONF 1
+<a id='L373' name='L373'></a>#include "confdefs.h"
+<a id='L374' name='L374'></a>#include "${srcdir-.}/lib/netmask.c"],
+<a id='L375' name='L375'></a>           samba_cv_HAVE_NETMASK_IFCONF=yes,samba_cv_HAVE_NETMASK_IFCONF=no,samba_cv_HAVE_NETMASK_IFCONF=cross)])
+<a id='L376' name='L376'></a>if test x"$samba_cv_HAVE_NETMASK_IFCONF" = x"yes"; then
+<a id='L377' name='L377'></a>    netmask=yes;AC_DEFINE(HAVE_NETMASK_IFCONF, 1, [Define to use IFCONF style netmask])
+<a id='L378' name='L378'></a>fi
+<a id='L379' name='L379'></a> 
+<a id='L380' name='L380'></a>if test $netmask = no; then
+<a id='L381' name='L381'></a>AC_CACHE_CHECK([for netmask ifreq],samba_cv_HAVE_NETMASK_IFREQ,[
+<a id='L382' name='L382'></a>AC_TRY_RUN([
+<a id='L383' name='L383'></a>#define HAVE_NETMASK_IFREQ 1
+<a id='L384' name='L384'></a>#define AUTOCONF 1
+<a id='L385' name='L385'></a>#include "confdefs.h"
+<a id='L386' name='L386'></a>#include "${srcdir-.}/lib/netmask.c"],
+<a id='L387' name='L387'></a>           samba_cv_HAVE_NETMASK_IFREQ=yes,samba_cv_HAVE_NETMASK_IFREQ=no,samba_cv_HAVE_NETMASK_IFREQ=cross)])
+<a id='L388' name='L388'></a>if test x"$samba_cv_HAVE_NETMASK_IFREQ" = x"yes"; then
+<a id='L389' name='L389'></a>    netmask=yes;AC_DEFINE(HAVE_NETMASK_IFREQ, 1, [Define to use IFREQ style netmask])
+<a id='L390' name='L390'></a>fi
+<a id='L391' name='L391'></a>fi
+<a id='L392' name='L392'></a> 
+<a id='L393' name='L393'></a>if test $netmask = no; then
+<a id='L394' name='L394'></a>AC_CACHE_CHECK([for netmask AIX],samba_cv_HAVE_NETMASK_AIX,[
+<a id='L395' name='L395'></a>AC_TRY_RUN([
+<a id='L396' name='L396'></a>#define HAVE_NETMASK_AIX 1
+<a id='L397' name='L397'></a>#define AUTOCONF 1
+<a id='L398' name='L398'></a>#include "confdefs.h"
+<a id='L399' name='L399'></a>#include "${srcdir-.}/lib/netmask.c"],
+<a id='L400' name='L400'></a>           samba_cv_HAVE_NETMASK_AIX=yes,samba_cv_HAVE_NETMASK_AIX=no,samba_cv_HAVE_NETMASK_AIX=cross)])
+<a id='L401' name='L401'></a>if test x"$samba_cv_HAVE_NETMASK_AIX" = x"yes"; then
+<a id='L402' name='L402'></a>    netmask=yes;AC_DEFINE(HAVE_NETMASK_AIX, 1, [Define to use AIX style netmask])
+<a id='L403' name='L403'></a>fi
+<a id='L404' name='L404'></a>fi
+<a id='L405' name='L405'></a> 
+<a id='L406' name='L406'></a> 
+<a id='L407' name='L407'></a>AC_CACHE_CHECK([for broken nisplus include files],samba_cv_BROKEN_NISPLUS_INCLUDE_FILES,[
+<a id='L408' name='L408'></a>AC_TRY_COMPILE([#include &lt;sys/acl.h&gt;
+<a id='L409' name='L409'></a>#if defined(HAVE_RPCSVC_NIS_H)
+<a id='L410' name='L410'></a>#include &lt;rpcsvc/nis.h&gt;
+<a id='L411' name='L411'></a>#endif],
+<a id='L412' name='L412'></a>[return 0;],
+<a id='L413' name='L413'></a>samba_cv_BROKEN_NISPLUS_INCLUDE_FILES=no,samba_cv_BROKEN_NISPLUS_INCLUDE_FILES=yes)])
+<a id='L414' name='L414'></a>if test x"$samba_cv_BROKEN_NISPLUS_INCLUDE_FILES" = x"yes"; then
+<a id='L415' name='L415'></a>    AC_DEFINE(BROKEN_NISPLUS_INCLUDE_FILES, 1,
+<a id='L416' name='L416'></a>              [Define if sys/acl.h and rpcsvc/nis.h cannot be included together])
+<a id='L417' name='L417'></a>fi
+<a id='L418' name='L418'></a> 
+<a id='L419' name='L419'></a> 
+<a id='L420' name='L420'></a>#################################################
+<a id='L421' name='L421'></a># check for a LDAP password database
+<a id='L422' name='L422'></a>AC_MSG_CHECKING([whether to use LDAP password database])
+<a id='L423' name='L423'></a>AC_ARG_WITH(ldap,
+<a id='L424' name='L424'></a>[  --with-ldap     Include LDAP support
+<a id='L425' name='L425'></a>  --without-ldap  Don't include LDAP support (default)],
+<a id='L426' name='L426'></a>[ case "$withval" in
+<a id='L427' name='L427'></a>  yes)
+<a id='L428' name='L428'></a>    AC_MSG_RESULT(yes)
+<a id='L429' name='L429'></a>    AC_DEFINE(WITH_LDAP, 1, [Define to enable LDAP support])
+<a id='L430' name='L430'></a>    ;;
+<a id='L431' name='L431'></a>  *)
+<a id='L432' name='L432'></a>    AC_MSG_RESULT(no)
+<a id='L433' name='L433'></a>    ;;
+<a id='L434' name='L434'></a>  esac ],
+<a id='L435' name='L435'></a>  AC_MSG_RESULT(no)
+<a id='L436' name='L436'></a>)
+<a id='L437' name='L437'></a> 
+<a id='L438' name='L438'></a>#################################################
+<a id='L439' name='L439'></a># check for a NISPLUS password database
+<a id='L440' name='L440'></a>AC_MSG_CHECKING([whether to use NISPLUS password database])
+<a id='L441' name='L441'></a>AC_ARG_WITH(nisplus,
+<a id='L442' name='L442'></a>[  --with-nisplus     Include NISPLUS password database support
+<a id='L443' name='L443'></a>  --without-nisplus  Don't include NISPLUS password database support (default)],
+<a id='L444' name='L444'></a>[ case "$withval" in
+<a id='L445' name='L445'></a>  yes)
+<a id='L446' name='L446'></a>    AC_MSG_RESULT(yes)
+<a id='L447' name='L447'></a>    AC_DEFINE(WITH_NISPLUS, 1, [Define to enable NIS+ support])
+<a id='L448' name='L448'></a>    ;;
+<a id='L449' name='L449'></a>  *)
+<a id='L450' name='L450'></a>    AC_MSG_RESULT(no)
+<a id='L451' name='L451'></a>    ;;
+<a id='L452' name='L452'></a>  esac ],
+<a id='L453' name='L453'></a>  AC_MSG_RESULT(no)
+<a id='L454' name='L454'></a>)
+<a id='L455' name='L455'></a> 
+<a id='L456' name='L456'></a>#################################################
+<a id='L457' name='L457'></a># check for a NISPLUS_HOME support 
+<a id='L458' name='L458'></a>AC_MSG_CHECKING([whether to use NISPLUS_HOME])
+<a id='L459' name='L459'></a>AC_ARG_WITH(nisplus-home,
+<a id='L460' name='L460'></a>[  --with-nisplus-home     Include NISPLUS_HOME support
+<a id='L461' name='L461'></a>  --without-nisplus-home  Don't include NISPLUS_HOME support (default)],
+<a id='L462' name='L462'></a>[ case "$withval" in
+<a id='L463' name='L463'></a>  yes)
+<a id='L464' name='L464'></a>    AC_MSG_RESULT(yes)
+<a id='L465' name='L465'></a>    AC_DEFINE(WITH_NISPLUS_HOME, 1, [Define to support NISPLUS_HOME variable])
+<a id='L466' name='L466'></a>    ;;
+<a id='L467' name='L467'></a>  *)
+<a id='L468' name='L468'></a>    AC_MSG_RESULT(no)
+<a id='L469' name='L469'></a>    ;;
+<a id='L470' name='L470'></a>  esac ],
+<a id='L471' name='L471'></a>  AC_MSG_RESULT(no)
+<a id='L472' name='L472'></a>)
+<a id='L473' name='L473'></a> 
+<a id='L474' name='L474'></a>#################################################
+<a id='L475' name='L475'></a># check for the secure socket layer
+<a id='L476' name='L476'></a>AC_MSG_CHECKING([whether to use SSL])
+<a id='L477' name='L477'></a>AC_ARG_WITH(ssl,
+<a id='L478' name='L478'></a>[  --with-ssl     Include SSL support
+<a id='L479' name='L479'></a>  --without-ssl  Don't include SSL support (default)
+<a id='L480' name='L480'></a>  --with-sslinc=DIR Where the SSL includes are (defaults to /usr/local/ssl)],
+<a id='L481' name='L481'></a>[ case "$withval" in
+<a id='L482' name='L482'></a>  yes)
+<a id='L483' name='L483'></a>    AC_MSG_RESULT(yes)
+<a id='L484' name='L484'></a>    AC_DEFINE(WITH_SSL, 1, [Define to enable SSL support])
+<a id='L485' name='L485'></a>    withval="/usr/local/ssl"     # default
+<a id='L486' name='L486'></a> 
+<a id='L487' name='L487'></a>    if test "${with_sslinc+set}" = set; then
+<a id='L488' name='L488'></a> 
+<a id='L489' name='L489'></a>        withval="$with_sslinc"
+<a id='L490' name='L490'></a>        case "$withval" in
+<a id='L491' name='L491'></a>        yes|no)
+<a id='L492' name='L492'></a>          AC_MSG_WARN([--with-sslinc called without argument - will use default])
+<a id='L493' name='L493'></a>          CFLAGS="-I/usr/local/ssl/include $CFLAGS"
+<a id='L494' name='L494'></a>          LIBS="-lssl -lcrypto $LIBS"
+<a id='L495' name='L495'></a>          LDFLAGS="=L/usr/local/ssl/lib $LDFLAGS"
+<a id='L496' name='L496'></a>        ;;
+<a id='L497' name='L497'></a>        * )
+<a id='L498' name='L498'></a>          CFLAGS="-I${withval}/include $CFLAGS"
+<a id='L499' name='L499'></a>          LIBS="-lssl -l crypto $LIBS"
+<a id='L500' name='L500'></a>          LDFLAGS="-L${withval}/lib $LDFLAGS"
+<a id='L501' name='L501'></a>        ;;
+<a id='L502' name='L502'></a>        esac
+<a id='L503' name='L503'></a> 
+<a id='L504' name='L504'></a>    else
+<a id='L505' name='L505'></a> 
+<a id='L506' name='L506'></a>        CFLAGS="-I/usr/local/ssl/include $CFLAGS"   
+<a id='L507' name='L507'></a>        LIBS="-lssl -lcrypto $LIBS"
+<a id='L508' name='L508'></a>        LDFLAGS="-L/usr/local/ssl/lib $LDFLAGS"
+<a id='L509' name='L509'></a> 
+<a id='L510' name='L510'></a>    fi
+<a id='L511' name='L511'></a> 
+<a id='L512' name='L512'></a>    if test ! -d ${withval}; then
+<a id='L513' name='L513'></a>      AC_MSG_ERROR([called with --with-ssl, but ssl base directory ${withval} does not exist or is not a directory. Aborting config])
+<a id='L514' name='L514'></a>    fi 
+<a id='L515' name='L515'></a> 
+<a id='L516' name='L516'></a>    CFLAGS="-DHAVE_CRYPT_DECL $CFLAGS"  # Damn, SSLeay defines its own
+<a id='L517' name='L517'></a> 
+<a id='L518' name='L518'></a>    ;;
+<a id='L519' name='L519'></a>  *)
+<a id='L520' name='L520'></a>    AC_MSG_RESULT(no)
+<a id='L521' name='L521'></a>    ;;
+<a id='L522' name='L522'></a>  esac ],
+<a id='L523' name='L523'></a>  AC_MSG_RESULT(no)
+<a id='L524' name='L524'></a>)
+<a id='L525' name='L525'></a> 
+<a id='L526' name='L526'></a>####################################################
+<a id='L527' name='L527'></a># get variables from parent process (main configure)
+<a id='L528' name='L528'></a># set configuration directory location
+<a id='L529' name='L529'></a>if test -n "$SMBCONFIGDIR"; then
+<a id='L530' name='L530'></a>    configdir="$SMBCONFIGDIR"
+<a id='L531' name='L531'></a>else
+<a id='L532' name='L532'></a>    configdir="\$(LIBDIR)"
+<a id='L533' name='L533'></a>fi
+<a id='L534' name='L534'></a># set codepage directory location
+<a id='L535' name='L535'></a>if test -n "$SMBCODEPAGEDIR"; then
+<a id='L536' name='L536'></a>    codepagedir="$SMBCODEPAGEDIR"
+<a id='L537' name='L537'></a>elif test -n "$SMBCONFIGDIR"; then
+<a id='L538' name='L538'></a>    codepagedir="$SMBCONFIGDIR/codepages"
+<a id='L539' name='L539'></a>else
+<a id='L540' name='L540'></a>    codepagedir="\$(LIBDIR)/codepages"
+<a id='L541' name='L541'></a>fi
+<a id='L542' name='L542'></a>####################################################
+<a id='L543' name='L543'></a> 
+<a id='L544' name='L544'></a>AC_MSG_CHECKING([configure summary])
+<a id='L545' name='L545'></a>AC_TRY_RUN([
+<a id='L546' name='L546'></a>#include &lt;stdio.h&gt;
+<a id='L547' name='L547'></a>#include &lt;stdlib.h&gt;
+<a id='L548' name='L548'></a>#include &lt;unistd.h&gt;
+<a id='L549' name='L549'></a> 
+<a id='L550' name='L550'></a>main()
+<a id='L551' name='L551'></a>{
+<a id='L552' name='L552'></a>#if !(defined(HAVE_NETMASK_IFCONF) || defined(HAVE_NETMASK_IFREQ) || defined(HAVE_NETMASK_AIX))
+<a id='L553' name='L553'></a>    printf("WARNING: No automated netmask determination - use an interfaces line\n");
+<a id='L554' name='L554'></a>#endif
+<a id='L555' name='L555'></a> 
+<a id='L556' name='L556'></a>#if !((defined(HAVE_RANDOM) || defined(HAVE_RAND)) &amp;&amp; (defined(HAVE_SRANDOM) || defined(HAVE_SRAND)))
+<a id='L557' name='L557'></a>    printf("ERROR: No random or srandom routine!\n");
+<a id='L558' name='L558'></a>    exit(1);
+<a id='L559' name='L559'></a>#endif
+<a id='L560' name='L560'></a> 
+<a id='L561' name='L561'></a>    exit(0);
+<a id='L562' name='L562'></a>}
+<a id='L563' name='L563'></a>],
+<a id='L564' name='L564'></a>           AC_MSG_RESULT(OK);,
+<a id='L565' name='L565'></a>           AC_MSG_RESULT(failure)
+<a id='L566' name='L566'></a>           AC_MSG_ERROR([Aborting config]),:)
+<a id='L567' name='L567'></a> 
+<a id='L568' name='L568'></a>builddir=`pwd`
+<a id='L569' name='L569'></a>AC_SUBST(builddir)
+<a id='L570' name='L570'></a>AC_SUBST(configdir)
+<a id='L571' name='L571'></a>AC_SUBST(codepagedir)
+<a id='L572' name='L572'></a> 
+<a id='L573' name='L573'></a>AC_OUTPUT([include/stamp-h Makefile])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+573 src/vfs/smbfs/helpers/configure.ac'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/smbfs/helpers/lib/interface.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L51'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L431'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/<a href='../files/src--vfs--smbfs--helpers--lib.html'>lib</a>/interface.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/<a href='../files/src--vfs--smbfs--helpers--lib.html'>lib</a>/interface.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L51' title='Defined at 51.'>default_netmask</a></li>
+<li><a href='#L85' title='Defined at 85.'>get_broadcast</a></li>
+<li><a href='#L138' title='Defined at 138.'>interpret_interfaces</a></li>
+<li><a href='#L255' title='Defined at 255.'>load_interfaces</a></li>
+<li><a href='#L266' title='Defined at 266.'>iface_set_default</a></li>
+<li><a href='#L292' title='Defined at 292.'>ismyip</a></li>
+<li><a href='#L306' title='Defined at 306.'>is_local_net</a></li>
+<li><a href='#L320' title='Defined at 320.'>iface_count</a></li>
+<li><a href='#L335' title='Defined at 335.'>we_are_multihomed</a></li>
+<li><a href='#L349' title='Defined at 349.'>get_interface</a></li>
+<li><a href='#L365' title='Defined at 365.'>iface_n_ip</a></li>
+<li><a href='#L381' title='Defined at 381.'>iface_find</a></li>
+<li><a href='#L402' title='Defined at 402.'>iface_hash</a></li>
+<li><a href='#L424' title='Defined at 424.'>iface_bcast</a></li>
+<li><a href='#L431' title='Defined at 431.'>iface_ip</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Unix SMB/Netbios implementation.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   Version 1.9.</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   multiple interface handling</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'></em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>   Copyright (C) Andrew Tridgell 1992-1998</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'></em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Copyright (C) 2011-2021</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'></em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'></em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> "<a href='src--vfs--smbfs--helpers--include--includes.h.html'>includes.h</a>"
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/DEBUGLEVEL.html' title='Multiple used in 35 places.'>DEBUGLEVEL</a>;
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/ipzero.html' title='Multiple used in 7 places.'>ipzero</a>;
+<a id='L32' name='L32'></a>  32 <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/allones_ip.html' title='Multiple used in 2 places.'>allones_ip</a>;
+<a id='L33' name='L33'></a>  33 <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/loopback_ip.html' title='Multiple used in 2 places.'>loopback_ip</a>;
+<a id='L34' name='L34'></a>  34 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/default_ip.html' title='Multiple used in 3 places.'>default_ip</a>;
+<a id='L35' name='L35'></a>  35 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/default_bcast.html' title='Multiple used in 3 places.'>default_bcast</a>;
+<a id='L36' name='L36'></a>  36 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/default_nmask.html' title='Multiple used in 3 places.'>default_nmask</a>;
+<a id='L37' name='L37'></a>  37 <strong class='reserved'>static</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a> <a href='../Y/got_ip.html' title='Multiple used in 3 places.'>got_ip</a> = <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L16' title='Defined at 16 in src/vfs/smbfs/helpers/include/smb.h.'>False</a>;
+<a id='L38' name='L38'></a>  38 <strong class='reserved'>static</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a> <a href='../Y/got_bcast.html' title='Multiple used in 3 places.'>got_bcast</a> = <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L16' title='Defined at 16 in src/vfs/smbfs/helpers/include/smb.h.'>False</a>;
+<a id='L39' name='L39'></a>  39 <strong class='reserved'>static</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a> <a href='../Y/got_nmask.html' title='Multiple used in 3 places.'>got_nmask</a> = <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L16' title='Defined at 16 in src/vfs/smbfs/helpers/include/smb.h.'>False</a>;
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a> = <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/last_iface.html' title='Multiple used in 4 places.'>last_iface</a>;
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#define</em> <a href='../R/ALLONES.html' title='Multiple referred from 2 places.'>ALLONES</a>  ((<a href='../D/uint32.html' title='Multiple defined in 3 places.'>uint32</a>)0xFFFFFFFF)
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#define</em> <a href='../R/MKBCADDR.html' title='Multiple referred from 4 places.'>MKBCADDR</a>(_IP, _NM) ((_IP &amp; _NM) | (_NM ^ <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L45' title='Defined at 45 in src/vfs/smbfs/helpers/lib/interface.c.'>ALLONES</a>))
+<a id='L47' name='L47'></a>  47 <em class='comment'>/****************************************************************************</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'>calculate the default netmask for an address</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>****************************************************************************/</em>
+<a id='L50' name='L50'></a>  50 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L51' name='L51'></a>  51 <a href='../R/default_netmask.html' title='Multiple referred from 3 places.'>default_netmask</a> (<strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> *<a href='../Y/inm.html' title='Multiple used in 5 places.'>inm</a>, <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> *<a href='../Y/iad.html' title='Multiple used in 2 places.'>iad</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L85'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+51 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L52' name='L52'></a>  52 <em class='brace'>{</em>
+<a id='L53' name='L53'></a>  53     <em class='comment'>/*</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'>     ** Guess a netmask based on the class of the IP address given.</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'>     */</em>
+<a id='L56' name='L56'></a>  56     <strong class='reserved'>switch</strong> ((<a href='../Y/ntohl.html' title='Multiple used in 7 places.'>ntohl</a> (<a href='../Y/iad.html' title='Multiple used in 2 places.'>iad</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>) &amp; 0xE0000000))
+<a id='L57' name='L57'></a>  57     <em class='brace'>{</em>
+<a id='L58' name='L58'></a>  58     <strong class='reserved'>case</strong> 0x00000000:           <em class='comment'>/* Class A addr */</em>
+<a id='L59' name='L59'></a>  59     <strong class='reserved'>case</strong> 0x20000000:
+<a id='L60' name='L60'></a>  60     <strong class='reserved'>case</strong> 0x40000000:
+<a id='L61' name='L61'></a>  61     <strong class='reserved'>case</strong> 0x60000000:
+<a id='L62' name='L62'></a>  62         <a href='../Y/inm.html' title='Multiple used in 5 places.'>inm</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> = <a href='../Y/htonl.html' title='Multiple used in 5 places.'>htonl</a> (0xFF000000);
+<a id='L63' name='L63'></a>  63         <strong class='reserved'>break</strong>;
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>case</strong> 0x80000000:           <em class='comment'>/* Class B addr */</em>
+<a id='L66' name='L66'></a>  66     <strong class='reserved'>case</strong> 0xA0000000:
+<a id='L67' name='L67'></a>  67         <a href='../Y/inm.html' title='Multiple used in 5 places.'>inm</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> = <a href='../Y/htonl.html' title='Multiple used in 5 places.'>htonl</a> (0xFFFF0000);
+<a id='L68' name='L68'></a>  68         <strong class='reserved'>break</strong>;
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70     <strong class='reserved'>case</strong> 0xC0000000:           <em class='comment'>/* Class C addr */</em>
+<a id='L71' name='L71'></a>  71         <a href='../Y/inm.html' title='Multiple used in 5 places.'>inm</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> = <a href='../Y/htonl.html' title='Multiple used in 5 places.'>htonl</a> (0xFFFFFF00);
+<a id='L72' name='L72'></a>  72         <strong class='reserved'>break</strong>;
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74     <strong class='reserved'>default</strong>:                   <em class='comment'>/* ??? */</em>
+<a id='L75' name='L75'></a>  75         <a href='../Y/inm.html' title='Multiple used in 5 places.'>inm</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> = <a href='../Y/htonl.html' title='Multiple used in 5 places.'>htonl</a> (0xFFFFFFF0);
+<a id='L76' name='L76'></a>  76     <em class='brace'>}</em>
+<a id='L77' name='L77'></a>  77 <em class='brace'>}</em>
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80 <em class='comment'>/****************************************************************************</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>  get the broadcast address for our address </em>
+<a id='L82' name='L82'></a>  82 <em class='comment'>(troyer@saifr00.ateng.az.honeywell.com)</em>
+<a id='L83' name='L83'></a>  83 <em class='comment'>****************************************************************************/</em>
+<a id='L84' name='L84'></a>  84 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L85' name='L85'></a>  85 <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L228' title='Referred from 228 in src/vfs/smbfs/helpers/lib/interface.c.'>get_broadcast</a> (<strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> *<a href='../Y/if_ipaddr.html' title='Multiple used in 5 places.'>if_ipaddr</a>, <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> *<a href='../Y/if_bcast.html' title='Multiple used in 3 places.'>if_bcast</a>, <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> *<a href='../Y/if_nmask.html' title='Multiple used in 7 places.'>if_nmask</a>)
+     <em class='comment'>/* <a href='#L51'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L138'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+85 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L86' name='L86'></a>  86 <em class='brace'>{</em>
+<a id='L87' name='L87'></a>  87     <a href='../D/uint32.html' title='Multiple defined in 3 places.'>uint32</a> <a href='../Y/nm.html' title='Multiple used in 4 places.'>nm</a>;
+<a id='L88' name='L88'></a>  88     <strong class='reserved'>short</strong> <a href='../Y/onbc.html' title='Multiple used in 6 places.'>onbc</a>;
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>short</strong> <a href='../Y/offbc.html' title='Multiple used in 5 places.'>offbc</a>;
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <em class='comment'>/* get a default netmask and broadcast */</em>
+<a id='L92' name='L92'></a>  92     <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L51' title='Defined at 51 in src/vfs/smbfs/helpers/lib/interface.c.'>default_netmask</a> (<a href='../Y/if_nmask.html' title='Multiple used in 7 places.'>if_nmask</a>, <a href='../Y/if_ipaddr.html' title='Multiple used in 5 places.'>if_ipaddr</a>);
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94     <a href='../D/get_netmask.html' title='Multiple defined in 4 places.'>get_netmask</a> (<a href='../Y/if_ipaddr.html' title='Multiple used in 5 places.'>if_ipaddr</a>, <a href='../Y/if_nmask.html' title='Multiple used in 7 places.'>if_nmask</a>);
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96     <em class='comment'>/* sanity check on the netmask */</em>
+<a id='L97' name='L97'></a>  97     <a href='../Y/nm.html' title='Multiple used in 4 places.'>nm</a> = <a href='../Y/ntohl.html' title='Multiple used in 7 places.'>ntohl</a> (<a href='../Y/if_nmask.html' title='Multiple used in 7 places.'>if_nmask</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>);
+<a id='L98' name='L98'></a>  98     <a href='../Y/onbc.html' title='Multiple used in 6 places.'>onbc</a> = 0;
+<a id='L99' name='L99'></a>  99     <a href='../Y/offbc.html' title='Multiple used in 5 places.'>offbc</a> = 0;
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>while</strong> ((<a href='../Y/onbc.html' title='Multiple used in 6 places.'>onbc</a> + <a href='../Y/offbc.html' title='Multiple used in 5 places.'>offbc</a>) &lt; 32)
+<a id='L101' name='L101'></a> 101     <em class='brace'>{</em>
+<a id='L102' name='L102'></a> 102         <strong class='reserved'>if</strong> (<a href='../Y/nm.html' title='Multiple used in 4 places.'>nm</a> &amp; 0x80000000)
+<a id='L103' name='L103'></a> 103         <em class='brace'>{</em>
+<a id='L104' name='L104'></a> 104             <a href='../Y/onbc.html' title='Multiple used in 6 places.'>onbc</a>++;
+<a id='L105' name='L105'></a> 105             <strong class='reserved'>if</strong> (<a href='../Y/offbc.html' title='Multiple used in 5 places.'>offbc</a>)
+<a id='L106' name='L106'></a> 106             <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107                 <em class='comment'>/* already found an off bit, so mask</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'>                   is wrong */</em>
+<a id='L109' name='L109'></a> 109                 <a href='../Y/onbc.html' title='Multiple used in 6 places.'>onbc</a> = 34;
+<a id='L110' name='L110'></a> 110             <em class='brace'>}</em>
+<a id='L111' name='L111'></a> 111         <em class='brace'>}</em>
+<a id='L112' name='L112'></a> 112         <strong class='reserved'>else</strong>
+<a id='L113' name='L113'></a> 113         <em class='brace'>{</em>
+<a id='L114' name='L114'></a> 114             <a href='../Y/offbc.html' title='Multiple used in 5 places.'>offbc</a>++;
+<a id='L115' name='L115'></a> 115         <em class='brace'>}</em>
+<a id='L116' name='L116'></a> 116         <a href='../Y/nm.html' title='Multiple used in 4 places.'>nm</a> &lt;&lt;= 1;
+<a id='L117' name='L117'></a> 117     <em class='brace'>}</em>
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>if</strong> ((<a href='../Y/onbc.html' title='Multiple used in 6 places.'>onbc</a> &lt; 8) || (<a href='../Y/onbc.html' title='Multiple used in 6 places.'>onbc</a> == 34))
+<a id='L119' name='L119'></a> 119     <em class='brace'>{</em>
+<a id='L120' name='L120'></a> 120         <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (0, ("Impossible netmask %s - using defaults\n", <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (*<a href='../Y/if_nmask.html' title='Multiple used in 7 places.'>if_nmask</a>)));
+<a id='L121' name='L121'></a> 121         <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L51' title='Defined at 51 in src/vfs/smbfs/helpers/lib/interface.c.'>default_netmask</a> (<a href='../Y/if_nmask.html' title='Multiple used in 7 places.'>if_nmask</a>, <a href='../Y/if_ipaddr.html' title='Multiple used in 5 places.'>if_ipaddr</a>);
+<a id='L122' name='L122'></a> 122     <em class='brace'>}</em>
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124     <em class='comment'>/* derive the broadcast assuming a 1's broadcast, as this is what</em>
+<a id='L125' name='L125'></a> 125 <em class='comment'>       all MS operating systems do, we have to comply even if the unix</em>
+<a id='L126' name='L126'></a> 126 <em class='comment'>       box is setup differently */</em>
+<a id='L127' name='L127'></a> 127     <a href='../Y/if_bcast.html' title='Multiple used in 3 places.'>if_bcast</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> = <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L46' title='Defined at 46 in src/vfs/smbfs/helpers/lib/interface.c.'>MKBCADDR</a> (<a href='../Y/if_ipaddr.html' title='Multiple used in 5 places.'>if_ipaddr</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>, <a href='../Y/if_nmask.html' title='Multiple used in 7 places.'>if_nmask</a>-&gt;<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>);
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129     <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (4, ("Derived broadcast address %s\n", <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (*<a href='../Y/if_bcast.html' title='Multiple used in 3 places.'>if_bcast</a>)));
+<a id='L130' name='L130'></a> 130 <em class='brace'>}</em>
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134 <em class='comment'>/****************************************************************************</em>
+<a id='L135' name='L135'></a> 135 <em class='comment'>load a list of network interfaces</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'>****************************************************************************/</em>
+<a id='L137' name='L137'></a> 137 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L138' name='L138'></a> 138 <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L258' title='Referred from 258 in src/vfs/smbfs/helpers/lib/interface.c.'>interpret_interfaces</a> (<strong class='reserved'>char</strong> *<a href='../Y/s.html' title='Multiple used in 1094 places.'>s</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> **<a href='../Y/interfaces.html' title='Multiple used in 6 places.'>interfaces</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/description.html' title='Multiple used in 5 places.'>description</a>)
+     <em class='comment'>/* <a href='#L85'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L255'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+138 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L139' name='L139'></a> 139 <em class='brace'>{</em>
+<a id='L140' name='L140'></a> 140     <strong class='reserved'>char</strong> *<a href='../Y/ptr.html' title='Multiple used in 123 places.'>ptr</a>;
+<a id='L141' name='L141'></a> 141     <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L317' title='Defined at 317 in src/vfs/smbfs/helpers/include/smb.h.'>fstring</a> <a href='../Y/token.html' title='Multiple used in 9 places.'>token</a>;
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>;
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>;
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145     <a href='../Y/ptr.html' title='Multiple used in 123 places.'>ptr</a> = <a href='../Y/s.html' title='Multiple used in 1094 places.'>s</a>;
+<a id='L146' name='L146'></a> 146     <a href='../Y/ipzero.html' title='Multiple used in 7 places.'>ipzero</a> = *<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1957' title='Defined at 1957 in src/vfs/smbfs/helpers/lib/util.c.'>interpret_addr2</a> ("0.0.0.0");
+<a id='L147' name='L147'></a> 147     <a href='../Y/allones_ip.html' title='Multiple used in 2 places.'>allones_ip</a> = *<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1957' title='Defined at 1957 in src/vfs/smbfs/helpers/lib/util.c.'>interpret_addr2</a> ("255.255.255.255");
+<a id='L148' name='L148'></a> 148     <a href='../Y/loopback_ip.html' title='Multiple used in 2 places.'>loopback_ip</a> = *<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1957' title='Defined at 1957 in src/vfs/smbfs/helpers/lib/util.c.'>interpret_addr2</a> ("127.0.0.1");
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>while</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util_str.c.html#L46' title='Defined at 46 in src/vfs/smbfs/helpers/lib/util_str.c.'>next_token</a> (&amp;<a href='../Y/ptr.html' title='Multiple used in 123 places.'>ptr</a>, <a href='../Y/token.html' title='Multiple used in 9 places.'>token</a>, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/token.html' title='Multiple used in 9 places.'>token</a>)))
+<a id='L151' name='L151'></a> 151     <em class='brace'>{</em>
+<a id='L152' name='L152'></a> 152         <em class='comment'>/* parse it into an IP address/netmasklength pair */</em>
+<a id='L153' name='L153'></a> 153         <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a> = <a href='../D/strchr.html' title='Multiple defined in 2 places.'>strchr</a> (<a href='../Y/token.html' title='Multiple used in 9 places.'>token</a>, '/');
+<a id='L154' name='L154'></a> 154         <strong class='reserved'>if</strong> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>)
+<a id='L155' name='L155'></a> 155             *<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>++ = 0;
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157         <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a> = *<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1957' title='Defined at 1957 in src/vfs/smbfs/helpers/lib/util.c.'>interpret_addr2</a> (<a href='../Y/token.html' title='Multiple used in 9 places.'>token</a>);
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159         <em class='comment'>/* maybe we already have it listed */</em>
+<a id='L160' name='L160'></a> 160         <em class='brace'>{</em>
+<a id='L161' name='L161'></a> 161             <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L162' name='L162'></a> 162             <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = (*<a href='../Y/interfaces.html' title='Multiple used in 6 places.'>interfaces</a>); <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a>)
+<a id='L163' name='L163'></a> 163                 <strong class='reserved'>if</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1871' title='Defined at 1871 in src/vfs/smbfs/helpers/lib/util.c.'>ip_equal</a> (<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>, <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>))
+<a id='L164' name='L164'></a> 164                     <strong class='reserved'>break</strong>;
+<a id='L165' name='L165'></a> 165             <strong class='reserved'>if</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>)
+<a id='L166' name='L166'></a> 166                 <strong class='reserved'>continue</strong>;
+<a id='L167' name='L167'></a> 167         <em class='brace'>}</em>
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169         <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a> = (<strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *) <a href='../Y/malloc.html' title='Multiple used in 23 places.'>malloc</a> (<strong class='reserved'>sizeof</strong> (*<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>));
+<a id='L170' name='L170'></a> 170         <strong class='reserved'>if</strong> (!<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>)
+<a id='L171' name='L171'></a> 171             <strong class='reserved'>return</strong>;
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173         <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a> = <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>;
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175         <strong class='reserved'>if</strong> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>)
+<a id='L176' name='L176'></a> 176         <em class='brace'>{</em>
+<a id='L177' name='L177'></a> 177             <strong class='reserved'>if</strong> (<a href='../Y/strlen.html' title='Multiple used in 279 places.'>strlen</a> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>) &gt; 2)
+<a id='L178' name='L178'></a> 178                 <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a> = *<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1957' title='Defined at 1957 in src/vfs/smbfs/helpers/lib/util.c.'>interpret_addr2</a> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>);
+<a id='L179' name='L179'></a> 179             <strong class='reserved'>else</strong>
+<a id='L180' name='L180'></a> 180                 <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> = <a href='../Y/htonl.html' title='Multiple used in 5 places.'>htonl</a> (((<a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L45' title='Defined at 45 in src/vfs/smbfs/helpers/lib/interface.c.'>ALLONES</a> &gt;&gt; <a href='../Y/atoi.html' title='Multiple used in 23 places.'>atoi</a> (<a href='../Y/p.html' title='Multiple used in 2274 places.'>p</a>)) ^ <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L45' title='Defined at 45 in src/vfs/smbfs/helpers/lib/interface.c.'>ALLONES</a>));
+<a id='L181' name='L181'></a> 181         <em class='brace'>}</em>
+<a id='L182' name='L182'></a> 182         <strong class='reserved'>else</strong>
+<a id='L183' name='L183'></a> 183         <em class='brace'>{</em>
+<a id='L184' name='L184'></a> 184             <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L51' title='Defined at 51 in src/vfs/smbfs/helpers/lib/interface.c.'>default_netmask</a> (&amp;<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>, &amp;<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>);
+<a id='L185' name='L185'></a> 185         <em class='brace'>}</em>
+<a id='L186' name='L186'></a> 186         <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> = <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L46' title='Defined at 46 in src/vfs/smbfs/helpers/lib/interface.c.'>MKBCADDR</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>, <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>);
+<a id='L187' name='L187'></a> 187         <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a> = <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189         <strong class='reserved'>if</strong> (!(*<a href='../Y/interfaces.html' title='Multiple used in 6 places.'>interfaces</a>))
+<a id='L190' name='L190'></a> 190         <em class='brace'>{</em>
+<a id='L191' name='L191'></a> 191             (*<a href='../Y/interfaces.html' title='Multiple used in 6 places.'>interfaces</a>) = <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>;
+<a id='L192' name='L192'></a> 192         <em class='brace'>}</em>
+<a id='L193' name='L193'></a> 193         <strong class='reserved'>else</strong>
+<a id='L194' name='L194'></a> 194         <em class='brace'>{</em>
+<a id='L195' name='L195'></a> 195             <a href='../Y/last_iface.html' title='Multiple used in 4 places.'>last_iface</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a> = <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>;
+<a id='L196' name='L196'></a> 196         <em class='brace'>}</em>
+<a id='L197' name='L197'></a> 197         <a href='../Y/last_iface.html' title='Multiple used in 4 places.'>last_iface</a> = <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>;
+<a id='L198' name='L198'></a> 198         <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (2, ("Added %s ip=%s ", <a href='../Y/description.html' title='Multiple used in 5 places.'>description</a>, <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>)));
+<a id='L199' name='L199'></a> 199         <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (2, ("bcast=%s ", <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>)));
+<a id='L200' name='L200'></a> 200         <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (2, ("nmask=%s\n", <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>)));
+<a id='L201' name='L201'></a> 201     <em class='brace'>}</em>
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203     <strong class='reserved'>if</strong> (*<a href='../Y/interfaces.html' title='Multiple used in 6 places.'>interfaces</a>)
+<a id='L204' name='L204'></a> 204         <strong class='reserved'>return</strong>;
+<a id='L205' name='L205'></a> 205 
+<a id='L206' name='L206'></a> 206     <em class='comment'>/* setup a default interface */</em>
+<a id='L207' name='L207'></a> 207     <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a> = (<strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *) <a href='../Y/malloc.html' title='Multiple used in 23 places.'>malloc</a> (<strong class='reserved'>sizeof</strong> (*<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>));
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>if</strong> (!<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>)
+<a id='L209' name='L209'></a> 209         <strong class='reserved'>return</strong>;
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a> = <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213     <strong class='reserved'>if</strong> (<a href='../Y/got_ip.html' title='Multiple used in 3 places.'>got_ip</a>)
+<a id='L214' name='L214'></a> 214     <em class='brace'>{</em>
+<a id='L215' name='L215'></a> 215         <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a> = <a href='../Y/default_ip.html' title='Multiple used in 3 places.'>default_ip</a>;
+<a id='L216' name='L216'></a> 216     <em class='brace'>}</em>
+<a id='L217' name='L217'></a> 217     <strong class='reserved'>else</strong>
+<a id='L218' name='L218'></a> 218     <em class='brace'>{</em>
+<a id='L219' name='L219'></a> 219         <a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1825' title='Defined at 1825 in src/vfs/smbfs/helpers/lib/util.c.'>get_myname</a> (<a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>, &amp;<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>);
+<a id='L220' name='L220'></a> 220     <em class='brace'>}</em>
+<a id='L221' name='L221'></a> 221 
+<a id='L222' name='L222'></a> 222     <strong class='reserved'>if</strong> (<a href='../Y/got_bcast.html' title='Multiple used in 3 places.'>got_bcast</a>)
+<a id='L223' name='L223'></a> 223     <em class='brace'>{</em>
+<a id='L224' name='L224'></a> 224         <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a> = <a href='../Y/default_bcast.html' title='Multiple used in 3 places.'>default_bcast</a>;
+<a id='L225' name='L225'></a> 225     <em class='brace'>}</em>
+<a id='L226' name='L226'></a> 226     <strong class='reserved'>else</strong>
+<a id='L227' name='L227'></a> 227     <em class='brace'>{</em>
+<a id='L228' name='L228'></a> 228         <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L85' title='Defined at 85 in src/vfs/smbfs/helpers/lib/interface.c.'>get_broadcast</a> (&amp;<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>, &amp;<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>, &amp;<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>);
+<a id='L229' name='L229'></a> 229     <em class='brace'>}</em>
+<a id='L230' name='L230'></a> 230 
+<a id='L231' name='L231'></a> 231     <strong class='reserved'>if</strong> (<a href='../Y/got_nmask.html' title='Multiple used in 3 places.'>got_nmask</a>)
+<a id='L232' name='L232'></a> 232     <em class='brace'>{</em>
+<a id='L233' name='L233'></a> 233         <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a> = <a href='../Y/default_nmask.html' title='Multiple used in 3 places.'>default_nmask</a>;
+<a id='L234' name='L234'></a> 234         <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> = <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L46' title='Defined at 46 in src/vfs/smbfs/helpers/lib/interface.c.'>MKBCADDR</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>, <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>);
+<a id='L235' name='L235'></a> 235     <em class='brace'>}</em>
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237     <strong class='reserved'>if</strong> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> != <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L46' title='Defined at 46 in src/vfs/smbfs/helpers/lib/interface.c.'>MKBCADDR</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>, <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>))
+<a id='L238' name='L238'></a> 238     <em class='brace'>{</em>
+<a id='L239' name='L239'></a> 239         <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (2, ("Warning: inconsistent interface %s\n", <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>)));
+<a id='L240' name='L240'></a> 240     <em class='brace'>}</em>
+<a id='L241' name='L241'></a> 241 
+<a id='L242' name='L242'></a> 242     <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a> = <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L243' name='L243'></a> 243     (*<a href='../Y/interfaces.html' title='Multiple used in 6 places.'>interfaces</a>) = <a href='../Y/last_iface.html' title='Multiple used in 4 places.'>last_iface</a> = <a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>;
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245     <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (2, ("Added interface ip=%s ", <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>)));
+<a id='L246' name='L246'></a> 246     <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (2, ("bcast=%s ", <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>)));
+<a id='L247' name='L247'></a> 247     <a href='../D/DEBUG.html' title='Multiple defined in 2 places.'>DEBUG</a> (2, ("nmask=%s\n", <a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/iface.html' title='Multiple used in 31 places.'>iface</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>)));
+<a id='L248' name='L248'></a> 248 <em class='brace'>}</em>
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251 <em class='comment'>/****************************************************************************</em>
+<a id='L252' name='L252'></a> 252 <em class='comment'>load the remote and local interfaces</em>
+<a id='L253' name='L253'></a> 253 <em class='comment'>****************************************************************************/</em>
+<a id='L254' name='L254'></a> 254 <strong class='reserved'>void</strong>
+<a id='L255' name='L255'></a> 255 <a href='../R/load_interfaces.html' title='Multiple referred from 2 places.'>load_interfaces</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L138'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L266'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+255 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L256' name='L256'></a> 256 <em class='brace'>{</em>
+<a id='L257' name='L257'></a> 257     <em class='comment'>/* add the machine's interfaces to local interface structure */</em>
+<a id='L258' name='L258'></a> 258     <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L138' title='Defined at 138 in src/vfs/smbfs/helpers/lib/interface.c.'>interpret_interfaces</a> (<a href='../Y/lp_interfaces.html' title='Multiple used in 3 places.'>lp_interfaces</a> (), &amp;<a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>, "interface");
+<a id='L259' name='L259'></a> 259 <em class='brace'>}</em>
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261 <em class='sharp'>#if</em> 0
+<a id='L262' name='L262'></a> 262 <em class='comment'>/****************************************************************************</em>
+<a id='L263' name='L263'></a> 263 <em class='comment'>  override the defaults</em>
+<a id='L264' name='L264'></a> 264 <em class='comment'>  **************************************************************************/</em>
+<a id='L265' name='L265'></a> 265 <strong class='reserved'>void</strong>
+<a id='L266' name='L266'></a> 266 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L26' title='Referred from 26 in src/vfs/smbfs/helpers/include/proto.h.'>iface_set_default</a> (<strong class='reserved'>char</strong> *<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>, <strong class='reserved'>char</strong> *<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>, <strong class='reserved'>char</strong> *<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>)
+     <em class='comment'>/* <a href='#L255'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L292'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+266 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L267' name='L267'></a> 267 <em class='brace'>{</em>
+<a id='L268' name='L268'></a> 268     <strong class='reserved'>if</strong> (<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>)
+<a id='L269' name='L269'></a> 269     <em class='brace'>{</em>
+<a id='L270' name='L270'></a> 270         <a href='../Y/got_ip.html' title='Multiple used in 3 places.'>got_ip</a> = <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L17' title='Defined at 17 in src/vfs/smbfs/helpers/include/smb.h.'>True</a>;
+<a id='L271' name='L271'></a> 271         <a href='../Y/default_ip.html' title='Multiple used in 3 places.'>default_ip</a> = *<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1957' title='Defined at 1957 in src/vfs/smbfs/helpers/lib/util.c.'>interpret_addr2</a> (<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>);
+<a id='L272' name='L272'></a> 272     <em class='brace'>}</em>
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274     <strong class='reserved'>if</strong> (<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>)
+<a id='L275' name='L275'></a> 275     <em class='brace'>{</em>
+<a id='L276' name='L276'></a> 276         <a href='../Y/got_bcast.html' title='Multiple used in 3 places.'>got_bcast</a> = <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L17' title='Defined at 17 in src/vfs/smbfs/helpers/include/smb.h.'>True</a>;
+<a id='L277' name='L277'></a> 277         <a href='../Y/default_bcast.html' title='Multiple used in 3 places.'>default_bcast</a> = *<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1957' title='Defined at 1957 in src/vfs/smbfs/helpers/lib/util.c.'>interpret_addr2</a> (<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>);
+<a id='L278' name='L278'></a> 278     <em class='brace'>}</em>
+<a id='L279' name='L279'></a> 279 
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>if</strong> (<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>)
+<a id='L281' name='L281'></a> 281     <em class='brace'>{</em>
+<a id='L282' name='L282'></a> 282         <a href='../Y/got_nmask.html' title='Multiple used in 3 places.'>got_nmask</a> = <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L17' title='Defined at 17 in src/vfs/smbfs/helpers/include/smb.h.'>True</a>;
+<a id='L283' name='L283'></a> 283         <a href='../Y/default_nmask.html' title='Multiple used in 3 places.'>default_nmask</a> = *<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1957' title='Defined at 1957 in src/vfs/smbfs/helpers/lib/util.c.'>interpret_addr2</a> (<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>);
+<a id='L284' name='L284'></a> 284     <em class='brace'>}</em>
+<a id='L285' name='L285'></a> 285 <em class='brace'>}</em>
+<a id='L286' name='L286'></a> 286 <em class='sharp'>#endif</em> <em class='comment'>/* 0 */</em>
+<a id='L287' name='L287'></a> 287 
+<a id='L288' name='L288'></a> 288 <em class='comment'>/****************************************************************************</em>
+<a id='L289' name='L289'></a> 289 <em class='comment'>  check if an IP is one of mine</em>
+<a id='L290' name='L290'></a> 290 <em class='comment'>  **************************************************************************/</em>
+<a id='L291' name='L291'></a> 291 <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a>
+<a id='L292' name='L292'></a> 292 <a href='../R/ismyip.html' title='Multiple referred from 2 places.'>ismyip</a> (<strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>)
+     <em class='comment'>/* <a href='#L266'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L306'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+292 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L293' name='L293'></a> 293 <em class='brace'>{</em>
+<a id='L294' name='L294'></a> 294     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L295' name='L295'></a> 295     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a>)
+<a id='L296' name='L296'></a> 296         <strong class='reserved'>if</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1871' title='Defined at 1871 in src/vfs/smbfs/helpers/lib/util.c.'>ip_equal</a> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>, <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>))
+<a id='L297' name='L297'></a> 297             <strong class='reserved'>return</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L17' title='Defined at 17 in src/vfs/smbfs/helpers/include/smb.h.'>True</a>;
+<a id='L298' name='L298'></a> 298     <strong class='reserved'>return</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L16' title='Defined at 16 in src/vfs/smbfs/helpers/include/smb.h.'>False</a>;
+<a id='L299' name='L299'></a> 299 <em class='brace'>}</em>
+<a id='L300' name='L300'></a> 300 
+<a id='L301' name='L301'></a> 301 <em class='sharp'>#if</em> 0
+<a id='L302' name='L302'></a> 302 <em class='comment'>/****************************************************************************</em>
+<a id='L303' name='L303'></a> 303 <em class='comment'>  check if a packet is from a local (known) net</em>
+<a id='L304' name='L304'></a> 304 <em class='comment'>  **************************************************************************/</em>
+<a id='L305' name='L305'></a> 305 <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a>
+<a id='L306' name='L306'></a> 306 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L28' title='Referred from 28 in src/vfs/smbfs/helpers/include/proto.h.'>is_local_net</a> (<strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/from.html' title='Multiple used in 162 places.'>from</a>)
+     <em class='comment'>/* <a href='#L292'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L320'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+306 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L307' name='L307'></a> 307 <em class='brace'>{</em>
+<a id='L308' name='L308'></a> 308     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L309' name='L309'></a> 309     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a>)
+<a id='L310' name='L310'></a> 310         <strong class='reserved'>if</strong> ((<a href='../Y/from.html' title='Multiple used in 162 places.'>from</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> &amp; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>) == (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a> &amp; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>.<a href='../Y/s_addr.html' title='Multiple used in 27 places.'>s_addr</a>))
+<a id='L311' name='L311'></a> 311             <strong class='reserved'>return</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L17' title='Defined at 17 in src/vfs/smbfs/helpers/include/smb.h.'>True</a>;
+<a id='L312' name='L312'></a> 312     <strong class='reserved'>return</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L16' title='Defined at 16 in src/vfs/smbfs/helpers/include/smb.h.'>False</a>;
+<a id='L313' name='L313'></a> 313 <em class='brace'>}</em>
+<a id='L314' name='L314'></a> 314 <em class='sharp'>#endif</em> <em class='comment'>/* 0 */</em>
+<a id='L315' name='L315'></a> 315 
+<a id='L316' name='L316'></a> 316 <em class='comment'>/****************************************************************************</em>
+<a id='L317' name='L317'></a> 317 <em class='comment'>  how many interfaces do we have</em>
+<a id='L318' name='L318'></a> 318 <em class='comment'>  **************************************************************************/</em>
+<a id='L319' name='L319'></a> 319 <strong class='reserved'>int</strong>
+<a id='L320' name='L320'></a> 320 <a href='../R/iface_count.html' title='Multiple referred from 3 places.'>iface_count</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L306'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L335'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+320 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L321' name='L321'></a> 321 <em class='brace'>{</em>
+<a id='L322' name='L322'></a> 322     <strong class='reserved'>int</strong> <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a> = 0;
+<a id='L323' name='L323'></a> 323     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a>)
+<a id='L326' name='L326'></a> 326         <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>++;
+<a id='L327' name='L327'></a> 327     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>;
+<a id='L328' name='L328'></a> 328 <em class='brace'>}</em>
+<a id='L329' name='L329'></a> 329 
+<a id='L330' name='L330'></a> 330 <em class='sharp'>#if</em> 0
+<a id='L331' name='L331'></a> 331 <em class='comment'>/****************************************************************************</em>
+<a id='L332' name='L332'></a> 332 <em class='comment'> True if we have two or more interfaces.</em>
+<a id='L333' name='L333'></a> 333 <em class='comment'>  **************************************************************************/</em>
+<a id='L334' name='L334'></a> 334 <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L28' title='Defined at 28 in src/vfs/smbfs/helpers/include/smb.h.'>BOOL</a>
+<a id='L335' name='L335'></a> 335 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L30' title='Referred from 30 in src/vfs/smbfs/helpers/include/proto.h.'>we_are_multihomed</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L320'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L349'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+335 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L336' name='L336'></a> 336 <em class='brace'>{</em>
+<a id='L337' name='L337'></a> 337     <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/multi.html' title='Multiple used in 4 places.'>multi</a> = -1;
+<a id='L338' name='L338'></a> 338 
+<a id='L339' name='L339'></a> 339     <strong class='reserved'>if</strong> (<a href='../Y/multi.html' title='Multiple used in 4 places.'>multi</a> == -1)
+<a id='L340' name='L340'></a> 340         <a href='../Y/multi.html' title='Multiple used in 4 places.'>multi</a> = (<a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L320' title='Defined at 320 in src/vfs/smbfs/helpers/lib/interface.c.'>iface_count</a> () &gt; 1 ? <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L17' title='Defined at 17 in src/vfs/smbfs/helpers/include/smb.h.'>True</a> : <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L16' title='Defined at 16 in src/vfs/smbfs/helpers/include/smb.h.'>False</a>);
+<a id='L341' name='L341'></a> 341 
+<a id='L342' name='L342'></a> 342     <strong class='reserved'>return</strong> <a href='../Y/multi.html' title='Multiple used in 4 places.'>multi</a>;
+<a id='L343' name='L343'></a> 343 <em class='brace'>}</em>
+<a id='L344' name='L344'></a> 344 
+<a id='L345' name='L345'></a> 345 <em class='comment'>/****************************************************************************</em>
+<a id='L346' name='L346'></a> 346 <em class='comment'>  return the Nth interface</em>
+<a id='L347' name='L347'></a> 347 <em class='comment'>  **************************************************************************/</em>
+<a id='L348' name='L348'></a> 348 <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *
+<a id='L349' name='L349'></a> 349 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L31' title='Referred from 31 in src/vfs/smbfs/helpers/include/proto.h.'>get_interface</a> (<strong class='reserved'>int</strong> <a href='../Y/n.html' title='Multiple used in 381 places.'>n</a>)
+     <em class='comment'>/* <a href='#L335'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L365'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+349 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L350' name='L350'></a> 350 <em class='brace'>{</em>
+<a id='L351' name='L351'></a> 351     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L352' name='L352'></a> 352 
+<a id='L353' name='L353'></a> 353     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> &amp;&amp; <a href='../Y/n.html' title='Multiple used in 381 places.'>n</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a>)
+<a id='L354' name='L354'></a> 354         <a href='../Y/n.html' title='Multiple used in 381 places.'>n</a>--;
+<a id='L355' name='L355'></a> 355 
+<a id='L356' name='L356'></a> 356     <strong class='reserved'>if</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>)
+<a id='L357' name='L357'></a> 357         <strong class='reserved'>return</strong> <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L358' name='L358'></a> 358     <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L359' name='L359'></a> 359 <em class='brace'>}</em>
+<a id='L360' name='L360'></a> 360 <em class='sharp'>#endif</em> <em class='comment'>/* 0 */</em>
+<a id='L361' name='L361'></a> 361 <em class='comment'>/****************************************************************************</em>
+<a id='L362' name='L362'></a> 362 <em class='comment'>  return IP of the Nth interface</em>
+<a id='L363' name='L363'></a> 363 <em class='comment'>  **************************************************************************/</em>
+<a id='L364' name='L364'></a> 364 <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> *
+<a id='L365' name='L365'></a> 365 <a href='../R/iface_n_ip.html' title='Multiple referred from 2 places.'>iface_n_ip</a> (<strong class='reserved'>int</strong> <a href='../Y/n.html' title='Multiple used in 381 places.'>n</a>)
+     <em class='comment'>/* <a href='#L349'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L381'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+365 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L366' name='L366'></a> 366 <em class='brace'>{</em>
+<a id='L367' name='L367'></a> 367     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L368' name='L368'></a> 368 
+<a id='L369' name='L369'></a> 369     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> &amp;&amp; <a href='../Y/n.html' title='Multiple used in 381 places.'>n</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a>)
+<a id='L370' name='L370'></a> 370         <a href='../Y/n.html' title='Multiple used in 381 places.'>n</a>--;
+<a id='L371' name='L371'></a> 371 
+<a id='L372' name='L372'></a> 372     <strong class='reserved'>if</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>)
+<a id='L373' name='L373'></a> 373         <strong class='reserved'>return</strong> &amp;<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>;
+<a id='L374' name='L374'></a> 374     <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L375' name='L375'></a> 375 <em class='brace'>}</em>
+<a id='L376' name='L376'></a> 376 
+<a id='L377' name='L377'></a> 377 <em class='comment'>/****************************************************************************</em>
+<a id='L378' name='L378'></a> 378 <em class='comment'>Try and find an interface that matches an ip. If we cannot, return NULL</em>
+<a id='L379' name='L379'></a> 379 <em class='comment'>  **************************************************************************/</em>
+<a id='L380' name='L380'></a> 380 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *
+<a id='L381' name='L381'></a> 381 <a href='../R/iface_find.html' title='Multiple referred from 2 places.'>iface_find</a> (<strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>)
+     <em class='comment'>/* <a href='#L365'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L402'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+381 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L382' name='L382'></a> 382 <em class='brace'>{</em>
+<a id='L383' name='L383'></a> 383     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L384' name='L384'></a> 384     <strong class='reserved'>if</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L1969' title='Defined at 1969 in src/vfs/smbfs/helpers/lib/util.c.'>zero_ip</a> (<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>))
+<a id='L385' name='L385'></a> 385         <strong class='reserved'>return</strong> <a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>;
+<a id='L386' name='L386'></a> 386 
+<a id='L387' name='L387'></a> 387     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a>)
+<a id='L388' name='L388'></a> 388         <strong class='reserved'>if</strong> (<a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L2426' title='Defined at 2426 in src/vfs/smbfs/helpers/lib/util.c.'>same_net</a> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>, <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>, <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>))
+<a id='L389' name='L389'></a> 389             <strong class='reserved'>return</strong> <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L390' name='L390'></a> 390 
+<a id='L391' name='L391'></a> 391     <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>;
+<a id='L392' name='L392'></a> 392 <em class='brace'>}</em>
+<a id='L393' name='L393'></a> 393 
+<a id='L394' name='L394'></a> 394 <em class='sharp'>#if</em> 0
+<a id='L395' name='L395'></a> 395 <em class='comment'>/****************************************************************************</em>
+<a id='L396' name='L396'></a> 396 <em class='comment'>this function provides a simple hash of the configured interfaces. It is</em>
+<a id='L397' name='L397'></a> 397 <em class='comment'>used to detect a change in interfaces to tell us whether to discard</em>
+<a id='L398' name='L398'></a> 398 <em class='comment'>the current wins.dat file.</em>
+<a id='L399' name='L399'></a> 399 <em class='comment'>Note that the result is independent of the order of the interfaces</em>
+<a id='L400' name='L400'></a> 400 <em class='comment'>  **************************************************************************/</em>
+<a id='L401' name='L401'></a> 401 <strong class='reserved'>unsigned</strong>
+<a id='L402' name='L402'></a> 402 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L33' title='Referred from 33 in src/vfs/smbfs/helpers/include/proto.h.'>iface_hash</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L381'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L424'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+402 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L403' name='L403'></a> 403 <em class='brace'>{</em>
+<a id='L404' name='L404'></a> 404     <strong class='reserved'>unsigned</strong> <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a> = 0;
+<a id='L405' name='L405'></a> 405     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>;
+<a id='L406' name='L406'></a> 406 
+<a id='L407' name='L407'></a> 407     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/next.html' title='Multiple used in 275 places.'>next</a>)
+<a id='L408' name='L408'></a> 408     <em class='brace'>{</em>
+<a id='L409' name='L409'></a> 409         <strong class='reserved'>unsigned</strong> <a href='../Y/x1.html' title='Multiple used in 67 places.'>x1</a> = (<strong class='reserved'>unsigned</strong>) <a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L2972' title='Defined at 2972 in src/vfs/smbfs/helpers/lib/util.c.'>str_checksum</a> (<a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>));
+<a id='L410' name='L410'></a> 410         <strong class='reserved'>unsigned</strong> <a href='../Y/x2.html' title='Multiple used in 39 places.'>x2</a> = (<strong class='reserved'>unsigned</strong>) <a href='../S/src--vfs--smbfs--helpers--lib--util.c.html#L2972' title='Defined at 2972 in src/vfs/smbfs/helpers/lib/util.c.'>str_checksum</a> (<a href='../Y/inet_ntoa.html' title='Multiple used in 37 places.'>inet_ntoa</a> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/nmask.html' title='Multiple used in 37 places.'>nmask</a>));
+<a id='L411' name='L411'></a> 411         <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a> ^= (<a href='../Y/x1.html' title='Multiple used in 67 places.'>x1</a> ^ <a href='../Y/x2.html' title='Multiple used in 39 places.'>x2</a>);
+<a id='L412' name='L412'></a> 412     <em class='brace'>}</em>
+<a id='L413' name='L413'></a> 413 
+<a id='L414' name='L414'></a> 414     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>;
+<a id='L415' name='L415'></a> 415 <em class='brace'>}</em>
+<a id='L416' name='L416'></a> 416 <em class='sharp'>#endif</em> <em class='comment'>/* 0 */</em>
+<a id='L417' name='L417'></a> 417 
+<a id='L418' name='L418'></a> 418 <em class='comment'>/* these 3 functions return the ip/bcast/nmask for the interface</em>
+<a id='L419' name='L419'></a> 419 <em class='comment'>   most appropriate for the given ip address. If they can't find</em>
+<a id='L420' name='L420'></a> 420 <em class='comment'>   an appropriate interface they return the requested field of the</em>
+<a id='L421' name='L421'></a> 421 <em class='comment'>   first known interface. */</em>
+<a id='L422' name='L422'></a> 422 
+<a id='L423' name='L423'></a> 423 <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> *
+<a id='L424' name='L424'></a> 424 <a href='../R/iface_bcast.html' title='Multiple referred from 3 places.'>iface_bcast</a> (<strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>)
+     <em class='comment'>/* <a href='#L402'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L431'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+424 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L425' name='L425'></a> 425 <em class='brace'>{</em>
+<a id='L426' name='L426'></a> 426     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L381' title='Defined at 381 in src/vfs/smbfs/helpers/lib/interface.c.'>iface_find</a> (<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>);
+<a id='L427' name='L427'></a> 427     <strong class='reserved'>return</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> ? &amp;<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a> : &amp;<a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>-&gt;<a href='../Y/bcast.html' title='Multiple used in 23 places.'>bcast</a>);
+<a id='L428' name='L428'></a> 428 <em class='brace'>}</em>
+<a id='L429' name='L429'></a> 429 
+<a id='L430' name='L430'></a> 430 <strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> *
+<a id='L431' name='L431'></a> 431 <a href='../S/src--vfs--smbfs--helpers--include--proto.h.html#L35' title='Referred from 35 in src/vfs/smbfs/helpers/include/proto.h.'>iface_ip</a> (<strong class='reserved'>struct</strong> <a href='../Y/in_addr.html' title='Multiple used in 97 places.'>in_addr</a> <a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>)
+     <em class='comment'>/* <a href='#L424'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+431 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+<a id='L432' name='L432'></a> 432 <em class='brace'>{</em>
+<a id='L433' name='L433'></a> 433     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L695' title='Defined at 695 in src/vfs/smbfs/helpers/include/smb.h.'>interface</a> *<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = <a href='../S/src--vfs--smbfs--helpers--lib--interface.c.html#L381' title='Defined at 381 in src/vfs/smbfs/helpers/lib/interface.c.'>iface_find</a> (<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>);
+<a id='L434' name='L434'></a> 434     <strong class='reserved'>return</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> ? &amp;<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a> : &amp;<a href='../Y/local_interfaces.html' title='Multiple used in 12 places.'>local_interfaces</a>-&gt;<a href='../Y/ip.html' title='Multiple used in 79 places.'>ip</a>);
+<a id='L435' name='L435'></a> 435 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L51'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L431'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+435 src/vfs/smbfs/helpers/lib/interface.c'  /> */</em>
+</body>
+</html>

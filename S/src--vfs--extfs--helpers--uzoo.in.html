@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/uzoo.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uzoo.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uzoo.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/uzoo.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Zoo file system
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a># Source of zoo can be found at
+<a id='L6' name='L6'></a># ftp://ftp.ibiblio.org/pub/Linux/utils/compress/
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a>ZOO=${MC_TEST_EXTFS_LIST_CMD:-zoo}
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a># Stupid zoo won't work if the archive name has no .zoo extension, so we
+<a id='L11' name='L11'></a># have to make a symlink with a "better" name.  Also, zoo can create
+<a id='L12' name='L12'></a># directories even if printing files to stdout, so it's safer to confine
+<a id='L13' name='L13'></a># it to a temporary directory.
+<a id='L14' name='L14'></a>mklink ()
+<a id='L15' name='L15'></a>{
+<a id='L16' name='L16'></a>    TMPDIR=`mktemp -d ${MC_TMPDIR:-/tmp}/mctmpdir-uzoo.XXXXXX` || exit 1
+<a id='L17' name='L17'></a>    trap 'cd /; rm -rf "$TMPDIR"' 0 1 2 3 5 13 15
+<a id='L18' name='L18'></a>    ARCHIVE="$TMPDIR/tmp.zoo"
+<a id='L19' name='L19'></a>    ln -sf "$1" "$ARCHIVE"
+<a id='L20' name='L20'></a>    cd "$TMPDIR" || exit 1
+<a id='L21' name='L21'></a>}
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a>mczoofs_list ()
+<a id='L24' name='L24'></a>{
+<a id='L25' name='L25'></a>    mklink "$1"
+<a id='L26' name='L26'></a>    $ZOO lq "$ARCHIVE" | @AWK@ -v uid=$(id -ru)  '
+<a id='L27' name='L27'></a>/^[^\ ]/ { next }
+<a id='L28' name='L28'></a>{
+<a id='L29' name='L29'></a>if (NF &lt; 8)
+<a id='L30' name='L30'></a>    next
+<a id='L31' name='L31'></a>if ($8 ~ /^\^/)
+<a id='L32' name='L32'></a>    $8=substr($8, 2)
+<a id='L33' name='L33'></a>if ($6 &gt; 50)
+<a id='L34' name='L34'></a>    $6=$6 + 1900
+<a id='L35' name='L35'></a>else
+<a id='L36' name='L36'></a>    $6=$6 + 2000
+<a id='L37' name='L37'></a>split($7, a, ":")
+<a id='L38' name='L38'></a>split("Jan:Feb:Mar:Apr:May:Jun:Jul:Aug:Sep:Oct:Nov:Dec", month_list, ":")
+<a id='L39' name='L39'></a>for (i=1; i&lt;=12; i++) {
+<a id='L40' name='L40'></a>    month[month_list[i]] = i
+<a id='L41' name='L41'></a>}
+<a id='L42' name='L42'></a>if ($8 ~ /\/$/)
+<a id='L43' name='L43'></a>    printf "drwxr-xr-x   1 %-8d %-8d %8d %02d-%02d-%4d %02d:%02d %s\n", uid, 0, $1, month[$5], $4, $6, a[1], a[2], $8
+<a id='L44' name='L44'></a>else
+<a id='L45' name='L45'></a>    printf "-rw-r--r--   1 %-8d %-8d %8d %02d-%02d-%4d %02d:%02d %s\n", uid, 0, $1, month[$5], $4, $6, a[1], a[2], $8
+<a id='L46' name='L46'></a>}' 2&gt;/dev/null
+<a id='L47' name='L47'></a>    exit 0
+<a id='L48' name='L48'></a>}
+<a id='L49' name='L49'></a> 
+<a id='L50' name='L50'></a>mczoofs_copyout ()
+<a id='L51' name='L51'></a>{
+<a id='L52' name='L52'></a>    mklink "$1"
+<a id='L53' name='L53'></a>    # zoo only accepts name without directory as file to extract
+<a id='L54' name='L54'></a>    base=`echo "$2" | sed 's,.*/,,'`
+<a id='L55' name='L55'></a>    $ZOO xpq: "$ARCHIVE" "$base" &gt; "$3"
+<a id='L56' name='L56'></a>    cd /
+<a id='L57' name='L57'></a>    exit 0
+<a id='L58' name='L58'></a>}
+<a id='L59' name='L59'></a> 
+<a id='L60' name='L60'></a>umask 077
+<a id='L61' name='L61'></a> 
+<a id='L62' name='L62'></a>cmd="$1"
+<a id='L63' name='L63'></a>shift
+<a id='L64' name='L64'></a>case "$cmd" in
+<a id='L65' name='L65'></a>  list) mczoofs_list "$@" ;;
+<a id='L66' name='L66'></a>  copyout) mczoofs_copyout "$@" ;;
+<a id='L67' name='L67'></a>  *) exit 1 ;;
+<a id='L68' name='L68'></a>esac
+<a id='L69' name='L69'></a>exit 0
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+69 src/vfs/extfs/helpers/uzoo.in'  /> */</em>
+</body>
+</html>

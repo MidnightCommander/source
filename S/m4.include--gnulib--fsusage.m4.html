@@ -1,0 +1,337 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/gnulib/fsusage.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/<a href='../files/m4.include--gnulib.html'>gnulib</a>/fsusage.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/<a href='../files/m4.include--gnulib.html'>gnulib</a>/fsusage.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/gnulib/fsusage.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># serial 35
+<a id='L2' name='L2'></a># Obtaining file system usage information.
+<a id='L3' name='L3'></a> 
+<a id='L4' name='L4'></a># Copyright (C) 1997-1998, 2000-2001, 2003-2020 Free Software Foundation, Inc.
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># This file is free software; the Free Software Foundation
+<a id='L7' name='L7'></a># gives unlimited permission to copy and/or distribute it,
+<a id='L8' name='L8'></a># with or without modifications, as long as this notice is preserved.
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a># Written by Jim Meyering.
+<a id='L11' name='L11'></a> 
+<a id='L12' name='L12'></a>AC_DEFUN([gl_FSUSAGE],
+<a id='L13' name='L13'></a>[
+<a id='L14' name='L14'></a>  AC_CHECK_HEADERS_ONCE([sys/param.h])
+<a id='L15' name='L15'></a>  AC_CHECK_HEADERS_ONCE([sys/vfs.h sys/fs_types.h])
+<a id='L16' name='L16'></a>  AC_CHECK_HEADERS([sys/mount.h], [], [],
+<a id='L17' name='L17'></a>    [AC_INCLUDES_DEFAULT
+<a id='L18' name='L18'></a>     [#if HAVE_SYS_PARAM_H
+<a id='L19' name='L19'></a>       #include &lt;sys/param.h&gt;
+<a id='L20' name='L20'></a>      #endif]])
+<a id='L21' name='L21'></a>  gl_FILE_SYSTEM_USAGE([gl_cv_fs_space=yes], [gl_cv_fs_space=no])
+<a id='L22' name='L22'></a>])
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a># Try to determine how a program can obtain file system usage information.
+<a id='L25' name='L25'></a># If successful, define the appropriate symbol (see fsusage.c) and
+<a id='L26' name='L26'></a># execute ACTION-IF-FOUND.  Otherwise, execute ACTION-IF-NOT-FOUND.
+<a id='L27' name='L27'></a>#
+<a id='L28' name='L28'></a># gl_FILE_SYSTEM_USAGE([ACTION-IF-FOUND[, ACTION-IF-NOT-FOUND]])
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>AC_DEFUN([gl_FILE_SYSTEM_USAGE],
+<a id='L31' name='L31'></a>[
+<a id='L32' name='L32'></a>  dnl Enable large-file support. This has the effect of changing the size
+<a id='L33' name='L33'></a>  dnl of field f_blocks in 'struct statvfs' from 32 bit to 64 bit on
+<a id='L34' name='L34'></a>  dnl glibc/Hurd, HP-UX 11, Solaris (32-bit mode). It also changes the size
+<a id='L35' name='L35'></a>  dnl of field f_blocks in 'struct statfs' from 32 bit to 64 bit on
+<a id='L36' name='L36'></a>  dnl Mac OS X &gt;= 10.5 (32-bit mode).
+<a id='L37' name='L37'></a>  AC_REQUIRE([AC_SYS_LARGEFILE])
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a>  ac_fsusage_space=no
+<a id='L40' name='L40'></a> 
+<a id='L41' name='L41'></a>  # Perform only the link test since it seems there are no variants of the
+<a id='L42' name='L42'></a>  # statvfs function.  This check is more than just AC_CHECK_FUNCS([statvfs])
+<a id='L43' name='L43'></a>  # because that got a false positive on SCO OSR5.  Adding the declaration
+<a id='L44' name='L44'></a>  # of a 'struct statvfs' causes this test to fail (as it should) on such
+<a id='L45' name='L45'></a>  # systems.  That system is reported to work fine with STAT_STATFS4 which
+<a id='L46' name='L46'></a>  # is what it gets when this test fails.
+<a id='L47' name='L47'></a>  if test $ac_fsusage_space = no; then
+<a id='L48' name='L48'></a>    # glibc/{Hurd,kFreeBSD}, FreeBSD &gt;= 5.0, NetBSD &gt;= 3.0,
+<a id='L49' name='L49'></a>    # OpenBSD &gt;= 4.4, AIX, HP-UX, IRIX, Solaris, Cygwin, Interix, BeOS.
+<a id='L50' name='L50'></a>    AC_CACHE_CHECK([for statvfs function (SVR4)],
+<a id='L51' name='L51'></a>      [fu_cv_sys_stat_statvfs],
+<a id='L52' name='L52'></a>      [AC_LINK_IFELSE(
+<a id='L53' name='L53'></a>         [AC_LANG_PROGRAM([[
+<a id='L54' name='L54'></a>#include &lt;sys/types.h&gt;
+<a id='L55' name='L55'></a>#ifdef __osf__
+<a id='L56' name='L56'></a>"Do not use Tru64's statvfs implementation"
+<a id='L57' name='L57'></a>#endif
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>#include &lt;sys/statvfs.h&gt;
+<a id='L60' name='L60'></a> 
+<a id='L61' name='L61'></a>struct statvfs fsd;
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a>#if defined __APPLE__ &amp;&amp; defined __MACH__
+<a id='L64' name='L64'></a>#include &lt;limits.h&gt;
+<a id='L65' name='L65'></a>/* On Mac OS X &gt;= 10.5, f_blocks in 'struct statvfs' is a 32-bit quantity;
+<a id='L66' name='L66'></a>   that commonly limits file systems to 4 TiB.  Whereas f_blocks in
+<a id='L67' name='L67'></a>   'struct statfs' is a 64-bit type, thanks to the large-file support
+<a id='L68' name='L68'></a>   that was enabled above.  In this case, don't use statvfs(); use statfs()
+<a id='L69' name='L69'></a>   instead.  */
+<a id='L70' name='L70'></a>int check_f_blocks_size[sizeof fsd.f_blocks * CHAR_BIT &lt;= 32 ? -1 : 1];
+<a id='L71' name='L71'></a>#endif
+<a id='L72' name='L72'></a>]],
+<a id='L73' name='L73'></a>            [[statvfs (0, &amp;fsd);]])],
+<a id='L74' name='L74'></a>         [fu_cv_sys_stat_statvfs=yes],
+<a id='L75' name='L75'></a>         [fu_cv_sys_stat_statvfs=no])
+<a id='L76' name='L76'></a>      ])
+<a id='L77' name='L77'></a>    if test $fu_cv_sys_stat_statvfs = yes; then
+<a id='L78' name='L78'></a>      ac_fsusage_space=yes
+<a id='L79' name='L79'></a>      # AIX &gt;= 5.2 has statvfs64 that has a wider f_blocks field than statvfs.
+<a id='L80' name='L80'></a>      # glibc, HP-UX, IRIX, Solaris have statvfs64 as well, but on these systems
+<a id='L81' name='L81'></a>      # statvfs with large-file support is already equivalent to statvfs64.
+<a id='L82' name='L82'></a>      AC_CACHE_CHECK([whether to use statvfs64],
+<a id='L83' name='L83'></a>        [fu_cv_sys_stat_statvfs64],
+<a id='L84' name='L84'></a>        [AC_LINK_IFELSE(
+<a id='L85' name='L85'></a>           [AC_LANG_PROGRAM(
+<a id='L86' name='L86'></a>              [[#include &lt;sys/types.h&gt;
+<a id='L87' name='L87'></a>                #include &lt;sys/statvfs.h&gt;
+<a id='L88' name='L88'></a>                struct statvfs64 fsd;
+<a id='L89' name='L89'></a>                int check_f_blocks_larger_in_statvfs64
+<a id='L90' name='L90'></a>                  [sizeof (((struct statvfs64 *) 0)-&gt;f_blocks)
+<a id='L91' name='L91'></a>                   &gt; sizeof (((struct statvfs *) 0)-&gt;f_blocks)
+<a id='L92' name='L92'></a>                   ? 1 : -1];
+<a id='L93' name='L93'></a>              ]],
+<a id='L94' name='L94'></a>              [[statvfs64 (0, &amp;fsd);]])],
+<a id='L95' name='L95'></a>           [fu_cv_sys_stat_statvfs64=yes],
+<a id='L96' name='L96'></a>           [fu_cv_sys_stat_statvfs64=no])
+<a id='L97' name='L97'></a>        ])
+<a id='L98' name='L98'></a>      if test $fu_cv_sys_stat_statvfs64 = yes; then
+<a id='L99' name='L99'></a>        AC_DEFINE([STAT_STATVFS64], [1],
+<a id='L100' name='L100'></a>          [Define if statvfs64 should be preferred over statvfs.])
+<a id='L101' name='L101'></a>      else
+<a id='L102' name='L102'></a>        AC_DEFINE([STAT_STATVFS], [1],
+<a id='L103' name='L103'></a>          [Define if there is a function named statvfs.  (SVR4)])
+<a id='L104' name='L104'></a>      fi
+<a id='L105' name='L105'></a>    fi
+<a id='L106' name='L106'></a>  fi
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a>  # Check for this unconditionally so we have a
+<a id='L109' name='L109'></a>  # good fallback on glibc/Linux &gt; 2.6 &lt; 2.6.36
+<a id='L110' name='L110'></a>  AC_CACHE_CHECK([for two-argument statfs with statfs.f_frsize member],
+<a id='L111' name='L111'></a>    [fu_cv_sys_stat_statfs2_frsize],
+<a id='L112' name='L112'></a>    [AC_RUN_IFELSE(
+<a id='L113' name='L113'></a>       [AC_LANG_SOURCE([[
+<a id='L114' name='L114'></a>#ifdef HAVE_SYS_PARAM_H
+<a id='L115' name='L115'></a>#include &lt;sys/param.h&gt;
+<a id='L116' name='L116'></a>#endif
+<a id='L117' name='L117'></a>#ifdef HAVE_SYS_MOUNT_H
+<a id='L118' name='L118'></a>#include &lt;sys/mount.h&gt;
+<a id='L119' name='L119'></a>#endif
+<a id='L120' name='L120'></a>#ifdef HAVE_SYS_VFS_H
+<a id='L121' name='L121'></a>#include &lt;sys/vfs.h&gt;
+<a id='L122' name='L122'></a>#endif
+<a id='L123' name='L123'></a>  int
+<a id='L124' name='L124'></a>  main ()
+<a id='L125' name='L125'></a>  {
+<a id='L126' name='L126'></a>    struct statfs fsd;
+<a id='L127' name='L127'></a>    fsd.f_frsize = 0;
+<a id='L128' name='L128'></a>    return statfs (".", &amp;fsd) != 0;
+<a id='L129' name='L129'></a>  }]])],
+<a id='L130' name='L130'></a>       [fu_cv_sys_stat_statfs2_frsize=yes],
+<a id='L131' name='L131'></a>       [fu_cv_sys_stat_statfs2_frsize=no],
+<a id='L132' name='L132'></a>       [fu_cv_sys_stat_statfs2_frsize=no])
+<a id='L133' name='L133'></a>    ])
+<a id='L134' name='L134'></a>  if test $fu_cv_sys_stat_statfs2_frsize = yes; then
+<a id='L135' name='L135'></a>    ac_fsusage_space=yes
+<a id='L136' name='L136'></a>    AC_DEFINE([STAT_STATFS2_FRSIZE], [1],
+<a id='L137' name='L137'></a>      [Define if statfs takes 2 args and struct statfs has a field named f_frsize.
+<a id='L138' name='L138'></a>       (glibc/Linux &gt; 2.6)])
+<a id='L139' name='L139'></a>  fi
+<a id='L140' name='L140'></a> 
+<a id='L141' name='L141'></a>  if test $ac_fsusage_space = no; then
+<a id='L142' name='L142'></a>    # DEC Alpha running OSF/1
+<a id='L143' name='L143'></a>    AC_CACHE_CHECK([for 3-argument statfs function (DEC OSF/1)],
+<a id='L144' name='L144'></a>      [fu_cv_sys_stat_statfs3_osf1],
+<a id='L145' name='L145'></a>      [AC_RUN_IFELSE([AC_LANG_SOURCE([[
+<a id='L146' name='L146'></a>#include &lt;sys/param.h&gt;
+<a id='L147' name='L147'></a>#include &lt;sys/types.h&gt;
+<a id='L148' name='L148'></a>#include &lt;sys/mount.h&gt;
+<a id='L149' name='L149'></a>  int
+<a id='L150' name='L150'></a>  main ()
+<a id='L151' name='L151'></a>  {
+<a id='L152' name='L152'></a>    struct statfs fsd;
+<a id='L153' name='L153'></a>    fsd.f_fsize = 0;
+<a id='L154' name='L154'></a>    return statfs (".", &amp;fsd, sizeof (struct statfs)) != 0;
+<a id='L155' name='L155'></a>  }]])],
+<a id='L156' name='L156'></a>         [fu_cv_sys_stat_statfs3_osf1=yes],
+<a id='L157' name='L157'></a>         [fu_cv_sys_stat_statfs3_osf1=no],
+<a id='L158' name='L158'></a>         [fu_cv_sys_stat_statfs3_osf1=no])
+<a id='L159' name='L159'></a>      ])
+<a id='L160' name='L160'></a>    if test $fu_cv_sys_stat_statfs3_osf1 = yes; then
+<a id='L161' name='L161'></a>      ac_fsusage_space=yes
+<a id='L162' name='L162'></a>      AC_DEFINE([STAT_STATFS3_OSF1], [1],
+<a id='L163' name='L163'></a>        [Define if statfs takes 3 args.  (DEC Alpha running OSF/1)])
+<a id='L164' name='L164'></a>    fi
+<a id='L165' name='L165'></a>  fi
+<a id='L166' name='L166'></a> 
+<a id='L167' name='L167'></a>  if test $ac_fsusage_space = no; then
+<a id='L168' name='L168'></a>    # glibc/Linux, Mac OS X, FreeBSD &lt; 5.0, NetBSD &lt; 3.0, OpenBSD &lt; 4.4.
+<a id='L169' name='L169'></a>    # (glibc/{Hurd,kFreeBSD}, FreeBSD &gt;= 5.0, NetBSD &gt;= 3.0,
+<a id='L170' name='L170'></a>    # OpenBSD &gt;= 4.4, AIX, HP-UX, OSF/1, Cygwin already handled above.)
+<a id='L171' name='L171'></a>    # (On IRIX you need to include &lt;sys/statfs.h&gt;, not only &lt;sys/mount.h&gt; and
+<a id='L172' name='L172'></a>    # &lt;sys/vfs.h&gt;.)
+<a id='L173' name='L173'></a>    # (On Solaris, statfs has 4 arguments.)
+<a id='L174' name='L174'></a>    AC_CACHE_CHECK([for two-argument statfs with statfs.f_bsize member (AIX, 4.3BSD)],
+<a id='L175' name='L175'></a>      [fu_cv_sys_stat_statfs2_bsize],
+<a id='L176' name='L176'></a>      [AC_RUN_IFELSE([AC_LANG_SOURCE([[
+<a id='L177' name='L177'></a>#ifdef HAVE_SYS_PARAM_H
+<a id='L178' name='L178'></a>#include &lt;sys/param.h&gt;
+<a id='L179' name='L179'></a>#endif
+<a id='L180' name='L180'></a>#ifdef HAVE_SYS_MOUNT_H
+<a id='L181' name='L181'></a>#include &lt;sys/mount.h&gt;
+<a id='L182' name='L182'></a>#endif
+<a id='L183' name='L183'></a>#ifdef HAVE_SYS_VFS_H
+<a id='L184' name='L184'></a>#include &lt;sys/vfs.h&gt;
+<a id='L185' name='L185'></a>#endif
+<a id='L186' name='L186'></a>  int
+<a id='L187' name='L187'></a>  main ()
+<a id='L188' name='L188'></a>  {
+<a id='L189' name='L189'></a>    struct statfs fsd;
+<a id='L190' name='L190'></a>    fsd.f_bsize = 0;
+<a id='L191' name='L191'></a>    return statfs (".", &amp;fsd) != 0;
+<a id='L192' name='L192'></a>  }]])],
+<a id='L193' name='L193'></a>         [fu_cv_sys_stat_statfs2_bsize=yes],
+<a id='L194' name='L194'></a>         [fu_cv_sys_stat_statfs2_bsize=no],
+<a id='L195' name='L195'></a>         [fu_cv_sys_stat_statfs2_bsize=no])
+<a id='L196' name='L196'></a>      ])
+<a id='L197' name='L197'></a>    if test $fu_cv_sys_stat_statfs2_bsize = yes; then
+<a id='L198' name='L198'></a>      ac_fsusage_space=yes
+<a id='L199' name='L199'></a>      AC_DEFINE([STAT_STATFS2_BSIZE], [1],
+<a id='L200' name='L200'></a>        [Define if statfs takes 2 args and struct statfs has a field named f_bsize.
+<a id='L201' name='L201'></a>         (4.3BSD, SunOS 4, HP-UX)])
+<a id='L202' name='L202'></a>    fi
+<a id='L203' name='L203'></a>  fi
+<a id='L204' name='L204'></a> 
+<a id='L205' name='L205'></a>  if test $ac_fsusage_space = no; then
+<a id='L206' name='L206'></a>    # SVR3
+<a id='L207' name='L207'></a>    # (Solaris already handled above.)
+<a id='L208' name='L208'></a>    AC_CACHE_CHECK([for four-argument statfs (SVR3)],
+<a id='L209' name='L209'></a>      [fu_cv_sys_stat_statfs4],
+<a id='L210' name='L210'></a>      [AC_RUN_IFELSE([AC_LANG_SOURCE([[
+<a id='L211' name='L211'></a>#include &lt;sys/types.h&gt;
+<a id='L212' name='L212'></a>#include &lt;sys/statfs.h&gt;
+<a id='L213' name='L213'></a>  int
+<a id='L214' name='L214'></a>  main ()
+<a id='L215' name='L215'></a>  {
+<a id='L216' name='L216'></a>    struct statfs fsd;
+<a id='L217' name='L217'></a>    return statfs (".", &amp;fsd, sizeof fsd, 0) != 0;
+<a id='L218' name='L218'></a>  }]])],
+<a id='L219' name='L219'></a>         [fu_cv_sys_stat_statfs4=yes],
+<a id='L220' name='L220'></a>         [fu_cv_sys_stat_statfs4=no],
+<a id='L221' name='L221'></a>         [fu_cv_sys_stat_statfs4=no])
+<a id='L222' name='L222'></a>      ])
+<a id='L223' name='L223'></a>    if test $fu_cv_sys_stat_statfs4 = yes; then
+<a id='L224' name='L224'></a>      ac_fsusage_space=yes
+<a id='L225' name='L225'></a>      AC_DEFINE([STAT_STATFS4], [1],
+<a id='L226' name='L226'></a>        [Define if statfs takes 4 args.  (SVR3, old Irix)])
+<a id='L227' name='L227'></a>    fi
+<a id='L228' name='L228'></a>  fi
+<a id='L229' name='L229'></a> 
+<a id='L230' name='L230'></a>  if test $ac_fsusage_space = no; then
+<a id='L231' name='L231'></a>    # 4.4BSD and older NetBSD
+<a id='L232' name='L232'></a>    # (OSF/1 already handled above.)
+<a id='L233' name='L233'></a>    # (On AIX, you need to include &lt;sys/statfs.h&gt;, not only &lt;sys/mount.h&gt;.)
+<a id='L234' name='L234'></a>    # (On Solaris, statfs has 4 arguments and 'struct statfs' is not declared in
+<a id='L235' name='L235'></a>    # &lt;sys/mount.h&gt;.)
+<a id='L236' name='L236'></a>    AC_CACHE_CHECK([for two-argument statfs with statfs.f_fsize member (4.4BSD and NetBSD)],
+<a id='L237' name='L237'></a>      [fu_cv_sys_stat_statfs2_fsize],
+<a id='L238' name='L238'></a>      [AC_RUN_IFELSE([AC_LANG_SOURCE([[
+<a id='L239' name='L239'></a>#include &lt;sys/types.h&gt;
+<a id='L240' name='L240'></a>#ifdef HAVE_SYS_PARAM_H
+<a id='L241' name='L241'></a>#include &lt;sys/param.h&gt;
+<a id='L242' name='L242'></a>#endif
+<a id='L243' name='L243'></a>#ifdef HAVE_SYS_MOUNT_H
+<a id='L244' name='L244'></a>#include &lt;sys/mount.h&gt;
+<a id='L245' name='L245'></a>#endif
+<a id='L246' name='L246'></a>  int
+<a id='L247' name='L247'></a>  main ()
+<a id='L248' name='L248'></a>  {
+<a id='L249' name='L249'></a>    struct statfs fsd;
+<a id='L250' name='L250'></a>    fsd.f_fsize = 0;
+<a id='L251' name='L251'></a>    return statfs (".", &amp;fsd) != 0;
+<a id='L252' name='L252'></a>  }]])],
+<a id='L253' name='L253'></a>         [fu_cv_sys_stat_statfs2_fsize=yes],
+<a id='L254' name='L254'></a>         [fu_cv_sys_stat_statfs2_fsize=no],
+<a id='L255' name='L255'></a>         [fu_cv_sys_stat_statfs2_fsize=no])
+<a id='L256' name='L256'></a>      ])
+<a id='L257' name='L257'></a>    if test $fu_cv_sys_stat_statfs2_fsize = yes; then
+<a id='L258' name='L258'></a>      ac_fsusage_space=yes
+<a id='L259' name='L259'></a>      AC_DEFINE([STAT_STATFS2_FSIZE], [1],
+<a id='L260' name='L260'></a>        [Define if statfs takes 2 args and struct statfs has a field named f_fsize.
+<a id='L261' name='L261'></a>         (4.4BSD, NetBSD)])
+<a id='L262' name='L262'></a>    fi
+<a id='L263' name='L263'></a>  fi
+<a id='L264' name='L264'></a> 
+<a id='L265' name='L265'></a>  AS_IF([test $ac_fsusage_space = yes], [$1], [$2])
+<a id='L266' name='L266'></a> 
+<a id='L267' name='L267'></a>])
+<a id='L268' name='L268'></a> 
+<a id='L269' name='L269'></a> 
+<a id='L270' name='L270'></a># Check for SunOS statfs brokenness wrt partitions 2GB and larger.
+<a id='L271' name='L271'></a># If &lt;sys/vfs.h&gt; exists and struct statfs has a member named f_spare,
+<a id='L272' name='L272'></a># enable the work-around code in fsusage.c.
+<a id='L273' name='L273'></a>AC_DEFUN([gl_STATFS_TRUNCATES],
+<a id='L274' name='L274'></a>[
+<a id='L275' name='L275'></a>  AC_CACHE_CHECK([for statfs that truncates block counts],
+<a id='L276' name='L276'></a>    [fu_cv_sys_truncating_statfs],
+<a id='L277' name='L277'></a>    [AC_COMPILE_IFELSE(
+<a id='L278' name='L278'></a>       [AC_LANG_PROGRAM([[
+<a id='L279' name='L279'></a>#if !defined(sun) &amp;&amp; !defined(__sun)
+<a id='L280' name='L280'></a>choke -- this is a workaround for a Sun-specific problem
+<a id='L281' name='L281'></a>#endif
+<a id='L282' name='L282'></a>#include &lt;sys/types.h&gt;
+<a id='L283' name='L283'></a>#include &lt;sys/vfs.h&gt;
+<a id='L284' name='L284'></a>         ]],
+<a id='L285' name='L285'></a>         [[struct statfs t; long c = *(t.f_spare);
+<a id='L286' name='L286'></a>           if (c) return 0;
+<a id='L287' name='L287'></a>         ]])],
+<a id='L288' name='L288'></a>       [fu_cv_sys_truncating_statfs=yes],
+<a id='L289' name='L289'></a>       [fu_cv_sys_truncating_statfs=no])
+<a id='L290' name='L290'></a>    ])
+<a id='L291' name='L291'></a>  if test $fu_cv_sys_truncating_statfs = yes; then
+<a id='L292' name='L292'></a>    AC_DEFINE([STATFS_TRUNCATES_BLOCK_COUNTS], [1],
+<a id='L293' name='L293'></a>      [Define if the block counts reported by statfs may be truncated to 2GB
+<a id='L294' name='L294'></a>       and the correct values may be stored in the f_spare array.
+<a id='L295' name='L295'></a>       (SunOS 4.1.2, 4.1.3, and 4.1.3_U1 are reported to have this problem.
+<a id='L296' name='L296'></a>       SunOS 4.1.1 seems not to be affected.)])
+<a id='L297' name='L297'></a>  fi
+<a id='L298' name='L298'></a>])
+<a id='L299' name='L299'></a> 
+<a id='L300' name='L300'></a> 
+<a id='L301' name='L301'></a># Prerequisites of lib/fsusage.c not done by gl_FILE_SYSTEM_USAGE.
+<a id='L302' name='L302'></a>AC_DEFUN([gl_PREREQ_FSUSAGE_EXTRA],
+<a id='L303' name='L303'></a>[
+<a id='L304' name='L304'></a>  AC_CHECK_HEADERS([sys/fs/s5param.h sys/statfs.h])
+<a id='L305' name='L305'></a>  gl_STATFS_TRUNCATES
+<a id='L306' name='L306'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+306 m4.include/gnulib/fsusage.m4'  /> */</em>
+</body>
+</html>

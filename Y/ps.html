@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>ps</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--util.h.html#L220'>ps</a>                220 lib/util.h     GString *mc_pstream_get_string (mc_pipe_stream_t * ps);</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L232'>ps</a>                232 lib/utilunix.c mc_pread_stream (mc_pipe_stream_t * ps, const fd_set * fds)</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L237'>ps</a>                237 lib/utilunix.c     if (!FD_ISSET (ps-&gt;fd, fds))</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L239'>ps</a>                239 lib/utilunix.c         ps-&gt;len = MC_PIPE_STREAM_UNREAD;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L243'>ps</a>                243 lib/utilunix.c     buf_len = (size_t) ps-&gt;len;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L246'>ps</a>                246 lib/utilunix.c         buf_len = ps-&gt;null_term ? MC_PIPE_BUFSIZE - 1 : MC_PIPE_BUFSIZE;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L250'>ps</a>                250 lib/utilunix.c         read_len = read (ps-&gt;fd, ps-&gt;buf, buf_len);</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L257'>ps</a>                257 lib/utilunix.c         ps-&gt;len = MC_PIPE_ERROR_READ;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L258'>ps</a>                258 lib/utilunix.c         ps-&gt;error = errno;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L262'>ps</a>                262 lib/utilunix.c         ps-&gt;len = MC_PIPE_STREAM_EOF;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L266'>ps</a>                266 lib/utilunix.c         ps-&gt;len = read_len;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L268'>ps</a>                268 lib/utilunix.c         if (ps-&gt;null_term)</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L269'>ps</a>                269 lib/utilunix.c             ps-&gt;buf[(size_t) ps-&gt;len] = '\0';</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L272'>ps</a>                272 lib/utilunix.c     ps-&gt;pos = 0;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L635'>ps</a>                635 lib/utilunix.c mc_pstream_get_string (mc_pipe_stream_t * ps)</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L641'>ps</a>                641 lib/utilunix.c     g_return_val_if_fail (ps != NULL, NULL);</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L643'>ps</a>                643 lib/utilunix.c     if (ps-&gt;len &lt; 0)</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L646'>ps</a>                646 lib/utilunix.c     size = ps-&gt;len - ps-&gt;pos;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L651'>ps</a>                651 lib/utilunix.c     s = ps-&gt;buf + ps-&gt;pos;</span>
+<span class='curline'><a href='../S/lib--utilunix.c.html#L663'>ps</a>                663 lib/utilunix.c     ps-&gt;pos += i;</span>
+</pre>
+</body>
+</html>

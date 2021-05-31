@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/fish/helpers/README.fish</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--fish.html'>fish</a>/<a href='../files/src--vfs--fish--helpers.html'>helpers</a>/README.fish</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--fish.html'>fish</a>/<a href='../files/src--vfs--fish--helpers.html'>helpers</a>/README.fish</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/fish/helpers/README.fish'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a> 
+<a id='L2' name='L2'></a>                FIles transferred over SHell protocol (V 0.0.3)
+<a id='L3' name='L3'></a>                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<a id='L4' name='L4'></a> 
+<a id='L5' name='L5'></a>This protocol was designed for transferring files over a remote shell
+<a id='L6' name='L6'></a>connection (rsh and compatibles). It can be as well used for transfers over 
+<a id='L7' name='L7'></a>rsh, and there may be other uses.
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>Client sends requests of following form:
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>#FISH_COMMAND
+<a id='L12' name='L12'></a>equivalent shell commands,
+<a id='L13' name='L13'></a>which may be multiline
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>Only fish commands are defined here, shell equivalents are for your
+<a id='L16' name='L16'></a>information only and will probably vary from implementation to
+<a id='L17' name='L17'></a>implementation. Fish commands always have priority: server is
+<a id='L18' name='L18'></a>expected to execute fish command if it understands it. If it does not,
+<a id='L19' name='L19'></a>however, it can try the luck and execute shell command.
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>Since version 4.7.3, the scripts that FISH sends to host machines after
+<a id='L22' name='L22'></a>a command is transmitted are no longer hardwired in the Midnight
+<a id='L23' name='L23'></a>Commander source code.
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a>First, mc looks for system-wide set of scripts, then it checks whether
+<a id='L26' name='L26'></a>current user has host-specific overrides in his per-user mc
+<a id='L27' name='L27'></a>configuration directory. User-defined overrides take priority over
+<a id='L28' name='L28'></a>sytem-wide scripts if they exist. The order in which the directories are
+<a id='L29' name='L29'></a>traversed is as follows:
+<a id='L30' name='L30'></a> 
+<a id='L31' name='L31'></a>    /usr/libexec/mc/fish
+<a id='L32' name='L32'></a>    ~/.local/share/mc/fish/&lt;hostname&gt;/
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>Server's reply is multiline, but always ends with
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>### 000&lt;optional text&gt;
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a>line. ### is prefix to mark this line, 000 is return code. Return
+<a id='L39' name='L39'></a>codes are superset to those used in ftp.
+<a id='L40' name='L40'></a> 
+<a id='L41' name='L41'></a>There are few new exit codes defined:
+<a id='L42' name='L42'></a> 
+<a id='L43' name='L43'></a>000 don't know; if there were no previous lines, this marks COMPLETE
+<a id='L44' name='L44'></a>success, if they were, it marks failure.
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>001 don't know; if there were no previous lines, this marks
+<a id='L47' name='L47'></a>PRELIMinary success, if they were, it marks failure
+<a id='L48' name='L48'></a> 
+<a id='L49' name='L49'></a>                                Connecting
+<a id='L50' name='L50'></a>                                ~~~~~~~~~~
+<a id='L51' name='L51'></a>Client uses "echo FISH:;/bin/sh" as command executed on remote
+<a id='L52' name='L52'></a>machine. This should make it possible for server to distinguish FISH
+<a id='L53' name='L53'></a>connections from normal rsh/ssh.
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>                                Commands
+<a id='L56' name='L56'></a>                                ~~~~~~~~
+<a id='L57' name='L57'></a>#FISH
+<a id='L58' name='L58'></a>echo; start_fish_server; echo '### 200'
+<a id='L59' name='L59'></a> 
+<a id='L60' name='L60'></a>This command is sent at the beginning. It marks that client wishes to
+<a id='L61' name='L61'></a>talk via FISH protocol. #VER command must follow. If server
+<a id='L62' name='L62'></a>understands FISH protocol, it has option to put FISH server somewhere
+<a id='L63' name='L63'></a>on system path and name it start_fish_server.
+<a id='L64' name='L64'></a> 
+<a id='L65' name='L65'></a>#VER 0.0.2 &lt;feature1&gt; &lt;feature2&gt; &lt;...&gt;
+<a id='L66' name='L66'></a>echo '### 000'
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a>This command is the second one. It sends client version and extensions
+<a id='L69' name='L69'></a>to the server. Server should reply with protocol version to be used,
+<a id='L70' name='L70'></a>and list of extensions accepted.
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>VER 0.0.0 &lt;feature2&gt;
+<a id='L73' name='L73'></a>### 200
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a>#PWD
+<a id='L76' name='L76'></a>pwd; echo '### 200'
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>Server should reply with current directory (in form /abc/def/ghi)
+<a id='L79' name='L79'></a>followed by line indicating success.
+<a id='L80' name='L80'></a> 
+<a id='L81' name='L81'></a>#LIST /directory
+<a id='L82' name='L82'></a>ls -lLa $1 | grep '^[^cbt]' | ( while read p x u g s m d y n; do echo "P$p $u.$g
+<a id='L83' name='L83'></a>S$s
+<a id='L84' name='L84'></a>d$m $d $y
+<a id='L85' name='L85'></a>:$n
+<a id='L86' name='L86'></a>"; done )
+<a id='L87' name='L87'></a>ls -lLa $1 | grep '^[cb]' | ( while read p x u g a i m d y n; do echo "P$p $u.$g
+<a id='L88' name='L88'></a>E$a$i
+<a id='L89' name='L89'></a>dD$m $d $y
+<a id='L90' name='L90'></a>:$n
+<a id='L91' name='L91'></a>"; done )
+<a id='L92' name='L92'></a>echo '### 200'
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>This allows client to list directory or get status information about
+<a id='L95' name='L95'></a>single file. Output is in following form (any line except :&lt;filename&gt;
+<a id='L96' name='L96'></a>may be omitted):
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>P&lt;unix permissions&gt; &lt;owner&gt;.&lt;group&gt;
+<a id='L99' name='L99'></a>S&lt;size&gt;
+<a id='L100' name='L100'></a>d&lt;3-letters month name&gt; &lt;day&gt; &lt;year or HH:MM&gt;
+<a id='L101' name='L101'></a>D&lt;year&gt; &lt;month&gt; &lt;day&gt; &lt;hour&gt; &lt;minute&gt; &lt;second&gt;[.1234]
+<a id='L102' name='L102'></a>E&lt;major-of-device&gt;,&lt;minor&gt;
+<a id='L103' name='L103'></a>:&lt;filename&gt;
+<a id='L104' name='L104'></a>L&lt;filename symlink points to&gt;
+<a id='L105' name='L105'></a>&lt;blank line to separate items&gt;
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>Unix permissions are of form X--------- where X is type of
+<a id='L108' name='L108'></a>file. Currently, '-' means regular file, 'd' means directory, 'c', 'b'
+<a id='L109' name='L109'></a>means character and block device, 'l' means symbolic link, 'p' means
+<a id='L110' name='L110'></a>FIFO and 's' means socket.
+<a id='L111' name='L111'></a> 
+<a id='L112' name='L112'></a>'d' has three fields: month (one of strings Jan Feb Mar Apr May Jun
+<a id='L113' name='L113'></a>Jul Aug Sep Oct Nov Dec), day of month, and third is either single
+<a id='L114' name='L114'></a>number indicating year, or HH:MM field (assume current year in such
+<a id='L115' name='L115'></a>case). As you've probably noticed, this is pretty broken; it is for
+<a id='L116' name='L116'></a>compatibility with ls listing.
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a>#RETR /some/name
+<a id='L119' name='L119'></a>ls -l /some/name | ( read a b c d x e; echo $x ); echo '### 100'; cat /some/name; echo '### 200'
+<a id='L120' name='L120'></a> 
+<a id='L121' name='L121'></a>Server sends line with filesize on it, followed by line with ### 100
+<a id='L122' name='L122'></a>indicating partial success, then it sends binary data (exactly
+<a id='L123' name='L123'></a>filesize bytes) and follows them with (with no preceding newline) ###
+<a id='L124' name='L124'></a>200.
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a>Note that there's no way to abort running RETR command - except
+<a id='L127' name='L127'></a>closing the connection.
+<a id='L128' name='L128'></a> 
+<a id='L129' name='L129'></a>#STOR &lt;size&gt; /file/name
+<a id='L130' name='L130'></a>&gt; /file/name; echo '### 001'; ( dd bs=4096 count=&lt;size/4096&gt;; dd bs=&lt;size%4096&gt; count=1 ) 2&gt;/dev/null | ( cat &gt; %s; cat &gt; /dev/null ); echo '### 200'
+<a id='L131' name='L131'></a> 
+<a id='L132' name='L132'></a>This command is for storing /file/name, which is exactly size bytes
+<a id='L133' name='L133'></a>big. You probably think I went crazy. Well, I did not: that strange
+<a id='L134' name='L134'></a>cat &gt; /dev/null has purpose to discard any extra data which was not
+<a id='L135' name='L135'></a>written to disk (due to for example out of space condition).
+<a id='L136' name='L136'></a> 
+<a id='L137' name='L137'></a>[Why? Imagine uploading file with "rm -rf /" line in it.]
+<a id='L138' name='L138'></a> 
+<a id='L139' name='L139'></a>#CWD /somewhere
+<a id='L140' name='L140'></a>cd /somewhere; echo '### 000'
+<a id='L141' name='L141'></a> 
+<a id='L142' name='L142'></a>It is specified here, but I'm not sure how wise idea is to use this
+<a id='L143' name='L143'></a>one: it breaks stateless-ness of the protocol.
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a>Following commands should be rather self-explanatory:
+<a id='L146' name='L146'></a> 
+<a id='L147' name='L147'></a>#CHMOD 1234 file
+<a id='L148' name='L148'></a>chmod 1234 file; echo '### 000'
+<a id='L149' name='L149'></a> 
+<a id='L150' name='L150'></a>#DELE /some/path
+<a id='L151' name='L151'></a>rm -f /some/path; echo '### 000'
+<a id='L152' name='L152'></a> 
+<a id='L153' name='L153'></a>#MKD /some/path
+<a id='L154' name='L154'></a>mkdir /some/path; echo '### 000'
+<a id='L155' name='L155'></a> 
+<a id='L156' name='L156'></a>#RMD /some/path
+<a id='L157' name='L157'></a>rmdir /some/path; echo '### 000'
+<a id='L158' name='L158'></a> 
+<a id='L159' name='L159'></a>#RENAME /path/a /path/b
+<a id='L160' name='L160'></a>mv /path/a /path/b; echo '### 000'
+<a id='L161' name='L161'></a> 
+<a id='L162' name='L162'></a>#LINK /path/a /path/b
+<a id='L163' name='L163'></a>ln /path/a /path/b; echo '### 000'
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a>#SYMLINK /path/a /path/b
+<a id='L166' name='L166'></a>ln -s /path/a /path/b; echo '### 000'
+<a id='L167' name='L167'></a> 
+<a id='L168' name='L168'></a>#CHOWN user /file/name
+<a id='L169' name='L169'></a>chown user /file/name; echo '### 000'
+<a id='L170' name='L170'></a> 
+<a id='L171' name='L171'></a>#CHGRP group /file/name
+<a id='L172' name='L172'></a>chgrp group /file/name; echo '### 000'
+<a id='L173' name='L173'></a> 
+<a id='L174' name='L174'></a>#INFO
+<a id='L175' name='L175'></a>...collect info about host into $result ...
+<a id='L176' name='L176'></a>echo $result
+<a id='L177' name='L177'></a>echo '### 200'
+<a id='L178' name='L178'></a> 
+<a id='L179' name='L179'></a>#READ &lt;offset&gt; &lt;size&gt; /path/and/filename
+<a id='L180' name='L180'></a>cat /path/and/filename | ( dd bs=4096 count=&lt;offset/4096&gt; &gt; /dev/null;
+<a id='L181' name='L181'></a>dd bs=&lt;offset%4096&gt; count=1 &gt; /dev/null;
+<a id='L182' name='L182'></a>dd bs=4096 count=&lt;offset/4096&gt;;
+<a id='L183' name='L183'></a>dd bs=&lt;offset%4096&gt; count=1; )
+<a id='L184' name='L184'></a> 
+<a id='L185' name='L185'></a>Returns ### 200 on successful exit, ### 291 on successful exit when
+<a id='L186' name='L186'></a>reading ended at eof, ### 292 on successfull exit when reading did not
+<a id='L187' name='L187'></a>end at eof.
+<a id='L188' name='L188'></a> 
+<a id='L189' name='L189'></a>#WRITE &lt;offset&gt; &lt;size&gt; /path/and/filename
+<a id='L190' name='L190'></a> 
+<a id='L191' name='L191'></a>Hmm, shall we define these ones if we know our client is not going to
+<a id='L192' name='L192'></a>use them?
+<a id='L193' name='L193'></a> 
+<a id='L194' name='L194'></a>you can use follow parameters:
+<a id='L195' name='L195'></a>FISH_FILESIZE
+<a id='L196' name='L196'></a>FISH_FILENAME
+<a id='L197' name='L197'></a>FISH_FILEMODE
+<a id='L198' name='L198'></a>FISH_FILEOWNER
+<a id='L199' name='L199'></a>FISH_FILEGROUPE
+<a id='L200' name='L200'></a>FISH_FILEFROM
+<a id='L201' name='L201'></a>FISH_FILETO
+<a id='L202' name='L202'></a> 
+<a id='L203' name='L203'></a>NB:
+<a id='L204' name='L204'></a>'FISH_FILESIZE' used if we operate with single file name in 'unlink', 'rmdir', 'chmod', etc...
+<a id='L205' name='L205'></a>'FISH_FILEFROM','FISH_FILETO'  used if we operate with two files in 'ln', 'hardlink', 'mv' etc...
+<a id='L206' name='L206'></a>'FISH_FILEOWNER', 'FISH_FILEGROUPE' is a new user/group in chown
+<a id='L207' name='L207'></a> 
+<a id='L208' name='L208'></a>also flags:
+<a id='L209' name='L209'></a>FISH_HAVE_HEAD
+<a id='L210' name='L210'></a>FISH_HAVE_SED
+<a id='L211' name='L211'></a>FISH_HAVE_AWK
+<a id='L212' name='L212'></a>FISH_HAVE_PERL
+<a id='L213' name='L213'></a>FISH_HAVE_LSQ
+<a id='L214' name='L214'></a>FISH_HAVE_DATE_MDYT
+<a id='L215' name='L215'></a> 
+<a id='L216' name='L216'></a>That's all, folks!
+<a id='L217' name='L217'></a>                                                pavel@ucw.cz
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+217 src/vfs/fish/helpers/README.fish'  /> */</em>
+</body>
+</html>

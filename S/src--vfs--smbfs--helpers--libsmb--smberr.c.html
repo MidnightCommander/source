@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/smbfs/helpers/libsmb/smberr.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L171'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/<a href='../files/src--vfs--smbfs--helpers--libsmb.html'>libsmb</a>/smberr.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--smbfs.html'>smbfs</a>/<a href='../files/src--vfs--smbfs--helpers.html'>helpers</a>/<a href='../files/src--vfs--smbfs--helpers--libsmb.html'>libsmb</a>/smberr.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L171'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/smbfs/helpers/libsmb/smberr.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L171' title='Defined at 171.'>smb_errstr</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Unix SMB/Netbios implementation.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   Version 1.9.</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'></em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Copyright (C) Andrew Tridgell 1998</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Copyright (C) 2011-2021</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'></em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'></em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> NO_SYSLOG
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='src--vfs--smbfs--helpers--include--includes.h.html'>includes.h</a>"
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <strong class='reserved'>extern</strong> <strong class='reserved'>int</strong> <a href='../Y/DEBUGLEVEL.html' title='Multiple used in 35 places.'>DEBUGLEVEL</a>;
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='comment'>/* error code stuff - put together by Merik Karman</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'>   merik@blackadder.dsh.oz.au */</em>
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong>
+<a id='L36' name='L36'></a>  36 <em class='brace'>{</em>
+<a id='L37' name='L37'></a>  37     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>;
+<a id='L38' name='L38'></a>  38     <strong class='reserved'>int</strong> <a href='../Y/code.html' title='Multiple used in 120 places.'>code</a>;
+<a id='L39' name='L39'></a>  39     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../D/message.html' title='Multiple defined in 5 places.'>message</a>;
+<a id='L40' name='L40'></a>  40 <em class='brace'>}</em> <a href='../R/err_code_struct.html' title='Multiple referred from 5 places.'>err_code_struct</a>;
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <em class='comment'>/* Dos Error Messages */</em>
+<a id='L43' name='L43'></a>  43 <strong class='reserved'>static</strong> <a href='../S/src--vfs--smbfs--helpers--libsmb--smberr.c.html#L40' title='Defined at 40 in src/vfs/smbfs/helpers/libsmb/smberr.c.'>err_code_struct</a> <strong class='reserved'>const</strong> <a href='../Y/dos_msgs.html' title='Multiple used in 2 places.'>dos_msgs</a>[] = <em class='brace'>{</em>
+<a id='L44' name='L44'></a>  44     <em class='brace'>{</em>"ERRbadfunc", 1, "Invalid function."<em class='brace'>}</em>,
+<a id='L45' name='L45'></a>  45     <em class='brace'>{</em>"ERRbadfile", 2, "File not found."<em class='brace'>}</em>,
+<a id='L46' name='L46'></a>  46     <em class='brace'>{</em>"ERRbadpath", 3, "Directory invalid."<em class='brace'>}</em>,
+<a id='L47' name='L47'></a>  47     <em class='brace'>{</em>"ERRnofids", 4, "No file descriptors available"<em class='brace'>}</em>,
+<a id='L48' name='L48'></a>  48     <em class='brace'>{</em>"ERRnoaccess", 5, "Access denied."<em class='brace'>}</em>,
+<a id='L49' name='L49'></a>  49     <em class='brace'>{</em>"ERRbadfid", 6, "Invalid file handle."<em class='brace'>}</em>,
+<a id='L50' name='L50'></a>  50     <em class='brace'>{</em>"ERRbadmcb", 7, "Memory control blocks destroyed."<em class='brace'>}</em>,
+<a id='L51' name='L51'></a>  51     <em class='brace'>{</em>"ERRnomem", 8, "Insufficient server memory to perform the requested function."<em class='brace'>}</em>,
+<a id='L52' name='L52'></a>  52     <em class='brace'>{</em>"ERRbadmem", 9, "Invalid memory block address."<em class='brace'>}</em>,
+<a id='L53' name='L53'></a>  53     <em class='brace'>{</em>"ERRbadenv", 10, "Invalid environment."<em class='brace'>}</em>,
+<a id='L54' name='L54'></a>  54     <em class='brace'>{</em>"ERRbadformat", 11, "Invalid format."<em class='brace'>}</em>,
+<a id='L55' name='L55'></a>  55     <em class='brace'>{</em>"ERRbadaccess", 12, "Invalid open mode."<em class='brace'>}</em>,
+<a id='L56' name='L56'></a>  56     <em class='brace'>{</em>"ERRbaddata", 13, "Invalid data."<em class='brace'>}</em>,
+<a id='L57' name='L57'></a>  57     <em class='brace'>{</em>"ERR", 14, "reserved."<em class='brace'>}</em>,
+<a id='L58' name='L58'></a>  58     <em class='brace'>{</em>"ERRbaddrive", 15, "Invalid drive specified."<em class='brace'>}</em>,
+<a id='L59' name='L59'></a>  59     <em class='brace'>{</em>"ERRremcd", 16,
+<a id='L60' name='L60'></a>  60      "A Delete Directory request attempted  to  remove  the  server's  current directory."<em class='brace'>}</em>,
+<a id='L61' name='L61'></a>  61     <em class='brace'>{</em>"ERRdiffdevice", 17, "Not same device."<em class='brace'>}</em>,
+<a id='L62' name='L62'></a>  62     <em class='brace'>{</em>"ERRnofiles", 18,
+<a id='L63' name='L63'></a>  63      "A File Search command can find no more files matching the specified criteria."<em class='brace'>}</em>,
+<a id='L64' name='L64'></a>  64     <em class='brace'>{</em>"ERRbadshare", 32,
+<a id='L65' name='L65'></a>  65      "The sharing mode specified for an Open conflicts with existing  FIDs  on the file."<em class='brace'>}</em>,
+<a id='L66' name='L66'></a>  66     <em class='brace'>{</em>"ERRlock", 33,
+<a id='L67' name='L67'></a>  67      "A Lock request conflicted with an existing lock or specified an  invalid mode,  or an Unlock requested attempted to remove a lock held by another process."<em class='brace'>}</em>,
+<a id='L68' name='L68'></a>  68     <em class='brace'>{</em>"ERRunsup", 50, "The operation is unsupported"<em class='brace'>}</em>,
+<a id='L69' name='L69'></a>  69     <em class='brace'>{</em>"ERRnosuchshare", 67, "You specified an invalid share name"<em class='brace'>}</em>,
+<a id='L70' name='L70'></a>  70     <em class='brace'>{</em>"ERRfilexists", 80,
+<a id='L71' name='L71'></a>  71      "The file named in a Create Directory, Make  New  File  or  Link  request already exists."<em class='brace'>}</em>,
+<a id='L72' name='L72'></a>  72     <em class='brace'>{</em>"ERRbadpipe", 230, "Pipe invalid."<em class='brace'>}</em>,
+<a id='L73' name='L73'></a>  73     <em class='brace'>{</em>"ERRpipebusy", 231, "All instances of the requested pipe are busy."<em class='brace'>}</em>,
+<a id='L74' name='L74'></a>  74     <em class='brace'>{</em>"ERRpipeclosing", 232, "Pipe close in progress."<em class='brace'>}</em>,
+<a id='L75' name='L75'></a>  75     <em class='brace'>{</em>"ERRnotconnected", 233, "No process on other end of pipe."<em class='brace'>}</em>,
+<a id='L76' name='L76'></a>  76     <em class='brace'>{</em>"ERRmoredata", 234, "There is more data to be returned."<em class='brace'>}</em>,
+<a id='L77' name='L77'></a>  77     <em class='brace'>{</em>"ERRinvgroup", 2455, "Invalid workgroup (try the -W option)"<em class='brace'>}</em>,
+<a id='L78' name='L78'></a>  78     <em class='brace'>{</em><a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>, -1, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>
+<a id='L79' name='L79'></a>  79 <em class='brace'>}</em>;
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81 <em class='comment'>/* Server Error Messages */</em>
+<a id='L82' name='L82'></a>  82 <strong class='reserved'>static</strong> <a href='../S/src--vfs--smbfs--helpers--libsmb--smberr.c.html#L40' title='Defined at 40 in src/vfs/smbfs/helpers/libsmb/smberr.c.'>err_code_struct</a> <strong class='reserved'>const</strong> <a href='../Y/server_msgs.html' title='Multiple used in 2 places.'>server_msgs</a>[] = <em class='brace'>{</em>
+<a id='L83' name='L83'></a>  83     <em class='brace'>{</em>"ERRerror", 1, "Non-specific error code."<em class='brace'>}</em>,
+<a id='L84' name='L84'></a>  84     <em class='brace'>{</em>"ERRbadpw", 2,
+<a id='L85' name='L85'></a>  85      "Bad password - name/password pair in a Tree Connect or Session Setup are invalid."<em class='brace'>}</em>,
+<a id='L86' name='L86'></a>  86     <em class='brace'>{</em>"ERRbadtype", 3, "reserved."<em class='brace'>}</em>,
+<a id='L87' name='L87'></a>  87     <em class='brace'>{</em>"ERRaccess", 4,
+<a id='L88' name='L88'></a>  88      "The requester does not have  the  necessary  access  rights  within  the specified  context for the requested function. The context is defined by the TID or the UID."<em class='brace'>}</em>,
+<a id='L89' name='L89'></a>  89     <em class='brace'>{</em>"ERRinvnid", 5, "The tree ID (TID) specified in a command was invalid."<em class='brace'>}</em>,
+<a id='L90' name='L90'></a>  90     <em class='brace'>{</em>"ERRinvnetname", 6, "Invalid network name in tree connect."<em class='brace'>}</em>,
+<a id='L91' name='L91'></a>  91     <em class='brace'>{</em>"ERRinvdevice", 7,
+<a id='L92' name='L92'></a>  92      "Invalid device - printer request made to non-printer connection or  non-printer request made to printer connection."<em class='brace'>}</em>,
+<a id='L93' name='L93'></a>  93     <em class='brace'>{</em>"ERRqfull", 49, "Print queue full (files) -- returned by open print file."<em class='brace'>}</em>,
+<a id='L94' name='L94'></a>  94     <em class='brace'>{</em>"ERRqtoobig", 50, "Print queue full -- no space."<em class='brace'>}</em>,
+<a id='L95' name='L95'></a>  95     <em class='brace'>{</em>"ERRqeof", 51, "EOF on print queue dump."<em class='brace'>}</em>,
+<a id='L96' name='L96'></a>  96     <em class='brace'>{</em>"ERRinvpfid", 52, "Invalid print file FID."<em class='brace'>}</em>,
+<a id='L97' name='L97'></a>  97     <em class='brace'>{</em>"ERRsmbcmd", 64, "The server did not recognize the command received."<em class='brace'>}</em>,
+<a id='L98' name='L98'></a>  98     <em class='brace'>{</em>"ERRsrverror", 65, "The server encountered an internal error, e.g., system file unavailable."<em class='brace'>}</em>,
+<a id='L99' name='L99'></a>  99     <em class='brace'>{</em>"ERRfilespecs", 67,
+<a id='L100' name='L100'></a> 100      "The file handle (FID) and pathname parameters contained an invalid  combination of values."<em class='brace'>}</em>,
+<a id='L101' name='L101'></a> 101     <em class='brace'>{</em>"ERRreserved", 68, "reserved."<em class='brace'>}</em>,
+<a id='L102' name='L102'></a> 102     <em class='brace'>{</em>"ERRbadpermits", 69,
+<a id='L103' name='L103'></a> 103      "The access permissions specified for a file or directory are not a valid combination.  The server cannot set the requested attribute."<em class='brace'>}</em>,
+<a id='L104' name='L104'></a> 104     <em class='brace'>{</em>"ERRreserved", 70, "reserved."<em class='brace'>}</em>,
+<a id='L105' name='L105'></a> 105     <em class='brace'>{</em>"ERRsetattrmode", 71, "The attribute mode in the Set File Attribute request is invalid."<em class='brace'>}</em>,
+<a id='L106' name='L106'></a> 106     <em class='brace'>{</em>"ERRpaused", 81, "Server is paused."<em class='brace'>}</em>,
+<a id='L107' name='L107'></a> 107     <em class='brace'>{</em>"ERRmsgoff", 82, "Not receiving messages."<em class='brace'>}</em>,
+<a id='L108' name='L108'></a> 108     <em class='brace'>{</em>"ERRnoroom", 83, "No room to buffer message."<em class='brace'>}</em>,
+<a id='L109' name='L109'></a> 109     <em class='brace'>{</em>"ERRrmuns", 87, "Too many remote user names."<em class='brace'>}</em>,
+<a id='L110' name='L110'></a> 110     <em class='brace'>{</em>"ERRtimeout", 88, "Operation timed out."<em class='brace'>}</em>,
+<a id='L111' name='L111'></a> 111     <em class='brace'>{</em>"ERRnoresource", 89, "No resources currently available for request."<em class='brace'>}</em>,
+<a id='L112' name='L112'></a> 112     <em class='brace'>{</em>"ERRtoomanyuids", 90, "Too many UIDs active on this session."<em class='brace'>}</em>,
+<a id='L113' name='L113'></a> 113     <em class='brace'>{</em>"ERRbaduid", 91, "The UID is not known as a valid ID on this session."<em class='brace'>}</em>,
+<a id='L114' name='L114'></a> 114     <em class='brace'>{</em>"ERRusempx", 250, "Temp unable to support Raw, use MPX mode."<em class='brace'>}</em>,
+<a id='L115' name='L115'></a> 115     <em class='brace'>{</em>"ERRusestd", 251, "Temp unable to support Raw, use standard read/write."<em class='brace'>}</em>,
+<a id='L116' name='L116'></a> 116     <em class='brace'>{</em>"ERRcontmpx", 252, "Continue in MPX mode."<em class='brace'>}</em>,
+<a id='L117' name='L117'></a> 117     <em class='brace'>{</em>"ERRreserved", 253, "reserved."<em class='brace'>}</em>,
+<a id='L118' name='L118'></a> 118     <em class='brace'>{</em>"ERRreserved", 254, "reserved."<em class='brace'>}</em>,
+<a id='L119' name='L119'></a> 119     <em class='brace'>{</em>"ERRnosupport", 0xFFFF, "Function not supported."<em class='brace'>}</em>,
+<a id='L120' name='L120'></a> 120     <em class='brace'>{</em><a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>, -1, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>
+<a id='L121' name='L121'></a> 121 <em class='brace'>}</em>;
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123 <em class='comment'>/* Hard Error Messages */</em>
+<a id='L124' name='L124'></a> 124 <strong class='reserved'>static</strong> <a href='../S/src--vfs--smbfs--helpers--libsmb--smberr.c.html#L40' title='Defined at 40 in src/vfs/smbfs/helpers/libsmb/smberr.c.'>err_code_struct</a> <strong class='reserved'>const</strong> <a href='../Y/hard_msgs.html' title='Multiple used in 2 places.'>hard_msgs</a>[] = <em class='brace'>{</em>
+<a id='L125' name='L125'></a> 125     <em class='brace'>{</em>"ERRnowrite", 19, "Attempt to write on write-protected diskette."<em class='brace'>}</em>,
+<a id='L126' name='L126'></a> 126     <em class='brace'>{</em>"ERRbadunit", 20, "Unknown unit."<em class='brace'>}</em>,
+<a id='L127' name='L127'></a> 127     <em class='brace'>{</em>"ERRnotready", 21, "Drive not ready."<em class='brace'>}</em>,
+<a id='L128' name='L128'></a> 128     <em class='brace'>{</em>"ERRbadcmd", 22, "Unknown command."<em class='brace'>}</em>,
+<a id='L129' name='L129'></a> 129     <em class='brace'>{</em>"ERRdata", 23, "Data error (CRC)."<em class='brace'>}</em>,
+<a id='L130' name='L130'></a> 130     <em class='brace'>{</em>"ERRbadreq", 24, "Bad request structure length."<em class='brace'>}</em>,
+<a id='L131' name='L131'></a> 131     <em class='brace'>{</em>"ERRseek", 25, "Seek error."<em class='brace'>}</em>,
+<a id='L132' name='L132'></a> 132     <em class='brace'>{</em>"ERRbadmedia", 26, "Unknown media type."<em class='brace'>}</em>,
+<a id='L133' name='L133'></a> 133     <em class='brace'>{</em>"ERRbadsector", 27, "Sector not found."<em class='brace'>}</em>,
+<a id='L134' name='L134'></a> 134     <em class='brace'>{</em>"ERRnopaper", 28, "Printer out of paper."<em class='brace'>}</em>,
+<a id='L135' name='L135'></a> 135     <em class='brace'>{</em>"ERRwrite", 29, "Write fault."<em class='brace'>}</em>,
+<a id='L136' name='L136'></a> 136     <em class='brace'>{</em>"ERRread", 30, "Read fault."<em class='brace'>}</em>,
+<a id='L137' name='L137'></a> 137     <em class='brace'>{</em>"ERRgeneral", 31, "General failure."<em class='brace'>}</em>,
+<a id='L138' name='L138'></a> 138     <em class='brace'>{</em>"ERRbadshare", 32, "An open conflicts with an existing open."<em class='brace'>}</em>,
+<a id='L139' name='L139'></a> 139     <em class='brace'>{</em>"ERRlock", 33,
+<a id='L140' name='L140'></a> 140      "A Lock request conflicted with an existing lock or specified an invalid mode, or an Unlock requested attempted to remove a lock held by another process."<em class='brace'>}</em>,
+<a id='L141' name='L141'></a> 141     <em class='brace'>{</em>"ERRwrongdisk", 34, "The wrong disk was found in a drive."<em class='brace'>}</em>,
+<a id='L142' name='L142'></a> 142     <em class='brace'>{</em>"ERRFCBUnavail", 35, "No FCBs are available to process request."<em class='brace'>}</em>,
+<a id='L143' name='L143'></a> 143     <em class='brace'>{</em>"ERRsharebufexc", 36, "A sharing buffer has been exceeded."<em class='brace'>}</em>,
+<a id='L144' name='L144'></a> 144     <em class='brace'>{</em><a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>, -1, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>
+<a id='L145' name='L145'></a> 145 <em class='brace'>}</em>;
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148 <strong class='reserved'>struct</strong>
+<a id='L149' name='L149'></a> 149 <em class='brace'>{</em>
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>int</strong> <a href='../Y/code.html' title='Multiple used in 120 places.'>code</a>;
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>;
+<a id='L152' name='L152'></a> 152     <a href='../S/src--vfs--smbfs--helpers--libsmb--smberr.c.html#L40' title='Defined at 40 in src/vfs/smbfs/helpers/libsmb/smberr.c.'>err_code_struct</a> <strong class='reserved'>const</strong> *<a href='../Y/err_msgs.html' title='Multiple used in 3 places.'>err_msgs</a>;
+<a id='L153' name='L153'></a> 153 <em class='brace'>}</em> <strong class='reserved'>const</strong> <a href='../Y/err_classes.html' title='Multiple used in 8 places.'>err_classes</a>[] = <em class='brace'>{</em>
+<a id='L154' name='L154'></a> 154     <em class='brace'>{</em>0, "SUCCESS", <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>,
+<a id='L155' name='L155'></a> 155     <em class='brace'>{</em>0x01, "ERRDOS", <a href='../Y/dos_msgs.html' title='Multiple used in 2 places.'>dos_msgs</a><em class='brace'>}</em>,
+<a id='L156' name='L156'></a> 156     <em class='brace'>{</em>0x02, "ERRSRV", <a href='../Y/server_msgs.html' title='Multiple used in 2 places.'>server_msgs</a><em class='brace'>}</em>,
+<a id='L157' name='L157'></a> 157     <em class='brace'>{</em>0x03, "ERRHRD", <a href='../Y/hard_msgs.html' title='Multiple used in 2 places.'>hard_msgs</a><em class='brace'>}</em>,
+<a id='L158' name='L158'></a> 158     <em class='brace'>{</em>0x04, "ERRXOS", <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>,
+<a id='L159' name='L159'></a> 159     <em class='brace'>{</em>0xE1, "ERRRMX1", <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>,
+<a id='L160' name='L160'></a> 160     <em class='brace'>{</em>0xE2, "ERRRMX2", <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>,
+<a id='L161' name='L161'></a> 161     <em class='brace'>{</em>0xE3, "ERRRMX3", <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>,
+<a id='L162' name='L162'></a> 162     <em class='brace'>{</em>0xFF, "ERRCMD", <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>,
+<a id='L163' name='L163'></a> 163     <em class='brace'>{</em>-1, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5804 places.'>NULL</a><em class='brace'>}</em>
+<a id='L164' name='L164'></a> 164 <em class='brace'>}</em>;
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 
+<a id='L167' name='L167'></a> 167 <em class='comment'>/****************************************************************************</em>
+<a id='L168' name='L168'></a> 168 <em class='comment'>return a SMB error string from a SMB buffer</em>
+<a id='L169' name='L169'></a> 169 <em class='comment'>****************************************************************************/</em>
+<a id='L170' name='L170'></a> 170 <strong class='reserved'>char</strong> *
+<a id='L171' name='L171'></a> 171 <a href='../R/smb_errstr.html' title='Multiple referred from 2 places.'>smb_errstr</a> (<strong class='reserved'>char</strong> *<a href='../Y/inbuf.html' title='Multiple used in 189 places.'>inbuf</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+171 src/vfs/smbfs/helpers/libsmb/smberr.c'  /> */</em>
+<a id='L172' name='L172'></a> 172 <em class='brace'>{</em>
+<a id='L173' name='L173'></a> 173     <strong class='reserved'>static</strong> <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L316' title='Defined at 316 in src/vfs/smbfs/helpers/include/smb.h.'>pstring</a> <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>;
+<a id='L174' name='L174'></a> 174     <strong class='reserved'>int</strong> <a href='../Y/class.html' title='Multiple used in 159 places.'>class</a> = <a href='../S/src--vfs--smbfs--helpers--include--byteorder.h.html#L120' title='Defined at 120 in src/vfs/smbfs/helpers/include/byteorder.h.'>CVAL</a> (<a href='../Y/inbuf.html' title='Multiple used in 189 places.'>inbuf</a>, <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L954' title='Defined at 954 in src/vfs/smbfs/helpers/include/smb.h.'>smb_rcls</a>);
+<a id='L175' name='L175'></a> 175     <strong class='reserved'>int</strong> <a href='../Y/num.html' title='Multiple used in 53 places.'>num</a> = <a href='../D/SVAL.html' title='Multiple defined in 2 places.'>SVAL</a> (<a href='../Y/inbuf.html' title='Multiple used in 189 places.'>inbuf</a>, <a href='../S/src--vfs--smbfs--helpers--include--smb.h.html#L956' title='Defined at 956 in src/vfs/smbfs/helpers/include/smb.h.'>smb_err</a>);
+<a id='L176' name='L176'></a> 176     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>, <a href='../Y/j.html' title='Multiple used in 219 places.'>j</a>;
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a> = 0; <a href='../Y/err_classes.html' title='Multiple used in 8 places.'>err_classes</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>; <a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>++)
+<a id='L179' name='L179'></a> 179         <strong class='reserved'>if</strong> (<a href='../Y/err_classes.html' title='Multiple used in 8 places.'>err_classes</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/code.html' title='Multiple used in 120 places.'>code</a> == <a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>)
+<a id='L180' name='L180'></a> 180         <em class='brace'>{</em>
+<a id='L181' name='L181'></a> 181             <strong class='reserved'>if</strong> (<a href='../Y/err_classes.html' title='Multiple used in 8 places.'>err_classes</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/err_msgs.html' title='Multiple used in 3 places.'>err_msgs</a>)
+<a id='L182' name='L182'></a> 182             <em class='brace'>{</em>
+<a id='L183' name='L183'></a> 183                 <strong class='reserved'>const</strong> <a href='../S/src--vfs--smbfs--helpers--libsmb--smberr.c.html#L40' title='Defined at 40 in src/vfs/smbfs/helpers/libsmb/smberr.c.'>err_code_struct</a> *<a href='../Y/err.html' title='Multiple used in 124 places.'>err</a> = <a href='../Y/err_classes.html' title='Multiple used in 8 places.'>err_classes</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/err_msgs.html' title='Multiple used in 3 places.'>err_msgs</a>;
+<a id='L184' name='L184'></a> 184                 <strong class='reserved'>for</strong> (<a href='../Y/j.html' title='Multiple used in 219 places.'>j</a> = 0; <a href='../Y/err.html' title='Multiple used in 124 places.'>err</a>[<a href='../Y/j.html' title='Multiple used in 219 places.'>j</a>].<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>; <a href='../Y/j.html' title='Multiple used in 219 places.'>j</a>++)
+<a id='L185' name='L185'></a> 185                     <strong class='reserved'>if</strong> (<a href='../Y/num.html' title='Multiple used in 53 places.'>num</a> == <a href='../Y/err.html' title='Multiple used in 124 places.'>err</a>[<a href='../Y/j.html' title='Multiple used in 219 places.'>j</a>].<a href='../Y/code.html' title='Multiple used in 120 places.'>code</a>)
+<a id='L186' name='L186'></a> 186                     <em class='brace'>{</em>
+<a id='L187' name='L187'></a> 187                         <strong class='reserved'>if</strong> (<a href='../Y/DEBUGLEVEL.html' title='Multiple used in 35 places.'>DEBUGLEVEL</a> &gt; 0)
+<a id='L188' name='L188'></a> 188                             <a href='../D/slprintf.html' title='Multiple defined in 2 places.'>slprintf</a> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>) - 1, "%s - %s (%s)", <a href='../Y/err_classes.html' title='Multiple used in 8 places.'>err_classes</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>,
+<a id='L189' name='L189'></a> 189                                       <a href='../Y/err.html' title='Multiple used in 124 places.'>err</a>[<a href='../Y/j.html' title='Multiple used in 219 places.'>j</a>].<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>, <a href='../Y/err.html' title='Multiple used in 124 places.'>err</a>[<a href='../Y/j.html' title='Multiple used in 219 places.'>j</a>].<a href='../D/message.html' title='Multiple defined in 5 places.'>message</a>);
+<a id='L190' name='L190'></a> 190                         <strong class='reserved'>else</strong>
+<a id='L191' name='L191'></a> 191                             <a href='../D/slprintf.html' title='Multiple defined in 2 places.'>slprintf</a> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>) - 1, "%s - %s", <a href='../Y/err_classes.html' title='Multiple used in 8 places.'>err_classes</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>,
+<a id='L192' name='L192'></a> 192                                       <a href='../Y/err.html' title='Multiple used in 124 places.'>err</a>[<a href='../Y/j.html' title='Multiple used in 219 places.'>j</a>].<a href='../Y/name.html' title='Multiple used in 774 places.'>name</a>);
+<a id='L193' name='L193'></a> 193                         <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>;
+<a id='L194' name='L194'></a> 194                     <em class='brace'>}</em>
+<a id='L195' name='L195'></a> 195             <em class='brace'>}</em>
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197             <a href='../D/slprintf.html' title='Multiple defined in 2 places.'>slprintf</a> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>) - 1, "%s - %d", <a href='../Y/err_classes.html' title='Multiple used in 8 places.'>err_classes</a>[<a href='../Y/i.html' title='Multiple used in 2445 places.'>i</a>].<a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>, <a href='../Y/num.html' title='Multiple used in 53 places.'>num</a>);
+<a id='L198' name='L198'></a> 198             <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>;
+<a id='L199' name='L199'></a> 199         <em class='brace'>}</em>
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201     <a href='../D/slprintf.html' title='Multiple defined in 2 places.'>slprintf</a> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>) - 1, "Error: Unknown error (%d,%d)", <a href='../Y/class.html' title='Multiple used in 159 places.'>class</a>, <a href='../Y/num.html' title='Multiple used in 53 places.'>num</a>);
+<a id='L202' name='L202'></a> 202     <strong class='reserved'>return</strong> (<a href='../Y/ret.html' title='Multiple used in 1118 places.'>ret</a>);
+<a id='L203' name='L203'></a> 203 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L171'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+203 src/vfs/smbfs/helpers/libsmb/smberr.c'  /> */</em>
+</body>
+</html>
