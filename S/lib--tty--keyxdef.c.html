@@ -1,0 +1,495 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/tty/keyxdef.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L412'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L448'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--tty.html'>tty</a>/keyxdef.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--tty.html'>tty</a>/keyxdef.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L412'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L448'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/tty/keyxdef.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L412' title='Defined at 412.'>load_qnx_key_defines</a></li>
+<li><a href='#L448' title='Defined at 448.'>load_xtra_key_defines</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/* {{{ Copyright */</em>
+<a id='L2' name='L2'></a>   2 
+<a id='L3' name='L3'></a>   3 <em class='comment'>/*</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Additional keyboard support routines.</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'></em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>   Copyright (C) 1998-2024</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'></em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Written by:</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   Gyorgy Tamasi, 1998</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'></em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'></em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'></em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> */</em>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='comment'>/* }}} */</em>
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='comment'>/** \file keyxdef.c</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'> *  \brief Source: additional keyboard support routines</em>
+<a id='L32' name='L32'></a>  32 <em class='comment'> *</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'> * PURPOSE:</em>
+<a id='L34' name='L34'></a>  34 <em class='comment'> *   We would like to support the direct ALT-?/META-? and some other 'extra'</em>
+<a id='L35' name='L35'></a>  35 <em class='comment'> *   keyboard functionality provided by some terminals under some OSes (and</em>
+<a id='L36' name='L36'></a>  36 <em class='comment'> *   not supported by the 'learn keys...' facility of 'mc'.</em>
+<a id='L37' name='L37'></a>  37 <em class='comment'> *   (First target platform: QNX.)</em>
+<a id='L38' name='L38'></a>  38 <em class='comment'> *</em>
+<a id='L39' name='L39'></a>  39 <em class='comment'> * REMARK:</em>
+<a id='L40' name='L40'></a>  40 <em class='comment'> *</em>
+<a id='L41' name='L41'></a>  41 <em class='comment'> *   Implementation strategy: we don't want to rely on a specific terminal</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'> *   information database management API (termcap,terminfo,SLang,...), so we</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'> *   try to define a superset of the possible key identifiers here.</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'> *</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'> */</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>tty.h</a>"
+<a id='L52' name='L52'></a>  52 <em class='sharp'>#include</em> "<a href='../I/mouse.h.html'>mouse.h</a>"              <em class='comment'>/* required before key.h */</em>
+<a id='L53' name='L53'></a>  53 <em class='sharp'>#include</em> "<a href='lib--tty--key.h.html'>key.h</a>"
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong> (<a href='../Y/__QNX__.html' title='Multiple used in 4 places.'>__QNX__</a>) &amp;&amp; !<strong class='reserved'>defined</strong> (<a href='../Y/__QNXNTO__.html' title='Multiple used in 11 places.'>__QNXNTO__</a>)
+<a id='L56' name='L56'></a>  56 <em class='sharp'>#define</em> <a href='../R/HAVE_QNX_KEYS.html' title='Multiple referred from 6 places.'>HAVE_QNX_KEYS</a>
+<a id='L57' name='L57'></a>  57 <em class='sharp'>#endif</em>
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L56' title='Defined at 56 in lib/tty/keyxdef.c.'>HAVE_QNX_KEYS</a>
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61 <em class='comment'>/* select implementation: use QNX/term interface */</em>
+<a id='L62' name='L62'></a>  62 <em class='sharp'>#define</em> <a href='../R/__USE_QNX_TI.html' title='Multiple referred from 5 places.'>__USE_QNX_TI</a>
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 <em class='comment'>/* implementation specific _TE() definition */</em>
+<a id='L65' name='L65'></a>  65 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L62' title='Defined at 62 in lib/tty/keyxdef.c.'>__USE_QNX_TI</a>
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <em class='comment'>/* include QNX/term.h (not NCURSES/term.h!) */</em>
+<a id='L68' name='L68'></a>  68 <em class='sharp'>#if</em> __WATCOMC__ &gt; 1000
+<a id='L69' name='L69'></a>  69 <em class='sharp'>#include</em> &lt;sys/term.h&gt;
+<a id='L70' name='L70'></a>  70 <em class='sharp'>#else</em>
+<a id='L71' name='L71'></a>  71 <em class='sharp'>#include</em> &lt;term.h&gt;
+<a id='L72' name='L72'></a>  72 <em class='sharp'>#endif</em>
+<a id='L73' name='L73'></a>  73 <em class='sharp'>#include</em> &lt;stdlib.h&gt;             <em class='comment'>/* getenv() */</em>
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 <em class='comment'>/* fieldname -&gt; index conversion */</em>
+<a id='L76' name='L76'></a>  76 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L80' title='Referred from 80 in lib/tty/keyxdef.c.'>__QTISX</a>(<a href='../Y/_qtisn.html' title='Multiple used in 3 places.'>_qtisn</a>) \
+<a id='L77' name='L77'></a>  77         (((<strong class='reserved'>int</strong>)(&amp;((<strong class='reserved'>struct</strong> <a href='../Y/_strs.html' title='Multiple used in 2 places.'>_strs</a>*)0)-&gt;<a href='../Y/_qtisn.html' title='Multiple used in 3 places.'>_qtisn</a>))/<strong class='reserved'>sizeof</strong>(<a href='../Y/charoffset.html' title='Multiple used in 2 places.'>charoffset</a>))
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 <em class='comment'>/* define the OS/implementation-specific __TK() format */</em>
+<a id='L80' name='L80'></a>  80 <em class='sharp'>#define</em> <a href='../R/__TK.html' title='Multiple referred from 149 places.'>__TK</a>(_tis,_tcs,_tisx,<a href='../Y/_qtisn.html' title='Multiple used in 3 places.'>_qtisn</a>)  <a href='../S/lib--tty--keyxdef.c.html#L76' title='Defined at 76 in lib/tty/keyxdef.c.'>__QTISX</a>(<a href='../Y/_qtisn.html' title='Multiple used in 3 places.'>_qtisn</a>)
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82 <em class='sharp'>#endif</em> <em class='comment'>/* __USE_QNX_TI */</em>
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84 <em class='sharp'>#endif</em> <em class='comment'>/* HAVE_QNX_KEYS */</em>
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87 <em class='comment'>/* {{{ */</em>
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89 <em class='comment'>/* general key definitions:</em>
+<a id='L90' name='L90'></a>  90 <em class='comment'> * </em>
+<a id='L91' name='L91'></a>  91 <em class='comment'> * format:</em>
+<a id='L92' name='L92'></a>  92 <em class='comment'> * </em>
+<a id='L93' name='L93'></a>  93 <em class='comment'> *   terminfo name,</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'> *   termcap name,</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'> *   index in the terminfo string table (ncurses),</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'> *   field name in the QNX terminfo strings struct</em>
+<a id='L97' name='L97'></a>  97 <em class='comment'> */</em>
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L337' title='Referred from 337 in lib/tty/keyxdef.c.'>Key_backspace</a>   <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kbs",   "kb",  55, _ky_backspace )
+<a id='L105' name='L105'></a> 105 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L265' title='Referred from 265 in lib/tty/keyxdef.c.'>Key_catab</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("ktbc",  "ka",  56, _ky_catab )
+<a id='L106' name='L106'></a> 106 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L262' title='Referred from 262 in lib/tty/keyxdef.c.'>Key_clear</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kclr",  "kC",  57, _ky_clear )
+<a id='L107' name='L107'></a> 107 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L290' title='Referred from 290 in lib/tty/keyxdef.c.'>Key_ctab</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kctab", "kt",  58, _ky_ctab )
+<a id='L108' name='L108'></a> 108 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L346' title='Referred from 346 in lib/tty/keyxdef.c.'>Key_dc</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kdch1", "kD",  59, _ky_dc )
+<a id='L109' name='L109'></a> 109 <em class='sharp'>#define</em> Key_dl          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kdl1",  "kL",  60, _ky_dl )
+<a id='L110' name='L110'></a> 110 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L341' title='Referred from 341 in lib/tty/keyxdef.c.'>Key_down</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcud1", "kd",  61, _ky_down )
+<a id='L111' name='L111'></a> 111 <em class='sharp'>#define</em> Key_eic         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("krmir", "kM",  62, _ky_eic )
+<a id='L112' name='L112'></a> 112 <em class='sharp'>#define</em> Key_eol         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kel",   "kE",  63, _ky_eol )
+<a id='L113' name='L113'></a> 113 <em class='sharp'>#define</em> Key_eos         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("ked",   "kS",  64, _ky_eos )
+<a id='L114' name='L114'></a> 114 <em class='sharp'>#define</em> Key_f0          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf0",   "k0",  65, _ky_f0 )
+<a id='L115' name='L115'></a> 115 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L348' title='Referred from 348 in lib/tty/keyxdef.c.'>Key_f1</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf1",   "k1",  66, _ky_f1 )
+<a id='L116' name='L116'></a> 116 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L357' title='Referred from 357 in lib/tty/keyxdef.c.'>Key_f10</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf10",  "k;",  67, _ky_f10 )
+<a id='L117' name='L117'></a> 117 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L349' title='Referred from 349 in lib/tty/keyxdef.c.'>Key_f2</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf2",   "k2",  68, _ky_f2 )
+<a id='L118' name='L118'></a> 118 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L350' title='Referred from 350 in lib/tty/keyxdef.c.'>Key_f3</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf3",   "k3",  69, _ky_f3 )
+<a id='L119' name='L119'></a> 119 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L351' title='Referred from 351 in lib/tty/keyxdef.c.'>Key_f4</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf4",   "k4",  70, _ky_f4 )
+<a id='L120' name='L120'></a> 120 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L352' title='Referred from 352 in lib/tty/keyxdef.c.'>Key_f5</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf5",   "k5",  71, _ky_f5 )
+<a id='L121' name='L121'></a> 121 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L353' title='Referred from 353 in lib/tty/keyxdef.c.'>Key_f6</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf6",   "k6",  72, _ky_f6 )
+<a id='L122' name='L122'></a> 122 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L354' title='Referred from 354 in lib/tty/keyxdef.c.'>Key_f7</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf7",   "k7",  73, _ky_f7 )
+<a id='L123' name='L123'></a> 123 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L355' title='Referred from 355 in lib/tty/keyxdef.c.'>Key_f8</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf8",   "k8",  74, _ky_f8 )
+<a id='L124' name='L124'></a> 124 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L356' title='Referred from 356 in lib/tty/keyxdef.c.'>Key_f9</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf9",   "k9",  75, _ky_f9 )
+<a id='L125' name='L125'></a> 125 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L344' title='Referred from 344 in lib/tty/keyxdef.c.'>Key_home</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("khome", "kh",  76, _ky_home )
+<a id='L126' name='L126'></a> 126 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L347' title='Referred from 347 in lib/tty/keyxdef.c.'>Key_ic</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kich1", "kI",  77, _ky_ic )
+<a id='L127' name='L127'></a> 127 <em class='sharp'>#define</em> Key_il          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kil1",  "kA",  78, _ky_il )
+<a id='L128' name='L128'></a> 128 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L338' title='Referred from 338 in lib/tty/keyxdef.c.'>Key_left</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcub1", "kl",  79, _ky_left )
+<a id='L129' name='L129'></a> 129 <em class='sharp'>#define</em> Key_ll          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kll",   "kH",  80, _ky_ll )
+<a id='L130' name='L130'></a> 130 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L342' title='Referred from 342 in lib/tty/keyxdef.c.'>Key_npage</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("knp",   "kN",  81, _ky_npage )
+<a id='L131' name='L131'></a> 131 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L343' title='Referred from 343 in lib/tty/keyxdef.c.'>Key_ppage</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kpp",   "kP",  82, _ky_ppage )
+<a id='L132' name='L132'></a> 132 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L339' title='Referred from 339 in lib/tty/keyxdef.c.'>Key_right</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcuf1", "kr",  83, _ky_right )
+<a id='L133' name='L133'></a> 133 <em class='sharp'>#define</em> Key_sf          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kind",  "kF",  84, _ky_sf )
+<a id='L134' name='L134'></a> 134 <em class='sharp'>#define</em> Key_sr          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kri",   "kR",  85, _ky_sr )
+<a id='L135' name='L135'></a> 135 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L263' title='Referred from 263 in lib/tty/keyxdef.c.'>Key_stab</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("khts",  "kT",  86, _ky_stab )
+<a id='L136' name='L136'></a> 136 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L340' title='Referred from 340 in lib/tty/keyxdef.c.'>Key_up</a>          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcuu1", "ku",  87, _ky_up )
+<a id='L137' name='L137'></a> 137 <em class='sharp'>#define</em> Key_a1          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("ka1",   "K1", 139, _ky_a1 )
+<a id='L138' name='L138'></a> 138 <em class='sharp'>#define</em> Key_a3          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("ka3",   "K3", 140, _ky_a3 )
+<a id='L139' name='L139'></a> 139 <em class='sharp'>#define</em> Key_b2          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kb2",   "K2", 141, _ky_b2 )
+<a id='L140' name='L140'></a> 140 <em class='sharp'>#define</em> Key_c1          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kc1",   "K4", 142, _ky_c1 )
+<a id='L141' name='L141'></a> 141 <em class='sharp'>#define</em> Key_c3          <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kc3",   "K5", 143, _ky_c3 )
+<a id='L142' name='L142'></a> 142 <em class='sharp'>#define</em> Key_btab        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcbt",  "kB", 148, _ky_btab )
+<a id='L143' name='L143'></a> 143 <em class='sharp'>#define</em> Key_beg         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kbeg",  "@1", 158, _ky_beg )
+<a id='L144' name='L144'></a> 144 <em class='sharp'>#define</em> Key_cancel      <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcan",  "@2", 159, _ky_cancel )
+<a id='L145' name='L145'></a> 145 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L264' title='Referred from 264 in lib/tty/keyxdef.c.'>Key_close</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kclo",  "@3", 160, _ky_close )
+<a id='L146' name='L146'></a> 146 <em class='sharp'>#define</em> Key_command     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcmd",  "@4", 161, _ky_command )
+<a id='L147' name='L147'></a> 147 <em class='sharp'>#define</em> Key_copy        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcpy",  "@5", 162, _ky_copy )
+<a id='L148' name='L148'></a> 148 <em class='sharp'>#define</em> Key_create      <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kcrt",  "@6", 163, _ky_create )
+<a id='L149' name='L149'></a> 149 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L345' title='Referred from 345 in lib/tty/keyxdef.c.'>Key_end</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kend",  "@7", 164, _ky_end )
+<a id='L150' name='L150'></a> 150 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L289' title='Referred from 289 in lib/tty/keyxdef.c.'>Key_enter</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kent",  "@8", 165, _ky_enter )
+<a id='L151' name='L151'></a> 151 <em class='sharp'>#define</em> Key_exit        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kext",  "@9", 166, _ky_exit )
+<a id='L152' name='L152'></a> 152 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L267' title='Referred from 267 in lib/tty/keyxdef.c.'>Key_find</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kfnd",  "@0", 167, _ky_find )
+<a id='L153' name='L153'></a> 153 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L269' title='Referred from 269 in lib/tty/keyxdef.c.'>Key_help</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("khlp",  "%1", 168, _ky_help )
+<a id='L154' name='L154'></a> 154 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L274' title='Referred from 274 in lib/tty/keyxdef.c.'>Key_mark</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kmrk",  "%2", 169, _ky_mark )
+<a id='L155' name='L155'></a> 155 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L266' title='Referred from 266 in lib/tty/keyxdef.c.'>Key_message</a>     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kmsg",  "%3", 170, _ky_message )
+<a id='L156' name='L156'></a> 156 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L270' title='Referred from 270 in lib/tty/keyxdef.c.'>Key_move</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kmov",  "%4", 171, _ky_move )
+<a id='L157' name='L157'></a> 157 <em class='sharp'>#define</em> Key_next        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("knxt",  "%5", 172, _ky_next )
+<a id='L158' name='L158'></a> 158 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L276' title='Referred from 276 in lib/tty/keyxdef.c.'>Key_open</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kopn",  "%6", 173, _ky_open )
+<a id='L159' name='L159'></a> 159 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L272' title='Referred from 272 in lib/tty/keyxdef.c.'>Key_options</a>     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kopt",  "%7", 174, _ky_options )
+<a id='L160' name='L160'></a> 160 <em class='sharp'>#define</em> Key_previous    <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kprv",  "%8", 175, _ky_previous )
+<a id='L161' name='L161'></a> 161 <em class='sharp'>#define</em> Key_print       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kprt",  "%9", 176, _ky_print )
+<a id='L162' name='L162'></a> 162 <em class='sharp'>#define</em> Key_redo        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("krdo",  "%0", 177, _ky_redo )
+<a id='L163' name='L163'></a> 163 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L273' title='Referred from 273 in lib/tty/keyxdef.c.'>Key_reference</a>   <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kref",  "&amp;1", 178, _ky_reference )
+<a id='L164' name='L164'></a> 164 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L268' title='Referred from 268 in lib/tty/keyxdef.c.'>Key_refresh</a>     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("krfr",  "&amp;2", 179, _ky_refresh )
+<a id='L165' name='L165'></a> 165 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L279' title='Referred from 279 in lib/tty/keyxdef.c.'>Key_replace</a>     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("krpl",  "&amp;3", 180, _ky_replace )
+<a id='L166' name='L166'></a> 166 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L271' title='Referred from 271 in lib/tty/keyxdef.c.'>Key_restart</a>     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("krst",  "&amp;4", 181, _ky_restart )
+<a id='L167' name='L167'></a> 167 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L277' title='Referred from 277 in lib/tty/keyxdef.c.'>Key_resume</a>      <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kres",  "&amp;5", 182, _ky_resume )
+<a id='L168' name='L168'></a> 168 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L278' title='Referred from 278 in lib/tty/keyxdef.c.'>Key_save</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("ksav",  "&amp;6", 183, _ky_save )
+<a id='L169' name='L169'></a> 169 <em class='sharp'>#define</em> Key_suspend     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kspd",  "&amp;7", 184, _ky_suspend )
+<a id='L170' name='L170'></a> 170 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L282' title='Referred from 282 in lib/tty/keyxdef.c.'>Key_undo</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kund",  "&amp;8", 185, _ky_undo )
+<a id='L171' name='L171'></a> 171 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L275' title='Referred from 275 in lib/tty/keyxdef.c.'>Key_sbeg</a>        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kBEG",  "&amp;9", 186, _ky_sbeg )
+<a id='L172' name='L172'></a> 172 <em class='sharp'>#define</em> Key_scancel     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kCAN",  "&amp;0", 187, _ky_scancel )
+<a id='L173' name='L173'></a> 173 <em class='sharp'>#define</em> Key_scommand    <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kCMD",  "*1", 188, _ky_scommand )
+<a id='L174' name='L174'></a> 174 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L280' title='Referred from 280 in lib/tty/keyxdef.c.'>Key_scopy</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kCPY",  "*2", 189, _ky_scopy )
+<a id='L175' name='L175'></a> 175 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L281' title='Referred from 281 in lib/tty/keyxdef.c.'>Key_screate</a>     <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kCRT",  "*3", 190, _ky_screate )
+<a id='L176' name='L176'></a> 176 <em class='sharp'>#define</em> Key_sdc         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kDC",   "*4", 191, _ky_sdc )
+<a id='L177' name='L177'></a> 177 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L283' title='Referred from 283 in lib/tty/keyxdef.c.'>Key_sdl</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kDL",   "*5", 192, _ky_sdl )
+<a id='L178' name='L178'></a> 178 <em class='sharp'>#define</em> Key_select      <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kslt",  "*6", 193, _ky_select )
+<a id='L179' name='L179'></a> 179 <em class='sharp'>#define</em> Key_send        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kEND",  "*7", 194, _ky_send )
+<a id='L180' name='L180'></a> 180 <em class='sharp'>#define</em> Key_seol        <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kEOL",  "*8", 195, _ky_seol )
+<a id='L181' name='L181'></a> 181 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L284' title='Referred from 284 in lib/tty/keyxdef.c.'>Key_sexit</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kEXT",  "*9", 196, _ky_sexit )
+<a id='L182' name='L182'></a> 182 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L285' title='Referred from 285 in lib/tty/keyxdef.c.'>Key_sfind</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kFND",  "*0", 197, _ky_sfind )
+<a id='L183' name='L183'></a> 183 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L286' title='Referred from 286 in lib/tty/keyxdef.c.'>Key_shelp</a>       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kHLP",  "#1", 198, _ky_shelp )
+<a id='L184' name='L184'></a> 184 <em class='sharp'>#define</em> Key_shome       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kHOM",  "#2", 199, _ky_shome )
+<a id='L185' name='L185'></a> 185 <em class='sharp'>#define</em> Key_sic         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kIC",   "#3", 200, _ky_sic )
+<a id='L186' name='L186'></a> 186 <em class='sharp'>#define</em> Key_sleft       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kLFT",  "#4", 201, _ky_sleft )
+<a id='L187' name='L187'></a> 187 <em class='sharp'>#define</em> Key_smessage    <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kMSG",  "%a", 202, _ky_smessage )
+<a id='L188' name='L188'></a> 188 <em class='sharp'>#define</em> Key_smove       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kMOV",  "%b", 203, _ky_smove )
+<a id='L189' name='L189'></a> 189 <em class='sharp'>#define</em> Key_snext       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kNXT",  "%c", 204, _ky_snext )
+<a id='L190' name='L190'></a> 190 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L287' title='Referred from 287 in lib/tty/keyxdef.c.'>Key_soptions</a>    <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kOPT",  "%d", 205, _ky_soptions )
+<a id='L191' name='L191'></a> 191 <em class='sharp'>#define</em> Key_sprevious   <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kPRV",  "%e", 206, _ky_sprevious )
+<a id='L192' name='L192'></a> 192 <em class='sharp'>#define</em> Key_sprint      <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kPRT",  "%f", 207, _ky_sprint )
+<a id='L193' name='L193'></a> 193 <em class='sharp'>#define</em> Key_sredo       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kRDO",  "%g", 208, _ky_sredo )
+<a id='L194' name='L194'></a> 194 <em class='sharp'>#define</em> Key_sreplace    <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kRPL",  "%h", 209, _ky_sreplace )
+<a id='L195' name='L195'></a> 195 <em class='sharp'>#define</em> Key_sright      <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kRIT",  "%i", 210, _ky_sright )
+<a id='L196' name='L196'></a> 196 <em class='sharp'>#define</em> Key_srsume      <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kRES",  "%j", 211, _ky_srsume )
+<a id='L197' name='L197'></a> 197 <em class='sharp'>#define</em> Key_ssave       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kSAV",  "!1", 212, _ky_ssave )
+<a id='L198' name='L198'></a> 198 <em class='sharp'>#define</em> Key_ssuspend    <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kSPD",  "!2", 213, _ky_ssuspend )
+<a id='L199' name='L199'></a> 199 <em class='sharp'>#define</em> Key_sundo       <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kUND",  "!3", 214, _ky_sundo )
+<a id='L200' name='L200'></a> 200 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L358' title='Referred from 358 in lib/tty/keyxdef.c.'>Key_f11</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf11",  "F1", 216, _ky_f11 )
+<a id='L201' name='L201'></a> 201 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L359' title='Referred from 359 in lib/tty/keyxdef.c.'>Key_f12</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf12",  "F2", 217, _ky_f12 )
+<a id='L202' name='L202'></a> 202 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L360' title='Referred from 360 in lib/tty/keyxdef.c.'>Key_f13</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf13",  "F3", 218, _ky_f13 )
+<a id='L203' name='L203'></a> 203 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L361' title='Referred from 361 in lib/tty/keyxdef.c.'>Key_f14</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf14",  "F4", 219, _ky_f14 )
+<a id='L204' name='L204'></a> 204 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L362' title='Referred from 362 in lib/tty/keyxdef.c.'>Key_f15</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf15",  "F5", 220, _ky_f15 )
+<a id='L205' name='L205'></a> 205 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L363' title='Referred from 363 in lib/tty/keyxdef.c.'>Key_f16</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf16",  "F6", 221, _ky_f16 )
+<a id='L206' name='L206'></a> 206 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L364' title='Referred from 364 in lib/tty/keyxdef.c.'>Key_f17</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf17",  "F7", 222, _ky_f17 )
+<a id='L207' name='L207'></a> 207 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L365' title='Referred from 365 in lib/tty/keyxdef.c.'>Key_f18</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf18",  "F8", 223, _ky_f18 )
+<a id='L208' name='L208'></a> 208 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L366' title='Referred from 366 in lib/tty/keyxdef.c.'>Key_f19</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf19",  "F9", 224, _ky_f19 )
+<a id='L209' name='L209'></a> 209 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L367' title='Referred from 367 in lib/tty/keyxdef.c.'>Key_f20</a>         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf20",  "FA", 225, _ky_f20 )
+<a id='L210' name='L210'></a> 210 <em class='sharp'>#define</em> Key_f21         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf21",  "FB", 226, _ky_f21 )
+<a id='L211' name='L211'></a> 211 <em class='sharp'>#define</em> Key_f22         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf22",  "FC", 227, _ky_f22 )
+<a id='L212' name='L212'></a> 212 <em class='sharp'>#define</em> Key_f23         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf23",  "FD", 228, _ky_f23 )
+<a id='L213' name='L213'></a> 213 <em class='sharp'>#define</em> Key_f24         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf24",  "FE", 229, _ky_f24 )
+<a id='L214' name='L214'></a> 214 <em class='sharp'>#define</em> Key_f25         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf25",  "FF", 230, _ky_f25 )
+<a id='L215' name='L215'></a> 215 <em class='sharp'>#define</em> Key_f26         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf26",  "FG", 231, _ky_f26 )
+<a id='L216' name='L216'></a> 216 <em class='sharp'>#define</em> Key_f27         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf27",  "FH", 232, _ky_f27 )
+<a id='L217' name='L217'></a> 217 <em class='sharp'>#define</em> Key_f28         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf28",  "FI", 233, _ky_f28 )
+<a id='L218' name='L218'></a> 218 <em class='sharp'>#define</em> Key_f29         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf29",  "FJ", 234, _ky_f29 )
+<a id='L219' name='L219'></a> 219 <em class='sharp'>#define</em> Key_f30         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf30",  "FK", 235, _ky_f30 )
+<a id='L220' name='L220'></a> 220 <em class='sharp'>#define</em> Key_f31         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf31",  "FL", 236, _ky_f31 )
+<a id='L221' name='L221'></a> 221 <em class='sharp'>#define</em> Key_f32         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf32",  "FM", 237, _ky_f32 )
+<a id='L222' name='L222'></a> 222 <em class='sharp'>#define</em> Key_f33         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf33",  "FN", 238, _ky_f33 )
+<a id='L223' name='L223'></a> 223 <em class='sharp'>#define</em> Key_f34         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf34",  "FO", 239, _ky_f34 )
+<a id='L224' name='L224'></a> 224 <em class='sharp'>#define</em> Key_f35         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf35",  "FP", 240, _ky_f35 )
+<a id='L225' name='L225'></a> 225 <em class='sharp'>#define</em> Key_f36         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf36",  "FQ", 241, _ky_f36 )
+<a id='L226' name='L226'></a> 226 <em class='sharp'>#define</em> Key_f37         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf37",  "FR", 242, _ky_f37 )
+<a id='L227' name='L227'></a> 227 <em class='sharp'>#define</em> Key_f38         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf38",  "FS", 243, _ky_f38 )
+<a id='L228' name='L228'></a> 228 <em class='sharp'>#define</em> Key_f39         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf39",  "FT", 244, _ky_f39 )
+<a id='L229' name='L229'></a> 229 <em class='sharp'>#define</em> Key_f40         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf40",  "FU", 245, _ky_f40 )
+<a id='L230' name='L230'></a> 230 <em class='sharp'>#define</em> Key_f41         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf41",  "FV", 246, _ky_f41 )
+<a id='L231' name='L231'></a> 231 <em class='sharp'>#define</em> Key_f42         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf42",  "FW", 247, _ky_f42 )
+<a id='L232' name='L232'></a> 232 <em class='sharp'>#define</em> Key_f43         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf43",  "FX", 248, _ky_f43 )
+<a id='L233' name='L233'></a> 233 <em class='sharp'>#define</em> Key_f44         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf44",  "FY", 249, _ky_f44 )
+<a id='L234' name='L234'></a> 234 <em class='sharp'>#define</em> Key_f45         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf45",  "FZ", 250, _ky_f45 )
+<a id='L235' name='L235'></a> 235 <em class='sharp'>#define</em> Key_f46         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf46",  "Fa", 251, _ky_f46 )
+<a id='L236' name='L236'></a> 236 <em class='sharp'>#define</em> Key_f47         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf47",  "Fb", 252, _ky_f47 )
+<a id='L237' name='L237'></a> 237 <em class='sharp'>#define</em> Key_f48         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf48",  "Fc", 253, _ky_f48 )
+<a id='L238' name='L238'></a> 238 <em class='sharp'>#define</em> Key_f49         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf49",  "Fd", 254, _ky_f49 )
+<a id='L239' name='L239'></a> 239 <em class='sharp'>#define</em> Key_f50         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf50",  "Fe", 255, _ky_f50 )
+<a id='L240' name='L240'></a> 240 <em class='sharp'>#define</em> Key_f51         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf51",  "Ff", 256, _ky_f51 )
+<a id='L241' name='L241'></a> 241 <em class='sharp'>#define</em> Key_f52         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf52",  "Fg", 257, _ky_f52 )
+<a id='L242' name='L242'></a> 242 <em class='sharp'>#define</em> Key_f53         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf53",  "Fh", 258, _ky_f53 )
+<a id='L243' name='L243'></a> 243 <em class='sharp'>#define</em> Key_f54         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf54",  "Fi", 259, _ky_f54 )
+<a id='L244' name='L244'></a> 244 <em class='sharp'>#define</em> Key_f55         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf55",  "Fj", 260, _ky_f55 )
+<a id='L245' name='L245'></a> 245 <em class='sharp'>#define</em> Key_f56         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf56",  "Fk", 261, _ky_f56 )
+<a id='L246' name='L246'></a> 246 <em class='sharp'>#define</em> Key_f57         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf57",  "Fl", 262, _ky_f57 )
+<a id='L247' name='L247'></a> 247 <em class='sharp'>#define</em> Key_f58         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf58",  "Fm", 263, _ky_f58 )
+<a id='L248' name='L248'></a> 248 <em class='sharp'>#define</em> Key_f59         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf59",  "Fn", 264, _ky_f59 )
+<a id='L249' name='L249'></a> 249 <em class='sharp'>#define</em> Key_f60         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf60",  "Fo", 265, _ky_f60 )
+<a id='L250' name='L250'></a> 250 <em class='sharp'>#define</em> Key_f61         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf61",  "Fp", 266, _ky_f61 )
+<a id='L251' name='L251'></a> 251 <em class='sharp'>#define</em> Key_f62         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf62",  "Fq", 267, _ky_f62 )
+<a id='L252' name='L252'></a> 252 <em class='sharp'>#define</em> Key_f63         <a href='../S/lib--tty--keyxdef.c.html#L80' title='Defined at 80 in lib/tty/keyxdef.c.'>__TK</a>("kf63",  "Fr", 268, _ky_f63 )
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254 <em class='comment'>/* }}} */</em>
+<a id='L255' name='L255'></a> 255 
+<a id='L256' name='L256'></a> 256 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L56' title='Defined at 56 in lib/tty/keyxdef.c.'>HAVE_QNX_KEYS</a>
+<a id='L257' name='L257'></a> 257 
+<a id='L258' name='L258'></a> 258 <em class='comment'>/* don't force pre-defining of base keys under QNX */</em>
+<a id='L259' name='L259'></a> 259 <em class='sharp'>#define</em> <a href='../R/FORCE_BASE_KEY_DEFS.html' title='Multiple referred from 2 places.'>FORCE_BASE_KEY_DEFS</a> 0
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261 <em class='comment'>/* OS specific key aliases */</em>
+<a id='L262' name='L262'></a> 262 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L369' title='Referred from 369 in lib/tty/keyxdef.c.'>Key_alt_a</a>       <a href='../S/lib--tty--keyxdef.c.html#L106' title='Defined at 106 in lib/tty/keyxdef.c.'>Key_clear</a>
+<a id='L263' name='L263'></a> 263 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L370' title='Referred from 370 in lib/tty/keyxdef.c.'>Key_alt_b</a>       <a href='../S/lib--tty--keyxdef.c.html#L135' title='Defined at 135 in lib/tty/keyxdef.c.'>Key_stab</a>
+<a id='L264' name='L264'></a> 264 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L371' title='Referred from 371 in lib/tty/keyxdef.c.'>Key_alt_c</a>       <a href='../S/lib--tty--keyxdef.c.html#L145' title='Defined at 145 in lib/tty/keyxdef.c.'>Key_close</a>
+<a id='L265' name='L265'></a> 265 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L372' title='Referred from 372 in lib/tty/keyxdef.c.'>Key_alt_d</a>       <a href='../S/lib--tty--keyxdef.c.html#L105' title='Defined at 105 in lib/tty/keyxdef.c.'>Key_catab</a>
+<a id='L266' name='L266'></a> 266 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L373' title='Referred from 373 in lib/tty/keyxdef.c.'>Key_alt_e</a>       <a href='../S/lib--tty--keyxdef.c.html#L155' title='Defined at 155 in lib/tty/keyxdef.c.'>Key_message</a>
+<a id='L267' name='L267'></a> 267 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L374' title='Referred from 374 in lib/tty/keyxdef.c.'>Key_alt_f</a>       <a href='../S/lib--tty--keyxdef.c.html#L152' title='Defined at 152 in lib/tty/keyxdef.c.'>Key_find</a>
+<a id='L268' name='L268'></a> 268 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L375' title='Referred from 375 in lib/tty/keyxdef.c.'>Key_alt_g</a>       <a href='../S/lib--tty--keyxdef.c.html#L164' title='Defined at 164 in lib/tty/keyxdef.c.'>Key_refresh</a>
+<a id='L269' name='L269'></a> 269 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L376' title='Referred from 376 in lib/tty/keyxdef.c.'>Key_alt_h</a>       <a href='../S/lib--tty--keyxdef.c.html#L153' title='Defined at 153 in lib/tty/keyxdef.c.'>Key_help</a>
+<a id='L270' name='L270'></a> 270 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L377' title='Referred from 377 in lib/tty/keyxdef.c.'>Key_alt_i</a>       <a href='../S/lib--tty--keyxdef.c.html#L156' title='Defined at 156 in lib/tty/keyxdef.c.'>Key_move</a>
+<a id='L271' name='L271'></a> 271 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L378' title='Referred from 378 in lib/tty/keyxdef.c.'>Key_alt_j</a>       <a href='../S/lib--tty--keyxdef.c.html#L166' title='Defined at 166 in lib/tty/keyxdef.c.'>Key_restart</a>
+<a id='L272' name='L272'></a> 272 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L379' title='Referred from 379 in lib/tty/keyxdef.c.'>Key_alt_k</a>       <a href='../S/lib--tty--keyxdef.c.html#L159' title='Defined at 159 in lib/tty/keyxdef.c.'>Key_options</a>
+<a id='L273' name='L273'></a> 273 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L380' title='Referred from 380 in lib/tty/keyxdef.c.'>Key_alt_l</a>       <a href='../S/lib--tty--keyxdef.c.html#L163' title='Defined at 163 in lib/tty/keyxdef.c.'>Key_reference</a>
+<a id='L274' name='L274'></a> 274 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L381' title='Referred from 381 in lib/tty/keyxdef.c.'>Key_alt_m</a>       <a href='../S/lib--tty--keyxdef.c.html#L154' title='Defined at 154 in lib/tty/keyxdef.c.'>Key_mark</a>
+<a id='L275' name='L275'></a> 275 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L382' title='Referred from 382 in lib/tty/keyxdef.c.'>Key_alt_n</a>       <a href='../S/lib--tty--keyxdef.c.html#L171' title='Defined at 171 in lib/tty/keyxdef.c.'>Key_sbeg</a>
+<a id='L276' name='L276'></a> 276 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L383' title='Referred from 383 in lib/tty/keyxdef.c.'>Key_alt_o</a>       <a href='../S/lib--tty--keyxdef.c.html#L158' title='Defined at 158 in lib/tty/keyxdef.c.'>Key_open</a>
+<a id='L277' name='L277'></a> 277 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L384' title='Referred from 384 in lib/tty/keyxdef.c.'>Key_alt_p</a>       <a href='../S/lib--tty--keyxdef.c.html#L167' title='Defined at 167 in lib/tty/keyxdef.c.'>Key_resume</a>
+<a id='L278' name='L278'></a> 278 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L385' title='Referred from 385 in lib/tty/keyxdef.c.'>Key_alt_q</a>       <a href='../S/lib--tty--keyxdef.c.html#L168' title='Defined at 168 in lib/tty/keyxdef.c.'>Key_save</a>
+<a id='L279' name='L279'></a> 279 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L386' title='Referred from 386 in lib/tty/keyxdef.c.'>Key_alt_r</a>       <a href='../S/lib--tty--keyxdef.c.html#L165' title='Defined at 165 in lib/tty/keyxdef.c.'>Key_replace</a>
+<a id='L280' name='L280'></a> 280 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L387' title='Referred from 387 in lib/tty/keyxdef.c.'>Key_alt_s</a>       <a href='../S/lib--tty--keyxdef.c.html#L174' title='Defined at 174 in lib/tty/keyxdef.c.'>Key_scopy</a>
+<a id='L281' name='L281'></a> 281 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L388' title='Referred from 388 in lib/tty/keyxdef.c.'>Key_alt_t</a>       <a href='../S/lib--tty--keyxdef.c.html#L175' title='Defined at 175 in lib/tty/keyxdef.c.'>Key_screate</a>
+<a id='L282' name='L282'></a> 282 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L389' title='Referred from 389 in lib/tty/keyxdef.c.'>Key_alt_u</a>       <a href='../S/lib--tty--keyxdef.c.html#L170' title='Defined at 170 in lib/tty/keyxdef.c.'>Key_undo</a>
+<a id='L283' name='L283'></a> 283 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L390' title='Referred from 390 in lib/tty/keyxdef.c.'>Key_alt_v</a>       <a href='../S/lib--tty--keyxdef.c.html#L177' title='Defined at 177 in lib/tty/keyxdef.c.'>Key_sdl</a>
+<a id='L284' name='L284'></a> 284 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L391' title='Referred from 391 in lib/tty/keyxdef.c.'>Key_alt_w</a>       <a href='../S/lib--tty--keyxdef.c.html#L181' title='Defined at 181 in lib/tty/keyxdef.c.'>Key_sexit</a>
+<a id='L285' name='L285'></a> 285 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L392' title='Referred from 392 in lib/tty/keyxdef.c.'>Key_alt_x</a>       <a href='../S/lib--tty--keyxdef.c.html#L182' title='Defined at 182 in lib/tty/keyxdef.c.'>Key_sfind</a>
+<a id='L286' name='L286'></a> 286 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L393' title='Referred from 393 in lib/tty/keyxdef.c.'>Key_alt_y</a>       <a href='../S/lib--tty--keyxdef.c.html#L183' title='Defined at 183 in lib/tty/keyxdef.c.'>Key_shelp</a>
+<a id='L287' name='L287'></a> 287 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L394' title='Referred from 394 in lib/tty/keyxdef.c.'>Key_alt_z</a>       <a href='../S/lib--tty--keyxdef.c.html#L190' title='Defined at 190 in lib/tty/keyxdef.c.'>Key_soptions</a>
+<a id='L288' name='L288'></a> 288 
+<a id='L289' name='L289'></a> 289 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L293' title='Referred from 293 in lib/tty/keyxdef.c.'>Key_ctl_enter</a>   <a href='../S/lib--tty--keyxdef.c.html#L150' title='Defined at 150 in lib/tty/keyxdef.c.'>Key_enter</a>
+<a id='L290' name='L290'></a> 290 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L292' title='Referred from 292 in lib/tty/keyxdef.c.'>Key_ctl_tab</a>     <a href='../S/lib--tty--keyxdef.c.html#L107' title='Defined at 107 in lib/tty/keyxdef.c.'>Key_ctab</a>
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L397' title='Referred from 397 in lib/tty/keyxdef.c.'>Key_alt_tab</a>     <a href='../S/lib--tty--keyxdef.c.html#L290' title='Defined at 290 in lib/tty/keyxdef.c.'>Key_ctl_tab</a>     <em class='comment'>/* map ALT-TAB to CTRL-TAB */</em>
+<a id='L293' name='L293'></a> 293 <em class='sharp'>#define</em> <a href='../S/lib--tty--keyxdef.c.html#L396' title='Referred from 396 in lib/tty/keyxdef.c.'>Key_alt_enter</a>   <a href='../S/lib--tty--keyxdef.c.html#L289' title='Defined at 289 in lib/tty/keyxdef.c.'>Key_ctl_enter</a>   <em class='comment'>/* map ALT-ENTER to CTRL-ENTER */</em>
+<a id='L294' name='L294'></a> 294 
+<a id='L295' name='L295'></a> 295 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L62' title='Defined at 62 in lib/tty/keyxdef.c.'>__USE_QNX_TI</a>
+<a id='L296' name='L296'></a> 296 <em class='comment'>/* define current xtra_key_define_t (enable OS/implementation) */</em>
+<a id='L297' name='L297'></a> 297 <em class='sharp'>#define</em> <a href='../R/xtra_key_define_t.html' title='Multiple referred from 3 places.'>xtra_key_define_t</a> <a href='../S/lib--tty--keyxdef.c.html#L325' title='Defined at 325 in lib/tty/keyxdef.c.'>qnx_key_define_t</a>
+<a id='L298' name='L298'></a> 298 <em class='sharp'>#endif</em> <em class='comment'>/* __USE_QNX_TI */</em>
+<a id='L299' name='L299'></a> 299 <em class='sharp'>#endif</em> <em class='comment'>/* HAVE_QNX_KEYS */</em>
+<a id='L300' name='L300'></a> 300 
+<a id='L301' name='L301'></a> 301 
+<a id='L302' name='L302'></a> 302 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L297' title='Defined at 297 in lib/tty/keyxdef.c.'>xtra_key_define_t</a>
+<a id='L303' name='L303'></a> 303 <em class='sharp'>#ifndef</em> <a href='../D/FORCE_BASE_KEY_DEFS.html' title='Multiple defined in 2 places.'>FORCE_BASE_KEY_DEFS</a>
+<a id='L304' name='L304'></a> 304 <em class='sharp'>#define</em> <a href='../R/FORCE_BASE_KEY_DEFS.html' title='Multiple referred from 2 places.'>FORCE_BASE_KEY_DEFS</a> 0
+<a id='L305' name='L305'></a> 305 <em class='sharp'>#endif</em>
+<a id='L306' name='L306'></a> 306 <em class='sharp'>#endif</em> <em class='comment'>/* xtra_key_define_t */</em>
+<a id='L307' name='L307'></a> 307 
+<a id='L308' name='L308'></a> 308 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L56' title='Defined at 56 in lib/tty/keyxdef.c.'>HAVE_QNX_KEYS</a>
+<a id='L309' name='L309'></a> 309 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L62' title='Defined at 62 in lib/tty/keyxdef.c.'>__USE_QNX_TI</a>
+<a id='L310' name='L310'></a> 310 <em class='sharp'>#define</em> <a href='../R/__CT.html' title='Multiple referred from 2 places.'>__CT</a>               (__cur_term)
+<a id='L311' name='L311'></a> 311 <em class='sharp'>#define</em> <a href='../R/__QTISOFFS.html' title='Multiple referred from 2 places.'>__QTISOFFS</a>(<a href='../Y/_qtisx.html' title='Multiple used in 2 places.'>_qtisx</a>) (((<a href='../Y/charoffset.html' title='Multiple used in 2 places.'>charoffset</a>*)(&amp;<a href='../S/lib--tty--keyxdef.c.html#L310' title='Defined at 310 in lib/tty/keyxdef.c.'>__CT</a>-&gt;<a href='../Y/_strs.html' title='Multiple used in 2 places.'>_strs</a>))[<a href='../Y/_qtisx.html' title='Multiple used in 2 places.'>_qtisx</a>])
+<a id='L312' name='L312'></a> 312 <em class='sharp'>#define</em> <a href='../R/__QTISSTR.html' title='Multiple referred from 2 places.'>__QTISSTR</a>(<a href='../Y/_qtisx.html' title='Multiple used in 2 places.'>_qtisx</a>)  (&amp;<a href='../S/lib--tty--keyxdef.c.html#L310' title='Defined at 310 in lib/tty/keyxdef.c.'>__CT</a>-&gt;_strtab[0]+<a href='../S/lib--tty--keyxdef.c.html#L311' title='Defined at 311 in lib/tty/keyxdef.c.'>__QTISOFFS</a>(<a href='../Y/_qtisx.html' title='Multiple used in 2 places.'>_qtisx</a>))
+<a id='L313' name='L313'></a> 313 <em class='sharp'>#endif</em> <em class='comment'>/* __USE_QNX_TI */</em>
+<a id='L314' name='L314'></a> 314 <em class='sharp'>#endif</em> <em class='comment'>/* HAVE_QNX_KEYS */</em>
+<a id='L315' name='L315'></a> 315 
+<a id='L316' name='L316'></a> 316 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L317' name='L317'></a> 317 
+<a id='L318' name='L318'></a> 318 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L56' title='Defined at 56 in lib/tty/keyxdef.c.'>HAVE_QNX_KEYS</a>
+<a id='L319' name='L319'></a> 319 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L62' title='Defined at 62 in lib/tty/keyxdef.c.'>__USE_QNX_TI</a>
+<a id='L320' name='L320'></a> 320 <em class='comment'>/* OS/implementation specific key-define struct */</em>
+<a id='L321' name='L321'></a> 321 <strong class='reserved'>typedef</strong> <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> qnx_key_define_s
+<a id='L322' name='L322'></a> 322 <em class='brace'>{</em>
+<a id='L323' name='L323'></a> 323     <strong class='reserved'>int</strong> <a href='../Y/mc_code.html' title='Multiple used in 2 places.'>mc_code</a>;
+<a id='L324' name='L324'></a> 324     <strong class='reserved'>int</strong> <a href='../Y/str_idx.html' title='Multiple used in 5 places.'>str_idx</a>;
+<a id='L325' name='L325'></a> 325 <em class='brace'>}</em> <a href='../S/lib--tty--keyxdef.c.html#L297' title='Referred from 297 in lib/tty/keyxdef.c.'>qnx_key_define_t</a>;
+<a id='L326' name='L326'></a> 326 <em class='sharp'>#endif</em> <em class='comment'>/* __USE_QNX_TI */</em>
+<a id='L327' name='L327'></a> 327 <em class='sharp'>#endif</em> <em class='comment'>/* HAVE_QNX_KEYS */</em>
+<a id='L328' name='L328'></a> 328 
+<a id='L329' name='L329'></a> 329 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L330' name='L330'></a> 330 
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L297' title='Defined at 297 in lib/tty/keyxdef.c.'>xtra_key_define_t</a>
+<a id='L333' name='L333'></a> 333 
+<a id='L334' name='L334'></a> 334 <em class='comment'>/* general key define table */</em>
+<a id='L335' name='L335'></a> 335 <a href='../S/lib--tty--keyxdef.c.html#L297' title='Defined at 297 in lib/tty/keyxdef.c.'>xtra_key_define_t</a> <a href='../Y/xtra_key_defines.html' title='Multiple used in 4 places.'>xtra_key_defines</a>[] = <em class='brace'>{</em>
+<a id='L336' name='L336'></a> 336 <em class='sharp'>#if</em> <a href='../D/FORCE_BASE_KEY_DEFS.html' title='Multiple defined in 2 places.'>FORCE_BASE_KEY_DEFS</a>
+<a id='L337' name='L337'></a> 337     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L32' title='Defined at 32 in lib/tty/tty-slang.h.'>KEY_BACKSPACE</a>, <a href='../S/lib--tty--keyxdef.c.html#L104' title='Defined at 104 in lib/tty/keyxdef.c.'>Key_backspace</a><em class='brace'>}</em>,
+<a id='L338' name='L338'></a> 338     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L33' title='Defined at 33 in lib/tty/tty-slang.h.'>KEY_LEFT</a>, <a href='../S/lib--tty--keyxdef.c.html#L128' title='Defined at 128 in lib/tty/keyxdef.c.'>Key_left</a><em class='brace'>}</em>,
+<a id='L339' name='L339'></a> 339     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L33' title='Defined at 33 in lib/tty/tty-slang.h.'>KEY_RIGHT</a>, <a href='../S/lib--tty--keyxdef.c.html#L132' title='Defined at 132 in lib/tty/keyxdef.c.'>Key_right</a><em class='brace'>}</em>,
+<a id='L340' name='L340'></a> 340     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L33' title='Defined at 33 in lib/tty/tty-slang.h.'>KEY_UP</a>, <a href='../S/lib--tty--keyxdef.c.html#L136' title='Defined at 136 in lib/tty/keyxdef.c.'>Key_up</a><em class='brace'>}</em>,
+<a id='L341' name='L341'></a> 341     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L33' title='Defined at 33 in lib/tty/tty-slang.h.'>KEY_DOWN</a>, <a href='../S/lib--tty--keyxdef.c.html#L110' title='Defined at 110 in lib/tty/keyxdef.c.'>Key_down</a><em class='brace'>}</em>,
+<a id='L342' name='L342'></a> 342     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L34' title='Defined at 34 in lib/tty/tty-slang.h.'>KEY_NPAGE</a>, <a href='../S/lib--tty--keyxdef.c.html#L130' title='Defined at 130 in lib/tty/keyxdef.c.'>Key_npage</a><em class='brace'>}</em>,
+<a id='L343' name='L343'></a> 343     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L34' title='Defined at 34 in lib/tty/tty-slang.h.'>KEY_PPAGE</a>, <a href='../S/lib--tty--keyxdef.c.html#L131' title='Defined at 131 in lib/tty/keyxdef.c.'>Key_ppage</a><em class='brace'>}</em>,
+<a id='L344' name='L344'></a> 344     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L34' title='Defined at 34 in lib/tty/tty-slang.h.'>KEY_HOME</a>, <a href='../S/lib--tty--keyxdef.c.html#L125' title='Defined at 125 in lib/tty/keyxdef.c.'>Key_home</a><em class='brace'>}</em>,
+<a id='L345' name='L345'></a> 345     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L33' title='Defined at 33 in lib/tty/tty-slang.h.'>KEY_END</a>, <a href='../S/lib--tty--keyxdef.c.html#L149' title='Defined at 149 in lib/tty/keyxdef.c.'>Key_end</a><em class='brace'>}</em>,
+<a id='L346' name='L346'></a> 346     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L35' title='Defined at 35 in lib/tty/tty-slang.h.'>KEY_DC</a>, <a href='../S/lib--tty--keyxdef.c.html#L108' title='Defined at 108 in lib/tty/keyxdef.c.'>Key_dc</a><em class='brace'>}</em>,
+<a id='L347' name='L347'></a> 347     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L34' title='Defined at 34 in lib/tty/tty-slang.h.'>KEY_IC</a>, <a href='../S/lib--tty--keyxdef.c.html#L126' title='Defined at 126 in lib/tty/keyxdef.c.'>Key_ic</a><em class='brace'>}</em>,
+<a id='L348' name='L348'></a> 348     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (1), <a href='../S/lib--tty--keyxdef.c.html#L115' title='Defined at 115 in lib/tty/keyxdef.c.'>Key_f1</a><em class='brace'>}</em>,
+<a id='L349' name='L349'></a> 349     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (2), <a href='../S/lib--tty--keyxdef.c.html#L117' title='Defined at 117 in lib/tty/keyxdef.c.'>Key_f2</a><em class='brace'>}</em>,
+<a id='L350' name='L350'></a> 350     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (3), <a href='../S/lib--tty--keyxdef.c.html#L118' title='Defined at 118 in lib/tty/keyxdef.c.'>Key_f3</a><em class='brace'>}</em>,
+<a id='L351' name='L351'></a> 351     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (4), <a href='../S/lib--tty--keyxdef.c.html#L119' title='Defined at 119 in lib/tty/keyxdef.c.'>Key_f4</a><em class='brace'>}</em>,
+<a id='L352' name='L352'></a> 352     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (5), <a href='../S/lib--tty--keyxdef.c.html#L120' title='Defined at 120 in lib/tty/keyxdef.c.'>Key_f5</a><em class='brace'>}</em>,
+<a id='L353' name='L353'></a> 353     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (6), <a href='../S/lib--tty--keyxdef.c.html#L121' title='Defined at 121 in lib/tty/keyxdef.c.'>Key_f6</a><em class='brace'>}</em>,
+<a id='L354' name='L354'></a> 354     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (7), <a href='../S/lib--tty--keyxdef.c.html#L122' title='Defined at 122 in lib/tty/keyxdef.c.'>Key_f7</a><em class='brace'>}</em>,
+<a id='L355' name='L355'></a> 355     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (8), <a href='../S/lib--tty--keyxdef.c.html#L123' title='Defined at 123 in lib/tty/keyxdef.c.'>Key_f8</a><em class='brace'>}</em>,
+<a id='L356' name='L356'></a> 356     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (9), <a href='../S/lib--tty--keyxdef.c.html#L124' title='Defined at 124 in lib/tty/keyxdef.c.'>Key_f9</a><em class='brace'>}</em>,
+<a id='L357' name='L357'></a> 357     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (10), <a href='../S/lib--tty--keyxdef.c.html#L116' title='Defined at 116 in lib/tty/keyxdef.c.'>Key_f10</a><em class='brace'>}</em>,
+<a id='L358' name='L358'></a> 358     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (11), <a href='../S/lib--tty--keyxdef.c.html#L200' title='Defined at 200 in lib/tty/keyxdef.c.'>Key_f11</a><em class='brace'>}</em>,
+<a id='L359' name='L359'></a> 359     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (12), <a href='../S/lib--tty--keyxdef.c.html#L201' title='Defined at 201 in lib/tty/keyxdef.c.'>Key_f12</a><em class='brace'>}</em>,
+<a id='L360' name='L360'></a> 360     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (13), <a href='../S/lib--tty--keyxdef.c.html#L202' title='Defined at 202 in lib/tty/keyxdef.c.'>Key_f13</a><em class='brace'>}</em>,
+<a id='L361' name='L361'></a> 361     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (14), <a href='../S/lib--tty--keyxdef.c.html#L203' title='Defined at 203 in lib/tty/keyxdef.c.'>Key_f14</a><em class='brace'>}</em>,
+<a id='L362' name='L362'></a> 362     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (15), <a href='../S/lib--tty--keyxdef.c.html#L204' title='Defined at 204 in lib/tty/keyxdef.c.'>Key_f15</a><em class='brace'>}</em>,
+<a id='L363' name='L363'></a> 363     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (16), <a href='../S/lib--tty--keyxdef.c.html#L205' title='Defined at 205 in lib/tty/keyxdef.c.'>Key_f16</a><em class='brace'>}</em>,
+<a id='L364' name='L364'></a> 364     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (17), <a href='../S/lib--tty--keyxdef.c.html#L206' title='Defined at 206 in lib/tty/keyxdef.c.'>Key_f17</a><em class='brace'>}</em>,
+<a id='L365' name='L365'></a> 365     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (18), <a href='../S/lib--tty--keyxdef.c.html#L207' title='Defined at 207 in lib/tty/keyxdef.c.'>Key_f18</a><em class='brace'>}</em>,
+<a id='L366' name='L366'></a> 366     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (19), <a href='../S/lib--tty--keyxdef.c.html#L208' title='Defined at 208 in lib/tty/keyxdef.c.'>Key_f19</a><em class='brace'>}</em>,
+<a id='L367' name='L367'></a> 367     <em class='brace'>{</em><a href='../S/lib--tty--tty-slang.h.html#L9' title='Defined at 9 in lib/tty/tty-slang.h.'>KEY_F</a> (20), <a href='../S/lib--tty--keyxdef.c.html#L209' title='Defined at 209 in lib/tty/keyxdef.c.'>Key_f20</a><em class='brace'>}</em>,
+<a id='L368' name='L368'></a> 368 <em class='sharp'>#endif</em>
+<a id='L369' name='L369'></a> 369     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('a'), <a href='../S/lib--tty--keyxdef.c.html#L262' title='Defined at 262 in lib/tty/keyxdef.c.'>Key_alt_a</a><em class='brace'>}</em>,
+<a id='L370' name='L370'></a> 370     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('b'), <a href='../S/lib--tty--keyxdef.c.html#L263' title='Defined at 263 in lib/tty/keyxdef.c.'>Key_alt_b</a><em class='brace'>}</em>,
+<a id='L371' name='L371'></a> 371     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('c'), <a href='../S/lib--tty--keyxdef.c.html#L264' title='Defined at 264 in lib/tty/keyxdef.c.'>Key_alt_c</a><em class='brace'>}</em>,
+<a id='L372' name='L372'></a> 372     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('d'), <a href='../S/lib--tty--keyxdef.c.html#L265' title='Defined at 265 in lib/tty/keyxdef.c.'>Key_alt_d</a><em class='brace'>}</em>,
+<a id='L373' name='L373'></a> 373     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('e'), <a href='../S/lib--tty--keyxdef.c.html#L266' title='Defined at 266 in lib/tty/keyxdef.c.'>Key_alt_e</a><em class='brace'>}</em>,
+<a id='L374' name='L374'></a> 374     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('f'), <a href='../S/lib--tty--keyxdef.c.html#L267' title='Defined at 267 in lib/tty/keyxdef.c.'>Key_alt_f</a><em class='brace'>}</em>,
+<a id='L375' name='L375'></a> 375     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('g'), <a href='../S/lib--tty--keyxdef.c.html#L268' title='Defined at 268 in lib/tty/keyxdef.c.'>Key_alt_g</a><em class='brace'>}</em>,
+<a id='L376' name='L376'></a> 376     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('h'), <a href='../S/lib--tty--keyxdef.c.html#L269' title='Defined at 269 in lib/tty/keyxdef.c.'>Key_alt_h</a><em class='brace'>}</em>,
+<a id='L377' name='L377'></a> 377     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('i'), <a href='../S/lib--tty--keyxdef.c.html#L270' title='Defined at 270 in lib/tty/keyxdef.c.'>Key_alt_i</a><em class='brace'>}</em>,
+<a id='L378' name='L378'></a> 378     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('j'), <a href='../S/lib--tty--keyxdef.c.html#L271' title='Defined at 271 in lib/tty/keyxdef.c.'>Key_alt_j</a><em class='brace'>}</em>,
+<a id='L379' name='L379'></a> 379     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('k'), <a href='../S/lib--tty--keyxdef.c.html#L272' title='Defined at 272 in lib/tty/keyxdef.c.'>Key_alt_k</a><em class='brace'>}</em>,
+<a id='L380' name='L380'></a> 380     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('l'), <a href='../S/lib--tty--keyxdef.c.html#L273' title='Defined at 273 in lib/tty/keyxdef.c.'>Key_alt_l</a><em class='brace'>}</em>,
+<a id='L381' name='L381'></a> 381     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('m'), <a href='../S/lib--tty--keyxdef.c.html#L274' title='Defined at 274 in lib/tty/keyxdef.c.'>Key_alt_m</a><em class='brace'>}</em>,
+<a id='L382' name='L382'></a> 382     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('n'), <a href='../S/lib--tty--keyxdef.c.html#L275' title='Defined at 275 in lib/tty/keyxdef.c.'>Key_alt_n</a><em class='brace'>}</em>,
+<a id='L383' name='L383'></a> 383     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('o'), <a href='../S/lib--tty--keyxdef.c.html#L276' title='Defined at 276 in lib/tty/keyxdef.c.'>Key_alt_o</a><em class='brace'>}</em>,
+<a id='L384' name='L384'></a> 384     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('p'), <a href='../S/lib--tty--keyxdef.c.html#L277' title='Defined at 277 in lib/tty/keyxdef.c.'>Key_alt_p</a><em class='brace'>}</em>,
+<a id='L385' name='L385'></a> 385     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('q'), <a href='../S/lib--tty--keyxdef.c.html#L278' title='Defined at 278 in lib/tty/keyxdef.c.'>Key_alt_q</a><em class='brace'>}</em>,
+<a id='L386' name='L386'></a> 386     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('r'), <a href='../S/lib--tty--keyxdef.c.html#L279' title='Defined at 279 in lib/tty/keyxdef.c.'>Key_alt_r</a><em class='brace'>}</em>,
+<a id='L387' name='L387'></a> 387     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('s'), <a href='../S/lib--tty--keyxdef.c.html#L280' title='Defined at 280 in lib/tty/keyxdef.c.'>Key_alt_s</a><em class='brace'>}</em>,
+<a id='L388' name='L388'></a> 388     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('t'), <a href='../S/lib--tty--keyxdef.c.html#L281' title='Defined at 281 in lib/tty/keyxdef.c.'>Key_alt_t</a><em class='brace'>}</em>,
+<a id='L389' name='L389'></a> 389     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('u'), <a href='../S/lib--tty--keyxdef.c.html#L282' title='Defined at 282 in lib/tty/keyxdef.c.'>Key_alt_u</a><em class='brace'>}</em>,
+<a id='L390' name='L390'></a> 390     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('v'), <a href='../S/lib--tty--keyxdef.c.html#L283' title='Defined at 283 in lib/tty/keyxdef.c.'>Key_alt_v</a><em class='brace'>}</em>,
+<a id='L391' name='L391'></a> 391     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('w'), <a href='../S/lib--tty--keyxdef.c.html#L284' title='Defined at 284 in lib/tty/keyxdef.c.'>Key_alt_w</a><em class='brace'>}</em>,
+<a id='L392' name='L392'></a> 392     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('x'), <a href='../S/lib--tty--keyxdef.c.html#L285' title='Defined at 285 in lib/tty/keyxdef.c.'>Key_alt_x</a><em class='brace'>}</em>,
+<a id='L393' name='L393'></a> 393     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('y'), <a href='../S/lib--tty--keyxdef.c.html#L286' title='Defined at 286 in lib/tty/keyxdef.c.'>Key_alt_y</a><em class='brace'>}</em>,
+<a id='L394' name='L394'></a> 394     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('z'), <a href='../S/lib--tty--keyxdef.c.html#L287' title='Defined at 287 in lib/tty/keyxdef.c.'>Key_alt_z</a><em class='brace'>}</em>,
+<a id='L395' name='L395'></a> 395 
+<a id='L396' name='L396'></a> 396     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('\n'), <a href='../S/lib--tty--keyxdef.c.html#L293' title='Defined at 293 in lib/tty/keyxdef.c.'>Key_alt_enter</a><em class='brace'>}</em>,
+<a id='L397' name='L397'></a> 397     <em class='brace'>{</em><a href='../S/lib--tty--key.h.html#L27' title='Defined at 27 in lib/tty/key.h.'>ALT</a> ('\t'), <a href='../S/lib--tty--keyxdef.c.html#L292' title='Defined at 292 in lib/tty/keyxdef.c.'>Key_alt_tab</a><em class='brace'>}</em>
+<a id='L398' name='L398'></a> 398 <em class='brace'>}</em>;
+<a id='L399' name='L399'></a> 399 
+<a id='L400' name='L400'></a> 400 <em class='sharp'>#endif</em> <em class='comment'>/* xtra_key_define_t */</em>
+<a id='L401' name='L401'></a> 401 
+<a id='L402' name='L402'></a> 402 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L403' name='L403'></a> 403 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L404' name='L404'></a> 404 
+<a id='L405' name='L405'></a> 405 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L406' name='L406'></a> 406 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L407' name='L407'></a> 407 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L408' name='L408'></a> 408 
+<a id='L409' name='L409'></a> 409 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L56' title='Defined at 56 in lib/tty/keyxdef.c.'>HAVE_QNX_KEYS</a>
+<a id='L410' name='L410'></a> 410 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L62' title='Defined at 62 in lib/tty/keyxdef.c.'>__USE_QNX_TI</a>
+<a id='L411' name='L411'></a> 411 <strong class='reserved'>void</strong>
+<a id='L412' name='L412'></a> 412 <a href='../S/lib--tty--keyxdef.c.html#L451' title='Referred from 451 in lib/tty/keyxdef.c.'>load_qnx_key_defines</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L448'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L448'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+412 lib/tty/keyxdef.c'  /> */</em>
+<a id='L413' name='L413'></a> 413 <em class='brace'>{</em>
+<a id='L414' name='L414'></a> 414     <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/_qnx_keys_defined.html' title='Multiple used in 3 places.'>_qnx_keys_defined</a> = 0;
+<a id='L415' name='L415'></a> 415 
+<a id='L416' name='L416'></a> 416     <strong class='reserved'>if</strong> (!<a href='../Y/_qnx_keys_defined.html' title='Multiple used in 3 places.'>_qnx_keys_defined</a>)
+<a id='L417' name='L417'></a> 417     <em class='brace'>{</em>
+<a id='L418' name='L418'></a> 418         <strong class='reserved'>int</strong> <a href='../Y/idx.html' title='Multiple used in 116 places.'>idx</a>;
+<a id='L419' name='L419'></a> 419         <strong class='reserved'>int</strong> <a href='../Y/term_setup_ok.html' title='Multiple used in 3 places.'>term_setup_ok</a>;
+<a id='L420' name='L420'></a> 420 
+<a id='L421' name='L421'></a> 421         __setupterm (<a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/fileno.html' title='Multiple used in 5 places.'>fileno</a> (<a href='../Y/stdout.html' title='Multiple used in 30 places.'>stdout</a>), &amp;<a href='../Y/term_setup_ok.html' title='Multiple used in 3 places.'>term_setup_ok</a>);
+<a id='L422' name='L422'></a> 422         <strong class='reserved'>if</strong> (<a href='../Y/term_setup_ok.html' title='Multiple used in 3 places.'>term_setup_ok</a> != 1)
+<a id='L423' name='L423'></a> 423             <strong class='reserved'>return</strong>;
+<a id='L424' name='L424'></a> 424 
+<a id='L425' name='L425'></a> 425         <strong class='reserved'>for</strong> (<a href='../Y/idx.html' title='Multiple used in 116 places.'>idx</a> = 0; <a href='../Y/idx.html' title='Multiple used in 116 places.'>idx</a> &lt; <strong class='reserved'>sizeof</strong> (<a href='../Y/xtra_key_defines.html' title='Multiple used in 4 places.'>xtra_key_defines</a>) / <strong class='reserved'>sizeof</strong> (<a href='../Y/xtra_key_defines.html' title='Multiple used in 4 places.'>xtra_key_defines</a>[0]); <a href='../Y/idx.html' title='Multiple used in 116 places.'>idx</a>++)
+<a id='L426' name='L426'></a> 426         <em class='brace'>{</em>
+<a id='L427' name='L427'></a> 427             <strong class='reserved'>int</strong> <a href='../Y/str_idx.html' title='Multiple used in 5 places.'>str_idx</a> = <a href='../Y/xtra_key_defines.html' title='Multiple used in 4 places.'>xtra_key_defines</a>[<a href='../Y/idx.html' title='Multiple used in 116 places.'>idx</a>].<a href='../Y/str_idx.html' title='Multiple used in 5 places.'>str_idx</a>;
+<a id='L428' name='L428'></a> 428 
+<a id='L429' name='L429'></a> 429             <strong class='reserved'>if</strong> (<a href='../S/lib--tty--keyxdef.c.html#L311' title='Defined at 311 in lib/tty/keyxdef.c.'>__QTISOFFS</a> (<a href='../Y/str_idx.html' title='Multiple used in 5 places.'>str_idx</a>))
+<a id='L430' name='L430'></a> 430             <em class='brace'>{</em>
+<a id='L431' name='L431'></a> 431                 <strong class='reserved'>if</strong> (*<a href='../S/lib--tty--keyxdef.c.html#L312' title='Defined at 312 in lib/tty/keyxdef.c.'>__QTISSTR</a> (<a href='../Y/str_idx.html' title='Multiple used in 5 places.'>str_idx</a>))
+<a id='L432' name='L432'></a> 432                 <em class='brace'>{</em>
+<a id='L433' name='L433'></a> 433                     <a href='../S/lib--tty--key.c.html#L1632' title='Defined at 1632 in lib/tty/key.c.'>define_sequence</a> (<a href='../Y/xtra_key_defines.html' title='Multiple used in 4 places.'>xtra_key_defines</a>[<a href='../Y/idx.html' title='Multiple used in 116 places.'>idx</a>].<a href='../Y/mc_code.html' title='Multiple used in 2 places.'>mc_code</a>,
+<a id='L434' name='L434'></a> 434                                      <a href='../S/lib--tty--keyxdef.c.html#L312' title='Defined at 312 in lib/tty/keyxdef.c.'>__QTISSTR</a> (<a href='../Y/str_idx.html' title='Multiple used in 5 places.'>str_idx</a>), <a href='../S/lib--tty--key.h.html#L30' title='Defined at 30 in lib/tty/key.h.'>MCKEY_NOACTION</a>);
+<a id='L435' name='L435'></a> 435                 <em class='brace'>}</em>
+<a id='L436' name='L436'></a> 436             <em class='brace'>}</em>
+<a id='L437' name='L437'></a> 437         <em class='brace'>}</em>
+<a id='L438' name='L438'></a> 438         <a href='../Y/_qnx_keys_defined.html' title='Multiple used in 3 places.'>_qnx_keys_defined</a> = 1;
+<a id='L439' name='L439'></a> 439     <em class='brace'>}</em>
+<a id='L440' name='L440'></a> 440 <em class='brace'>}</em>
+<a id='L441' name='L441'></a> 441 <em class='sharp'>#endif</em> <em class='comment'>/* __USE_QNX_TI */</em>
+<a id='L442' name='L442'></a> 442 <em class='sharp'>#endif</em> <em class='comment'>/* HAVE_QNX_KEYS */</em>
+<a id='L443' name='L443'></a> 443 
+<a id='L444' name='L444'></a> 444 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L445' name='L445'></a> 445 <em class='comment'>/* called from key.c/init_key() */</em>
+<a id='L446' name='L446'></a> 446 
+<a id='L447' name='L447'></a> 447 <strong class='reserved'>void</strong>
+<a id='L448' name='L448'></a> 448 <a href='../R/load_xtra_key_defines.html' title='Multiple referred from 2 places.'>load_xtra_key_defines</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L412'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L412'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+448 lib/tty/keyxdef.c'  /> */</em>
+<a id='L449' name='L449'></a> 449 <em class='brace'>{</em>
+<a id='L450' name='L450'></a> 450 <em class='sharp'>#ifdef</em> <a href='../S/lib--tty--keyxdef.c.html#L56' title='Defined at 56 in lib/tty/keyxdef.c.'>HAVE_QNX_KEYS</a>
+<a id='L451' name='L451'></a> 451     <a href='../S/lib--tty--keyxdef.c.html#L412' title='Defined at 412 in lib/tty/keyxdef.c.'>load_qnx_key_defines</a> ();
+<a id='L452' name='L452'></a> 452 <em class='sharp'>#endif</em>
+<a id='L453' name='L453'></a> 453 <em class='brace'>}</em>
+<a id='L454' name='L454'></a> 454 
+<a id='L455' name='L455'></a> 455 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L412'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L448'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+455 lib/tty/keyxdef.c'  /> */</em>
+</body>
+</html>

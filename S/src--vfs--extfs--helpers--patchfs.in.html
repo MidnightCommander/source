@@ -1,0 +1,463 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/patchfs.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/patchfs.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/patchfs.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/patchfs.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Written by Adam Byrtek &lt;alpha@debian.org&gt;, 2002
+<a id='L4' name='L4'></a># Rewritten by David Sterba &lt;dave@jikos.cz&gt;, 2009
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># Extfs to handle patches in context and unified diff format.
+<a id='L7' name='L7'></a># Known issues: When name of file to patch is modified during editing, 
+<a id='L8' name='L8'></a># hunk is duplicated on copyin. It is unavoidable.
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a>use bytes;
+<a id='L11' name='L11'></a>use strict;
+<a id='L12' name='L12'></a>use warnings;
+<a id='L13' name='L13'></a>use POSIX;
+<a id='L14' name='L14'></a>use File::Temp 'tempfile';
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a># standard binaries
+<a id='L17' name='L17'></a>my $lzip = 'lzip';
+<a id='L18' name='L18'></a>my $lz4  = 'lz4';
+<a id='L19' name='L19'></a>my $lzma = 'lzma';
+<a id='L20' name='L20'></a>my $lzo  = 'lzop';
+<a id='L21' name='L21'></a>my $xz   = 'xz';
+<a id='L22' name='L22'></a>my $zstd = 'zstd';
+<a id='L23' name='L23'></a>my $bzip = 'bzip2';
+<a id='L24' name='L24'></a>my $gzip = 'gzip';
+<a id='L25' name='L25'></a>my $fileutil = 'file -b';
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a># date parsing requires Date::Parse from TimeDate module
+<a id='L28' name='L28'></a>my $parsedates = eval 'require Date::Parse';
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a># regular expressions
+<a id='L31' name='L31'></a>my $unified_header=qr/^--- .*\t.*\n\+\+\+ .*\t.*\n$/;
+<a id='L32' name='L32'></a>my $unified_extract=qr/^--- ([^\t]+).*\n\+\+\+ ([^\t]+)\s*(.*)\n/;
+<a id='L33' name='L33'></a>my $unified_header2=qr/^--- .*\n\+\+\+ .*\n$/;
+<a id='L34' name='L34'></a>my $unified_extract2=qr/^--- ([^\s]+).*\n\+\+\+ ([^\s]+)\s*(.*)\n/;
+<a id='L35' name='L35'></a>my $unified_contents=qr/^([+\-\\ \n]|@@ .* @@)/;
+<a id='L36' name='L36'></a>my $unified_hunk=qr/@@ -(\d+)(,(\d+))? \+(\d+)(,(\d+))? @@.*\n/;
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a>my $context_header=qr/^\*\*\* .*\t.*\n--- .*\t.*\n$/;
+<a id='L39' name='L39'></a>my $context_extract=qr/^\*\*\* ([^\t]+).*\n--- ([^\t]+)\s*(.*)\n/;
+<a id='L40' name='L40'></a>my $context_header2=qr/^\*\*\* .*\n--- .*\n$/;
+<a id='L41' name='L41'></a>my $context_extract2=qr/^\*\*\* ([^\s]+).*\n--- ([^\s]+)\s*(.*)\n/;
+<a id='L42' name='L42'></a>my $context_contents=qr/^([!+\-\\ \n]|-{3} .* -{4}|\*{3} .* \*{4}|\*{15})/;
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>my $ls_extract_id=qr/^[^\s]+\s+[^\s]+\s+([^\s]+)\s+([^\s]+)/;
+<a id='L45' name='L45'></a>my $basename=qr|^(.*/)*([^/]+)$|;
+<a id='L46' name='L46'></a> 
+<a id='L47' name='L47'></a>sub patchfs_canonicalize_path ($) {
+<a id='L48' name='L48'></a>  my ($fname) = @_;
+<a id='L49' name='L49'></a>  $fname =~ s,/+,/,g;
+<a id='L50' name='L50'></a>  $fname =~ s,(^|/)(?:\.?\./)+,$1,;
+<a id='L51' name='L51'></a>  return $fname;
+<a id='L52' name='L52'></a>}
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a># output unix date in a mc-readable format
+<a id='L55' name='L55'></a>sub timef
+<a id='L56' name='L56'></a>{
+<a id='L57' name='L57'></a>    my @time=localtime($_[0]);
+<a id='L58' name='L58'></a>    return sprintf '%02d-%02d-%02d %02d:%02d', $time[4]+1, $time[3],
+<a id='L59' name='L59'></a>                   $time[5]+1900, $time[2], $time[1];
+<a id='L60' name='L60'></a>}
+<a id='L61' name='L61'></a> 
+<a id='L62' name='L62'></a># parse given string as a date and return unix time
+<a id='L63' name='L63'></a>sub datetime
+<a id='L64' name='L64'></a>{
+<a id='L65' name='L65'></a>    # in case of problems fall back to 0 in unix time
+<a id='L66' name='L66'></a>    # note: str2time interprets some wrong values (eg. " ") as 'today'
+<a id='L67' name='L67'></a>    if ($parsedates &amp;&amp; defined (my $t=str2time($_[0]))) {
+<a id='L68' name='L68'></a>        return timef($t);
+<a id='L69' name='L69'></a>    }
+<a id='L70' name='L70'></a>    return timef(time);
+<a id='L71' name='L71'></a>}
+<a id='L72' name='L72'></a> 
+<a id='L73' name='L73'></a># print message on stderr and exit
+<a id='L74' name='L74'></a>sub error
+<a id='L75' name='L75'></a>{
+<a id='L76' name='L76'></a>    print STDERR $_[0], "\n";
+<a id='L77' name='L77'></a>    exit 1;
+<a id='L78' name='L78'></a>}
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a># (compressed) input
+<a id='L81' name='L81'></a>sub myin
+<a id='L82' name='L82'></a>{
+<a id='L83' name='L83'></a>    my ($qfname)=(quotemeta $_[0]);
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>    $_=`$fileutil $qfname`;
+<a id='L86' name='L86'></a>    if (/^'*lz4/) {
+<a id='L87' name='L87'></a>        return "$lz4 -dc $qfname";
+<a id='L88' name='L88'></a>    } elsif (/^'*lzip/) {
+<a id='L89' name='L89'></a>        return "$lzip -dc $qfname";
+<a id='L90' name='L90'></a>    } elsif (/^'*lzma/) {
+<a id='L91' name='L91'></a>        return "$lzma -dc $qfname";
+<a id='L92' name='L92'></a>    } elsif (/^'*lzo/) {
+<a id='L93' name='L93'></a>        return "$lzo -dc $qfname";
+<a id='L94' name='L94'></a>    } elsif (/^'*xz/) {
+<a id='L95' name='L95'></a>        return "$xz -dc $qfname";
+<a id='L96' name='L96'></a>    } elsif (/^'*zst/) {
+<a id='L97' name='L97'></a>        return "$zstd -dc $qfname";
+<a id='L98' name='L98'></a>    } elsif (/^'*bzip/) {
+<a id='L99' name='L99'></a>        return "$bzip -dc $qfname";
+<a id='L100' name='L100'></a>    } elsif (/^'*gzip/) {
+<a id='L101' name='L101'></a>        return "$gzip -dc $qfname";
+<a id='L102' name='L102'></a>    } else {
+<a id='L103' name='L103'></a>        return "cat $qfname";
+<a id='L104' name='L104'></a>    }
+<a id='L105' name='L105'></a>}
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a># (compressed) output
+<a id='L108' name='L108'></a>sub myout
+<a id='L109' name='L109'></a>{
+<a id='L110' name='L110'></a>    my ($qfname,$append)=(quotemeta $_[0],$_[1]);
+<a id='L111' name='L111'></a>    my ($sep) = $append ? '&gt;&gt;' : '&gt;';
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a>    $_=`$fileutil $qfname`;
+<a id='L114' name='L114'></a>    if (/^'*lz4/) {
+<a id='L115' name='L115'></a>        return "$lz4 -c $sep $qfname";
+<a id='L116' name='L116'></a>    } elsif (/^'*lzip/) {
+<a id='L117' name='L117'></a>        return "$lzip -c $sep $qfname";
+<a id='L118' name='L118'></a>    } elsif (/^'*lzma/) {
+<a id='L119' name='L119'></a>        return "$lzma -c $sep $qfname";
+<a id='L120' name='L120'></a>    } elsif (/^'*lzo/) {
+<a id='L121' name='L121'></a>        return "$lzo -c $sep $qfname";
+<a id='L122' name='L122'></a>    } elsif (/^'*xz/) {
+<a id='L123' name='L123'></a>        return "$xz -c $sep $qfname";
+<a id='L124' name='L124'></a>    } elsif (/^'*zst/) {
+<a id='L125' name='L125'></a>        return "$zstd -c $sep $qfname";
+<a id='L126' name='L126'></a>    } elsif (/^'*bzip/) {
+<a id='L127' name='L127'></a>        return "$bzip -c $sep $qfname";
+<a id='L128' name='L128'></a>    } elsif (/^'*gzip/) {
+<a id='L129' name='L129'></a>        return "$gzip -c $sep $qfname";
+<a id='L130' name='L130'></a>    } else {
+<a id='L131' name='L131'></a>        return "cat $sep $qfname";
+<a id='L132' name='L132'></a>    }
+<a id='L133' name='L133'></a>}
+<a id='L134' name='L134'></a> 
+<a id='L135' name='L135'></a># select diff filename conforming with rules found in diff.info
+<a id='L136' name='L136'></a>sub diff_filename
+<a id='L137' name='L137'></a>{
+<a id='L138' name='L138'></a>    my ($fsrc,$fdst)= @_;
+<a id='L139' name='L139'></a>    # TODO: can remove these two calls later
+<a id='L140' name='L140'></a>    $fsrc = patchfs_canonicalize_path ($fsrc);
+<a id='L141' name='L141'></a>    $fdst = patchfs_canonicalize_path ($fdst);
+<a id='L142' name='L142'></a>    if (!$fdst &amp;&amp; !$fsrc) {
+<a id='L143' name='L143'></a>        error 'Index: not yet implemented';
+<a id='L144' name='L144'></a>    } elsif (!$fsrc || $fsrc eq '/dev/null') {
+<a id='L145' name='L145'></a>        return ($fdst,'PATCH-CREATE/');
+<a id='L146' name='L146'></a>    } elsif (!$fdst || $fdst eq '/dev/null') {
+<a id='L147' name='L147'></a>        return ($fsrc,'PATCH-REMOVE/');
+<a id='L148' name='L148'></a>    } elsif (($fdst eq '/dev/null') &amp;&amp; ($fsrc eq '/dev/null')) {
+<a id='L149' name='L149'></a>        error 'Malformed diff, missing a sane filename';
+<a id='L150' name='L150'></a>    } else {
+<a id='L151' name='L151'></a>        # fewest path name components
+<a id='L152' name='L152'></a>        if ($fdst=~s|/|/|g &lt; $fsrc=~s|/|/|g) {
+<a id='L153' name='L153'></a>            return ($fdst,'');
+<a id='L154' name='L154'></a>        } elsif ($fdst=~s|/|/|g &gt; $fsrc=~s|/|/|g) {
+<a id='L155' name='L155'></a>            return ($fsrc,'');
+<a id='L156' name='L156'></a>        } else {
+<a id='L157' name='L157'></a>            # shorter base name
+<a id='L158' name='L158'></a>            if (($fdst=~/$basename/o,length $2) &lt; ($fsrc=~/$basename/o,length $2)) {
+<a id='L159' name='L159'></a>                return ($fdst,'');
+<a id='L160' name='L160'></a>            } elsif (($fdst=~/$basename/o,length $2) &gt; ($fsrc=~/$basename/o,length $2)) {
+<a id='L161' name='L161'></a>                return ($fsrc,'');
+<a id='L162' name='L162'></a>            } else {
+<a id='L163' name='L163'></a>                # shortest names
+<a id='L164' name='L164'></a>                if (length $fdst &lt; length $fsrc) {
+<a id='L165' name='L165'></a>                    return ($fdst,'');
+<a id='L166' name='L166'></a>                } else {
+<a id='L167' name='L167'></a>                    return ($fsrc,'');
+<a id='L168' name='L168'></a>                }
+<a id='L169' name='L169'></a>            }
+<a id='L170' name='L170'></a>        }
+<a id='L171' name='L171'></a>    }
+<a id='L172' name='L172'></a>}
+<a id='L173' name='L173'></a> 
+<a id='L174' name='L174'></a># IN: diff "archive" name
+<a id='L175' name='L175'></a># IN: file handle for output; STDIN for list, tempfile else
+<a id='L176' name='L176'></a># IN: filename to watch (for: copyout, rm), '' for: list
+<a id='L177' name='L177'></a># IN: remove the file?
+<a id='L178' name='L178'></a>#     true  - ... and print out the rest
+<a id='L179' name='L179'></a>#     false - ie. copyout mode, print just the file
+<a id='L180' name='L180'></a>sub parse($$$$)
+<a id='L181' name='L181'></a>{
+<a id='L182' name='L182'></a>    my $archive=shift;
+<a id='L183' name='L183'></a>    my $fh=shift;
+<a id='L184' name='L184'></a>    my $file=shift;
+<a id='L185' name='L185'></a>    my $rmmod=shift;
+<a id='L186' name='L186'></a>    my ($state,$fsize,$time);
+<a id='L187' name='L187'></a>    my ($f,$fsrc,$fdst,$prefix);
+<a id='L188' name='L188'></a>    my ($unified,$context);
+<a id='L189' name='L189'></a>    my ($skipread, $filetoprint, $filefound);
+<a id='L190' name='L190'></a>    my ($h_add,$h_del,$h_ctx);  # hunk line counts
+<a id='L191' name='L191'></a>    my ($h_r1,$h_r2);           # hunk ranges
+<a id='L192' name='L192'></a>    my @outsrc;         # if desired ...
+<a id='L193' name='L193'></a>    my @outdst;
+<a id='L194' name='L194'></a>    my $line;
+<a id='L195' name='L195'></a>    my %fmap_size=();
+<a id='L196' name='L196'></a>    my %fmap_time=();
+<a id='L197' name='L197'></a> 
+<a id='L198' name='L198'></a>    import Date::Parse if ($parsedates &amp;&amp; $file eq '');
+<a id='L199' name='L199'></a> 
+<a id='L200' name='L200'></a>    $line=1;
+<a id='L201' name='L201'></a>    $state=0; $fsize=0; $f='';
+<a id='L202' name='L202'></a>    $filefound=0;
+<a id='L203' name='L203'></a>    while ($skipread || ($line++,$_=&lt;I&gt;)) {
+<a id='L204' name='L204'></a>        $skipread=0;
+<a id='L205' name='L205'></a>        if($state == 0) {       # expecting comments
+<a id='L206' name='L206'></a>            $unified=$context=0;
+<a id='L207' name='L207'></a>            $unified=1 if (/^--- /);
+<a id='L208' name='L208'></a>            $context=1 if (/^\*\*\* /);
+<a id='L209' name='L209'></a>            if (!$unified &amp;&amp; !$context) {
+<a id='L210' name='L210'></a>                $filefound=0 if($file ne '' &amp;&amp; $filetoprint);
+<a id='L211' name='L211'></a>                # shortcut for rmmod xor filefound
+<a id='L212' name='L212'></a>                # - in rmmod we print if not found
+<a id='L213' name='L213'></a>                # - in copyout (!rmmod) we print if found
+<a id='L214' name='L214'></a>                print $fh $_ if($rmmod != $filefound);
+<a id='L215' name='L215'></a>                next;
+<a id='L216' name='L216'></a>            }
+<a id='L217' name='L217'></a> 
+<a id='L218' name='L218'></a>            if($file eq '' &amp;&amp; $filetoprint) {
+<a id='L219' name='L219'></a>                $fmap_size{"$prefix$f"}+=$fsize;
+<a id='L220' name='L220'></a>                $fmap_time{"$prefix$f"}=$time;
+<a id='L221' name='L221'></a>            }
+<a id='L222' name='L222'></a> 
+<a id='L223' name='L223'></a>            # start of new file
+<a id='L224' name='L224'></a>            $_ .=&lt;I&gt;;   # steal next line, both formats
+<a id='L225' name='L225'></a>            $line++;
+<a id='L226' name='L226'></a>            if($unified) {
+<a id='L227' name='L227'></a>                if(/$unified_header/o) {
+<a id='L228' name='L228'></a>                    ($fsrc,$fdst,$time) = /$unified_extract/o;
+<a id='L229' name='L229'></a>                } elsif(/$unified_header2/o) {
+<a id='L230' name='L230'></a>                    ($fsrc,$fdst,$time) = /$unified_extract2/o;
+<a id='L231' name='L231'></a>                } else {
+<a id='L232' name='L232'></a>                    error "Can't parse unified diff header";
+<a id='L233' name='L233'></a>                }
+<a id='L234' name='L234'></a>            } elsif($context) {
+<a id='L235' name='L235'></a>                if(/$context_header/o) {
+<a id='L236' name='L236'></a>                    ($fsrc,$fdst,$time) = /$context_extract/o;
+<a id='L237' name='L237'></a>                } elsif(/$context_header2/o) {
+<a id='L238' name='L238'></a>                    ($fsrc,$fdst,$time) = /$context_extract2/o;
+<a id='L239' name='L239'></a>                } else {
+<a id='L240' name='L240'></a>                    error "Can't parse context diff header";
+<a id='L241' name='L241'></a>                }
+<a id='L242' name='L242'></a>            } else {
+<a id='L243' name='L243'></a>                error "Unrecognized diff header";
+<a id='L244' name='L244'></a>            }
+<a id='L245' name='L245'></a>            $fsrc=patchfs_canonicalize_path($fsrc);
+<a id='L246' name='L246'></a>            $fdst=patchfs_canonicalize_path($fdst);
+<a id='L247' name='L247'></a>            if(wantarray) {
+<a id='L248' name='L248'></a>                push @outsrc,$fsrc;
+<a id='L249' name='L249'></a>                push @outdst,$fdst;
+<a id='L250' name='L250'></a>            }
+<a id='L251' name='L251'></a>            ($f,$prefix)=diff_filename($fsrc,$fdst);
+<a id='L252' name='L252'></a>            $filefound=($f eq $file);
+<a id='L253' name='L253'></a> 
+<a id='L254' name='L254'></a>            $f="$f.diff";
+<a id='L255' name='L255'></a>            $filetoprint=1;
+<a id='L256' name='L256'></a>            $fsize=length;
+<a id='L257' name='L257'></a>            print $fh $_ if($rmmod != $filefound);
+<a id='L258' name='L258'></a> 
+<a id='L259' name='L259'></a>            $state=1;
+<a id='L260' name='L260'></a>        } elsif($state == 1) { # expecting diff hunk headers, end of file or comments
+<a id='L261' name='L261'></a>            if($unified) {
+<a id='L262' name='L262'></a>                my ($a,$b,$c,$d);
+<a id='L263' name='L263'></a>                ($a,$b,$h_r1,$c,$d,$h_r2)=/$unified_hunk/o;
+<a id='L264' name='L264'></a>                if(!defined($a) || !defined($c)) {
+<a id='L265' name='L265'></a>                    # hunk header does not come, a comment inside
+<a id='L266' name='L266'></a>                    # or maybe a new file, state 0 will decide
+<a id='L267' name='L267'></a>                    $skipread=1;
+<a id='L268' name='L268'></a>                    $state=0;
+<a id='L269' name='L269'></a>                    next;
+<a id='L270' name='L270'></a>                }
+<a id='L271' name='L271'></a>                $fsize+=length;
+<a id='L272' name='L272'></a>                print $fh $_ if($rmmod != $filefound);
+<a id='L273' name='L273'></a>                $h_r1=1 if(!defined($b));
+<a id='L274' name='L274'></a>                $h_r2=1 if(!defined($d));
+<a id='L275' name='L275'></a>                $h_add=$h_del=$h_ctx=0;
+<a id='L276' name='L276'></a>                $state=2;
+<a id='L277' name='L277'></a>            } elsif($context) {
+<a id='L278' name='L278'></a>                if(!/$context_contents/o) {
+<a id='L279' name='L279'></a>                    $skipread=1;
+<a id='L280' name='L280'></a>                    $state=0;
+<a id='L281' name='L281'></a>                    next;
+<a id='L282' name='L282'></a>                }
+<a id='L283' name='L283'></a>                print $fh $_ if($rmmod != $filefound);
+<a id='L284' name='L284'></a>                $fsize+=length;
+<a id='L285' name='L285'></a>            }
+<a id='L286' name='L286'></a>        } elsif($state == 2) { # expecting hunk contents
+<a id='L287' name='L287'></a>            if($h_del + $h_ctx == $h_r1 &amp;&amp; $h_add + $h_ctx == $h_r2) {
+<a id='L288' name='L288'></a>                # hooray, end of hunk
+<a id='L289' name='L289'></a>                # we optimistically ended with a hunk before but
+<a id='L290' name='L290'></a>                # the line has been read already
+<a id='L291' name='L291'></a>                $skipread=1;
+<a id='L292' name='L292'></a>                $state=1;
+<a id='L293' name='L293'></a>                next;
+<a id='L294' name='L294'></a>            }
+<a id='L295' name='L295'></a>            print $fh $_ if($rmmod != $filefound);
+<a id='L296' name='L296'></a>            $fsize+=length;
+<a id='L297' name='L297'></a>            my ($first)= /^(.)/;
+<a id='L298' name='L298'></a>            if(ord($first) == ord('+')) { $h_add++; }
+<a id='L299' name='L299'></a>            elsif(ord($first) == ord('-')) { $h_del++; }
+<a id='L300' name='L300'></a>            elsif(ord($first) == ord(' ')) { $h_ctx++; }
+<a id='L301' name='L301'></a>            elsif(ord($first) == ord('\\')) { 0; }
+<a id='L302' name='L302'></a>            elsif(ord($first) == ord('@')) { error "Malformed hunk, header came too early"; }
+<a id='L303' name='L303'></a>            else { error "$archive:$line: Unrecognized character '$first' in hunk"; }
+<a id='L304' name='L304'></a>        }
+<a id='L305' name='L305'></a>    }
+<a id='L306' name='L306'></a>    if($file eq '' &amp;&amp; $filetoprint) {
+<a id='L307' name='L307'></a>        $fmap_size{"$prefix$f"}+=$fsize;
+<a id='L308' name='L308'></a>        $fmap_time{"$prefix$f"}=$time;
+<a id='L309' name='L309'></a>    }
+<a id='L310' name='L310'></a> 
+<a id='L311' name='L311'></a>    # use uid and gid from file
+<a id='L312' name='L312'></a>    my $qarchive = quotemeta $archive;
+<a id='L313' name='L313'></a>    my ($uid,$gid)=(`ls -l $qarchive`=~/$ls_extract_id/o);
+<a id='L314' name='L314'></a> 
+<a id='L315' name='L315'></a>    # flush all file names with cumulative file size
+<a id='L316' name='L316'></a>    while(my ($fn, $fs) = each %fmap_size) {
+<a id='L317' name='L317'></a>        printf $fh "-rw-r--r-- 1 %s %s %d %s %s\n", $uid, $gid, $fs, datetime($fmap_time{$fn}), $fn;
+<a id='L318' name='L318'></a>    }
+<a id='L319' name='L319'></a> 
+<a id='L320' name='L320'></a>    close($fh) if($file ne '');
+<a id='L321' name='L321'></a>    return \(@outsrc, @outdst) if wantarray;
+<a id='L322' name='L322'></a>}
+<a id='L323' name='L323'></a> 
+<a id='L324' name='L324'></a># list files affected by patch
+<a id='L325' name='L325'></a>sub list($) {
+<a id='L326' name='L326'></a>        parse($_[0], *STDOUT, '', 0);
+<a id='L327' name='L327'></a>        close(I);
+<a id='L328' name='L328'></a>}
+<a id='L329' name='L329'></a> 
+<a id='L330' name='L330'></a># extract diff from patch
+<a id='L331' name='L331'></a># IN: diff file to find
+<a id='L332' name='L332'></a># IN: output file name
+<a id='L333' name='L333'></a>sub copyout($$) {
+<a id='L334' name='L334'></a>    my ($file,$out)=@_;
+<a id='L335' name='L335'></a> 
+<a id='L336' name='L336'></a>    $file=~s/^(PATCH-(CREATE|REMOVE)\/)?(.*)\.diff$/$3/;
+<a id='L337' name='L337'></a>    $file = patchfs_canonicalize_path ($file);
+<a id='L338' name='L338'></a> 
+<a id='L339' name='L339'></a>    open(FH, "&gt;$out") or error("Cannot open output file");
+<a id='L340' name='L340'></a>    parse('', *FH, $file, 0);
+<a id='L341' name='L341'></a>}
+<a id='L342' name='L342'></a> 
+<a id='L343' name='L343'></a># remove diff(s) from patch
+<a id='L344' name='L344'></a># IN: archive
+<a id='L345' name='L345'></a># IN: file to delete
+<a id='L346' name='L346'></a>sub rm($$) {
+<a id='L347' name='L347'></a>    my $archive=shift;
+<a id='L348' name='L348'></a>    my ($tmp,$tmpname)=tempfile();
+<a id='L349' name='L349'></a> 
+<a id='L350' name='L350'></a>    @_=map {scalar(s/^(PATCH-(CREATE|REMOVE)\/)?(.*)\.diff$/$3/,$_)} @_;
+<a id='L351' name='L351'></a> 
+<a id='L352' name='L352'></a>    # just the first file for now
+<a id='L353' name='L353'></a>    parse($archive, $tmp, $_[0], 1);
+<a id='L354' name='L354'></a>    close I;
+<a id='L355' name='L355'></a> 
+<a id='L356' name='L356'></a>    # replace archive
+<a id='L357' name='L357'></a>    system("cat \Q$tmpname\E | " . myout($archive,0))==0
+<a id='L358' name='L358'></a>      or error "Can't write to archive";
+<a id='L359' name='L359'></a>    system("rm -f -- \Q$tmpname\E");
+<a id='L360' name='L360'></a>}
+<a id='L361' name='L361'></a> 
+<a id='L362' name='L362'></a># append diff to archive
+<a id='L363' name='L363'></a># IN: diff archive name
+<a id='L364' name='L364'></a># IN: newly created file name in archive
+<a id='L365' name='L365'></a># IN: the real source file
+<a id='L366' name='L366'></a>sub copyin($$$) {
+<a id='L367' name='L367'></a>    # TODO: seems to be tricky. what to do?
+<a id='L368' name='L368'></a>    # copyin of file which is already there may:
+<a id='L369' name='L369'></a>    #  * delete the original and copy only the new
+<a id='L370' name='L370'></a>    #  * just append the new hunks to the same file
+<a id='L371' name='L371'></a>    #    problems: may not be a valid diff, unmerged hunks
+<a id='L372' name='L372'></a>    #  * try to merge the two together
+<a id='L373' name='L373'></a>    #    ... but we do not want write patchutils again, right?
+<a id='L374' name='L374'></a>    error "Copying files into diff not supported";
+<a id='L375' name='L375'></a>    return;
+<a id='L376' name='L376'></a> 
+<a id='L377' name='L377'></a>    my ($archive,$name,$src)=@_;
+<a id='L378' name='L378'></a> 
+<a id='L379' name='L379'></a>    # in case we are appending another diff, we have
+<a id='L380' name='L380'></a>    # to delete/merge all the files
+<a id='L381' name='L381'></a>    open(DEVNULL, "&gt;/dev/null");
+<a id='L382' name='L382'></a>    open I, myin($src).'|';
+<a id='L383' name='L383'></a>    my ($srclist,$dstlist)=parse($archive, *DEVNULL, '', 0);
+<a id='L384' name='L384'></a>    close(I);
+<a id='L385' name='L385'></a>    close(DEVNULL);
+<a id='L386' name='L386'></a>    foreach(@$srclist) {
+<a id='L387' name='L387'></a>        print("SRC: del $_\n");
+<a id='L388' name='L388'></a>    }
+<a id='L389' name='L389'></a>    foreach(@$dstlist) {
+<a id='L390' name='L390'></a>        print("DST: del $_\n");
+<a id='L391' name='L391'></a>    }
+<a id='L392' name='L392'></a>    return;
+<a id='L393' name='L393'></a> 
+<a id='L394' name='L394'></a>    # remove overwritten file
+<a id='L395' name='L395'></a>    open I, myin($archive).'|';
+<a id='L396' name='L396'></a>    rm ($archive, $name);
+<a id='L397' name='L397'></a>    close I;
+<a id='L398' name='L398'></a> 
+<a id='L399' name='L399'></a>    my $cmd1=myin("$src.diff");
+<a id='L400' name='L400'></a>    my $cmd2=myout($archive,1);
+<a id='L401' name='L401'></a>    system("$cmd1 | $cmd2")==0
+<a id='L402' name='L402'></a>      or error "Can't write to archive";
+<a id='L403' name='L403'></a>}
+<a id='L404' name='L404'></a> 
+<a id='L405' name='L405'></a>my $fin = $ARGV[1];
+<a id='L406' name='L406'></a> 
+<a id='L407' name='L407'></a># resolve symlink
+<a id='L408' name='L408'></a>while (-l $fin) {
+<a id='L409' name='L409'></a>    $fin = readlink $fin;
+<a id='L410' name='L410'></a>}
+<a id='L411' name='L411'></a> 
+<a id='L412' name='L412'></a>if ($ARGV[0] eq 'list') {
+<a id='L413' name='L413'></a>    open I, myin($fin).'|';
+<a id='L414' name='L414'></a>    list ($fin);
+<a id='L415' name='L415'></a>    exit 0;
+<a id='L416' name='L416'></a>} elsif ($ARGV[0] eq 'copyout') {
+<a id='L417' name='L417'></a>    open I, myin($fin)."|";
+<a id='L418' name='L418'></a>    copyout ($ARGV[2], $ARGV[3]);
+<a id='L419' name='L419'></a>    exit 0;
+<a id='L420' name='L420'></a>} elsif ($ARGV[0] eq 'rm') {
+<a id='L421' name='L421'></a>    open I, myin($fin)."|";
+<a id='L422' name='L422'></a>    rm ($fin, $ARGV[2]);
+<a id='L423' name='L423'></a>    exit 0;
+<a id='L424' name='L424'></a>} elsif ($ARGV[0] eq 'rmdir') {
+<a id='L425' name='L425'></a>    exit 0;
+<a id='L426' name='L426'></a>} elsif ($ARGV[0] eq 'mkdir') {
+<a id='L427' name='L427'></a>    exit 0;
+<a id='L428' name='L428'></a>} elsif ($ARGV[0] eq 'copyin') {
+<a id='L429' name='L429'></a>    copyin ($fin, $ARGV[2], $ARGV[3]);
+<a id='L430' name='L430'></a>    exit 0;
+<a id='L431' name='L431'></a>}
+<a id='L432' name='L432'></a>exit 1;
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+432 src/vfs/extfs/helpers/patchfs.in'  /> */</em>
+</body>
+</html>

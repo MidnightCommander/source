@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/ax_check_pcre2.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/ax_check_pcre2.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/ax_check_pcre2.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/ax_check_pcre2.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># ===========================================================================
+<a id='L2' name='L2'></a>#      https://www.gnu.org/software/autoconf-archive/ax_check_pcre2.html
+<a id='L3' name='L3'></a># ===========================================================================
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a># SYNOPSIS
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a>#   AX_CHECK_PCRE2([bits], [action-if-found], [action-if-not-found])
+<a id='L8' name='L8'></a>#
+<a id='L9' name='L9'></a># DESCRIPTION
+<a id='L10' name='L10'></a>#
+<a id='L11' name='L11'></a>#   Search for an installed libpcre2-8 library. If nothing was specified
+<a id='L12' name='L12'></a>#   when calling configure, it searches first in /usr/local and then in
+<a id='L13' name='L13'></a>#   /usr, /opt/local and /sw. If the --with-pcre2=DIR is specified, it will
+<a id='L14' name='L14'></a>#   try to find it in DIR/include/pcre2.h and DIR/lib/libpcre2-8. If
+<a id='L15' name='L15'></a>#   --without-pcre2 is specified, the library is not searched at all.
+<a id='L16' name='L16'></a>#
+<a id='L17' name='L17'></a>#   If 'bits' is empty or '8', PCRE2 8-bit character support is checked
+<a id='L18' name='L18'></a>#   only. If 'bits' contains '16', PCRE2 8-bit and 16-bit character support
+<a id='L19' name='L19'></a>#   are checked. If 'bits' contains '32', PCRE2 8-bit and 32-bit character
+<a id='L20' name='L20'></a>#   support are checked. When 'bits' contains both '16' and '32', PCRE2
+<a id='L21' name='L21'></a>#   8-bit, 16-bit, and 32-bit character support is checked.
+<a id='L22' name='L22'></a>#
+<a id='L23' name='L23'></a>#   If either the header file (pcre2.h), or the library (libpcre2-8) is not
+<a id='L24' name='L24'></a>#   found, or the specified PCRE2 character bit width is not supported,
+<a id='L25' name='L25'></a>#   shell commands 'action-if-not-found' is run. If 'action-if-not-found' is
+<a id='L26' name='L26'></a>#   not specified, the configuration exits on error, asking for a valid
+<a id='L27' name='L27'></a>#   PCRE2 installation directory or --without-pcre2.
+<a id='L28' name='L28'></a>#
+<a id='L29' name='L29'></a>#   If both header file and library are found, and the specified PCRE2 bit
+<a id='L30' name='L30'></a>#   widths are supported, shell commands 'action-if-found' is run. If
+<a id='L31' name='L31'></a>#   'action-if-found' is not specified, the default action appends
+<a id='L32' name='L32'></a>#   '-I${PCRE2_HOME}/include' to CPFLAGS, appends '-L$PCRE2_HOME}/lib' to
+<a id='L33' name='L33'></a>#   LDFLAGS, prepends '-lpcre2-8' to LIBS, and calls AC_DEFINE(HAVE_PCRE2).
+<a id='L34' name='L34'></a>#   You should use autoheader to include a definition for this symbol in a
+<a id='L35' name='L35'></a>#   config.h file. Sample usage in a C/C++ source is as follows:
+<a id='L36' name='L36'></a>#
+<a id='L37' name='L37'></a>#     #ifdef HAVE_PCRE2
+<a id='L38' name='L38'></a>#     #define PCRE2_CODE_UNIT_WIDTH 8
+<a id='L39' name='L39'></a>#     #include &lt;pcre2.h&gt;
+<a id='L40' name='L40'></a>#     #endif /* HAVE_PCRE2 */
+<a id='L41' name='L41'></a>#
+<a id='L42' name='L42'></a># LICENSE
+<a id='L43' name='L43'></a>#
+<a id='L44' name='L44'></a>#   Copyright (c) 2020 Robert van Engelen &lt;engelen@acm.org&gt;
+<a id='L45' name='L45'></a>#
+<a id='L46' name='L46'></a>#   This program is free software; you can redistribute it and/or modify it
+<a id='L47' name='L47'></a>#   under the terms of the GNU General Public License as published by the
+<a id='L48' name='L48'></a>#   Free Software Foundation; either version 2 of the License, or (at your
+<a id='L49' name='L49'></a>#   option) any later version.
+<a id='L50' name='L50'></a>#
+<a id='L51' name='L51'></a>#   This program is distributed in the hope that it will be useful, but
+<a id='L52' name='L52'></a>#   WITHOUT ANY WARRANTY; without even the implied warranty of
+<a id='L53' name='L53'></a>#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+<a id='L54' name='L54'></a>#   Public License for more details.
+<a id='L55' name='L55'></a>#
+<a id='L56' name='L56'></a>#   You should have received a copy of the GNU General Public License along
+<a id='L57' name='L57'></a>#   with this program. If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<a id='L58' name='L58'></a>#
+<a id='L59' name='L59'></a>#   As a special exception, the respective Autoconf Macro's copyright owner
+<a id='L60' name='L60'></a>#   gives unlimited permission to copy, distribute and modify the configure
+<a id='L61' name='L61'></a>#   scripts that are the output of Autoconf when processing the Macro. You
+<a id='L62' name='L62'></a>#   need not follow the terms of the GNU General Public License when using
+<a id='L63' name='L63'></a>#   or distributing such scripts, even though portions of the text of the
+<a id='L64' name='L64'></a>#   Macro appear in them. The GNU General Public License (GPL) does govern
+<a id='L65' name='L65'></a>#   all other use of the material that constitutes the Autoconf Macro.
+<a id='L66' name='L66'></a>#
+<a id='L67' name='L67'></a>#   This special exception to the GPL applies to versions of the Autoconf
+<a id='L68' name='L68'></a>#   Macro released by the Autoconf Archive. When you make and distribute a
+<a id='L69' name='L69'></a>#   modified version of the Autoconf Macro, you may extend this special
+<a id='L70' name='L70'></a>#   exception to the GPL to apply to your modified version as well.
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>#serial 2
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>AC_DEFUN([AX_CHECK_PCRE2],
+<a id='L75' name='L75'></a>#
+<a id='L76' name='L76'></a># Handle user hints
+<a id='L77' name='L77'></a>#
+<a id='L78' name='L78'></a>[AC_MSG_CHECKING(if PCRE2 is wanted)
+<a id='L79' name='L79'></a>pcre2_places="/usr/local /usr /opt/local /sw"
+<a id='L80' name='L80'></a>AC_ARG_WITH([pcre2],
+<a id='L81' name='L81'></a>[  --with-pcre2=DIR        root directory path of PCRE2 installation @&lt;:@defaults to
+<a id='L82' name='L82'></a>                          /usr/local or /usr if not found in /usr/local@:&gt;@
+<a id='L83' name='L83'></a>  --without-pcre2         to disable PCRE2 usage completely],
+<a id='L84' name='L84'></a>[if test "$withval" != "no" ; then
+<a id='L85' name='L85'></a>  AC_MSG_RESULT(yes)
+<a id='L86' name='L86'></a>  if test -d "$withval"
+<a id='L87' name='L87'></a>  then
+<a id='L88' name='L88'></a>    pcre2_places="$withval $pcre2_places"
+<a id='L89' name='L89'></a>  else
+<a id='L90' name='L90'></a>    AC_MSG_WARN([Sorry, $withval does not exist, checking usual places])
+<a id='L91' name='L91'></a>  fi
+<a id='L92' name='L92'></a>else
+<a id='L93' name='L93'></a>  pcre2_places=""
+<a id='L94' name='L94'></a>  AC_MSG_RESULT(no)
+<a id='L95' name='L95'></a>fi],
+<a id='L96' name='L96'></a>[AC_MSG_RESULT(yes)])
+<a id='L97' name='L97'></a>#
+<a id='L98' name='L98'></a># Locate PCRE2, if wanted
+<a id='L99' name='L99'></a>#
+<a id='L100' name='L100'></a>if test -n "${pcre2_places}"
+<a id='L101' name='L101'></a>then
+<a id='L102' name='L102'></a>  # check the user supplied or any other more or less 'standard' place:
+<a id='L103' name='L103'></a>  #   Most UNIX systems      : /usr/local and /usr
+<a id='L104' name='L104'></a>  #   MacPorts / Fink on OSX : /opt/local respectively /sw
+<a id='L105' name='L105'></a>  for PCRE2_HOME in ${pcre2_places} ; do
+<a id='L106' name='L106'></a>    if test -f "${PCRE2_HOME}/include/pcre2.h"; then break; fi
+<a id='L107' name='L107'></a>    PCRE2_HOME=""
+<a id='L108' name='L108'></a>  done
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>  PCRE2_OLD_LDFLAGS=$LDFLAGS
+<a id='L111' name='L111'></a>  PCRE2_OLD_CPPFLAGS=$CPPFLAGS
+<a id='L112' name='L112'></a>  if test -n "${PCRE2_HOME}"; then
+<a id='L113' name='L113'></a>    LDFLAGS="$LDFLAGS -L${PCRE2_HOME}/lib"
+<a id='L114' name='L114'></a>    CPPFLAGS="$CPPFLAGS -I${PCRE2_HOME}/include"
+<a id='L115' name='L115'></a>  fi
+<a id='L116' name='L116'></a>  AC_LANG_PUSH([C])
+<a id='L117' name='L117'></a>  AC_CHECK_LIB([pcre2-8], [pcre2_compile_8], [pcre2_cv_libpcre2=yes], [pcre2_cv_libpcre2=no])
+<a id='L118' name='L118'></a>  AC_CHECK_HEADER([pcre2.h], [pcre2_cv_pcre2_h=yes], [pcre2_cv_pcre2_h=no], [#define PCRE2_CODE_UNIT_WIDTH 8])
+<a id='L119' name='L119'></a>  case "$1" in
+<a id='L120' name='L120'></a>  *16*)
+<a id='L121' name='L121'></a>    AC_CHECK_LIB([pcre2-16], [pcre2_compile_16], [pcre2_cv_libpcre2_16=yes], [pcre2_cv_libpcre2_16=no])
+<a id='L122' name='L122'></a>    AC_CHECK_HEADER([pcre2.h], [pcre2_cv_pcre2_16_h=yes], [pcre2_cv_pcre2_16_h=no], [#define PCRE2_CODE_UNIT_WIDTH 16])
+<a id='L123' name='L123'></a>    if test "$pcre2_cv_libpcre2_16" = "no" || test "$pcre2_cv_pcre2_16_h" = "no"; then
+<a id='L124' name='L124'></a>      pcre2_cv_libpcre2=no
+<a id='L125' name='L125'></a>    fi
+<a id='L126' name='L126'></a>    ;;
+<a id='L127' name='L127'></a>  esac
+<a id='L128' name='L128'></a>  case "$1" in
+<a id='L129' name='L129'></a>  *32*)
+<a id='L130' name='L130'></a>    AC_CHECK_LIB([pcre2-32], [pcre2_compile_32], [pcre2_cv_libpcre2_32=yes], [pcre2_cv_libpcre2_32=no])
+<a id='L131' name='L131'></a>    AC_CHECK_HEADER([pcre2.h], [pcre2_cv_pcre2_32_h=yes], [pcre2_cv_pcre2_32_h=no], [#define PCRE2_CODE_UNIT_WIDTH 32])
+<a id='L132' name='L132'></a>    if test "$pcre2_cv_libpcre2_32" = "no" || test "$pcre2_cv_pcre2_32_h" = "no"; then
+<a id='L133' name='L133'></a>      pcre2_cv_libpcre2=no
+<a id='L134' name='L134'></a>    fi
+<a id='L135' name='L135'></a>  esac
+<a id='L136' name='L136'></a>  AC_LANG_POP([C])
+<a id='L137' name='L137'></a>  if test "$pcre2_cv_libpcre2" = "yes" &amp;&amp; test "$pcre2_cv_pcre2_h" = "yes"
+<a id='L138' name='L138'></a>  then
+<a id='L139' name='L139'></a>    #
+<a id='L140' name='L140'></a>    # If both library and header were found, action-if-found
+<a id='L141' name='L141'></a>    #
+<a id='L142' name='L142'></a>    m4_ifblank([$2],[
+<a id='L143' name='L143'></a>                CPPFLAGS="$CPPFLAGS -I${PCRE2_HOME}/include"
+<a id='L144' name='L144'></a>                LDFLAGS="$LDFLAGS -L${PCRE2_HOME}/lib"
+<a id='L145' name='L145'></a>                LIBS="-lpcre2-8 $LIBS"
+<a id='L146' name='L146'></a>                AC_DEFINE([HAVE_PCRE2], [1],
+<a id='L147' name='L147'></a>                          [Define to 1 if you have `PCRE2' library (-lpcre2-$1)])
+<a id='L148' name='L148'></a>               ],[
+<a id='L149' name='L149'></a>                # Restore variables
+<a id='L150' name='L150'></a>                LDFLAGS="$PCRE2_OLD_LDFLAGS"
+<a id='L151' name='L151'></a>                CPPFLAGS="$PCRE2_OLD_CPPFLAGS"
+<a id='L152' name='L152'></a>                $2
+<a id='L153' name='L153'></a>               ])
+<a id='L154' name='L154'></a>  else
+<a id='L155' name='L155'></a>    #
+<a id='L156' name='L156'></a>    # If either header or library was not found, action-if-not-found
+<a id='L157' name='L157'></a>    #
+<a id='L158' name='L158'></a>    m4_default([$3],[
+<a id='L159' name='L159'></a>                AC_MSG_ERROR([either specify a valid PCRE2 installation with --with-pcre2=DIR or disable PCRE2 usage with --without-pcre2])
+<a id='L160' name='L160'></a>                ])
+<a id='L161' name='L161'></a>  fi
+<a id='L162' name='L162'></a>fi
+<a id='L163' name='L163'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+163 m4.include/ax_check_pcre2.m4'  /> */</em>
+</body>
+</html>

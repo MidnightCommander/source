@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>doc/doxygen-include.am</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/doc.html'>doc</a>/doxygen-include.am</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/doc.html'>doc</a>/doxygen-include.am</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 doc/doxygen-include.am'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># ---------------------------------------------------------------------------
+<a id='L2' name='L2'></a># Licensed to the Apache Software Foundation (ASF) under one or more
+<a id='L3' name='L3'></a># contributor license agreements.  See the NOTICE file distributed with
+<a id='L4' name='L4'></a># this work for additional information regarding copyright ownership.
+<a id='L5' name='L5'></a># The ASF licenses this file to You under the Apache License, Version 2.0
+<a id='L6' name='L6'></a># (the "License"); you may not use this file except in compliance with
+<a id='L7' name='L7'></a># the License.  You may obtain a copy of the License at
+<a id='L8' name='L8'></a># 
+<a id='L9' name='L9'></a># http://www.apache.org/licenses/LICENSE-2.0
+<a id='L10' name='L10'></a># 
+<a id='L11' name='L11'></a># Unless required by applicable law or agreed to in writing, software
+<a id='L12' name='L12'></a># distributed under the License is distributed on an "AS IS" BASIS,
+<a id='L13' name='L13'></a># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+<a id='L14' name='L14'></a># See the License for the specific language governing permissions and
+<a id='L15' name='L15'></a># limitations under the License.
+<a id='L16' name='L16'></a># ---------------------------------------------------------------------------
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a># Copyright (C) 2004 Oren Ben-Kiki
+<a id='L19' name='L19'></a># This file is distributed under the same terms as the Automake macro files.
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a># Generate automatic documentation using Doxygen. Goals and variables values
+<a id='L22' name='L22'></a># are controlled by the various DX_COND_??? conditionals set by autoconf.
+<a id='L23' name='L23'></a>#
+<a id='L24' name='L24'></a># The provided goals are:
+<a id='L25' name='L25'></a># doxygen-doc: Generate all doxygen documentation.
+<a id='L26' name='L26'></a># doxygen-run: Run doxygen, which will generate some of the documentation
+<a id='L27' name='L27'></a>#              (HTML, CHM, CHI, MAN, RTF, XML) but will not do the post
+<a id='L28' name='L28'></a>#              processing required for the rest of it (PS, PDF, and some MAN).
+<a id='L29' name='L29'></a># doxygen-man: Rename some doxygen generated man pages.
+<a id='L30' name='L30'></a># doxygen-ps: Generate doxygen PostScript documentation.
+<a id='L31' name='L31'></a># doxygen-pdf: Generate doxygen PDF documentation.
+<a id='L32' name='L32'></a>#
+<a id='L33' name='L33'></a># Note that by default these are not integrated into the automake goals. If
+<a id='L34' name='L34'></a># doxygen is used to generate man pages, you can achieve this integration by
+<a id='L35' name='L35'></a># setting man3_MANS to the list of man pages generated and then adding the
+<a id='L36' name='L36'></a># dependency:
+<a id='L37' name='L37'></a>#
+<a id='L38' name='L38'></a>#   $(man3_MANS): doxygen-doc
+<a id='L39' name='L39'></a>#
+<a id='L40' name='L40'></a># This will cause make to run doxygen and generate all the documentation.
+<a id='L41' name='L41'></a>#
+<a id='L42' name='L42'></a># The following variable is intended for use in Makefile.am:
+<a id='L43' name='L43'></a>#
+<a id='L44' name='L44'></a># DX_CLEANFILES = everything to clean.
+<a id='L45' name='L45'></a>#
+<a id='L46' name='L46'></a># This is usually added to MOSTLYCLEANFILES.
+<a id='L47' name='L47'></a> 
+<a id='L48' name='L48'></a>## --------------------------------- ##
+<a id='L49' name='L49'></a>## Format-independent Doxygen rules. ##
+<a id='L50' name='L50'></a>## --------------------------------- ##
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>if DX_COND_doc
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a>## ------------------------------- ##
+<a id='L55' name='L55'></a>## Rules specific for HTML output. ##
+<a id='L56' name='L56'></a>## ------------------------------- ##
+<a id='L57' name='L57'></a> 
+<a id='L58' name='L58'></a>if DX_COND_html
+<a id='L59' name='L59'></a> 
+<a id='L60' name='L60'></a>DX_CLEAN_HTML = @DX_DOCDIR@/html
+<a id='L61' name='L61'></a> 
+<a id='L62' name='L62'></a>endif DX_COND_html
+<a id='L63' name='L63'></a> 
+<a id='L64' name='L64'></a>## ------------------------------ ##
+<a id='L65' name='L65'></a>## Rules specific for CHM output. ##
+<a id='L66' name='L66'></a>## ------------------------------ ##
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a>if DX_COND_chm
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a>DX_CLEAN_CHM = @DX_DOCDIR@/chm
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>if DX_COND_chi
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>DX_CLEAN_CHI = @DX_DOCDIR@/@PACKAGE@.chi
+<a id='L75' name='L75'></a> 
+<a id='L76' name='L76'></a>endif DX_COND_chi
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>endif DX_COND_chm
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a>## ------------------------------ ##
+<a id='L81' name='L81'></a>## Rules specific for MAN output. ##
+<a id='L82' name='L82'></a>## ------------------------------ ##
+<a id='L83' name='L83'></a> 
+<a id='L84' name='L84'></a>if DX_COND_man
+<a id='L85' name='L85'></a> 
+<a id='L86' name='L86'></a>DX_CLEAN_MAN = @DX_DOCDIR@/man
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a>endif DX_COND_man
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>## ------------------------------ ##
+<a id='L91' name='L91'></a>## Rules specific for RTF output. ##
+<a id='L92' name='L92'></a>## ------------------------------ ##
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>if DX_COND_rtf
+<a id='L95' name='L95'></a> 
+<a id='L96' name='L96'></a>DX_CLEAN_RTF = @DX_DOCDIR@/rtf
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>endif DX_COND_rtf
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>## ------------------------------ ##
+<a id='L101' name='L101'></a>## Rules specific for XML output. ##
+<a id='L102' name='L102'></a>## ------------------------------ ##
+<a id='L103' name='L103'></a> 
+<a id='L104' name='L104'></a>if DX_COND_xml
+<a id='L105' name='L105'></a> 
+<a id='L106' name='L106'></a>DX_CLEAN_XML = @DX_DOCDIR@/xml
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a>endif DX_COND_xml
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>## ----------------------------- ##
+<a id='L111' name='L111'></a>## Rules specific for PS output. ##
+<a id='L112' name='L112'></a>## ----------------------------- ##
+<a id='L113' name='L113'></a> 
+<a id='L114' name='L114'></a>if DX_COND_ps
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>DX_CLEAN_PS = @DX_DOCDIR@/@PACKAGE@.ps
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a>DX_PS_GOAL = doxygen-ps
+<a id='L119' name='L119'></a> 
+<a id='L120' name='L120'></a>doxygen-ps: @DX_DOCDIR@/@PACKAGE@.ps
+<a id='L121' name='L121'></a> 
+<a id='L122' name='L122'></a>@DX_DOCDIR@/@PACKAGE@.ps: @DX_DOCDIR@/@PACKAGE@.tag
+<a id='L123' name='L123'></a>        cd @DX_DOCDIR@/latex; \
+<a id='L124' name='L124'></a>        rm -f *.aux *.toc *.idx *.ind *.ilg *.log *.out; \
+<a id='L125' name='L125'></a>        $(DX_LATEX) refman.tex; \
+<a id='L126' name='L126'></a>        $(MAKEINDEX_PATH) refman.idx; \
+<a id='L127' name='L127'></a>        $(DX_LATEX) refman.tex; \
+<a id='L128' name='L128'></a>        countdown=5; \
+<a id='L129' name='L129'></a>        while $(DX_EGREP) 'Rerun (LaTeX|to get cross-references right)' \
+<a id='L130' name='L130'></a>                          refman.log &gt; /dev/null 2&gt;&amp;1 \
+<a id='L131' name='L131'></a>           &amp;&amp; test $$countdown -gt 0; do \
+<a id='L132' name='L132'></a>            $(DX_LATEX) refman.tex; \
+<a id='L133' name='L133'></a>            countdown=`expr $$countdown - 1`; \
+<a id='L134' name='L134'></a>        done; \
+<a id='L135' name='L135'></a>        $(DX_DVIPS) -o ../@PACKAGE@.ps refman.dvi
+<a id='L136' name='L136'></a> 
+<a id='L137' name='L137'></a>endif DX_COND_ps
+<a id='L138' name='L138'></a> 
+<a id='L139' name='L139'></a>## ------------------------------ ##
+<a id='L140' name='L140'></a>## Rules specific for PDF output. ##
+<a id='L141' name='L141'></a>## ------------------------------ ##
+<a id='L142' name='L142'></a> 
+<a id='L143' name='L143'></a>if DX_COND_pdf
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a>DX_CLEAN_PDF = @DX_DOCDIR@/@PACKAGE@.pdf
+<a id='L146' name='L146'></a> 
+<a id='L147' name='L147'></a>DX_PDF_GOAL = doxygen-pdf
+<a id='L148' name='L148'></a> 
+<a id='L149' name='L149'></a>doxygen-pdf: @DX_DOCDIR@/@PACKAGE@.pdf
+<a id='L150' name='L150'></a> 
+<a id='L151' name='L151'></a>@DX_DOCDIR@/@PACKAGE@.pdf: @DX_DOCDIR@/@PACKAGE@.tag
+<a id='L152' name='L152'></a>        cd @DX_DOCDIR@/latex; \
+<a id='L153' name='L153'></a>        rm -f *.aux *.toc *.idx *.ind *.ilg *.log *.out; \
+<a id='L154' name='L154'></a>        $(DX_PDFLATEX) refman.tex; \
+<a id='L155' name='L155'></a>        $(DX_MAKEINDEX) refman.idx; \
+<a id='L156' name='L156'></a>        $(DX_PDFLATEX) refman.tex; \
+<a id='L157' name='L157'></a>        countdown=5; \
+<a id='L158' name='L158'></a>        while $(DX_EGREP) 'Rerun (LaTeX|to get cross-references right)' \
+<a id='L159' name='L159'></a>                          refman.log &gt; /dev/null 2&gt;&amp;1 \
+<a id='L160' name='L160'></a>           &amp;&amp; test $$countdown -gt 0; do \
+<a id='L161' name='L161'></a>            $(DX_PDFLATEX) refman.tex; \
+<a id='L162' name='L162'></a>            countdown=`expr $$countdown - 1`; \
+<a id='L163' name='L163'></a>        done; \
+<a id='L164' name='L164'></a>        mv refman.pdf ../@PACKAGE@.pdf
+<a id='L165' name='L165'></a> 
+<a id='L166' name='L166'></a>endif DX_COND_pdf
+<a id='L167' name='L167'></a> 
+<a id='L168' name='L168'></a>## ------------------------------------------------- ##
+<a id='L169' name='L169'></a>## Rules specific for LaTeX (shared for PS and PDF). ##
+<a id='L170' name='L170'></a>## ------------------------------------------------- ##
+<a id='L171' name='L171'></a> 
+<a id='L172' name='L172'></a>if DX_COND_latex
+<a id='L173' name='L173'></a> 
+<a id='L174' name='L174'></a>DX_CLEAN_LATEX = @DX_DOCDIR@/latex
+<a id='L175' name='L175'></a> 
+<a id='L176' name='L176'></a>endif DX_COND_latex
+<a id='L177' name='L177'></a> 
+<a id='L178' name='L178'></a>.PHONY: doxygen-run doxygen-doc $(DX_PS_GOAL) $(DX_PDF_GOAL)
+<a id='L179' name='L179'></a> 
+<a id='L180' name='L180'></a>.INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
+<a id='L181' name='L181'></a> 
+<a id='L182' name='L182'></a>doxygen-run: @DX_DOCDIR@/@PACKAGE@.tag
+<a id='L183' name='L183'></a> 
+<a id='L184' name='L184'></a>doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
+<a id='L185' name='L185'></a> 
+<a id='L186' name='L186'></a>@DX_DOCDIR@/@PACKAGE@.tag: $(DX_CONFIG) $(pkginclude_HEADERS)
+<a id='L187' name='L187'></a>        rm -rf @DX_DOCDIR@
+<a id='L188' name='L188'></a>        $(DX_ENV) $(DX_DOXYGEN) $(srcdir)/$(DX_CONFIG)
+<a id='L189' name='L189'></a> 
+<a id='L190' name='L190'></a>DX_CLEANFILES = \
+<a id='L191' name='L191'></a>    @DX_DOCDIR@/@PACKAGE@.tag \
+<a id='L192' name='L192'></a>    -r \
+<a id='L193' name='L193'></a>    $(DX_CLEAN_HTML) \
+<a id='L194' name='L194'></a>    $(DX_CLEAN_CHM) \
+<a id='L195' name='L195'></a>    $(DX_CLEAN_CHI) \
+<a id='L196' name='L196'></a>    $(DX_CLEAN_MAN) \
+<a id='L197' name='L197'></a>    $(DX_CLEAN_RTF) \
+<a id='L198' name='L198'></a>    $(DX_CLEAN_XML) \
+<a id='L199' name='L199'></a>    $(DX_CLEAN_PS) \
+<a id='L200' name='L200'></a>    $(DX_CLEAN_PDF) \
+<a id='L201' name='L201'></a>    $(DX_CLEAN_LATEX)
+<a id='L202' name='L202'></a> 
+<a id='L203' name='L203'></a>endif DX_COND_doc
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+203 doc/doxygen-include.am'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>global_speller</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L68'>global_speller</a>     68 src/editor/spell.c static spell_t *global_speller = NULL;</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L300'>global_speller</a>    300 src/editor/spell.c     if (global_speller != NULL)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L303'>global_speller</a>    303 src/editor/spell.c     global_speller = g_try_malloc (sizeof (spell_t));</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L304'>global_speller</a>    304 src/editor/spell.c     if (global_speller == NULL)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L309'>global_speller</a>    309 src/editor/spell.c         MC_PTR_FREE (global_speller);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L313'>global_speller</a>    313 src/editor/spell.c     global_speller-&gt;config = mc_new_aspell_config ();</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L314'>global_speller</a>    314 src/editor/spell.c     global_speller-&gt;speller = NULL;</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L317'>global_speller</a>    317 src/editor/spell.c         mc_aspell_config_replace (global_speller-&gt;config, "lang", spell_language);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L319'>global_speller</a>    319 src/editor/spell.c     error = mc_new_aspell_speller (global_speller-&gt;config);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L322'>global_speller</a>    322 src/editor/spell.c         global_speller-&gt;speller = mc_to_aspell_speller (error);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L339'>global_speller</a>    339 src/editor/spell.c     if (global_speller == NULL)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L342'>global_speller</a>    342 src/editor/spell.c     if (global_speller-&gt;speller != NULL)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L343'>global_speller</a>    343 src/editor/spell.c         mc_delete_aspell_speller (global_speller-&gt;speller);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L345'>global_speller</a>    345 src/editor/spell.c     if (global_speller-&gt;config != NULL)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L346'>global_speller</a>    346 src/editor/spell.c         mc_delete_aspell_config (global_speller-&gt;config);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L348'>global_speller</a>    348 src/editor/spell.c     MC_PTR_FREE (global_speller);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L374'>global_speller</a>    374 src/editor/spell.c     dlist = mc_get_aspell_dict_info_list (global_speller-&gt;config);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L415'>global_speller</a>    415 src/editor/spell.c     code = mc_aspell_config_retrieve (global_speller-&gt;config, "lang");</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L445'>global_speller</a>    445 src/editor/spell.c         mc_aspell_config_replace (global_speller-&gt;config, "lang", lang);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L446'>global_speller</a>    446 src/editor/spell.c         mc_aspell_config_replace (global_speller-&gt;config, "encoding", spell_codeset);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L449'>global_speller</a>    449 src/editor/spell.c         if (global_speller-&gt;speller != NULL)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L450'>global_speller</a>    450 src/editor/spell.c             mc_delete_aspell_speller (global_speller-&gt;speller);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L452'>global_speller</a>    452 src/editor/spell.c         global_speller-&gt;speller = NULL;</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L454'>global_speller</a>    454 src/editor/spell.c         error = mc_new_aspell_speller (global_speller-&gt;config);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L461'>global_speller</a>    461 src/editor/spell.c         global_speller-&gt;speller = mc_to_aspell_speller (error);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L480'>global_speller</a>    480 src/editor/spell.c     if (word != NULL &amp;&amp; global_speller != NULL &amp;&amp; global_speller-&gt;speller != NULL)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L481'>global_speller</a>    481 src/editor/spell.c         res = mc_aspell_speller_check (global_speller-&gt;speller, word, word_size);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L501'>global_speller</a>    501 src/editor/spell.c     if (word != NULL &amp;&amp; global_speller != NULL &amp;&amp; global_speller-&gt;speller != NULL)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L505'>global_speller</a>    505 src/editor/spell.c         wordlist = mc_aspell_speller_suggest (global_speller-&gt;speller, word, word_size);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L541'>global_speller</a>    541 src/editor/spell.c     mc_aspell_speller_add_to_personal (global_speller-&gt;speller, word, word_size);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L543'>global_speller</a>    543 src/editor/spell.c     if (mc_aspell_speller_error (global_speller-&gt;speller) != 0)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L545'>global_speller</a>    545 src/editor/spell.c         edit_error_dialog (_("Error"), mc_aspell_speller_error_message (global_speller-&gt;speller));</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L549'>global_speller</a>    549 src/editor/spell.c     mc_aspell_speller_save_all_word_lists (global_speller-&gt;speller);</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L551'>global_speller</a>    551 src/editor/spell.c     if (mc_aspell_speller_error (global_speller-&gt;speller) != 0)</span>
+<span class='curline'><a href='../S/src--editor--spell.c.html#L553'>global_speller</a>    553 src/editor/spell.c         edit_error_dialog (_("Error"), mc_aspell_speller_error_message (global_speller-&gt;speller));</span>
+</pre>
+</body>
+</html>

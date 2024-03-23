@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/mc-glib.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/mc-glib.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/mc-glib.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/mc-glib.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>dnl
+<a id='L2' name='L2'></a>dnl Check whether the g_module_* family of functions works
+<a id='L3' name='L3'></a>dnl on this system.  We need to know that at the compile time to
+<a id='L4' name='L4'></a>dnl decide whether to link with X11.
+<a id='L5' name='L5'></a>dnl
+<a id='L6' name='L6'></a>AC_DEFUN([mc_G_MODULE_SUPPORTED], [
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a>    g_module_supported=""
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a>    found_gmodule=no
+<a id='L11' name='L11'></a>    PKG_CHECK_MODULES(GMODULE, [gmodule-no-export-2.0 &gt;= 2.32], [found_gmodule=yes], [:])
+<a id='L12' name='L12'></a>    if test x"$found_gmodule" = xyes; then
+<a id='L13' name='L13'></a>        g_module_supported="gmodule-no-export-2.0"
+<a id='L14' name='L14'></a>    else
+<a id='L15' name='L15'></a>        dnl try fallback to the generic gmodule
+<a id='L16' name='L16'></a>        PKG_CHECK_MODULES(GMODULE, [gmodule-2.0 &gt;= 2.32], [found_gmodule=yes], [:])
+<a id='L17' name='L17'></a>        if test x"$found_gmodule" = xyes; then
+<a id='L18' name='L18'></a>            g_module_supported="gmodule-2.0"
+<a id='L19' name='L19'></a>        fi
+<a id='L20' name='L20'></a>    fi
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a>    case x"$g_module_supported" in
+<a id='L23' name='L23'></a>        xgmodule-no-export-2.0|xgmodule-2.0)
+<a id='L24' name='L24'></a>            if test x`$PKG_CONFIG --variable=gmodule_supported "$g_module_supported"` = xtrue; then
+<a id='L25' name='L25'></a>                AC_DEFINE([HAVE_GMODULE], [1], [Defined if gmodule functionality is supported])
+<a id='L26' name='L26'></a>            else
+<a id='L27' name='L27'></a>                g_module_supported=""
+<a id='L28' name='L28'></a>            fi
+<a id='L29' name='L29'></a>            ;;
+<a id='L30' name='L30'></a>        *)
+<a id='L31' name='L31'></a>            g_module_supported=""
+<a id='L32' name='L32'></a>            ;;
+<a id='L33' name='L33'></a>    esac
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>    dnl
+<a id='L36' name='L36'></a>    dnl Try to find static libraries for glib and gmodule.
+<a id='L37' name='L37'></a>    dnl
+<a id='L38' name='L38'></a>    if test x$with_glib_static = xyes; then
+<a id='L39' name='L39'></a>        new_GLIB_LIBS=
+<a id='L40' name='L40'></a>        for i in $GLIB_LIBS; do
+<a id='L41' name='L41'></a>            case x$i in
+<a id='L42' name='L42'></a>            x-lglib*)
+<a id='L43' name='L43'></a>                lib=glib ;;
+<a id='L44' name='L44'></a>            x-lgmodule*)
+<a id='L45' name='L45'></a>                lib=gmodule ;;
+<a id='L46' name='L46'></a>            *)
+<a id='L47' name='L47'></a>                lib=
+<a id='L48' name='L48'></a>                add="$i" ;;
+<a id='L49' name='L49'></a>            esac
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>            if test -n "$lib"; then
+<a id='L52' name='L52'></a>                lib1=`echo $i | ${SED-sed} 's/^-l//'`
+<a id='L53' name='L53'></a>                if test -f "$GLIB_LIBDIR/lib${lib1}.a"; then
+<a id='L54' name='L54'></a>                    add="$GLIB_LIBDIR/lib${lib1}.a"
+<a id='L55' name='L55'></a>                else
+<a id='L56' name='L56'></a>                    if test -f "$GLIB_LIBDIR/lib${lib}.a"; then
+<a id='L57' name='L57'></a>                        add="$GLIB_LIBDIR/lib${lib}.a"
+<a id='L58' name='L58'></a>                    else
+<a id='L59' name='L59'></a>                        AC_MSG_ERROR([Cannot find static $lib])
+<a id='L60' name='L60'></a>                    fi
+<a id='L61' name='L61'></a>                fi
+<a id='L62' name='L62'></a>            fi
+<a id='L63' name='L63'></a>            new_GLIB_LIBS="$new_GLIB_LIBS $add"
+<a id='L64' name='L64'></a>        done
+<a id='L65' name='L65'></a>        GLIB_LIBS="$new_GLIB_LIBS"
+<a id='L66' name='L66'></a>    fi
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a>])
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a>AC_DEFUN([mc_CHECK_GLIB], [
+<a id='L71' name='L71'></a>    dnl
+<a id='L72' name='L72'></a>    dnl First try glib 2.x.
+<a id='L73' name='L73'></a>    dnl Keep this check close to the beginning, so that the users
+<a id='L74' name='L74'></a>    dnl without any glib won't have their time wasted by other checks.
+<a id='L75' name='L75'></a>    dnl
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a>    AC_ARG_WITH([glib_static],
+<a id='L78' name='L78'></a>        AS_HELP_STRING([--with-glib-static], [Link glib statically @&lt;:@no@:&gt;@]))
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a>    glib_found=no
+<a id='L81' name='L81'></a>    PKG_CHECK_MODULES(GLIB, [glib-2.0 &gt;= 2.32], [glib_found=yes], [:])
+<a id='L82' name='L82'></a>    if test x"$glib_found" = xno; then
+<a id='L83' name='L83'></a>        AC_MSG_ERROR([glib-2.0 not found or version too old (must be &gt;= 2.32)])
+<a id='L84' name='L84'></a>    fi
+<a id='L85' name='L85'></a> 
+<a id='L86' name='L86'></a>])
+<a id='L87' name='L87'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+87 m4.include/mc-glib.m4'  /> */</em>
+</body>
+</html>

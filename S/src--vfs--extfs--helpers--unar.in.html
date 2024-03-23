@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/unar.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/unar.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/unar.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/unar.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a># Written by Ilia Maslakov &lt;il.smind@gmail.com&gt;
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a># (C) 2020 The Free Software Foundation.
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a># Define awk
+<a id='L8' name='L8'></a>AWK=@AWK@
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a># Define which archiver you are using with appropriate options
+<a id='L11' name='L11'></a>UNAR_LIST="lsar "
+<a id='L12' name='L12'></a>UNAR_GET="unar "
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a># The 'list' command executive
+<a id='L15' name='L15'></a>mc_unar_fs_list()
+<a id='L16' name='L16'></a>{
+<a id='L17' name='L17'></a>    # List the contents of the archive and sort it out
+<a id='L18' name='L18'></a>    $UNAR_LIST -l "$1" | $AWK -v uid=`id -nu` -v gid=`id -ng` '
+<a id='L19' name='L19'></a>        BEGIN { flag = 0 }
+<a id='L20' name='L20'></a>        /^\(Flags/ {next}
+<a id='L21' name='L21'></a>        /^\(Mode/ {next}
+<a id='L22' name='L22'></a>        {
+<a id='L23' name='L23'></a>            flag++;
+<a id='L24' name='L24'></a>            if (flag &lt; 4)
+<a id='L25' name='L25'></a>                next
+<a id='L26' name='L26'></a>            pr="-r--r--r--"
+<a id='L27' name='L27'></a>            if (index($2, "D") != 0)
+<a id='L28' name='L28'></a>                pr="dr-xr-xr-x"
+<a id='L29' name='L29'></a>            split($6, a, "-")
+<a id='L30' name='L30'></a>            split($7, b, ":")
+<a id='L31' name='L31'></a>            printf "%s 1 %s %s %d %02d/%02d/%02d %02d:%02d  %s\n", pr, uid, gid, $3, a[3], a[2], a[1], b[1], b[2], $8
+<a id='L32' name='L32'></a>        }'
+<a id='L33' name='L33'></a>}
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a># The 'copyout' command executive to copy displayed files to a destination
+<a id='L36' name='L36'></a>mc_unar_fs_copyout ()
+<a id='L37' name='L37'></a>{
+<a id='L38' name='L38'></a>    TMPDIR=`mktemp -d "${MC_TMPDIR:-/tmp}/mctmpdir-uha.XXXXXX"` || exit 1
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>    $UNAR_GET  "$1" "$2" -o "$TMPDIR" &gt;/dev/null
+<a id='L41' name='L41'></a>    we=`basename "$1" | sed -E 's|^(.*?)\.\w+$|\1|'`
+<a id='L42' name='L42'></a>    cat "$TMPDIR/$we/$2" &gt; "$3"
+<a id='L43' name='L43'></a>    cd /
+<a id='L44' name='L44'></a>    rm -rf "$TMPDIR"
+<a id='L45' name='L45'></a>}
+<a id='L46' name='L46'></a> 
+<a id='L47' name='L47'></a># The main routine
+<a id='L48' name='L48'></a>umask 077
+<a id='L49' name='L49'></a> 
+<a id='L50' name='L50'></a>cmd="$1"
+<a id='L51' name='L51'></a>shift
+<a id='L52' name='L52'></a> 
+<a id='L53' name='L53'></a>case "$cmd" in
+<a id='L54' name='L54'></a>   list)    mc_unar_fs_list    "$@" ;;
+<a id='L55' name='L55'></a>   copyout) mc_unar_fs_copyout "$@" ;;
+<a id='L56' name='L56'></a>   *)       exit 1 ;;
+<a id='L57' name='L57'></a>esac
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>exit 0
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+59 src/vfs/extfs/helpers/unar.in'  /> */</em>
+</body>
+</html>

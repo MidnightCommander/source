@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/textconf.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L140'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L258'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/textconf.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/textconf.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L140'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L258'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/textconf.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L140' title='Defined at 140.'>show_version</a></li>
+<li><a href='#L208' title='Defined at 208.'>show_datadirs_extended</a></li>
+<li><a href='#L258' title='Defined at 258.'>show_configure_options</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Print features specific for this build</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2000-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'></em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'></em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'></em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> */</em>
+<a id='L22' name='L22'></a>  22 
+<a id='L23' name='L23'></a>  23 <em class='comment'>/** \file textconf.c</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> *  \brief Source: prints features specific for this build</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;limits.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;stdio.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;sys/types.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong> (<a href='../Y/ENABLE_VFS.html' title='Multiple used in 23 places.'>ENABLE_VFS</a>) &amp;&amp; <strong class='reserved'>defined</strong>(<a href='../Y/ENABLE_VFS_SFTP.html' title='Multiple used in 10 places.'>ENABLE_VFS_SFTP</a>)
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;libssh2.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#endif</em> <em class='comment'>/* ENABLE_VFS_SFTP &amp;&amp; ENABLE_VFS */</em>
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> "<a href='lib--fileloc.h.html'>lib/fileloc.h</a>"
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> "<a href='lib--mcconfig.h.html'>lib/mcconfig.h</a>"
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"           <em class='comment'>/* mc_get_profile_root() */</em>
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>lib/tty/tty.h</a>"        <em class='comment'>/* S-Lang or ncurses version */</em>
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> "<a href='src--textconf.h.html'>src/textconf.h</a>"
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS.html' title='Multiple used in 23 places.'>ENABLE_VFS</a>
+<a id='L56' name='L56'></a>  56 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/vfs_supported.html' title='Multiple used in 3 places.'>vfs_supported</a>[] = <em class='brace'>{</em>
+<a id='L57' name='L57'></a>  57 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_CPIO.html' title='Multiple used in 3 places.'>ENABLE_VFS_CPIO</a>
+<a id='L58' name='L58'></a>  58     "cpiofs",
+<a id='L59' name='L59'></a>  59 <em class='sharp'>#endif</em>
+<a id='L60' name='L60'></a>  60 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_TAR.html' title='Multiple used in 3 places.'>ENABLE_VFS_TAR</a>
+<a id='L61' name='L61'></a>  61     "tarfs",
+<a id='L62' name='L62'></a>  62 <em class='sharp'>#endif</em>
+<a id='L63' name='L63'></a>  63 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_SFS.html' title='Multiple used in 3 places.'>ENABLE_VFS_SFS</a>
+<a id='L64' name='L64'></a>  64     "sfs",
+<a id='L65' name='L65'></a>  65 <em class='sharp'>#endif</em>
+<a id='L66' name='L66'></a>  66 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_EXTFS.html' title='Multiple used in 6 places.'>ENABLE_VFS_EXTFS</a>
+<a id='L67' name='L67'></a>  67     "extfs",
+<a id='L68' name='L68'></a>  68 <em class='sharp'>#endif</em>
+<a id='L69' name='L69'></a>  69 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_UNDELFS.html' title='Multiple used in 9 places.'>ENABLE_VFS_UNDELFS</a>
+<a id='L70' name='L70'></a>  70     "ext2undelfs",
+<a id='L71' name='L71'></a>  71 <em class='sharp'>#endif</em>
+<a id='L72' name='L72'></a>  72 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_FTP.html' title='Multiple used in 26 places.'>ENABLE_VFS_FTP</a>
+<a id='L73' name='L73'></a>  73     "ftpfs",
+<a id='L74' name='L74'></a>  74 <em class='sharp'>#endif</em>
+<a id='L75' name='L75'></a>  75 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_SFTP.html' title='Multiple used in 10 places.'>ENABLE_VFS_SFTP</a>
+<a id='L76' name='L76'></a>  76     "sftpfs",
+<a id='L77' name='L77'></a>  77 <em class='sharp'>#endif</em>
+<a id='L78' name='L78'></a>  78 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_SHELL.html' title='Multiple used in 13 places.'>ENABLE_VFS_SHELL</a>
+<a id='L79' name='L79'></a>  79     "shell",
+<a id='L80' name='L80'></a>  80 <em class='sharp'>#endif</em>
+<a id='L81' name='L81'></a>  81     <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>
+<a id='L82' name='L82'></a>  82 <em class='brace'>}</em>;
+<a id='L83' name='L83'></a>  83 <em class='sharp'>#endif</em> <em class='comment'>/* ENABLE_VFS */</em>
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/features.html' title='Multiple used in 3 places.'>features</a>[] = <em class='brace'>{</em>
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87 <em class='sharp'>#ifdef</em> <a href='../Y/USE_INTERNAL_EDIT.html' title='Multiple used in 46 places.'>USE_INTERNAL_EDIT</a>
+<a id='L88' name='L88'></a>  88 <em class='sharp'>#ifdef</em> <a href='../Y/HAVE_ASPELL.html' title='Multiple used in 14 places.'>HAVE_ASPELL</a>
+<a id='L89' name='L89'></a>  89     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With builtin Editor and Aspell support"),
+<a id='L90' name='L90'></a>  90 <em class='sharp'>#else</em>
+<a id='L91' name='L91'></a>  91     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With builtin Editor"),
+<a id='L92' name='L92'></a>  92 <em class='sharp'>#endif</em> <em class='comment'>/* HAVE_ASPELL */</em>
+<a id='L93' name='L93'></a>  93 <em class='sharp'>#endif</em> <em class='comment'>/* USE_INTERNAL_EDIT */</em>
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_SUBSHELL.html' title='Multiple used in 39 places.'>ENABLE_SUBSHELL</a>
+<a id='L96' name='L96'></a>  96 <em class='sharp'>#ifdef</em> <a href='../Y/SUBSHELL_OPTIONAL.html' title='Multiple used in 2 places.'>SUBSHELL_OPTIONAL</a>
+<a id='L97' name='L97'></a>  97     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With optional subshell support"),
+<a id='L98' name='L98'></a>  98 <em class='sharp'>#else</em>
+<a id='L99' name='L99'></a>  99     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With subshell support as default"),
+<a id='L100' name='L100'></a> 100 <em class='sharp'>#endif</em>
+<a id='L101' name='L101'></a> 101 <em class='sharp'>#endif</em> <em class='comment'>/* !ENABLE_SUBSHELL */</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_BACKGROUND.html' title='Multiple used in 28 places.'>ENABLE_BACKGROUND</a>
+<a id='L104' name='L104'></a> 104     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With support for background operations"),
+<a id='L105' name='L105'></a> 105 <em class='sharp'>#endif</em>
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 <em class='sharp'>#ifdef</em> <a href='../Y/HAVE_LIBGPM.html' title='Multiple used in 13 places.'>HAVE_LIBGPM</a>
+<a id='L108' name='L108'></a> 108     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With mouse support on xterm and Linux console"),
+<a id='L109' name='L109'></a> 109 <em class='sharp'>#else</em>
+<a id='L110' name='L110'></a> 110     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With mouse support on xterm"),
+<a id='L111' name='L111'></a> 111 <em class='sharp'>#endif</em>
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113 <em class='sharp'>#ifdef</em> <a href='../Y/HAVE_TEXTMODE_X11_SUPPORT.html' title='Multiple used in 7 places.'>HAVE_TEXTMODE_X11_SUPPORT</a>
+<a id='L114' name='L114'></a> 114     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With support for X11 events"),
+<a id='L115' name='L115'></a> 115 <em class='sharp'>#endif</em>
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_NLS.html' title='Multiple used in 30 places.'>ENABLE_NLS</a>
+<a id='L118' name='L118'></a> 118     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With internationalization support"),
+<a id='L119' name='L119'></a> 119 <em class='sharp'>#endif</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121 <em class='sharp'>#ifdef</em> <a href='../S/tests--lib--vfs--tempdir.c.html#L31' title='Defined at 31 in tests/lib/vfs/tempdir.c.'>HAVE_CHARSET</a>
+<a id='L122' name='L122'></a> 122     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With multiple codepages support"),
+<a id='L123' name='L123'></a> 123 <em class='sharp'>#endif</em>
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_EXT2FS_ATTR.html' title='Multiple used in 21 places.'>ENABLE_EXT2FS_ATTR</a>
+<a id='L126' name='L126'></a> 126     <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("With ext2fs attributes support"),
+<a id='L127' name='L127'></a> 127 <em class='sharp'>#endif</em>
+<a id='L128' name='L128'></a> 128 
+<a id='L129' name='L129'></a> 129     <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>
+<a id='L130' name='L130'></a> 130 <em class='brace'>}</em>;
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L138' name='L138'></a> 138 
+<a id='L139' name='L139'></a> 139 <strong class='reserved'>void</strong>
+<a id='L140' name='L140'></a> 140 <a href='../R/show_version.html' title='Multiple referred from 2 places.'>show_version</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L208'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L258'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+140 src/textconf.c'  /> */</em>
+<a id='L141' name='L141'></a> 141 <em class='brace'>{</em>
+<a id='L142' name='L142'></a> 142     <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144     <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("GNU Midnight Commander %s\n"), <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/mc_version.html' title='Multiple used in 9 places.'>mc_version</a>);
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146     <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Built with GLib %d.%d.%d\n"),
+<a id='L147' name='L147'></a> 147             GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION, GLIB_MICRO_VERSION);
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149 <em class='sharp'>#ifdef</em> <a href='../Y/HAVE_SLANG.html' title='Multiple used in 16 places.'>HAVE_SLANG</a>
+<a id='L150' name='L150'></a> 150     <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Built with S-Lang %s with terminfo database\n"), SLANG_VERSION_STRING);
+<a id='L151' name='L151'></a> 151 <em class='sharp'>#elif</em> <strong class='reserved'>defined</strong>(<a href='../Y/USE_NCURSES.html' title='Multiple used in 3 places.'>USE_NCURSES</a>)
+<a id='L152' name='L152'></a> 152 <em class='sharp'>#ifdef</em> <a href='../Y/NCURSES_VERSION.html' title='Multiple used in 6 places.'>NCURSES_VERSION</a>
+<a id='L153' name='L153'></a> 153     <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Built with ncurses %s\n"), <a href='../Y/NCURSES_VERSION.html' title='Multiple used in 6 places.'>NCURSES_VERSION</a>);
+<a id='L154' name='L154'></a> 154 <em class='sharp'>#else</em>
+<a id='L155' name='L155'></a> 155     <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Built with ncurses (unknown version)"));
+<a id='L156' name='L156'></a> 156 <em class='sharp'>#endif</em> <em class='comment'>/* !NCURSES_VERSION */</em>
+<a id='L157' name='L157'></a> 157 <em class='sharp'>#elif</em> <strong class='reserved'>defined</strong>(<a href='../Y/USE_NCURSESW.html' title='Multiple used in 3 places.'>USE_NCURSESW</a>)
+<a id='L158' name='L158'></a> 158 <em class='sharp'>#ifdef</em> <a href='../Y/NCURSES_VERSION.html' title='Multiple used in 6 places.'>NCURSES_VERSION</a>
+<a id='L159' name='L159'></a> 159     <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Built with ncursesw %s\n"), <a href='../Y/NCURSES_VERSION.html' title='Multiple used in 6 places.'>NCURSES_VERSION</a>);
+<a id='L160' name='L160'></a> 160 <em class='sharp'>#else</em>
+<a id='L161' name='L161'></a> 161     <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Built with ncursesw (unknown version)"));
+<a id='L162' name='L162'></a> 162 <em class='sharp'>#endif</em> <em class='comment'>/* !NCURSES_VERSION */</em>
+<a id='L163' name='L163'></a> 163 <em class='sharp'>#else</em>
+<a id='L164' name='L164'></a> 164 <em class='sharp'>#error</em> "Cannot compile mc without S-Lang or ncurses"
+<a id='L165' name='L165'></a> 165 <em class='sharp'>#endif</em> <em class='comment'>/* !HAVE_SLANG &amp;&amp; !USE_NCURSES */</em>
+<a id='L166' name='L166'></a> 166 
+<a id='L167' name='L167'></a> 167 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong> (<a href='../Y/ENABLE_VFS.html' title='Multiple used in 23 places.'>ENABLE_VFS</a>) &amp;&amp; <strong class='reserved'>defined</strong>(<a href='../Y/ENABLE_VFS_SFTP.html' title='Multiple used in 10 places.'>ENABLE_VFS_SFTP</a>)
+<a id='L168' name='L168'></a> 168     <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Built with libssh2 %d.%d.%d\n"),
+<a id='L169' name='L169'></a> 169             LIBSSH2_VERSION_MAJOR, LIBSSH2_VERSION_MINOR, LIBSSH2_VERSION_PATCH);
+<a id='L170' name='L170'></a> 170 <em class='sharp'>#endif</em> <em class='comment'>/* ENABLE_VFS_SFTP &amp;&amp; ENABLE_VFS */</em>
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/features.html' title='Multiple used in 3 places.'>features</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>] != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L173' name='L173'></a> 173         <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/features.html' title='Multiple used in 3 places.'>features</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>]));
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS.html' title='Multiple used in 23 places.'>ENABLE_VFS</a>
+<a id='L176' name='L176'></a> 176     <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Virtual File Systems:"));
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/vfs_supported.html' title='Multiple used in 3 places.'>vfs_supported</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>] != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L178' name='L178'></a> 178         <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> ("%s %s", <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> == 0 ? "" : ",", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/vfs_supported.html' title='Multiple used in 3 places.'>vfs_supported</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>]));
+<a id='L179' name='L179'></a> 179     (<strong class='reserved'>void</strong>) <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> ("");
+<a id='L180' name='L180'></a> 180 <em class='sharp'>#endif</em> <em class='comment'>/* ENABLE_VFS */</em>
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182     (<strong class='reserved'>void</strong>) <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Data types:"));
+<a id='L183' name='L183'></a> 183 <em class='sharp'>#define</em> <a href='../R/TYPE_INFO.html' title='Multiple referred from 6 places.'>TYPE_INFO</a>(<a href='../Y/T.html' title='Multiple used in 2 places.'>T</a>) \
+<a id='L184' name='L184'></a> 184     (<strong class='reserved'>void</strong>)<a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a>(" %s: %d;", #<a href='../Y/T.html' title='Multiple used in 2 places.'>T</a>, (<strong class='reserved'>int</strong>) (<a href='../Y/CHAR_BIT.html' title='Multiple used in 7 places.'>CHAR_BIT</a> * <strong class='reserved'>sizeof</strong>(<a href='../Y/T.html' title='Multiple used in 2 places.'>T</a>)))
+<a id='L185' name='L185'></a> 185     <a href='../D/TYPE_INFO.html' title='Multiple defined in 2 places.'>TYPE_INFO</a> (<strong class='reserved'>char</strong>);
+<a id='L186' name='L186'></a> 186     <a href='../D/TYPE_INFO.html' title='Multiple defined in 2 places.'>TYPE_INFO</a> (<strong class='reserved'>int</strong>);
+<a id='L187' name='L187'></a> 187     <a href='../D/TYPE_INFO.html' title='Multiple defined in 2 places.'>TYPE_INFO</a> (<strong class='reserved'>long</strong>);
+<a id='L188' name='L188'></a> 188     <a href='../D/TYPE_INFO.html' title='Multiple defined in 2 places.'>TYPE_INFO</a> (<strong class='reserved'>void</strong> *);
+<a id='L189' name='L189'></a> 189     <a href='../D/TYPE_INFO.html' title='Multiple defined in 2 places.'>TYPE_INFO</a> (<a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a>);
+<a id='L190' name='L190'></a> 190     <a href='../D/TYPE_INFO.html' title='Multiple defined in 2 places.'>TYPE_INFO</a> (<a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a>);
+<a id='L191' name='L191'></a> 191 <em class='sharp'>#undef</em> <a href='../R/TYPE_INFO.html' title='Multiple referred from 6 places.'>TYPE_INFO</a>
+<a id='L192' name='L192'></a> 192     (<strong class='reserved'>void</strong>) <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> ("");
+<a id='L193' name='L193'></a> 193 <em class='brace'>}</em>
+<a id='L194' name='L194'></a> 194 
+<a id='L195' name='L195'></a> 195 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L196' name='L196'></a> 196 <em class='sharp'>#define</em> <a href='../R/PRINTF_GROUP.html' title='Multiple referred from 2 places.'>PRINTF_GROUP</a>(<a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>) \
+<a id='L197' name='L197'></a> 197     (<strong class='reserved'>void</strong>) <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> ("[%s]\n", <a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>)
+<a id='L198' name='L198'></a> 198 <em class='sharp'>#define</em> <a href='../R/PRINTF_SECTION.html' title='Multiple referred from 4 places.'>PRINTF_SECTION</a>(<a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>,<a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>) \
+<a id='L199' name='L199'></a> 199     (<strong class='reserved'>void</strong>) <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> ("    %-17s %s\n", <a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>, <a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>)
+<a id='L200' name='L200'></a> 200 <em class='sharp'>#define</em> <a href='../R/PRINTF_SECTION2.html' title='Multiple referred from 3 places.'>PRINTF_SECTION2</a>(<a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>,<a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>) \
+<a id='L201' name='L201'></a> 201     (<strong class='reserved'>void</strong>) <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> ("    %-17s %s/\n", <a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>, <a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>)
+<a id='L202' name='L202'></a> 202 <em class='sharp'>#define</em> <a href='../R/PRINTF.html' title='Multiple referred from 5 places.'>PRINTF</a>(<a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>, <a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>, <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>) \
+<a id='L203' name='L203'></a> 203     (<strong class='reserved'>void</strong>) <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> ("\t%-15s %s/%s\n", <a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>, <a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>, <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>)
+<a id='L204' name='L204'></a> 204 <em class='sharp'>#define</em> <a href='../R/PRINTF2.html' title='Multiple referred from 2 places.'>PRINTF2</a>(<a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>, <a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>, <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>) \
+<a id='L205' name='L205'></a> 205     (<strong class='reserved'>void</strong>) <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> ("\t%-15s %s%s\n", <a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>, <a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>, <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>)
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207 <strong class='reserved'>void</strong>
+<a id='L208' name='L208'></a> 208 <a href='../R/show_datadirs_extended.html' title='Multiple referred from 2 places.'>show_datadirs_extended</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L140'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L258'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L140'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L258'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+208 src/textconf.c'  /> */</em>
+<a id='L209' name='L209'></a> 209 <em class='brace'>{</em>
+<a id='L210' name='L210'></a> 210     (<strong class='reserved'>void</strong>) <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> ("%s %s\n", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Home directory:"), <a href='../D/mc_config_get_home_dir.html' title='Multiple defined in 4 places.'>mc_config_get_home_dir</a> ());
+<a id='L211' name='L211'></a> 211     (<strong class='reserved'>void</strong>) <a href='../Y/printf.html' title='Multiple used in 61 places.'>printf</a> ("%s %s\n", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Profile root directory:"), <a href='../S/lib--util.c.html#L1456' title='Defined at 1456 in lib/util.c.'>mc_get_profile_root</a> ());
+<a id='L212' name='L212'></a> 212     (<strong class='reserved'>void</strong>) <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> ("");
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214     <a href='../D/PRINTF_GROUP.html' title='Multiple defined in 2 places.'>PRINTF_GROUP</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("System data"));
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <a href='../D/PRINTF_SECTION.html' title='Multiple defined in 2 places.'>PRINTF_SECTION</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Config directory:"), <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/sysconfig_dir.html' title='Multiple used in 38 places.'>sysconfig_dir</a>);
+<a id='L217' name='L217'></a> 217     <a href='../D/PRINTF_SECTION.html' title='Multiple defined in 2 places.'>PRINTF_SECTION</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Data directory:"), <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/share_data_dir.html' title='Multiple used in 28 places.'>share_data_dir</a>);
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219     <a href='../D/PRINTF_SECTION.html' title='Multiple defined in 2 places.'>PRINTF_SECTION</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("File extension handlers:"), EXTHELPERSDIR);
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221 <em class='sharp'>#if</em> <strong class='reserved'>defined</strong> <a href='../Y/ENABLE_VFS_EXTFS.html' title='Multiple used in 6 places.'>ENABLE_VFS_EXTFS</a> || <strong class='reserved'>defined</strong> <a href='../Y/ENABLE_VFS_SHELL.html' title='Multiple used in 13 places.'>ENABLE_VFS_SHELL</a>
+<a id='L222' name='L222'></a> 222     <a href='../D/PRINTF_SECTION.html' title='Multiple defined in 2 places.'>PRINTF_SECTION</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("VFS plugins and scripts:"), <a href='../Y/LIBEXECDIR.html' title='Multiple used in 5 places.'>LIBEXECDIR</a>);
+<a id='L223' name='L223'></a> 223 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_EXTFS.html' title='Multiple used in 6 places.'>ENABLE_VFS_EXTFS</a>
+<a id='L224' name='L224'></a> 224     <a href='../S/src--textconf.c.html#L204' title='Defined at 204 in src/textconf.c.'>PRINTF2</a> ("extfs.d:", <a href='../Y/LIBEXECDIR.html' title='Multiple used in 5 places.'>LIBEXECDIR</a>, <a href='../S/lib--fileloc.h.html#L51' title='Defined at 51 in lib/fileloc.h.'>MC_EXTFS_DIR</a> <a href='../S/lib--global.h.html#L122' title='Defined at 122 in lib/global.h.'>PATH_SEP_STR</a>);
+<a id='L225' name='L225'></a> 225 <em class='sharp'>#endif</em>
+<a id='L226' name='L226'></a> 226 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_SHELL.html' title='Multiple used in 13 places.'>ENABLE_VFS_SHELL</a>
+<a id='L227' name='L227'></a> 227     <a href='../S/src--textconf.c.html#L204' title='Defined at 204 in src/textconf.c.'>PRINTF2</a> ("shell:", <a href='../Y/LIBEXECDIR.html' title='Multiple used in 5 places.'>LIBEXECDIR</a>, <a href='../S/lib--fileloc.h.html#L33' title='Defined at 33 in lib/fileloc.h.'>VFS_SHELL_PREFIX</a> <a href='../S/lib--global.h.html#L122' title='Defined at 122 in lib/global.h.'>PATH_SEP_STR</a>);
+<a id='L228' name='L228'></a> 228 <em class='sharp'>#endif</em>
+<a id='L229' name='L229'></a> 229 <em class='sharp'>#endif</em> <em class='comment'>/* ENABLE_VFS_EXTFS || defiined ENABLE_VFS_SHELL */</em>
+<a id='L230' name='L230'></a> 230     (<strong class='reserved'>void</strong>) <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> ("");
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232     <a href='../D/PRINTF_GROUP.html' title='Multiple defined in 2 places.'>PRINTF_GROUP</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("User data"));
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234     <a href='../S/src--textconf.c.html#L200' title='Defined at 200 in src/textconf.c.'>PRINTF_SECTION2</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Config directory:"), <a href='../S/lib--mcconfig--paths.c.html#L257' title='Defined at 257 in lib/mcconfig/paths.c.'>mc_config_get_path</a> ());
+<a id='L235' name='L235'></a> 235     <a href='../S/src--textconf.c.html#L200' title='Defined at 200 in src/textconf.c.'>PRINTF_SECTION2</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Data directory:"), <a href='../S/lib--mcconfig--paths.c.html#L214' title='Defined at 214 in lib/mcconfig/paths.c.'>mc_config_get_data_path</a> ());
+<a id='L236' name='L236'></a> 236     <a href='../D/PRINTF.html' title='Multiple defined in 2 places.'>PRINTF</a> ("skins:", <a href='../S/lib--mcconfig--paths.c.html#L214' title='Defined at 214 in lib/mcconfig/paths.c.'>mc_config_get_data_path</a> (), <a href='../S/lib--fileloc.h.html#L68' title='Defined at 68 in lib/fileloc.h.'>MC_SKINS_DIR</a> <a href='../S/lib--global.h.html#L122' title='Defined at 122 in lib/global.h.'>PATH_SEP_STR</a>);
+<a id='L237' name='L237'></a> 237 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_EXTFS.html' title='Multiple used in 6 places.'>ENABLE_VFS_EXTFS</a>
+<a id='L238' name='L238'></a> 238     <a href='../D/PRINTF.html' title='Multiple defined in 2 places.'>PRINTF</a> ("extfs.d:", <a href='../S/lib--mcconfig--paths.c.html#L214' title='Defined at 214 in lib/mcconfig/paths.c.'>mc_config_get_data_path</a> (), <a href='../S/lib--fileloc.h.html#L51' title='Defined at 51 in lib/fileloc.h.'>MC_EXTFS_DIR</a> <a href='../S/lib--global.h.html#L122' title='Defined at 122 in lib/global.h.'>PATH_SEP_STR</a>);
+<a id='L239' name='L239'></a> 239 <em class='sharp'>#endif</em>
+<a id='L240' name='L240'></a> 240 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_VFS_SHELL.html' title='Multiple used in 13 places.'>ENABLE_VFS_SHELL</a>
+<a id='L241' name='L241'></a> 241     <a href='../D/PRINTF.html' title='Multiple defined in 2 places.'>PRINTF</a> ("shell:", <a href='../S/lib--mcconfig--paths.c.html#L214' title='Defined at 214 in lib/mcconfig/paths.c.'>mc_config_get_data_path</a> (), <a href='../S/lib--fileloc.h.html#L33' title='Defined at 33 in lib/fileloc.h.'>VFS_SHELL_PREFIX</a> <a href='../S/lib--global.h.html#L122' title='Defined at 122 in lib/global.h.'>PATH_SEP_STR</a>);
+<a id='L242' name='L242'></a> 242 <em class='sharp'>#endif</em>
+<a id='L243' name='L243'></a> 243 <em class='sharp'>#ifdef</em> <a href='../Y/USE_INTERNAL_EDIT.html' title='Multiple used in 46 places.'>USE_INTERNAL_EDIT</a>
+<a id='L244' name='L244'></a> 244     <a href='../D/PRINTF.html' title='Multiple defined in 2 places.'>PRINTF</a> ("mcedit macros:", <a href='../S/lib--mcconfig--paths.c.html#L214' title='Defined at 214 in lib/mcconfig/paths.c.'>mc_config_get_data_path</a> (), <a href='../S/lib--fileloc.h.html#L31' title='Defined at 31 in lib/fileloc.h.'>MC_MACRO_FILE</a>);
+<a id='L245' name='L245'></a> 245     <a href='../D/PRINTF.html' title='Multiple defined in 2 places.'>PRINTF</a> ("mcedit external macros:", <a href='../S/lib--mcconfig--paths.c.html#L214' title='Defined at 214 in lib/mcconfig/paths.c.'>mc_config_get_data_path</a> (), <a href='../S/lib--fileloc.h.html#L74' title='Defined at 74 in lib/fileloc.h.'>EDIT_HOME_MACRO_FILE</a> ".*");
+<a id='L246' name='L246'></a> 246 <em class='sharp'>#endif</em>
+<a id='L247' name='L247'></a> 247     <a href='../S/src--textconf.c.html#L200' title='Defined at 200 in src/textconf.c.'>PRINTF_SECTION2</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Cache directory:"), <a href='../S/lib--mcconfig--paths.c.html#L225' title='Defined at 225 in lib/mcconfig/paths.c.'>mc_config_get_cache_path</a> ());
+<a id='L248' name='L248'></a> 248 <em class='brace'>}</em>
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250 <em class='sharp'>#undef</em> <a href='../R/PRINTF.html' title='Multiple referred from 5 places.'>PRINTF</a>
+<a id='L251' name='L251'></a> 251 <em class='sharp'>#undef</em> <a href='../R/PRINTF_SECTION.html' title='Multiple referred from 4 places.'>PRINTF_SECTION</a>
+<a id='L252' name='L252'></a> 252 <em class='sharp'>#undef</em> <a href='../R/PRINTF_GROUP.html' title='Multiple referred from 2 places.'>PRINTF_GROUP</a>
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L255' name='L255'></a> 255 
+<a id='L256' name='L256'></a> 256 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_CONFIGURE_ARGS.html' title='Multiple used in 4 places.'>ENABLE_CONFIGURE_ARGS</a>
+<a id='L257' name='L257'></a> 257 <strong class='reserved'>void</strong>
+<a id='L258' name='L258'></a> 258 <a href='../R/show_configure_options.html' title='Multiple referred from 2 places.'>show_configure_options</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L208'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L140'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+258 src/textconf.c'  /> */</em>
+<a id='L259' name='L259'></a> 259 <em class='brace'>{</em>
+<a id='L260' name='L260'></a> 260     (<strong class='reserved'>void</strong>) <a href='../Y/puts.html' title='Multiple used in 10 places.'>puts</a> (MC_CONFIGURE_ARGS);
+<a id='L261' name='L261'></a> 261 <em class='brace'>}</em>
+<a id='L262' name='L262'></a> 262 <em class='sharp'>#endif</em>
+<a id='L263' name='L263'></a> 263 
+<a id='L264' name='L264'></a> 264 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L140'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L258'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+264 src/textconf.c'  /> */</em>
+</body>
+</html>

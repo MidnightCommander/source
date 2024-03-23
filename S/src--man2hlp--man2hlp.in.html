@@ -1,0 +1,1017 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/man2hlp/man2hlp.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--man2hlp.html'>man2hlp</a>/man2hlp.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--man2hlp.html'>man2hlp</a>/man2hlp.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/man2hlp/man2hlp.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL_FOR_BUILD@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a>#  Man page to help file converter
+<a id='L4' name='L4'></a>#  Copyright (C) 1994-2024
+<a id='L5' name='L5'></a>#  The Free Software Foundation, Inc.
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a>#  Originally written by:
+<a id='L8' name='L8'></a>#   Andrew V. Samoilov, 2002
+<a id='L9' name='L9'></a>#   Pavel Roskin, 2002
+<a id='L10' name='L10'></a>#   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2010
+<a id='L11' name='L11'></a>#
+<a id='L12' name='L12'></a>#  Completely rewritten in Perl by:
+<a id='L13' name='L13'></a>#   Alexandr Prenko, 2010
+<a id='L14' name='L14'></a>#
+<a id='L15' name='L15'></a># This program is free software: you can redistribute it and/or modify
+<a id='L16' name='L16'></a># it under the terms of the GNU General Public License as published by
+<a id='L17' name='L17'></a># the Free Software Foundation, either version 3 of the License, or
+<a id='L18' name='L18'></a># (at your option) any later version.
+<a id='L19' name='L19'></a>#
+<a id='L20' name='L20'></a># This program is distributed in the hope that it will be useful,
+<a id='L21' name='L21'></a># but WITHOUT ANY WARRANTY; without even the implied warranty of
+<a id='L22' name='L22'></a># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<a id='L23' name='L23'></a># GNU General Public License for more details.
+<a id='L24' name='L24'></a>#
+<a id='L25' name='L25'></a># You should have received a copy of the GNU General Public License
+<a id='L26' name='L26'></a># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<a id='L27' name='L27'></a>#
+<a id='L28' name='L28'></a># \file man2hlp
+<a id='L29' name='L29'></a># \brief Source: man page to help file converter
+<a id='L30' name='L30'></a> 
+<a id='L31' name='L31'></a>use strict;
+<a id='L32' name='L32'></a>use warnings;
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a># Perl have no static variables, so this hash emulates them
+<a id='L35' name='L35'></a>my %static = (
+<a id='L36' name='L36'></a>    "string_len anchor_flag"    =&gt; 0,
+<a id='L37' name='L37'></a>    "string_len lc_link_flag"   =&gt; 0,
+<a id='L38' name='L38'></a>    "handle_link old"           =&gt; undef
+<a id='L39' name='L39'></a>);
+<a id='L40' name='L40'></a> 
+<a id='L41' name='L41'></a># Imported constants
+<a id='L42' name='L42'></a>my $CHAR_LINK_START     = chr(01);      # Ctrl-A
+<a id='L43' name='L43'></a>my $CHAR_LINK_POINTER   = chr(02);      # Ctrl-B
+<a id='L44' name='L44'></a>my $CHAR_LINK_END       = chr(03);      # Ctrl-C
+<a id='L45' name='L45'></a>my $CHAR_NODE_END       = chr(04);      # Ctrl-D
+<a id='L46' name='L46'></a>my $CHAR_ALTERNATE      = chr(05);      # Ctrl-E
+<a id='L47' name='L47'></a>my $CHAR_NORMAL         = chr(06);      # Ctrl-F
+<a id='L48' name='L48'></a>my $CHAR_VERSION        = chr(07);      # Ctrl-G
+<a id='L49' name='L49'></a>my $CHAR_FONT_BOLD      = chr(010);     # Ctrl-H
+<a id='L50' name='L50'></a>my $CHAR_FONT_NORMAL    = chr(013);     # Ctrl-K
+<a id='L51' name='L51'></a>my $CHAR_FONT_ITALIC    = chr(024);     # Ctrl-T
+<a id='L52' name='L52'></a># end of import
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a>my $col = 0;            # Current output column
+<a id='L55' name='L55'></a>my $out_row = 1;        # Current output row
+<a id='L56' name='L56'></a>my $in_row = 0;         # Current input row
+<a id='L57' name='L57'></a>my $no_split_flag = 0;  # Flag: Don't split section on next ".SH"
+<a id='L58' name='L58'></a>my $skip_flag = 0;      # Flag: Skip this section.
+<a id='L59' name='L59'></a>                        #       0 = don't skip,
+<a id='L60' name='L60'></a>                        #       1 = skipping title,
+<a id='L61' name='L61'></a>                        #       2 = title skipped, skipping text
+<a id='L62' name='L62'></a>my $link_flag = 0;      # Flag: Next line is a link
+<a id='L63' name='L63'></a>my $verbatim_flag = 0;  # Flag: Copy input to output verbatim
+<a id='L64' name='L64'></a>my $node = 0;           # Flag: This line is an original ".SH"
+<a id='L65' name='L65'></a> 
+<a id='L66' name='L66'></a>my $c_out;              # Output filename
+<a id='L67' name='L67'></a>my $f_out;              # Output file
+<a id='L68' name='L68'></a> 
+<a id='L69' name='L69'></a>my $c_in;               # Current input filename
+<a id='L70' name='L70'></a> 
+<a id='L71' name='L71'></a>my $indentation;        # Indentation level, n spaces
+<a id='L72' name='L72'></a>my $tp_flag;            # Flag: .TP paragraph
+<a id='L73' name='L73'></a>                        #       1 = this line is .TP label,
+<a id='L74' name='L74'></a>                        #       2 = first line of label description.
+<a id='L75' name='L75'></a>my $topics = undef;
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a># Emulate C strtok()
+<a id='L78' name='L78'></a>my $strtok;
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a>sub strtok($$) {
+<a id='L81' name='L81'></a>    my ($str, $chars) = @_;
+<a id='L82' name='L82'></a> 
+<a id='L83' name='L83'></a>    if (! defined $chars || $chars eq "")
+<a id='L84' name='L84'></a>    {
+<a id='L85' name='L85'></a>        my $result = $strtok;
+<a id='L86' name='L86'></a>        $strtok = undef;
+<a id='L87' name='L87'></a>        return $result;
+<a id='L88' name='L88'></a>    }
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>    $str = $strtok unless defined $str;
+<a id='L91' name='L91'></a>    return undef unless defined $str;
+<a id='L92' name='L92'></a> 
+<a id='L93' name='L93'></a>    my $result;
+<a id='L94' name='L94'></a>    $str =~ s/^[$chars]+//;
+<a id='L95' name='L95'></a>    ($result, $strtok) = split /[$chars]+/, $str, 2;
+<a id='L96' name='L96'></a>    ($result, $strtok) = split /[$chars]+/, $strtok, 2 if defined $result &amp;&amp; $result eq "";
+<a id='L97' name='L97'></a>    $strtok = undef if ! defined $strtok || $strtok eq "";
+<a id='L98' name='L98'></a>    return $result;
+<a id='L99' name='L99'></a>}
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>sub struct_node() {
+<a id='L102' name='L102'></a>    return {
+<a id='L103' name='L103'></a>        "node"          =&gt; undef,   # Section name
+<a id='L104' name='L104'></a>        "lname"         =&gt; undef,   # Translated .SH, undef if not translated
+<a id='L105' name='L105'></a>        "next"          =&gt; undef,
+<a id='L106' name='L106'></a>        "heading_level" =&gt; undef
+<a id='L107' name='L107'></a>    }
+<a id='L108' name='L108'></a>}
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>my $nodes = struct_node();
+<a id='L111' name='L111'></a>my $cnode;              # Current node
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a># Report error in input
+<a id='L114' name='L114'></a>sub print_error($)
+<a id='L115' name='L115'></a>{
+<a id='L116' name='L116'></a>    my ($message) = @_;
+<a id='L117' name='L117'></a>    warn sprintf  "man2hlp: %s in file \"%s\" on line %d\n", $message, $c_in, $in_row;
+<a id='L118' name='L118'></a>}
+<a id='L119' name='L119'></a> 
+<a id='L120' name='L120'></a># Do open, exit if it fails
+<a id='L121' name='L121'></a>sub fopen_check ($$)
+<a id='L122' name='L122'></a>{
+<a id='L123' name='L123'></a>    my ($mode, $filename) = @_;
+<a id='L124' name='L124'></a>    my $f;
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a>    unless (open $f, $mode, $filename)
+<a id='L127' name='L127'></a>    {
+<a id='L128' name='L128'></a>        warn sprintf("man2hlp: Cannot open file \"%s\" ($!)\n", $filename);
+<a id='L129' name='L129'></a>        exit 3;
+<a id='L130' name='L130'></a>    }
+<a id='L131' name='L131'></a>    return $f;
+<a id='L132' name='L132'></a>}
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a># Do close, exit if it fails
+<a id='L135' name='L135'></a>sub fclose_check($)
+<a id='L136' name='L136'></a>{
+<a id='L137' name='L137'></a>    my ($f) = @_;
+<a id='L138' name='L138'></a>    unless (close $f) 
+<a id='L139' name='L139'></a>    {
+<a id='L140' name='L140'></a>        warn "man2hlp: Cannot close file ($!)\n";
+<a id='L141' name='L141'></a>        exit 3;
+<a id='L142' name='L142'></a>    }
+<a id='L143' name='L143'></a>}
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a># Change output line
+<a id='L146' name='L146'></a>sub newline()
+<a id='L147' name='L147'></a>{
+<a id='L148' name='L148'></a>    $out_row++;
+<a id='L149' name='L149'></a>    $col = 0;
+<a id='L150' name='L150'></a>    print $f_out "\n";
+<a id='L151' name='L151'></a>}
+<a id='L152' name='L152'></a> 
+<a id='L153' name='L153'></a># Calculate the length of string
+<a id='L154' name='L154'></a>sub string_len
+<a id='L155' name='L155'></a>{
+<a id='L156' name='L156'></a>    my ($buffer) = @_;
+<a id='L157' name='L157'></a>    my $anchor_flag = \$static{"string_len anchor_flag"}; # Flag: Inside hypertext anchor name ho4u_v_Ariom
+<a id='L158' name='L158'></a>    my $lc_link_flag = \$static{"string_len lc_link_flag"}; # Flag: Inside hypertext link target name
+<a id='L159' name='L159'></a>    my $backslash_flag = 0;     # Flag: Backslash quoting
+<a id='L160' name='L160'></a>    my $len = 0;                # Result: the length of the string
+<a id='L161' name='L161'></a> 
+<a id='L162' name='L162'></a> 
+<a id='L163' name='L163'></a>    foreach my $c (split //, $buffer)
+<a id='L164' name='L164'></a>    {
+<a id='L165' name='L165'></a>        if ($c eq $CHAR_LINK_POINTER)
+<a id='L166' name='L166'></a>        {
+<a id='L167' name='L167'></a>            $$lc_link_flag = 1;   # Link target name starts
+<a id='L168' name='L168'></a>        }
+<a id='L169' name='L169'></a>        elsif ($c eq $CHAR_LINK_END)
+<a id='L170' name='L170'></a>        {
+<a id='L171' name='L171'></a>            $$lc_link_flag = 0;   # Link target name ends
+<a id='L172' name='L172'></a>        }
+<a id='L173' name='L173'></a>        elsif ($c eq $CHAR_NODE_END)
+<a id='L174' name='L174'></a>        {
+<a id='L175' name='L175'></a>            # Node anchor name starts
+<a id='L176' name='L176'></a>            $$anchor_flag = 1;
+<a id='L177' name='L177'></a>            # Ugly hack to prevent loss of one space
+<a id='L178' name='L178'></a>            $len++;
+<a id='L179' name='L179'></a>        }
+<a id='L180' name='L180'></a>        # Don't add control characters to the length
+<a id='L181' name='L181'></a>        next if ord($c) &gt;= 0 &amp;&amp; ord($c) &lt; 32;
+<a id='L182' name='L182'></a>        # Attempt to handle backslash quoting
+<a id='L183' name='L183'></a>        if ($c eq '\\' &amp;&amp; !$backslash_flag)
+<a id='L184' name='L184'></a>        {
+<a id='L185' name='L185'></a>            $backslash_flag = 1;
+<a id='L186' name='L186'></a>            next;
+<a id='L187' name='L187'></a>        }
+<a id='L188' name='L188'></a>        $backslash_flag = 0;
+<a id='L189' name='L189'></a>        # Increase length if not inside anchor name or link target name
+<a id='L190' name='L190'></a>        $len++ if !$$anchor_flag &amp;&amp; !$$lc_link_flag;
+<a id='L191' name='L191'></a>        if ($$anchor_flag &amp;&amp; $c eq ']')
+<a id='L192' name='L192'></a>        {
+<a id='L193' name='L193'></a>            # Node anchor name ends
+<a id='L194' name='L194'></a>            $$anchor_flag = 0;
+<a id='L195' name='L195'></a>        }
+<a id='L196' name='L196'></a>    }
+<a id='L197' name='L197'></a>    return $len;
+<a id='L198' name='L198'></a>}
+<a id='L199' name='L199'></a> 
+<a id='L200' name='L200'></a># Output the string
+<a id='L201' name='L201'></a>sub print_string($)
+<a id='L202' name='L202'></a>{
+<a id='L203' name='L203'></a>    my ($buffer) = @_;
+<a id='L204' name='L204'></a>    my $len;                    # The length of current word
+<a id='L205' name='L205'></a>    my $backslash_flag = 0;
+<a id='L206' name='L206'></a>    my $font_change_flag = 0;
+<a id='L207' name='L207'></a>    my $quotes_flag = 0;
+<a id='L208' name='L208'></a> 
+<a id='L209' name='L209'></a>    # Skipping lines?
+<a id='L210' name='L210'></a>    return if $skip_flag;
+<a id='L211' name='L211'></a>    # Copying verbatim?
+<a id='L212' name='L212'></a>    if ($verbatim_flag)
+<a id='L213' name='L213'></a>    {
+<a id='L214' name='L214'></a>        # Attempt to handle backslash quoting
+<a id='L215' name='L215'></a>        foreach (split //, $buffer)
+<a id='L216' name='L216'></a>        {
+<a id='L217' name='L217'></a>            if ($_ eq '\\' &amp;&amp; !$backslash_flag)
+<a id='L218' name='L218'></a>            {
+<a id='L219' name='L219'></a>                $backslash_flag = 1;
+<a id='L220' name='L220'></a>                next;
+<a id='L221' name='L221'></a>            }
+<a id='L222' name='L222'></a>            $backslash_flag = 0;
+<a id='L223' name='L223'></a>            print $f_out $_;
+<a id='L224' name='L224'></a>        }
+<a id='L225' name='L225'></a>    }
+<a id='L226' name='L226'></a>    else
+<a id='L227' name='L227'></a>    {
+<a id='L228' name='L228'></a>        # Split into words
+<a id='L229' name='L229'></a>        $buffer = strtok($buffer, " \t\n");
+<a id='L230' name='L230'></a>        # Repeat for each word
+<a id='L231' name='L231'></a>        while (defined $buffer)
+<a id='L232' name='L232'></a>        {
+<a id='L233' name='L233'></a>            # Skip empty strings
+<a id='L234' name='L234'></a>            if ($buffer ne '')
+<a id='L235' name='L235'></a>            {
+<a id='L236' name='L236'></a>                $len = string_len($buffer);
+<a id='L237' name='L237'></a>                # Words are separated by spaces
+<a id='L238' name='L238'></a>                if ($col &gt; 0)
+<a id='L239' name='L239'></a>                {
+<a id='L240' name='L240'></a>                    print $f_out ' ';
+<a id='L241' name='L241'></a>                    $col++;
+<a id='L242' name='L242'></a>                }
+<a id='L243' name='L243'></a>                elsif ($indentation)
+<a id='L244' name='L244'></a>                {
+<a id='L245' name='L245'></a>                    print $f_out ' ' while $col++ &lt; $indentation;
+<a id='L246' name='L246'></a>                }
+<a id='L247' name='L247'></a>                # Attempt to handle backslash quoting
+<a id='L248' name='L248'></a>                foreach (split //, $buffer)
+<a id='L249' name='L249'></a>                {
+<a id='L250' name='L250'></a>                    # handle quotes: \(lq, \(rq, \(dq
+<a id='L251' name='L251'></a>                    if ($quotes_flag != 0)
+<a id='L252' name='L252'></a>                    {
+<a id='L253' name='L253'></a>                        if (($_ eq 'l' || $_ eq 'r' || $_ eq 'd') &amp;&amp; $quotes_flag == 1)
+<a id='L254' name='L254'></a>                        {
+<a id='L255' name='L255'></a>                            # continue quotes handling
+<a id='L256' name='L256'></a>                            $quotes_flag = 2;
+<a id='L257' name='L257'></a>                            next;
+<a id='L258' name='L258'></a>                        }
+<a id='L259' name='L259'></a>                        elsif ($_ eq 'q' &amp;&amp; $quotes_flag == 2)
+<a id='L260' name='L260'></a>                        {
+<a id='L261' name='L261'></a>                            # finish quotes handling
+<a id='L262' name='L262'></a>                            $quotes_flag = 0;
+<a id='L263' name='L263'></a>                            print $f_out '"';
+<a id='L264' name='L264'></a>                            next;
+<a id='L265' name='L265'></a>                        }
+<a id='L266' name='L266'></a>                        else
+<a id='L267' name='L267'></a>                        {
+<a id='L268' name='L268'></a>                            print $f_out '(' . $_;
+<a id='L269' name='L269'></a>                            print_error "Syntax error: unsupported \\(" . $_ . " command";
+<a id='L270' name='L270'></a>                        }
+<a id='L271' name='L271'></a>                    }
+<a id='L272' name='L272'></a>                    # handle \fR, \fB, \fI and \fP commands
+<a id='L273' name='L273'></a>                    if ($font_change_flag)
+<a id='L274' name='L274'></a>                    {
+<a id='L275' name='L275'></a>                        if ($_ eq 'B')
+<a id='L276' name='L276'></a>                        {
+<a id='L277' name='L277'></a>                            print $f_out $CHAR_FONT_BOLD;
+<a id='L278' name='L278'></a>                        }
+<a id='L279' name='L279'></a>                        elsif ($_ eq 'I')
+<a id='L280' name='L280'></a>                        {
+<a id='L281' name='L281'></a>                            print $f_out $CHAR_FONT_ITALIC;
+<a id='L282' name='L282'></a>                        }
+<a id='L283' name='L283'></a>                        elsif ($_ eq 'R' || $_ eq 'P')
+<a id='L284' name='L284'></a>                        {
+<a id='L285' name='L285'></a>                            print $f_out $CHAR_FONT_NORMAL;
+<a id='L286' name='L286'></a>                        }
+<a id='L287' name='L287'></a>                        else
+<a id='L288' name='L288'></a>                        {
+<a id='L289' name='L289'></a>                            print $f_out 'f' . $_;
+<a id='L290' name='L290'></a>                            print_error "Syntax error: unsupported \\f" . $_ . " command";
+<a id='L291' name='L291'></a>                        }
+<a id='L292' name='L292'></a> 
+<a id='L293' name='L293'></a>                        $font_change_flag = 0;
+<a id='L294' name='L294'></a>                        next;
+<a id='L295' name='L295'></a>                    }
+<a id='L296' name='L296'></a>                    if ($_ eq '(' &amp;&amp; $backslash_flag)
+<a id='L297' name='L297'></a>                    {
+<a id='L298' name='L298'></a>                        $quotes_flag = 1;
+<a id='L299' name='L299'></a>                        $backslash_flag = 0;
+<a id='L300' name='L300'></a>                        next;
+<a id='L301' name='L301'></a>                    }
+<a id='L302' name='L302'></a>                    if ($_ eq 'f' &amp;&amp; $backslash_flag)
+<a id='L303' name='L303'></a>                    {
+<a id='L304' name='L304'></a>                        $font_change_flag = 1;
+<a id='L305' name='L305'></a>                        $backslash_flag = 0;
+<a id='L306' name='L306'></a>                        next;
+<a id='L307' name='L307'></a>                    }
+<a id='L308' name='L308'></a>                    if ($_ eq '\\' &amp;&amp; !$backslash_flag)
+<a id='L309' name='L309'></a>                    {
+<a id='L310' name='L310'></a>                        $backslash_flag = 1;
+<a id='L311' name='L311'></a>                        next;
+<a id='L312' name='L312'></a>                    }
+<a id='L313' name='L313'></a>                    $backslash_flag = 0;
+<a id='L314' name='L314'></a>                    $font_change_flag = 0;
+<a id='L315' name='L315'></a>                    $quotes_flag = 0;
+<a id='L316' name='L316'></a>                    print $f_out $_;
+<a id='L317' name='L317'></a>                }
+<a id='L318' name='L318'></a>                # Increase column
+<a id='L319' name='L319'></a>                $col += $len;
+<a id='L320' name='L320'></a>            }
+<a id='L321' name='L321'></a>            # Get the next word
+<a id='L322' name='L322'></a>            $buffer = strtok(undef, " \t\n");
+<a id='L323' name='L323'></a>        }                       # while
+<a id='L324' name='L324'></a>    }
+<a id='L325' name='L325'></a>}
+<a id='L326' name='L326'></a> 
+<a id='L327' name='L327'></a># Like print_string but with printf-like syntax
+<a id='L328' name='L328'></a>sub printf_string
+<a id='L329' name='L329'></a>{
+<a id='L330' name='L330'></a>    print_string sprintf shift, @_;
+<a id='L331' name='L331'></a>}
+<a id='L332' name='L332'></a> 
+<a id='L333' name='L333'></a># Handle NODE and .SH commands.  is_sh is 1 for .SH, 0 for NODE
+<a id='L334' name='L334'></a># FIXME: Consider to remove first parameter
+<a id='L335' name='L335'></a>sub handle_node($$)
+<a id='L336' name='L336'></a>{
+<a id='L337' name='L337'></a>    my ($buffer, $is_sh) = @_;
+<a id='L338' name='L338'></a>    my ($len, $heading_level);
+<a id='L339' name='L339'></a> 
+<a id='L340' name='L340'></a>    # If we already skipped a section, don't skip another
+<a id='L341' name='L341'></a>    $skip_flag = 0 if $skip_flag == 2;
+<a id='L342' name='L342'></a> 
+<a id='L343' name='L343'></a>    # Get the command parameters
+<a id='L344' name='L344'></a>    $buffer = strtok(undef, "");
+<a id='L345' name='L345'></a>    if (! defined $buffer)
+<a id='L346' name='L346'></a>    {
+<a id='L347' name='L347'></a>        print_error "Syntax error: .SH: no title";
+<a id='L348' name='L348'></a>        return;
+<a id='L349' name='L349'></a>    }
+<a id='L350' name='L350'></a>    else
+<a id='L351' name='L351'></a>    {
+<a id='L352' name='L352'></a>        # Remove quotes
+<a id='L353' name='L353'></a>        $buffer =~ s/^"// and $buffer =~ s/"$//;
+<a id='L354' name='L354'></a>        # Calculate heading level
+<a id='L355' name='L355'></a>        $heading_level = 0;
+<a id='L356' name='L356'></a>        $heading_level++ while substr($buffer, $heading_level, 1) eq ' ';
+<a id='L357' name='L357'></a>        # Heading level must be even
+<a id='L358' name='L358'></a>        if ($heading_level % 2)
+<a id='L359' name='L359'></a>        {
+<a id='L360' name='L360'></a>            print_error "Syntax error: .SH: odd heading level";
+<a id='L361' name='L361'></a>        }
+<a id='L362' name='L362'></a>        if ($no_split_flag)
+<a id='L363' name='L363'></a>        {
+<a id='L364' name='L364'></a>            # Don't start a new section
+<a id='L365' name='L365'></a>            newline;
+<a id='L366' name='L366'></a>            print_string $buffer;
+<a id='L367' name='L367'></a>            newline;
+<a id='L368' name='L368'></a>            newline;
+<a id='L369' name='L369'></a>            $no_split_flag = 0;
+<a id='L370' name='L370'></a>        }
+<a id='L371' name='L371'></a>        elsif ($skip_flag)
+<a id='L372' name='L372'></a>        {
+<a id='L373' name='L373'></a>            # Skipping title and marking text for skipping
+<a id='L374' name='L374'></a>            $skip_flag = 2;
+<a id='L375' name='L375'></a>        }
+<a id='L376' name='L376'></a>        else
+<a id='L377' name='L377'></a>        {
+<a id='L378' name='L378'></a>            $buffer = substr($buffer, $heading_level);
+<a id='L379' name='L379'></a>            if (! $is_sh || ! $node)
+<a id='L380' name='L380'></a>            {
+<a id='L381' name='L381'></a>                # Start a new section, but omit empty section names
+<a id='L382' name='L382'></a>                if ($buffer ne '')
+<a id='L383' name='L383'></a>                {
+<a id='L384' name='L384'></a>                    printf $f_out "%s[%s]", $CHAR_NODE_END, $buffer;
+<a id='L385' name='L385'></a>                    newline;
+<a id='L386' name='L386'></a>                }
+<a id='L387' name='L387'></a> 
+<a id='L388' name='L388'></a>                # Add section to the linked list
+<a id='L389' name='L389'></a>                if (! defined $cnode)
+<a id='L390' name='L390'></a>                {
+<a id='L391' name='L391'></a>                    $cnode = $nodes;
+<a id='L392' name='L392'></a>                }
+<a id='L393' name='L393'></a>                else
+<a id='L394' name='L394'></a>                {
+<a id='L395' name='L395'></a>                    $cnode-&gt;{'next'} = struct_node();
+<a id='L396' name='L396'></a>                    $cnode = $cnode-&gt;{'next'};
+<a id='L397' name='L397'></a>                }
+<a id='L398' name='L398'></a>                $cnode-&gt;{'node'} = $buffer;
+<a id='L399' name='L399'></a>                $cnode-&gt;{'lname'} = undef;
+<a id='L400' name='L400'></a>                $cnode-&gt;{'next'} = undef;
+<a id='L401' name='L401'></a>                $cnode-&gt;{'heading_level'} = $heading_level;
+<a id='L402' name='L402'></a>            }
+<a id='L403' name='L403'></a>            if ($is_sh)
+<a id='L404' name='L404'></a>            {
+<a id='L405' name='L405'></a>                $cnode-&gt;{'lname'} = $buffer;
+<a id='L406' name='L406'></a>                print_string $buffer;
+<a id='L407' name='L407'></a>                newline;
+<a id='L408' name='L408'></a>                newline;
+<a id='L409' name='L409'></a>            }
+<a id='L410' name='L410'></a>        }                       # Start new section
+<a id='L411' name='L411'></a>    }                         # Has parameters
+<a id='L412' name='L412'></a>    $node = ! $is_sh;
+<a id='L413' name='L413'></a>}
+<a id='L414' name='L414'></a> 
+<a id='L415' name='L415'></a># Convert character from the macro name to the font marker
+<a id='L416' name='L416'></a>sub char_to_font($)
+<a id='L417' name='L417'></a>{
+<a id='L418' name='L418'></a>    my ($c) = @_;
+<a id='L419' name='L419'></a>    my %font = (
+<a id='L420' name='L420'></a>        'R' =&gt; $CHAR_FONT_NORMAL,
+<a id='L421' name='L421'></a>        'B' =&gt; $CHAR_FONT_BOLD,
+<a id='L422' name='L422'></a>        'I' =&gt; $CHAR_FONT_ITALIC
+<a id='L423' name='L423'></a>    );
+<a id='L424' name='L424'></a>    return exists $font{$c} ? $font{$c} : chr(0);
+<a id='L425' name='L425'></a>}
+<a id='L426' name='L426'></a> 
+<a id='L427' name='L427'></a>#
+<a id='L428' name='L428'></a># Handle alternate font commands (.BR, .IR, .RB, .RI, .BI, .IB)
+<a id='L429' name='L429'></a># Return 0 if the command wasn't recognized, 1 otherwise
+<a id='L430' name='L430'></a>#
+<a id='L431' name='L431'></a>sub handle_alt_font($)
+<a id='L432' name='L432'></a>{
+<a id='L433' name='L433'></a>    my ($buffer) = @_;
+<a id='L434' name='L434'></a>    my $in_quotes = 0;
+<a id='L435' name='L435'></a>    my $alt_state = 0;
+<a id='L436' name='L436'></a> 
+<a id='L437' name='L437'></a>    return 0 if length($buffer) != 3;
+<a id='L438' name='L438'></a>    return 0 if substr($buffer, 0, 1) ne '.';
+<a id='L439' name='L439'></a> 
+<a id='L440' name='L440'></a>    my @font = (
+<a id='L441' name='L441'></a>        char_to_font substr($buffer, 1, 1),
+<a id='L442' name='L442'></a>        char_to_font substr($buffer, 2, 1)
+<a id='L443' name='L443'></a>    );
+<a id='L444' name='L444'></a> 
+<a id='L445' name='L445'></a>    # Exclude names with unknown characters, .BB, .II and .RR
+<a id='L446' name='L446'></a>    if ($font[0] eq chr(0) || $font[1] eq chr(0) || $font[0] eq $font[1])
+<a id='L447' name='L447'></a>    {
+<a id='L448' name='L448'></a>        return 0;
+<a id='L449' name='L449'></a>    }
+<a id='L450' name='L450'></a> 
+<a id='L451' name='L451'></a>    my $p = strtok(undef, "");
+<a id='L452' name='L452'></a>    return 1 unless defined $p;
+<a id='L453' name='L453'></a> 
+<a id='L454' name='L454'></a>    $buffer = $font[0];
+<a id='L455' name='L455'></a> 
+<a id='L456' name='L456'></a>    my @p = split //, $p;
+<a id='L457' name='L457'></a>    while (@p)
+<a id='L458' name='L458'></a>    {
+<a id='L459' name='L459'></a> 
+<a id='L460' name='L460'></a>        if ($p[0] eq '"')
+<a id='L461' name='L461'></a>        {
+<a id='L462' name='L462'></a>            $in_quotes = !$in_quotes;
+<a id='L463' name='L463'></a>            shift @p;
+<a id='L464' name='L464'></a>            next;
+<a id='L465' name='L465'></a>        }
+<a id='L466' name='L466'></a> 
+<a id='L467' name='L467'></a>        if ($p[0] eq ' ' &amp;&amp; !$in_quotes)
+<a id='L468' name='L468'></a>        {
+<a id='L469' name='L469'></a>            shift @p;
+<a id='L470' name='L470'></a>            # Don't change font if we are at the end
+<a id='L471' name='L471'></a>            if (@p)
+<a id='L472' name='L472'></a>            {
+<a id='L473' name='L473'></a>                $alt_state = $alt_state ? 0 : 1;
+<a id='L474' name='L474'></a>                $buffer .= $font[$alt_state];
+<a id='L475' name='L475'></a>            }
+<a id='L476' name='L476'></a> 
+<a id='L477' name='L477'></a>            # Skip more spaces
+<a id='L478' name='L478'></a>            shift @p while @p &amp;&amp; $p[0] eq ' ';
+<a id='L479' name='L479'></a> 
+<a id='L480' name='L480'></a>            next;
+<a id='L481' name='L481'></a>        }
+<a id='L482' name='L482'></a> 
+<a id='L483' name='L483'></a>        $buffer .= shift @p;
+<a id='L484' name='L484'></a>    }
+<a id='L485' name='L485'></a> 
+<a id='L486' name='L486'></a>    # Turn off attributes if necessary
+<a id='L487' name='L487'></a>    if ($font[$alt_state] ne $CHAR_FONT_NORMAL)
+<a id='L488' name='L488'></a>    {
+<a id='L489' name='L489'></a>        $buffer .= $CHAR_FONT_NORMAL;
+<a id='L490' name='L490'></a>    }
+<a id='L491' name='L491'></a> 
+<a id='L492' name='L492'></a>    print_string $buffer;
+<a id='L493' name='L493'></a> 
+<a id='L494' name='L494'></a>    return 1;
+<a id='L495' name='L495'></a>}
+<a id='L496' name='L496'></a> 
+<a id='L497' name='L497'></a># Handle .IP and .TP commands.  is_tp is 1 for .TP, 0 for .IP
+<a id='L498' name='L498'></a>sub handle_tp_ip($)
+<a id='L499' name='L499'></a>{
+<a id='L500' name='L500'></a>    my ($is_tp) = @_;
+<a id='L501' name='L501'></a>    newline if $col &gt; 0;
+<a id='L502' name='L502'></a>    newline;
+<a id='L503' name='L503'></a>    if ($is_tp)
+<a id='L504' name='L504'></a>    {
+<a id='L505' name='L505'></a>        $tp_flag = 1;
+<a id='L506' name='L506'></a>        $indentation = 0;
+<a id='L507' name='L507'></a>    }
+<a id='L508' name='L508'></a>    else
+<a id='L509' name='L509'></a>    {
+<a id='L510' name='L510'></a>        $indentation = 8;
+<a id='L511' name='L511'></a>    }
+<a id='L512' name='L512'></a>}
+<a id='L513' name='L513'></a> 
+<a id='L514' name='L514'></a># Handle all the roff dot commands.  See man groff_man for details
+<a id='L515' name='L515'></a>sub handle_command($)
+<a id='L516' name='L516'></a>{
+<a id='L517' name='L517'></a>    my ($buffer) = @_;
+<a id='L518' name='L518'></a>    my $len;
+<a id='L519' name='L519'></a> 
+<a id='L520' name='L520'></a>    # Get the command name
+<a id='L521' name='L521'></a>    $buffer = strtok($buffer, " \t");
+<a id='L522' name='L522'></a> 
+<a id='L523' name='L523'></a>    if ($buffer eq ".SH")
+<a id='L524' name='L524'></a>    {
+<a id='L525' name='L525'></a>        $indentation = 0;
+<a id='L526' name='L526'></a>        handle_node $buffer, 1;
+<a id='L527' name='L527'></a>    }
+<a id='L528' name='L528'></a>    elsif ($buffer eq ".\\\"NODE")
+<a id='L529' name='L529'></a>    {
+<a id='L530' name='L530'></a>        handle_node $buffer, 0;
+<a id='L531' name='L531'></a>    }
+<a id='L532' name='L532'></a>    elsif ($buffer eq ".\\\"DONT_SPLIT\"")
+<a id='L533' name='L533'></a>    {
+<a id='L534' name='L534'></a>        $no_split_flag = 1;
+<a id='L535' name='L535'></a>    }
+<a id='L536' name='L536'></a>    elsif ($buffer eq ".\\\"SKIP_SECTION\"")
+<a id='L537' name='L537'></a>    {
+<a id='L538' name='L538'></a>        $skip_flag = 1;
+<a id='L539' name='L539'></a>    }
+<a id='L540' name='L540'></a>    elsif ($buffer eq ".\\\"LINK2\"")
+<a id='L541' name='L541'></a>    {
+<a id='L542' name='L542'></a>        # Next two input lines form a link
+<a id='L543' name='L543'></a>        $link_flag = 2;
+<a id='L544' name='L544'></a>    }
+<a id='L545' name='L545'></a>    elsif ($buffer eq ".PP" || $buffer eq ".P" || $buffer eq ".LP")
+<a id='L546' name='L546'></a>    {
+<a id='L547' name='L547'></a>        $indentation = 0;
+<a id='L548' name='L548'></a>        # End of paragraph
+<a id='L549' name='L549'></a>        newline if $col &gt; 0;
+<a id='L550' name='L550'></a>        newline;
+<a id='L551' name='L551'></a>    }
+<a id='L552' name='L552'></a>    elsif ($buffer eq ".nf")
+<a id='L553' name='L553'></a>    {
+<a id='L554' name='L554'></a>        # Following input lines are to be handled verbatim
+<a id='L555' name='L555'></a>        $verbatim_flag = 1;
+<a id='L556' name='L556'></a>        newline if $col &gt; 0;
+<a id='L557' name='L557'></a>    }
+<a id='L558' name='L558'></a>    elsif ($buffer eq ".I" || $buffer eq ".B" || $buffer eq ".SB")
+<a id='L559' name='L559'></a>    {
+<a id='L560' name='L560'></a>        # Bold text or italics text
+<a id='L561' name='L561'></a>        my $backslash_flag = 0;
+<a id='L562' name='L562'></a> 
+<a id='L563' name='L563'></a>        # .SB [text]
+<a id='L564' name='L564'></a>        # Causes the text on the same line or the text on the
+<a id='L565' name='L565'></a>        # next  line  to  appear  in boldface font, one point
+<a id='L566' name='L566'></a>        # size smaller than the default font.
+<a id='L567' name='L567'></a>        #
+<a id='L568' name='L568'></a> 
+<a id='L569' name='L569'></a>        # FIXME: text is optional, so there is no error
+<a id='L570' name='L570'></a> 
+<a id='L571' name='L571'></a>        my $p = strtok(undef, "");
+<a id='L572' name='L572'></a>        if (! defined $p)
+<a id='L573' name='L573'></a>        {
+<a id='L574' name='L574'></a>            print_error "Syntax error: .I | .B | .SB : no text";
+<a id='L575' name='L575'></a>            return;
+<a id='L576' name='L576'></a>        }
+<a id='L577' name='L577'></a> 
+<a id='L578' name='L578'></a>        $buffer = substr($buffer, 1, 1) eq 'I' ? $CHAR_FONT_ITALIC : $CHAR_FONT_BOLD;
+<a id='L579' name='L579'></a> 
+<a id='L580' name='L580'></a>        # Attempt to handle backslash quoting
+<a id='L581' name='L581'></a>        foreach (split //, $p)
+<a id='L582' name='L582'></a>        {
+<a id='L583' name='L583'></a>            if ($_ eq '\\' &amp;&amp; !$backslash_flag)
+<a id='L584' name='L584'></a>            {
+<a id='L585' name='L585'></a>                $backslash_flag = 1;
+<a id='L586' name='L586'></a>                next;
+<a id='L587' name='L587'></a>            }
+<a id='L588' name='L588'></a>            $backslash_flag = 0;
+<a id='L589' name='L589'></a>            $buffer .= $_;
+<a id='L590' name='L590'></a>        }
+<a id='L591' name='L591'></a>        print_string $buffer . $CHAR_FONT_NORMAL;
+<a id='L592' name='L592'></a>    }
+<a id='L593' name='L593'></a>    elsif ($buffer eq ".TP")
+<a id='L594' name='L594'></a>    {
+<a id='L595' name='L595'></a>        handle_tp_ip 1;
+<a id='L596' name='L596'></a>    }
+<a id='L597' name='L597'></a>    elsif ($buffer eq ".IP")
+<a id='L598' name='L598'></a>    {
+<a id='L599' name='L599'></a>        handle_tp_ip 0;
+<a id='L600' name='L600'></a>    }
+<a id='L601' name='L601'></a>    elsif ($buffer eq ".\\\"TOPICS")
+<a id='L602' name='L602'></a>    {
+<a id='L603' name='L603'></a>        if ($out_row &gt; 1)
+<a id='L604' name='L604'></a>        {
+<a id='L605' name='L605'></a>            print_error "Syntax error: .\\\"TOPICS must be first command";
+<a id='L606' name='L606'></a>            return;
+<a id='L607' name='L607'></a>        }
+<a id='L608' name='L608'></a>        $buffer = strtok(undef, "");
+<a id='L609' name='L609'></a>        if (! defined $buffer)
+<a id='L610' name='L610'></a>        {
+<a id='L611' name='L611'></a>            print_error "Syntax error: .\\\"TOPICS: no text";
+<a id='L612' name='L612'></a>            return;
+<a id='L613' name='L613'></a>        }
+<a id='L614' name='L614'></a>        # Remove quotes
+<a id='L615' name='L615'></a>        $buffer =~ s/^"// and $buffer =~ s/"$//;
+<a id='L616' name='L616'></a>        $topics = $buffer;
+<a id='L617' name='L617'></a>    }
+<a id='L618' name='L618'></a>    elsif ($buffer eq ".br")
+<a id='L619' name='L619'></a>    {
+<a id='L620' name='L620'></a>        newline if $col;
+<a id='L621' name='L621'></a>    }
+<a id='L622' name='L622'></a>    elsif ($buffer =~  /^\.\\"/)
+<a id='L623' name='L623'></a>    {
+<a id='L624' name='L624'></a>        # Comment { Hello from K.O. ;-) }
+<a id='L625' name='L625'></a>    }
+<a id='L626' name='L626'></a>    elsif ($buffer eq ".TH")
+<a id='L627' name='L627'></a>    {
+<a id='L628' name='L628'></a>        # Title header
+<a id='L629' name='L629'></a>    }
+<a id='L630' name='L630'></a>    elsif ($buffer eq ".SM")
+<a id='L631' name='L631'></a>    {
+<a id='L632' name='L632'></a>        # Causes the text on the same line or the text on the
+<a id='L633' name='L633'></a>        # next  line  to  appear  in a font that is one point
+<a id='L634' name='L634'></a>        # size smaller than the default font.
+<a id='L635' name='L635'></a>        $buffer = strtok(undef, "");
+<a id='L636' name='L636'></a>        print_string $buffer if defined $buffer;
+<a id='L637' name='L637'></a>    }
+<a id='L638' name='L638'></a>    elsif (handle_alt_font($buffer) == 1)
+<a id='L639' name='L639'></a>    {
+<a id='L640' name='L640'></a>        return;
+<a id='L641' name='L641'></a>    }
+<a id='L642' name='L642'></a>    elsif ($buffer eq ".RE")
+<a id='L643' name='L643'></a>    {
+<a id='L644' name='L644'></a>        newline;
+<a id='L645' name='L645'></a>    }
+<a id='L646' name='L646'></a>    else
+<a id='L647' name='L647'></a>    {
+<a id='L648' name='L648'></a>        # Other commands are ignored
+<a id='L649' name='L649'></a>        print_error sprintf "Warning: unsupported command %s", $buffer;
+<a id='L650' name='L650'></a>        return;
+<a id='L651' name='L651'></a>    }
+<a id='L652' name='L652'></a>}
+<a id='L653' name='L653'></a> 
+<a id='L654' name='L654'></a>sub struct_links()
+<a id='L655' name='L655'></a>{
+<a id='L656' name='L656'></a>    return {
+<a id='L657' name='L657'></a>        'linkname'  =&gt; undef,   # Section name
+<a id='L658' name='L658'></a>        'line'      =&gt; undef,   # Input line in ...
+<a id='L659' name='L659'></a>        'filename'  =&gt; undef,
+<a id='L660' name='L660'></a>        'next'      =&gt; undef
+<a id='L661' name='L661'></a>    }
+<a id='L662' name='L662'></a>}
+<a id='L663' name='L663'></a> 
+<a id='L664' name='L664'></a>my $links = struct_links();
+<a id='L665' name='L665'></a>my $current_link;
+<a id='L666' name='L666'></a> 
+<a id='L667' name='L667'></a> 
+<a id='L668' name='L668'></a>sub handle_link($)
+<a id='L669' name='L669'></a>{
+<a id='L670' name='L670'></a>    my ($buffer) = @_;
+<a id='L671' name='L671'></a>    my $old = \$static{"handle_link old"};
+<a id='L672' name='L672'></a>    my $len;
+<a id='L673' name='L673'></a>    my $amp;
+<a id='L674' name='L674'></a>    my $amp_arg;
+<a id='L675' name='L675'></a> 
+<a id='L676' name='L676'></a>    if ($link_flag == 1)
+<a id='L677' name='L677'></a>    {
+<a id='L678' name='L678'></a>        # Old format link, not supported
+<a id='L679' name='L679'></a>    }
+<a id='L680' name='L680'></a>    elsif ($link_flag == 2)
+<a id='L681' name='L681'></a>    {
+<a id='L682' name='L682'></a>        # First part of new format link
+<a id='L683' name='L683'></a>        # Bold text or italics text
+<a id='L684' name='L684'></a>        if (substr($buffer, 0, 2) eq '.I' || substr($buffer, 0, 2) eq '.B')
+<a id='L685' name='L685'></a>        {
+<a id='L686' name='L686'></a>            $buffer =~ s/^..[\s\t]*//;
+<a id='L687' name='L687'></a>        }
+<a id='L688' name='L688'></a>        $$old = $buffer;
+<a id='L689' name='L689'></a>        $link_flag = 3;
+<a id='L690' name='L690'></a> 
+<a id='L691' name='L691'></a>    }
+<a id='L692' name='L692'></a>    elsif ($link_flag == 3)
+<a id='L693' name='L693'></a>    {
+<a id='L694' name='L694'></a>        # Second part of new format link
+<a id='L695' name='L695'></a>        $buffer =~ s/^\.//;
+<a id='L696' name='L696'></a>        $buffer =~ s/^\\//;
+<a id='L697' name='L697'></a>        $buffer =~ s/^"//;
+<a id='L698' name='L698'></a>        $buffer =~ s/"$//;
+<a id='L699' name='L699'></a> 
+<a id='L700' name='L700'></a>        # "Layout\&amp;)," -- "Layout" should be highlighted, but not "),"
+<a id='L701' name='L701'></a>        ($$old, $amp_arg) = split /\\&amp;/, $$old, 2;
+<a id='L702' name='L702'></a>        $amp_arg = "" unless defined $amp_arg;
+<a id='L703' name='L703'></a>        printf_string "%s%s%s%s%s%s\n", $CHAR_LINK_START, $$old,
+<a id='L704' name='L704'></a>                       $CHAR_LINK_POINTER, $buffer, $CHAR_LINK_END, $amp_arg;
+<a id='L705' name='L705'></a>        $link_flag = 0;
+<a id='L706' name='L706'></a>        # Add to the linked list
+<a id='L707' name='L707'></a>        if (defined $current_link)
+<a id='L708' name='L708'></a>        {
+<a id='L709' name='L709'></a>            $current_link-&gt;{'next'} = struct_links();
+<a id='L710' name='L710'></a>            $current_link = $current_link-&gt;{'next'};
+<a id='L711' name='L711'></a>            $current_link-&gt;{'next'} = undef;
+<a id='L712' name='L712'></a>        }
+<a id='L713' name='L713'></a>        else
+<a id='L714' name='L714'></a>        {
+<a id='L715' name='L715'></a>            $current_link = $links;
+<a id='L716' name='L716'></a>        }
+<a id='L717' name='L717'></a>        $current_link-&gt;{'linkname'} = $buffer;
+<a id='L718' name='L718'></a>        $current_link-&gt;{'filename'} = $c_in;
+<a id='L719' name='L719'></a>        $current_link-&gt;{'line'} = $in_row;
+<a id='L720' name='L720'></a>    }
+<a id='L721' name='L721'></a>}
+<a id='L722' name='L722'></a> 
+<a id='L723' name='L723'></a>sub main
+<a id='L724' name='L724'></a>{
+<a id='L725' name='L725'></a>    my $len;                    # Length of input line
+<a id='L726' name='L726'></a>    my $c_man;                  # Manual filename
+<a id='L727' name='L727'></a>    my $c_tmpl;                 # Template filename
+<a id='L728' name='L728'></a>    my $f_man;                  # Manual file
+<a id='L729' name='L729'></a>    my $f_tmpl;                 # Template file
+<a id='L730' name='L730'></a>    my $buffer;                 # Full input line
+<a id='L731' name='L731'></a>    my $lc_node = undef;
+<a id='L732' name='L732'></a>    my $outfile_buffer;         # Large buffer to keep the output file
+<a id='L733' name='L733'></a>    my $cont_start;             # Start of [Contents]
+<a id='L734' name='L734'></a>    my $file_end;               # Length of the output file
+<a id='L735' name='L735'></a> 
+<a id='L736' name='L736'></a>    # Validity check for arguments
+<a id='L737' name='L737'></a>    if (@ARGV != 3)
+<a id='L738' name='L738'></a>    {
+<a id='L739' name='L739'></a>        warn "Usage: man2hlp file.man template_file helpfile\n";
+<a id='L740' name='L740'></a>        return 3;
+<a id='L741' name='L741'></a>    }
+<a id='L742' name='L742'></a> 
+<a id='L743' name='L743'></a>    $c_man  = $ARGV[0];
+<a id='L744' name='L744'></a>    $c_tmpl = $ARGV[1];
+<a id='L745' name='L745'></a>    $c_out  = $ARGV[2];
+<a id='L746' name='L746'></a> 
+<a id='L747' name='L747'></a>    # First stage - process the manual, write to the output file
+<a id='L748' name='L748'></a> 
+<a id='L749' name='L749'></a>    $f_man = fopen_check "&lt;", $c_man;
+<a id='L750' name='L750'></a>    $f_out = fopen_check "&gt;", $c_out;
+<a id='L751' name='L751'></a>    $c_in = $c_man;
+<a id='L752' name='L752'></a> 
+<a id='L753' name='L753'></a>    # Repeat for each input line
+<a id='L754' name='L754'></a>    while (&lt;$f_man&gt;)
+<a id='L755' name='L755'></a>    {
+<a id='L756' name='L756'></a>        # Remove terminating newline
+<a id='L757' name='L757'></a>        chomp;
+<a id='L758' name='L758'></a>        $buffer = $_;
+<a id='L759' name='L759'></a>        my $input_line;       # Input line without initial "\&amp;"
+<a id='L760' name='L760'></a> 
+<a id='L761' name='L761'></a>        if (substr($buffer, 0, 2) eq '\\&amp;')
+<a id='L762' name='L762'></a>        {
+<a id='L763' name='L763'></a>            $input_line = substr($buffer, 2);
+<a id='L764' name='L764'></a>        }
+<a id='L765' name='L765'></a>        else
+<a id='L766' name='L766'></a>        {
+<a id='L767' name='L767'></a>            $input_line = $buffer;
+<a id='L768' name='L768'></a>        }
+<a id='L769' name='L769'></a> 
+<a id='L770' name='L770'></a>        $in_row++;
+<a id='L771' name='L771'></a>        $len = length($input_line);
+<a id='L772' name='L772'></a> 
+<a id='L773' name='L773'></a>        if ($verbatim_flag)
+<a id='L774' name='L774'></a>        {
+<a id='L775' name='L775'></a>            # Copy the line verbatim
+<a id='L776' name='L776'></a>            if ($input_line eq ".fi")
+<a id='L777' name='L777'></a>            {
+<a id='L778' name='L778'></a>                $verbatim_flag = 0;
+<a id='L779' name='L779'></a>            }
+<a id='L780' name='L780'></a>            else
+<a id='L781' name='L781'></a>            {
+<a id='L782' name='L782'></a>                print_string $input_line;
+<a id='L783' name='L783'></a>                newline;
+<a id='L784' name='L784'></a>            }
+<a id='L785' name='L785'></a>        }
+<a id='L786' name='L786'></a>        elsif ($link_flag)
+<a id='L787' name='L787'></a>        {
+<a id='L788' name='L788'></a>            # The line is a link
+<a id='L789' name='L789'></a>            handle_link $input_line;
+<a id='L790' name='L790'></a>        }
+<a id='L791' name='L791'></a>        elsif (substr($buffer, 0, 1) eq '.')
+<a id='L792' name='L792'></a>        {
+<a id='L793' name='L793'></a>            # The line is a roff command
+<a id='L794' name='L794'></a>            handle_command $input_line;
+<a id='L795' name='L795'></a>        }
+<a id='L796' name='L796'></a>        else
+<a id='L797' name='L797'></a>        {
+<a id='L798' name='L798'></a>            #A normal line, just output it
+<a id='L799' name='L799'></a>            print_string $input_line;
+<a id='L800' name='L800'></a>        }
+<a id='L801' name='L801'></a>        # .TP label processed as usual line
+<a id='L802' name='L802'></a>        if ($tp_flag)
+<a id='L803' name='L803'></a>        {
+<a id='L804' name='L804'></a>            if ($tp_flag == 1)
+<a id='L805' name='L805'></a>            {
+<a id='L806' name='L806'></a>                $tp_flag = 2;
+<a id='L807' name='L807'></a>            }
+<a id='L808' name='L808'></a>            else
+<a id='L809' name='L809'></a>            {
+<a id='L810' name='L810'></a>                $tp_flag = 0;
+<a id='L811' name='L811'></a>                $indentation = 8;
+<a id='L812' name='L812'></a>                if ($col &gt;= $indentation)
+<a id='L813' name='L813'></a>                {
+<a id='L814' name='L814'></a>                    newline;
+<a id='L815' name='L815'></a>                }
+<a id='L816' name='L816'></a>                else
+<a id='L817' name='L817'></a>                {
+<a id='L818' name='L818'></a>                    print $f_out " " while ++$col &lt; $indentation;
+<a id='L819' name='L819'></a>                }
+<a id='L820' name='L820'></a>            }
+<a id='L821' name='L821'></a>        }
+<a id='L822' name='L822'></a>    }
+<a id='L823' name='L823'></a> 
+<a id='L824' name='L824'></a>    newline;
+<a id='L825' name='L825'></a>    fclose_check $f_man;
+<a id='L826' name='L826'></a>    # First stage ends here, closing the manual
+<a id='L827' name='L827'></a> 
+<a id='L828' name='L828'></a>    # Second stage - process the template file
+<a id='L829' name='L829'></a>    $f_tmpl = fopen_check "&lt;", $c_tmpl;
+<a id='L830' name='L830'></a>    $c_in = $c_tmpl;
+<a id='L831' name='L831'></a> 
+<a id='L832' name='L832'></a>    # Repeat for each input line
+<a id='L833' name='L833'></a>    # Read a line
+<a id='L834' name='L834'></a>    while (&lt;$f_tmpl&gt;)
+<a id='L835' name='L835'></a>    {
+<a id='L836' name='L836'></a>        $buffer = $_;
+<a id='L837' name='L837'></a>        if (defined $lc_node)
+<a id='L838' name='L838'></a>        {
+<a id='L839' name='L839'></a>            if ($buffer ne "\n")
+<a id='L840' name='L840'></a>            {
+<a id='L841' name='L841'></a>                $cnode-&gt;{'lname'} = $buffer;
+<a id='L842' name='L842'></a>                chomp $cnode-&gt;{'lname'};
+<a id='L843' name='L843'></a>            }
+<a id='L844' name='L844'></a>            $lc_node = undef;
+<a id='L845' name='L845'></a>        }
+<a id='L846' name='L846'></a>        else
+<a id='L847' name='L847'></a>        {
+<a id='L848' name='L848'></a>            my $char_node_end = index($buffer, $CHAR_NODE_END);
+<a id='L849' name='L849'></a>            $lc_node = $char_node_end &lt; 0 ? undef : substr($buffer, $char_node_end);
+<a id='L850' name='L850'></a> 
+<a id='L851' name='L851'></a>            if (defined $lc_node &amp;&amp; substr($lc_node, 1, 1) eq '[')
+<a id='L852' name='L852'></a>            {
+<a id='L853' name='L853'></a>                my $p = index($lc_node, ']');
+<a id='L854' name='L854'></a>                if ($p &gt;= 0) {
+<a id='L855' name='L855'></a>                    if (substr($lc_node, 1, 6) eq '[main]')
+<a id='L856' name='L856'></a>                    {
+<a id='L857' name='L857'></a>                        $lc_node = undef;
+<a id='L858' name='L858'></a>                    }
+<a id='L859' name='L859'></a>                    else
+<a id='L860' name='L860'></a>                    {
+<a id='L861' name='L861'></a>                        if (! defined $cnode)
+<a id='L862' name='L862'></a>                        {
+<a id='L863' name='L863'></a>                            $cnode = $nodes;
+<a id='L864' name='L864'></a>                        }
+<a id='L865' name='L865'></a>                        else
+<a id='L866' name='L866'></a>                        {
+<a id='L867' name='L867'></a>                            $cnode-&gt;{'next'} = struct_node();
+<a id='L868' name='L868'></a>                            $cnode = $cnode-&gt;{'next'};
+<a id='L869' name='L869'></a>                        }
+<a id='L870' name='L870'></a>                        $cnode-&gt;{'node'} = substr($lc_node, 2, $p-2);
+<a id='L871' name='L871'></a>                        $cnode-&gt;{'lname'} = undef;
+<a id='L872' name='L872'></a>                        $cnode-&gt;{'next'} = undef;
+<a id='L873' name='L873'></a>                        $cnode-&gt;{'heading_level'} = 0;
+<a id='L874' name='L874'></a>                    }
+<a id='L875' name='L875'></a>                }
+<a id='L876' name='L876'></a>                else
+<a id='L877' name='L877'></a>                {
+<a id='L878' name='L878'></a>                  $lc_node = undef;
+<a id='L879' name='L879'></a>                }
+<a id='L880' name='L880'></a>            }
+<a id='L881' name='L881'></a>            else
+<a id='L882' name='L882'></a>            {
+<a id='L883' name='L883'></a>                $lc_node = undef;
+<a id='L884' name='L884'></a>            }
+<a id='L885' name='L885'></a>        }
+<a id='L886' name='L886'></a>        print $f_out $buffer;
+<a id='L887' name='L887'></a>    }
+<a id='L888' name='L888'></a> 
+<a id='L889' name='L889'></a>    $cont_start = tell $f_out;
+<a id='L890' name='L890'></a>    if ($cont_start &lt;= 0)
+<a id='L891' name='L891'></a>    {
+<a id='L892' name='L892'></a>        perror $c_out;
+<a id='L893' name='L893'></a>        return 1;
+<a id='L894' name='L894'></a>    }
+<a id='L895' name='L895'></a> 
+<a id='L896' name='L896'></a>    if ($topics)
+<a id='L897' name='L897'></a>    {
+<a id='L898' name='L898'></a>        printf $f_out "\004[Contents]\n%s\n\n", $topics;
+<a id='L899' name='L899'></a>    }
+<a id='L900' name='L900'></a>    else
+<a id='L901' name='L901'></a>    {
+<a id='L902' name='L902'></a>        print $f_out "\004[Contents]\n";
+<a id='L903' name='L903'></a>    }
+<a id='L904' name='L904'></a> 
+<a id='L905' name='L905'></a>    for ($current_link = $links; defined $current_link &amp;&amp; defined $current_link-&gt;{'linkname'};)
+<a id='L906' name='L906'></a>    {
+<a id='L907' name='L907'></a>        my $found = 0;
+<a id='L908' name='L908'></a>        my $next = $current_link-&gt;{'next'};
+<a id='L909' name='L909'></a> 
+<a id='L910' name='L910'></a>        if ($current_link-&gt;{'linkname'} eq "Contents")
+<a id='L911' name='L911'></a>        {
+<a id='L912' name='L912'></a>            $found = 1;
+<a id='L913' name='L913'></a>        }
+<a id='L914' name='L914'></a>        else
+<a id='L915' name='L915'></a>        {
+<a id='L916' name='L916'></a>            for ($cnode = $nodes; defined $cnode &amp;&amp; defined $cnode-&gt;{'node'}; $cnode = $cnode-&gt;{'next'})
+<a id='L917' name='L917'></a>            {
+<a id='L918' name='L918'></a>                if ($cnode-&gt;{'node'} eq $current_link-&gt;{'linkname'})
+<a id='L919' name='L919'></a>                {
+<a id='L920' name='L920'></a>                    $found = 1;
+<a id='L921' name='L921'></a>                    last;
+<a id='L922' name='L922'></a>                }
+<a id='L923' name='L923'></a>            }
+<a id='L924' name='L924'></a>        }
+<a id='L925' name='L925'></a>        if (! $found)
+<a id='L926' name='L926'></a>        {
+<a id='L927' name='L927'></a>            $buffer = sprintf "Stale link \"%s\"", $current_link-&gt;{'linkname'};
+<a id='L928' name='L928'></a>            $c_in = $current_link-&gt;{'filename'};
+<a id='L929' name='L929'></a>            $in_row = $current_link-&gt;{'line'};
+<a id='L930' name='L930'></a>            print_error $buffer;
+<a id='L931' name='L931'></a>        }
+<a id='L932' name='L932'></a> 
+<a id='L933' name='L933'></a>        $current_link = $next;
+<a id='L934' name='L934'></a>    }
+<a id='L935' name='L935'></a> 
+<a id='L936' name='L936'></a>    for ($cnode = $nodes; defined $cnode &amp;&amp; defined $cnode-&gt;{'node'};)
+<a id='L937' name='L937'></a>    {
+<a id='L938' name='L938'></a>        my $next = $cnode-&gt;{'next'};
+<a id='L939' name='L939'></a>        $lc_node = $cnode-&gt;{'node'};
+<a id='L940' name='L940'></a> 
+<a id='L941' name='L941'></a>        if (defined $lc_node &amp;&amp; $lc_node ne '') {
+<a id='L942' name='L942'></a>            printf $f_out "  %*s\001%s\002%s\003", $cnode-&gt;{'heading_level'},
+<a id='L943' name='L943'></a>                "", $cnode-&gt;{'lname'} ? $cnode-&gt;{'lname'} : $lc_node, $lc_node;
+<a id='L944' name='L944'></a>        }
+<a id='L945' name='L945'></a>        print $f_out "\n";
+<a id='L946' name='L946'></a>        $cnode = $next;
+<a id='L947' name='L947'></a>    }
+<a id='L948' name='L948'></a> 
+<a id='L949' name='L949'></a>    $file_end = tell $f_out;
+<a id='L950' name='L950'></a> 
+<a id='L951' name='L951'></a>    # Sanity check
+<a id='L952' name='L952'></a>    if (($file_end &lt;= 0) || ($file_end - $cont_start &lt;= 0))
+<a id='L953' name='L953'></a>    {
+<a id='L954' name='L954'></a>        warn $c_out ."\n";
+<a id='L955' name='L955'></a>        return 1;
+<a id='L956' name='L956'></a>    }
+<a id='L957' name='L957'></a> 
+<a id='L958' name='L958'></a>    fclose_check $f_out;
+<a id='L959' name='L959'></a>    fclose_check $f_tmpl;
+<a id='L960' name='L960'></a>    # Second stage ends here, closing all files, note the end of output
+<a id='L961' name='L961'></a> 
+<a id='L962' name='L962'></a>    #
+<a id='L963' name='L963'></a>    # Third stage - swap two parts of the output file.
+<a id='L964' name='L964'></a>    # First, open the output file for reading and load it into the memory.
+<a id='L965' name='L965'></a>    #
+<a id='L966' name='L966'></a>    $outfile_buffer = '';
+<a id='L967' name='L967'></a>    $f_out = fopen_check '&lt;', $c_out;
+<a id='L968' name='L968'></a>    $outfile_buffer .= $_ while &lt;$f_out&gt;;
+<a id='L969' name='L969'></a>    fclose_check $f_out;
+<a id='L970' name='L970'></a>    # Now the output file is in the memory
+<a id='L971' name='L971'></a> 
+<a id='L972' name='L972'></a>    # Again open output file for writing
+<a id='L973' name='L973'></a>    $f_out = fopen_check '&gt;', $c_out;
+<a id='L974' name='L974'></a> 
+<a id='L975' name='L975'></a>    # Write part after the "Contents" node
+<a id='L976' name='L976'></a>    print $f_out substr($outfile_buffer, $cont_start, $file_end - $cont_start);
+<a id='L977' name='L977'></a> 
+<a id='L978' name='L978'></a>    # Write part before the "Contents" node
+<a id='L979' name='L979'></a>    print $f_out substr($outfile_buffer, 0, $cont_start-1);
+<a id='L980' name='L980'></a>    print $f_out "\n";
+<a id='L981' name='L981'></a>    fclose_check $f_out;
+<a id='L982' name='L982'></a> 
+<a id='L983' name='L983'></a>    return 0;
+<a id='L984' name='L984'></a>}
+<a id='L985' name='L985'></a> 
+<a id='L986' name='L986'></a>exit main();
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+986 src/man2hlp/man2hlp.in'  /> */</em>
+</body>
+</html>

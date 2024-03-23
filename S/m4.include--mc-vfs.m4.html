@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/mc-vfs.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/mc-vfs.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/mc-vfs.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/mc-vfs.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>AC_DEFUN([mc_VFS_ADDNAME],
+<a id='L2' name='L2'></a>[
+<a id='L3' name='L3'></a>    if test x"$vfs_flags" = "x" ; then
+<a id='L4' name='L4'></a>        vfs_flags="$1"
+<a id='L5' name='L5'></a>    else
+<a id='L6' name='L6'></a>        vfs_flags="$vfs_flags, $1"
+<a id='L7' name='L7'></a>    fi
+<a id='L8' name='L8'></a>])
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a>m4_include([m4.include/vfs/rpc.m4])
+<a id='L11' name='L11'></a>m4_include([m4.include/vfs/socket.m4])
+<a id='L12' name='L12'></a>m4_include([m4.include/vfs/mc-vfs-extfs.m4])
+<a id='L13' name='L13'></a>m4_include([m4.include/vfs/mc-vfs-sfs.m4])
+<a id='L14' name='L14'></a>m4_include([m4.include/vfs/mc-vfs-ftp.m4])
+<a id='L15' name='L15'></a>m4_include([m4.include/vfs/mc-vfs-sftp.m4])
+<a id='L16' name='L16'></a>m4_include([m4.include/vfs/mc-vfs-shell.m4])
+<a id='L17' name='L17'></a>m4_include([m4.include/vfs/mc-vfs-undelfs.m4])
+<a id='L18' name='L18'></a>m4_include([m4.include/vfs/mc-vfs-tarfs.m4])
+<a id='L19' name='L19'></a>m4_include([m4.include/vfs/mc-vfs-cpiofs.m4])
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>dnl mc_VFS_CHECKS
+<a id='L22' name='L22'></a>dnl   Check for various functions needed by libvfs.
+<a id='L23' name='L23'></a>dnl   This has various effects:
+<a id='L24' name='L24'></a>dnl     Sets MC_VFS_LIBS to libraries required
+<a id='L25' name='L25'></a>dnl     Sets vfs_flags to "pretty" list of vfs implementations we include.
+<a id='L26' name='L26'></a>dnl     Sets shell variable enable_vfs to yes (default, --with-vfs) or
+<a id='L27' name='L27'></a>dnl        "no" (--without-vfs).
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>dnl Private define
+<a id='L30' name='L30'></a>AC_DEFUN([mc_ENABLE_VFS_NET],
+<a id='L31' name='L31'></a>[
+<a id='L32' name='L32'></a>    dnl FIXME: network checks should probably be in their own macro.
+<a id='L33' name='L33'></a>    AC_REQUIRE_SOCKET
+<a id='L34' name='L34'></a>    if test x"$have_socket" = xyes; then
+<a id='L35' name='L35'></a>        AC_CHECK_TYPE([nlink_t], ,
+<a id='L36' name='L36'></a>                        [AC_DEFINE_UNQUOTED([nlink_t], [unsigned int],
+<a id='L37' name='L37'></a>                            [Define to 'unsigned int' if &lt;sys/types.h&gt; does not define.])])
+<a id='L38' name='L38'></a>        AC_CHECK_TYPES([socklen_t],,,
+<a id='L39' name='L39'></a>            [
+<a id='L40' name='L40'></a>#include &lt;sys/types.h&gt;
+<a id='L41' name='L41'></a>#include &lt;sys/socket.h&gt;
+<a id='L42' name='L42'></a>            ])
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>        AC_CHECK_RPC
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>        enable_vfs_net=yes
+<a id='L47' name='L47'></a>        AC_DEFINE(ENABLE_VFS_NET, [1], [Define to enable network VFSes support])
+<a id='L48' name='L48'></a>    fi
+<a id='L49' name='L49'></a>])
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>AC_DEFUN([mc_VFS_CHECKS],
+<a id='L52' name='L52'></a>[
+<a id='L53' name='L53'></a>    vfs_type="normal"
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>    AC_ARG_ENABLE([vfs],
+<a id='L56' name='L56'></a>        AS_HELP_STRING([--disable-vfs], [Disable VFS]),
+<a id='L57' name='L57'></a>        [
+<a id='L58' name='L58'></a>            if test "x$enableval" = "xno"; then
+<a id='L59' name='L59'></a>                enable_vfs=no
+<a id='L60' name='L60'></a>            else
+<a id='L61' name='L61'></a>                enable_vfs=yes
+<a id='L62' name='L62'></a>            fi
+<a id='L63' name='L63'></a>        ],
+<a id='L64' name='L64'></a>        [enable_vfs=yes])
+<a id='L65' name='L65'></a> 
+<a id='L66' name='L66'></a>    if test x"$enable_vfs" = x"yes" ; then
+<a id='L67' name='L67'></a>        vfs_type="Midnight Commander Virtual Filesystem"
+<a id='L68' name='L68'></a>        AC_MSG_NOTICE([Enabling VFS code])
+<a id='L69' name='L69'></a>        AC_DEFINE(ENABLE_VFS, [1], [Define to enable VFS support])
+<a id='L70' name='L70'></a>    fi
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>    mc_VFS_CPIOFS
+<a id='L73' name='L73'></a>    mc_VFS_EXTFS
+<a id='L74' name='L74'></a>    mc_VFS_SHELL
+<a id='L75' name='L75'></a>    mc_VFS_FTP
+<a id='L76' name='L76'></a>    mc_VFS_SFS
+<a id='L77' name='L77'></a>    mc_VFS_SFTP
+<a id='L78' name='L78'></a>    mc_VFS_TARFS
+<a id='L79' name='L79'></a>    mc_VFS_UNDELFS
+<a id='L80' name='L80'></a> 
+<a id='L81' name='L81'></a>    AM_CONDITIONAL(ENABLE_VFS, [test x"$enable_vfs" = x"yes"])
+<a id='L82' name='L82'></a> 
+<a id='L83' name='L83'></a>    if test x"$enable_vfs_ftp" = x"yes" -o x"$enable_vfs_shell" = x"yes" -o x"$enable_vfs_sftp" = x"yes"; then
+<a id='L84' name='L84'></a>        mc_ENABLE_VFS_NET
+<a id='L85' name='L85'></a>    fi
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a>    AM_CONDITIONAL([ENABLE_VFS_NET], [test x"$enable_vfs_net" = x"yes"])
+<a id='L88' name='L88'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+88 m4.include/mc-vfs.m4'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>doc/man/date-of-man-include.am</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/doc.html'>doc</a>/<a href='../files/doc--man.html'>man</a>/date-of-man-include.am</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/doc.html'>doc</a>/<a href='../files/doc--man.html'>man</a>/date-of-man-include.am</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 doc/man/date-of-man-include.am'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>SED_PARAMETERS = \
+<a id='L2' name='L2'></a>        -e "s/%DATE_OF_MAN_PAGE%/$${MAN_DATE}/g" \
+<a id='L3' name='L3'></a>        -e "s/%MAN_VERSION%/@MAN_VERSION@/g" \
+<a id='L4' name='L4'></a>        -e "s{%sysconfdir%{@sysconfdir@{g" \
+<a id='L5' name='L5'></a>        -e "s{%libexecdir%{@libexecdir@{g" \
+<a id='L6' name='L6'></a>        -e "s{%pkglibexecdir%{$(libexecdir)/@PACKAGE@{g" \
+<a id='L7' name='L7'></a>        -e "s{%pkgdatadir%{$(datadir)/@PACKAGE@{g"
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>MAN_DATE_CMD = \
+<a id='L10' name='L10'></a>        LC_ALL=$(DATE_LANG) @PERL_FOR_BUILD@ -CS -MPOSIX -e '\
+<a id='L11' name='L11'></a>            @fi=lstat("'$${MAN_FILE}'"); \
+<a id='L12' name='L12'></a>            print POSIX::strftime("$(DATE_FORMAT)", localtime($$fi[9]));' 2&gt;/dev/null
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>mc.1: $(srcdir)/mc.1.in
+<a id='L15' name='L15'></a>        MAN_FILE='$(srcdir)/mc.1.in'; MAN_DATE=$$($(MAN_DATE_CMD)); \
+<a id='L16' name='L16'></a>        $(SED) $(SED_PARAMETERS) '$(srcdir)/mc.1.in' &gt; '$@'
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>mcdiff.1: $(srcdir)/mcdiff.1.in
+<a id='L19' name='L19'></a>        MAN_FILE='$(srcdir)/mcdiff.1.in'; MAN_DATE=$$($(MAN_DATE_CMD)); \
+<a id='L20' name='L20'></a>        $(SED) $(SED_PARAMETERS) '$(srcdir)/mcdiff.1.in' &gt; '$@'
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a>mcedit.1: $(srcdir)/mcedit.1.in
+<a id='L23' name='L23'></a>        MAN_FILE='$(srcdir)/mcedit.1.in'; MAN_DATE=$$($(MAN_DATE_CMD)); \
+<a id='L24' name='L24'></a>        $(SED) $(SED_PARAMETERS) '$(srcdir)/mcedit.1.in' &gt; '$@'
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>mcview.1: $(srcdir)/mcview.1.in
+<a id='L27' name='L27'></a>        MAN_FILE='$(srcdir)/mcview.1.in'; MAN_DATE=$$($(MAN_DATE_CMD)); \
+<a id='L28' name='L28'></a>        $(SED) $(SED_PARAMETERS) '$(srcdir)/mcview.1.in' &gt; '$@'
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+28 doc/man/date-of-man-include.am'  /> */</em>
+</body>
+</html>

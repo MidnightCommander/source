@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/mc-use-termcap.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/mc-use-termcap.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/mc-use-termcap.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/mc-use-termcap.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>dnl
+<a id='L2' name='L2'></a>dnl Try using termcap database and link with libtermcap if possible.
+<a id='L3' name='L3'></a>dnl
+<a id='L4' name='L4'></a>AC_DEFUN([mc_USE_TERMCAP], [
+<a id='L5' name='L5'></a>        screen_msg="$screen_msg with termcap database"
+<a id='L6' name='L6'></a>        AC_MSG_NOTICE([using S-Lang screen library with termcap])
+<a id='L7' name='L7'></a>        AC_DEFINE(USE_TERMCAP, 1, [Define to use termcap database])
+<a id='L8' name='L8'></a>        AC_CHECK_LIB(termcap, tgoto, [MCLIBS="$MCLIBS -ltermcap"], , [$LIBS])
+<a id='L9' name='L9'></a>])
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>dnl
+<a id='L12' name='L12'></a>dnl Check if the installed S-Lang library uses termcap
+<a id='L13' name='L13'></a>dnl
+<a id='L14' name='L14'></a>AC_DEFUN([mc_SLANG_TERMCAP], [
+<a id='L15' name='L15'></a>    unset ac_cv_lib_termcap_tgoto
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a>    AC_CACHE_CHECK([if S-Lang uses termcap], [mc_cv_slang_termcap], [
+<a id='L18' name='L18'></a>        ac_save_LIBS="$LIBS"
+<a id='L19' name='L19'></a>        LIBS="$LIBS -lslang"
+<a id='L20' name='L20'></a>        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+<a id='L21' name='L21'></a>#include &lt;slang.h&gt;
+<a id='L22' name='L22'></a>        ]],
+<a id='L23' name='L23'></a>        [[SLtt_get_terminfo(); SLtt_tgetflag((char*)"");]])],
+<a id='L24' name='L24'></a>        [mc_cv_slang_termcap=no], [mc_cv_slang_termcap=yes])
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>        LIBS="$ac_save_LIBS"
+<a id='L27' name='L27'></a>    ])
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>    if test x"$mc_cv_slang_termcap" = xyes; then
+<a id='L30' name='L30'></a>        mc_USE_TERMCAP
+<a id='L31' name='L31'></a>    fi
+<a id='L32' name='L32'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+32 m4.include/mc-use-termcap.m4'  /> */</em>
+</body>
+</html>

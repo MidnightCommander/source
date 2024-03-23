@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/README</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/README</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/README</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/README'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>            Writing scripts for Midnight Commander's external vfs
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>IMPORTANT NOTE: There may be some bugs left in extfs. Enjoy.
+<a id='L4' name='L4'></a> 
+<a id='L5' name='L5'></a>Starting with version 3.1, the Midnight Commander comes with so called
+<a id='L6' name='L6'></a>extfs, which is one of the virtual filesystems. This system makes it
+<a id='L7' name='L7'></a>possible to create new virtual filesystems for the GNU MC very easily.
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>To handle requests, create a shell/perl/python/etc script/program
+<a id='L10' name='L10'></a>(with executable permissions) in $(libexecdir)/mc/extfs.d
+<a id='L11' name='L11'></a>or in ~/.local/share/mc/extfs.d/.
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>(Note: $(libexecdir) should be substituted for actual libexecdir path
+<a id='L14' name='L14'></a>stored when configured or compiled, like /usr/local/libexec or /usr/libexec).
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>Assign a vfs suffix. For example, if you have .zip file, and would like
+<a id='L17' name='L17'></a>to see what's inside it, path will be
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>/anypath/my.zip/uzip://some_path/...
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>In this example, .zip is suffix, but I call vfs 'uzip'. Why? Well,
+<a id='L22' name='L22'></a>what this vfs essentially does is UNzip. UN is too long, so I chose
+<a id='L23' name='L23'></a>U. Note that sometime in future filesystem like zip may exist: It will
+<a id='L24' name='L24'></a>take whole tree and create .zip file from it. So /usr/zip:// will be
+<a id='L25' name='L25'></a>zipfile containing whole /usr tree.
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>If your vfs does not require file to work on, add '+' to the end of name.
+<a id='L28' name='L28'></a>Note, that trailing '+' in file name is not a part of vfs name, it is
+<a id='L29' name='L29'></a>just an vfs attribute. So you have not use it in vfs commands:
+<a id='L30' name='L30'></a> 
+<a id='L31' name='L31'></a>cd rpms://
+<a id='L32' name='L32'></a> 
+<a id='L33' name='L33'></a>is correct command, and
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>cd rpms+://
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>is incorrect command.
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>* Commands that should be implemented by your shell script
+<a id='L41' name='L41'></a>----------------------------------------------------------
+<a id='L42' name='L42'></a> 
+<a id='L43' name='L43'></a>Return zero from your script upon completion of the command, otherwise
+<a id='L44' name='L44'></a>nonzero for failure or in case of an unsupported command.
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>$libdir/extfs/prefix command [arguments]
+<a id='L47' name='L47'></a> 
+<a id='L48' name='L48'></a>* Command: list archivename
+<a id='L49' name='L49'></a> 
+<a id='L50' name='L50'></a>This command should list the complete archive content in the following format
+<a id='L51' name='L51'></a>(a little modified ls -l listing):
+<a id='L52' name='L52'></a> 
+<a id='L53' name='L53'></a>AAAAAAA NNN OOOOOOOO GGGGGGGG SSSSSSSS DATETIME [PATH/]FILENAME [-&gt; [PATH/]FILENAME[/]]]
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>where (things in [] are optional):
+<a id='L56' name='L56'></a> 
+<a id='L57' name='L57'></a>AAAAAAA  is the permission string like in ls -l
+<a id='L58' name='L58'></a>NNN      is the number of links
+<a id='L59' name='L59'></a>OOOOOOOO is the owner (either UID or name)
+<a id='L60' name='L60'></a>GGGGGGGG is the group (either GID or name)
+<a id='L61' name='L61'></a>SSSSSSSS is the file size
+<a id='L62' name='L62'></a>FILENAME is the filename
+<a id='L63' name='L63'></a>PATH     is the path from the archive's root without the leading slash (/)
+<a id='L64' name='L64'></a>DATETIME has one of the following formats:
+<a id='L65' name='L65'></a>            Mon DD hh:mm[:ss], Mon DD YYYY, MM-DD-YYYY hh:mm[:ss]
+<a id='L66' name='L66'></a> 
+<a id='L67' name='L67'></a>            where Mon is a three letter English month name, DD is day
+<a id='L68' name='L68'></a>            01-31 (can be 1-31, if following Mon), MM is month 01-12,
+<a id='L69' name='L69'></a>            YYYY is four digit year, hh is hours, mm is minutes,
+<a id='L70' name='L70'></a>            and ss is optional seconds.
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>If the -&gt; [PATH/]FILENAME part is present, it means:
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>If permissions start with an l (ell), then it is the name that symlink
+<a id='L75' name='L75'></a>points to. (If this PATH starts with a MC vfs prefix, then it is a symlink
+<a id='L76' name='L76'></a>somewhere to the other virtual filesystem (if you want to specify path from
+<a id='L77' name='L77'></a>the local root, use local:/path_name instead of /path_name, since /path_name
+<a id='L78' name='L78'></a>means from root of the archive listed).
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a>If permissions do not start with l, but number of links is greater than one,
+<a id='L81' name='L81'></a>then it says that this file should be a hardlinked with the other file.
+<a id='L82' name='L82'></a> 
+<a id='L83' name='L83'></a>The result of list command must not contain "." and ".." items.
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>* Command: copyout archivename storedfilename extractto
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a>This should extract from archive archivename the file called
+<a id='L88' name='L88'></a>storedfilename (possibly with path if not located in archive's root
+<a id='L89' name='L89'></a>[this is wrong. current extfs strips paths! -- pavel@ucw.cz])
+<a id='L90' name='L90'></a>to file extractto.
+<a id='L91' name='L91'></a> 
+<a id='L92' name='L92'></a>* Command: copyin archivename storedfilename sourcefile
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>This should add to the archivename the sourcefile with the name
+<a id='L95' name='L95'></a>storedfilename inside the archive.  
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a>Important note: archivename in the above examples may not have the
+<a id='L98' name='L98'></a>extension you are expecting to have, like it may happen that
+<a id='L99' name='L99'></a>archivename will be something like /tmp/f43513254 or just
+<a id='L100' name='L100'></a>anything. Some archivers do not like it, so you'll have to find some
+<a id='L101' name='L101'></a>workaround.
+<a id='L102' name='L102'></a> 
+<a id='L103' name='L103'></a>* Command: rm archivename storedfilename
+<a id='L104' name='L104'></a> 
+<a id='L105' name='L105'></a>This should remove storedfilename from archivename.
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>* Command: mkdir archivename dirname
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a>This should create a new directory called dirname inside archivename.
+<a id='L110' name='L110'></a> 
+<a id='L111' name='L111'></a>* Command: rmdir archivename dirname
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a>This should remove an existing directory dirname. If the directory is
+<a id='L114' name='L114'></a>not empty, mc will recursively delete it (possibly prompting).
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>* Command: run
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a>Undocumented :-)
+<a id='L119' name='L119'></a> 
+<a id='L120' name='L120'></a>---------------------------------------------------------
+<a id='L121' name='L121'></a> 
+<a id='L122' name='L122'></a>Don't forget to mark this file executable (chmod 755 ThisFile, for example)
+<a id='L123' name='L123'></a> 
+<a id='L124' name='L124'></a>For skeleton structure of executable, look at some of filesystems
+<a id='L125' name='L125'></a>similar to yours.
+<a id='L126' name='L126'></a> 
+<a id='L127' name='L127'></a>---------------------------------------------------------
+<a id='L128' name='L128'></a> 
+<a id='L129' name='L129'></a>In constructing these routines, errors will be made, and mc will not display
+<a id='L130' name='L130'></a>a malformed printing line.  That can lead the programmer down many false
+<a id='L131' name='L131'></a>trails in search of the bug.  Since this routine is an executable shell script
+<a id='L132' name='L132'></a>it can be run from the command line independently of mc, and its output will
+<a id='L133' name='L133'></a>show on the console or can be redirected to a file.
+<a id='L134' name='L134'></a> 
+<a id='L135' name='L135'></a>* Putting it to use
+<a id='L136' name='L136'></a>----------------------------------------------------------
+<a id='L137' name='L137'></a>The file .mc.ext in a home directory, and in mc's user directory (commonly
+<a id='L138' name='L138'></a>/etc/mc), contains instructions for operations on files depending
+<a id='L139' name='L139'></a>on filename extensions.  It is well documented in other files in this 
+<a id='L140' name='L140'></a>distribution, so here are just a few notes specifically on use of the
+<a id='L141' name='L141'></a>Virtual File System you just built.
+<a id='L142' name='L142'></a> 
+<a id='L143' name='L143'></a>There are entries in .mc.ext defining a few operations that can be done on a
+<a id='L144' name='L144'></a>file from an mc panel.  Typically they are annotated with a hash mark and a
+<a id='L145' name='L145'></a>file extension like this:
+<a id='L146' name='L146'></a> 
+<a id='L147' name='L147'></a># zip
+<a id='L148' name='L148'></a> 
+<a id='L149' name='L149'></a>There must be a way to find the file by extension, so the next line does
+<a id='L150' name='L150'></a>that.  In essence it says "identify the string ".zip" or (|) ".ZIP" at the
+<a id='L151' name='L151'></a>end ($) of a filename": 
+<a id='L152' name='L152'></a> 
+<a id='L153' name='L153'></a>regex/\.(zip|ZIP)$
+<a id='L154' name='L154'></a> 
+<a id='L155' name='L155'></a>The operations themselves follow that. They must be indented by at least a
+<a id='L156' name='L156'></a>space, and a tab works as well.  In particular, the Open operation will
+<a id='L157' name='L157'></a>now use your new virtual file system by cd'ing to it like this:
+<a id='L158' name='L158'></a> 
+<a id='L159' name='L159'></a>   Open=%cd zip:%d/%p
+<a id='L160' name='L160'></a> 
+<a id='L161' name='L161'></a>This is the line used when a file is highlighted in a panel and the user
+<a id='L162' name='L162'></a>presses &lt;Enter&gt; or &lt;Return&gt;.  The contents of the archive should show just
+<a id='L163' name='L163'></a>as if they were in a real directory, and can be manipulated as such.
+<a id='L164' name='L164'></a>The rest of the entry pertains to use of the F3 View key:
+<a id='L165' name='L165'></a> 
+<a id='L166' name='L166'></a>   View=%view{ascii} unzip -v %f
+<a id='L167' name='L167'></a> 
+<a id='L168' name='L168'></a>And perhaps an optional icon for X:
+<a id='L169' name='L169'></a> 
+<a id='L170' name='L170'></a>   Icon=zip.xpm
+<a id='L171' name='L171'></a> 
+<a id='L172' name='L172'></a>And perhaps an operation to extract the contents of the file, called from
+<a id='L173' name='L173'></a>a menu selection:
+<a id='L174' name='L174'></a> 
+<a id='L175' name='L175'></a>   Extract=unzip %f '*'
+<a id='L176' name='L176'></a> 
+<a id='L177' name='L177'></a>This is just an example.  The current entry for .zip files has a menu selection
+<a id='L178' name='L178'></a>of 'Unzip' which could be used in place of 'Extract'.  What goes here depends
+<a id='L179' name='L179'></a>on what items you have in, or add to, the menu system, and that's another 
+<a id='L180' name='L180'></a>subject.  The sum of this is the .mc.ext entry:
+<a id='L181' name='L181'></a> 
+<a id='L182' name='L182'></a># zip
+<a id='L183' name='L183'></a>regex/\.(zip|ZIP)$
+<a id='L184' name='L184'></a>   Open=%cd %p/uzip://
+<a id='L185' name='L185'></a>   View=%view{ascii} unzip -v %f
+<a id='L186' name='L186'></a>   Icon=zip.xpm
+<a id='L187' name='L187'></a>   Extract=unzip %f '*'
+<a id='L188' name='L188'></a> 
+<a id='L189' name='L189'></a>Add an entry like this to the .mc.ext file in a user's home directory, If you
+<a id='L190' name='L190'></a>want others to have it, add it to the mc.ext file in the mc system directory,
+<a id='L191' name='L191'></a>often /etc/mc/mc.ext.  Notice this file is not prepended with a dot.
+<a id='L192' name='L192'></a> 
+<a id='L193' name='L193'></a>Once all this is done, and things are in their proper places, exit mc if you
+<a id='L194' name='L194'></a>were using it, and restart it so it picks up the new information.
+<a id='L195' name='L195'></a> 
+<a id='L196' name='L196'></a>That's all there is to it.  The hardest part is making a listing function
+<a id='L197' name='L197'></a>that sorts the output of a system listing command and turns it into a form
+<a id='L198' name='L198'></a>that mc can use.  Currently awk (or gawk) is used because nearly all systems
+<a id='L199' name='L199'></a>have it. If another scripting language is available, like perl, that could
+<a id='L200' name='L200'></a>also be used. 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+200 src/vfs/extfs/helpers/README'  /> */</em>
+</body>
+</html>

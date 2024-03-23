@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>dview</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/src--diffviewer--internal.h.html#L150'>dview</a>             150 src/diffviewer/internal.h void dview_search_cmd (WDiff * dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--internal.h.html#L151'>dview</a>             151 src/diffviewer/internal.h void dview_continue_search_cmd (WDiff * dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L75'>dview</a>              75 src/diffviewer/search.c mcdiffview_dialog_search (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L138'>dview</a>             138 src/diffviewer/search.c     g_free (dview-&gt;search.last_string);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L139'>dview</a>             139 src/diffviewer/search.c     dview-&gt;search.last_string = exp;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L147'>dview</a>             147 src/diffviewer/search.c mcdiffview_do_search_backward (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L151'>dview</a>             151 src/diffviewer/search.c     if (dview-&gt;search.last_accessed_num_line &lt; 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L153'>dview</a>             153 src/diffviewer/search.c         dview-&gt;search.last_accessed_num_line = -1;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L157'>dview</a>             157 src/diffviewer/search.c     if ((size_t) dview-&gt;search.last_accessed_num_line &gt;= dview-&gt;a[dview-&gt;ord]-&gt;len)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L158'>dview</a>             158 src/diffviewer/search.c         dview-&gt;search.last_accessed_num_line = (ssize_t) dview-&gt;a[dview-&gt;ord]-&gt;len;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L160'>dview</a>             160 src/diffviewer/search.c     for (ind = --dview-&gt;search.last_accessed_num_line; ind &gt;= 0; ind--)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L164'>dview</a>             164 src/diffviewer/search.c         p = (DIFFLN *) &amp; g_array_index (dview-&gt;a[dview-&gt;ord], DIFFLN, (size_t) ind);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L168'>dview</a>             168 src/diffviewer/search.c         if (mc_search_run (dview-&gt;search.handle, p-&gt;p, 0, p-&gt;u.len, NULL))</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L170'>dview</a>             170 src/diffviewer/search.c             dview-&gt;skip_rows = dview-&gt;search.last_found_line =</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L171'>dview</a>             171 src/diffviewer/search.c                 dview-&gt;search.last_accessed_num_line = ind;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L182'>dview</a>             182 src/diffviewer/search.c mcdiffview_do_search_forward (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L186'>dview</a>             186 src/diffviewer/search.c     if (dview-&gt;search.last_accessed_num_line &lt; 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L187'>dview</a>             187 src/diffviewer/search.c         dview-&gt;search.last_accessed_num_line = -1;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L188'>dview</a>             188 src/diffviewer/search.c     else if ((size_t) dview-&gt;search.last_accessed_num_line &gt;= dview-&gt;a[dview-&gt;ord]-&gt;len)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L190'>dview</a>             190 src/diffviewer/search.c         dview-&gt;search.last_accessed_num_line = (ssize_t) dview-&gt;a[dview-&gt;ord]-&gt;len;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L194'>dview</a>             194 src/diffviewer/search.c     for (ind = (size_t)++ dview-&gt;search.last_accessed_num_line; ind &lt; dview-&gt;a[dview-&gt;ord]-&gt;len;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L199'>dview</a>             199 src/diffviewer/search.c         p = (DIFFLN *) &amp; g_array_index (dview-&gt;a[dview-&gt;ord], DIFFLN, ind);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L203'>dview</a>             203 src/diffviewer/search.c         if (mc_search_run (dview-&gt;search.handle, p-&gt;p, 0, p-&gt;u.len, NULL))</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L205'>dview</a>             205 src/diffviewer/search.c             dview-&gt;skip_rows = dview-&gt;search.last_found_line =</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L206'>dview</a>             206 src/diffviewer/search.c                 dview-&gt;search.last_accessed_num_line = (ssize_t) ind;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L216'>dview</a>             216 src/diffviewer/search.c mcdiffview_do_search (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L224'>dview</a>             224 src/diffviewer/search.c         present_result = mcdiffview_do_search_backward (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L228'>dview</a>             228 src/diffviewer/search.c         present_result = mcdiffview_do_search_forward (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L235'>dview</a>             235 src/diffviewer/search.c         dview-&gt;search.last_found_line = -1;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L245'>dview</a>             245 src/diffviewer/search.c dview_search_cmd (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L247'>dview</a>             247 src/diffviewer/search.c     if (dview-&gt;dsrc != DATA_SRC_MEM)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L253'>dview</a>             253 src/diffviewer/search.c     if (!mcdiffview_dialog_search (dview))</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L256'>dview</a>             256 src/diffviewer/search.c     mc_search_free (dview-&gt;search.handle);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L258'>dview</a>             258 src/diffviewer/search.c     dview-&gt;search.handle = mc_search_new (dview-&gt;search.last_string, cp_source);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L260'>dview</a>             260 src/diffviewer/search.c     dview-&gt;search.handle = mc_search_new (dview-&gt;search.last_string, NULL);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L263'>dview</a>             263 src/diffviewer/search.c     if (dview-&gt;search.handle == NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L266'>dview</a>             266 src/diffviewer/search.c     dview-&gt;search.handle-&gt;search_type = mcdiffview_search_options.type;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L268'>dview</a>             268 src/diffviewer/search.c     dview-&gt;search.handle-&gt;is_all_charsets = mcdiffview_search_options.all_codepages;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L270'>dview</a>             270 src/diffviewer/search.c     dview-&gt;search.handle-&gt;is_case_sensitive = mcdiffview_search_options.case_sens;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L271'>dview</a>             271 src/diffviewer/search.c     dview-&gt;search.handle-&gt;whole_words = mcdiffview_search_options.whole_words;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L273'>dview</a>             273 src/diffviewer/search.c     mcdiffview_do_search (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L279'>dview</a>             279 src/diffviewer/search.c dview_continue_search_cmd (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L281'>dview</a>             281 src/diffviewer/search.c     if (dview-&gt;dsrc != DATA_SRC_MEM)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L283'>dview</a>             283 src/diffviewer/search.c     else if (dview-&gt;search.handle == NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L284'>dview</a>             284 src/diffviewer/search.c         dview_search_cmd (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L286'>dview</a>             286 src/diffviewer/search.c         mcdiffview_do_search (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1686'>dview</a>            1686 src/diffviewer/ydiff.c redo_diff (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1688'>dview</a>            1688 src/diffviewer/ydiff.c     FBUF *const *f = dview-&gt;f;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1696'>dview</a>            1696 src/diffviewer/ydiff.c     if (dview-&gt;opt.quality == 2)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1698'>dview</a>            1698 src/diffviewer/ydiff.c     if (dview-&gt;opt.quality == 1)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1700'>dview</a>            1700 src/diffviewer/ydiff.c     if (dview-&gt;opt.strip_trailing_cr)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1702'>dview</a>            1702 src/diffviewer/ydiff.c     if (dview-&gt;opt.ignore_tab_expansion)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1704'>dview</a>            1704 src/diffviewer/ydiff.c     if (dview-&gt;opt.ignore_space_change)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1706'>dview</a>            1706 src/diffviewer/ydiff.c     if (dview-&gt;opt.ignore_all_space)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1708'>dview</a>            1708 src/diffviewer/ydiff.c     if (dview-&gt;opt.ignore_case)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1711'>dview</a>            1711 src/diffviewer/ydiff.c     if (dview-&gt;dsrc != DATA_SRC_MEM)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1718'>dview</a>            1718 src/diffviewer/ydiff.c     ndiff = dff_execute (dview-&gt;args, extra, dview-&gt;file[DIFF_LEFT], dview-&gt;file[DIFF_RIGHT], ops);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1726'>dview</a>            1726 src/diffviewer/ydiff.c     ctx.dsrc = dview-&gt;dsrc;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1727'>dview</a>            1727 src/diffviewer/ydiff.c     ctx.a = dview-&gt;a[DIFF_LEFT];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1729'>dview</a>            1729 src/diffviewer/ydiff.c     rv |= dff_reparse (DIFF_LEFT, dview-&gt;file[DIFF_LEFT], ops, printer, &amp;ctx);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1731'>dview</a>            1731 src/diffviewer/ydiff.c     ctx.a = dview-&gt;a[DIFF_RIGHT];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1733'>dview</a>            1733 src/diffviewer/ydiff.c     rv |= dff_reparse (DIFF_RIGHT, dview-&gt;file[DIFF_RIGHT], ops, printer, &amp;ctx);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1738'>dview</a>            1738 src/diffviewer/ydiff.c     if (rv != 0 || dview-&gt;a[DIFF_LEFT]-&gt;len != dview-&gt;a[DIFF_RIGHT]-&gt;len)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1741'>dview</a>            1741 src/diffviewer/ydiff.c     if (dview-&gt;dsrc == DATA_SRC_TMP)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1747'>dview</a>            1747 src/diffviewer/ydiff.c     if (dview-&gt;dsrc == DATA_SRC_MEM &amp;&amp; HDIFF_ENABLE)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1751'>dview</a>            1751 src/diffviewer/ydiff.c         dview-&gt;hdiff = g_ptr_array_new ();</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1753'>dview</a>            1753 src/diffviewer/ydiff.c         for (i = 0; i &lt; dview-&gt;a[DIFF_LEFT]-&gt;len; i++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1759'>dview</a>            1759 src/diffviewer/ydiff.c             p = &amp;g_array_index (dview-&gt;a[DIFF_LEFT], DIFFLN, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1760'>dview</a>            1760 src/diffviewer/ydiff.c             q = &amp;g_array_index (dview-&gt;a[DIFF_RIGHT], DIFFLN, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1776'>dview</a>            1776 src/diffviewer/ydiff.c             g_ptr_array_add (dview-&gt;hdiff, h);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1785'>dview</a>            1785 src/diffviewer/ydiff.c destroy_hdiff (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1787'>dview</a>            1787 src/diffviewer/ydiff.c     if (dview-&gt;hdiff != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1792'>dview</a>            1792 src/diffviewer/ydiff.c         len = dview-&gt;a[DIFF_LEFT]-&gt;len;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1798'>dview</a>            1798 src/diffviewer/ydiff.c             h = (GArray *) g_ptr_array_index (dview-&gt;hdiff, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1802'>dview</a>            1802 src/diffviewer/ydiff.c         g_ptr_array_free (dview-&gt;hdiff, TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1803'>dview</a>            1803 src/diffviewer/ydiff.c         dview-&gt;hdiff = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1806'>dview</a>            1806 src/diffviewer/ydiff.c     mc_search_free (dview-&gt;search.handle);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1807'>dview</a>            1807 src/diffviewer/ydiff.c     dview-&gt;search.handle = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1808'>dview</a>            1808 src/diffviewer/ydiff.c     MC_PTR_FREE (dview-&gt;search.last_string);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1923'>dview</a>            1923 src/diffviewer/ydiff.c get_current_hunk (WDiff * dview, int *start_line1, int *end_line1, int *start_line2, int *end_line2)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1925'>dview</a>            1925 src/diffviewer/ydiff.c     const GArray *a0 = dview-&gt;a[DIFF_LEFT];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1926'>dview</a>            1926 src/diffviewer/ydiff.c     const GArray *a1 = dview-&gt;a[DIFF_RIGHT];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1936'>dview</a>            1936 src/diffviewer/ydiff.c     pos = dview-&gt;skip_rows;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1963'>dview</a>            1963 src/diffviewer/ydiff.c         for (pos = dview-&gt;skip_rows;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1991'>dview</a>            1991 src/diffviewer/ydiff.c dview_remove_hunk (WDiff * dview, FILE * merge_file, int from1, int to1,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1999'>dview</a>            1999 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2001'>dview</a>            2001 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2028'>dview</a>            2028 src/diffviewer/ydiff.c dview_add_hunk (WDiff * dview, FILE * merge_file, int from1, int from2, int to2,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2037'>dview</a>            2037 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2038'>dview</a>            2038 src/diffviewer/ydiff.c         f1 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2042'>dview</a>            2042 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2043'>dview</a>            2043 src/diffviewer/ydiff.c         f1 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2075'>dview</a>            2075 src/diffviewer/ydiff.c dview_replace_hunk (WDiff * dview, FILE * merge_file, int from1, int to1, int from2, int to2,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2084'>dview</a>            2084 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2085'>dview</a>            2085 src/diffviewer/ydiff.c         f1 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2089'>dview</a>            2089 src/diffviewer/ydiff.c         f0 = fopen (dview-&gt;file[DIFF_LEFT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2090'>dview</a>            2090 src/diffviewer/ydiff.c         f1 = fopen (dview-&gt;file[DIFF_RIGHT], "r");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2120'>dview</a>            2120 src/diffviewer/ydiff.c do_merge_hunk (WDiff * dview, action_direction_t merge_direction)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2127'>dview</a>            2127 src/diffviewer/ydiff.c         hunk = get_current_hunk (dview, &amp;from2, &amp;to2, &amp;from1, &amp;to1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2129'>dview</a>            2129 src/diffviewer/ydiff.c         hunk = get_current_hunk (dview, &amp;from1, &amp;to1, &amp;from2, &amp;to2);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2137'>dview</a>            2137 src/diffviewer/ydiff.c         if (!dview-&gt;merged[n_merge])</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2139'>dview</a>            2139 src/diffviewer/ydiff.c             dview-&gt;merged[n_merge] = mc_util_make_backup_if_possible (dview-&gt;file[n_merge], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2140'>dview</a>            2140 src/diffviewer/ydiff.c             if (!dview-&gt;merged[n_merge])</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2144'>dview</a>            2144 src/diffviewer/ydiff.c                          dview-&gt;file[n_merge], "~~~", unix_error_string (errno));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2163'>dview</a>            2163 src/diffviewer/ydiff.c                 dview_add_hunk (dview, merge_file, from1, from2, to2, FROM_RIGHT_TO_LEFT);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2165'>dview</a>            2165 src/diffviewer/ydiff.c                 dview_remove_hunk (dview, merge_file, from1, to1, FROM_LEFT_TO_RIGHT);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2169'>dview</a>            2169 src/diffviewer/ydiff.c                 dview_remove_hunk (dview, merge_file, from1, to1, FROM_RIGHT_TO_LEFT);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2171'>dview</a>            2171 src/diffviewer/ydiff.c                 dview_add_hunk (dview, merge_file, from1, from2, to2, FROM_LEFT_TO_RIGHT);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2174'>dview</a>            2174 src/diffviewer/ydiff.c             dview_replace_hunk (dview, merge_file, from1, to1, from2, to2, merge_direction);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2184'>dview</a>            2184 src/diffviewer/ydiff.c             res = rewrite_backup_content (merge_file_name_vpath, dview-&gt;file[n_merge]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2196'>dview</a>            2196 src/diffviewer/ydiff.c dview_compute_split (WDiff * dview, int i)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2198'>dview</a>            2198 src/diffviewer/ydiff.c     dview-&gt;bias += i;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2199'>dview</a>            2199 src/diffviewer/ydiff.c     if (dview-&gt;bias &lt; 2 - dview-&gt;half1)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2200'>dview</a>            2200 src/diffviewer/ydiff.c         dview-&gt;bias = 2 - dview-&gt;half1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2201'>dview</a>            2201 src/diffviewer/ydiff.c     if (dview-&gt;bias &gt; dview-&gt;half2 - 2)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2202'>dview</a>            2202 src/diffviewer/ydiff.c         dview-&gt;bias = dview-&gt;half2 - 2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2208'>dview</a>            2208 src/diffviewer/ydiff.c dview_compute_areas (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2210'>dview</a>            2210 src/diffviewer/ydiff.c     Widget *w = WIDGET (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2212'>dview</a>            2212 src/diffviewer/ydiff.c     dview-&gt;height = w-&gt;rect.lines - 1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2213'>dview</a>            2213 src/diffviewer/ydiff.c     dview-&gt;half1 = w-&gt;rect.cols / 2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2214'>dview</a>            2214 src/diffviewer/ydiff.c     dview-&gt;half2 = w-&gt;rect.cols - dview-&gt;half1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2216'>dview</a>            2216 src/diffviewer/ydiff.c     dview_compute_split (dview, 0);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2222'>dview</a>            2222 src/diffviewer/ydiff.c dview_reread (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2226'>dview</a>            2226 src/diffviewer/ydiff.c     destroy_hdiff (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2227'>dview</a>            2227 src/diffviewer/ydiff.c     if (dview-&gt;a[DIFF_LEFT] != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2228'>dview</a>            2228 src/diffviewer/ydiff.c         g_array_free (dview-&gt;a[DIFF_LEFT], TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2229'>dview</a>            2229 src/diffviewer/ydiff.c     if (dview-&gt;a[DIFF_RIGHT] != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2230'>dview</a>            2230 src/diffviewer/ydiff.c         g_array_free (dview-&gt;a[DIFF_RIGHT], TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2232'>dview</a>            2232 src/diffviewer/ydiff.c     dview-&gt;a[DIFF_LEFT] = g_array_new (FALSE, FALSE, sizeof (DIFFLN));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2233'>dview</a>            2233 src/diffviewer/ydiff.c     g_array_set_clear_func (dview-&gt;a[DIFF_LEFT], cc_free_elt);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2234'>dview</a>            2234 src/diffviewer/ydiff.c     dview-&gt;a[DIFF_RIGHT] = g_array_new (FALSE, FALSE, sizeof (DIFFLN));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2235'>dview</a>            2235 src/diffviewer/ydiff.c     g_array_set_clear_func (dview-&gt;a[DIFF_RIGHT], cc_free_elt);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2237'>dview</a>            2237 src/diffviewer/ydiff.c     ndiff = redo_diff (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2239'>dview</a>            2239 src/diffviewer/ydiff.c         dview-&gt;ndiff = ndiff;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2246'>dview</a>            2246 src/diffviewer/ydiff.c dview_set_codeset (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2250'>dview</a>            2250 src/diffviewer/ydiff.c     dview-&gt;utf8 = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2261'>dview</a>            2261 src/diffviewer/ydiff.c             if (dview-&gt;converter != str_cnv_from_term)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2262'>dview</a>            2262 src/diffviewer/ydiff.c                 str_close_conv (dview-&gt;converter);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2263'>dview</a>            2263 src/diffviewer/ydiff.c             dview-&gt;converter = conv;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2265'>dview</a>            2265 src/diffviewer/ydiff.c         dview-&gt;utf8 = (gboolean) str_isutf8 (encoding_id);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2272'>dview</a>            2272 src/diffviewer/ydiff.c dview_select_encoding (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2275'>dview</a>            2275 src/diffviewer/ydiff.c         dview_set_codeset (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2276'>dview</a>            2276 src/diffviewer/ydiff.c     dview_reread (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2285'>dview</a>            2285 src/diffviewer/ydiff.c dview_load_options (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2290'>dview</a>            2290 src/diffviewer/ydiff.c     dview-&gt;display_symbols =</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2294'>dview</a>            2294 src/diffviewer/ydiff.c         dview-&gt;display_numbers = 1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2297'>dview</a>            2297 src/diffviewer/ydiff.c         dview-&gt;tab_size = tab_size;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2299'>dview</a>            2299 src/diffviewer/ydiff.c         dview-&gt;tab_size = 8;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2301'>dview</a>            2301 src/diffviewer/ydiff.c     dview-&gt;opt.quality = mc_config_get_int (mc_global.main_config, "DiffView", "diff_quality", 0);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2303'>dview</a>            2303 src/diffviewer/ydiff.c     dview-&gt;opt.strip_trailing_cr =</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2305'>dview</a>            2305 src/diffviewer/ydiff.c     dview-&gt;opt.ignore_all_space =</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2307'>dview</a>            2307 src/diffviewer/ydiff.c     dview-&gt;opt.ignore_space_change =</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2309'>dview</a>            2309 src/diffviewer/ydiff.c     dview-&gt;opt.ignore_tab_expansion =</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2311'>dview</a>            2311 src/diffviewer/ydiff.c     dview-&gt;opt.ignore_case =</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2314'>dview</a>            2314 src/diffviewer/ydiff.c     dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2320'>dview</a>            2320 src/diffviewer/ydiff.c dview_save_options (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2322'>dview</a>            2322 src/diffviewer/ydiff.c     mc_config_set_bool (mc_global.main_config, "DiffView", "show_symbols", dview-&gt;display_symbols);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2324'>dview</a>            2324 src/diffviewer/ydiff.c                         dview-&gt;display_numbers != 0);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2325'>dview</a>            2325 src/diffviewer/ydiff.c     mc_config_set_int (mc_global.main_config, "DiffView", "tab_size", dview-&gt;tab_size);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2327'>dview</a>            2327 src/diffviewer/ydiff.c     mc_config_set_int (mc_global.main_config, "DiffView", "diff_quality", dview-&gt;opt.quality);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2330'>dview</a>            2330 src/diffviewer/ydiff.c                         dview-&gt;opt.strip_trailing_cr);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2332'>dview</a>            2332 src/diffviewer/ydiff.c                         dview-&gt;opt.ignore_all_space);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2334'>dview</a>            2334 src/diffviewer/ydiff.c                         dview-&gt;opt.ignore_space_change);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2336'>dview</a>            2336 src/diffviewer/ydiff.c                         dview-&gt;opt.ignore_tab_expansion);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2338'>dview</a>            2338 src/diffviewer/ydiff.c                         dview-&gt;opt.ignore_case);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2344'>dview</a>            2344 src/diffviewer/ydiff.c dview_diff_options (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2355'>dview</a>            2355 src/diffviewer/ydiff.c             QUICK_RADIO (3, (const char **) quality_str, (int *) &amp;dview-&gt;opt.quality, NULL),</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2358'>dview</a>            2358 src/diffviewer/ydiff.c             QUICK_CHECKBOX (N_("&amp;Ignore case"), &amp;dview-&gt;opt.ignore_case, NULL),</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2359'>dview</a>            2359 src/diffviewer/ydiff.c             QUICK_CHECKBOX (N_("Ignore tab &amp;expansion"), &amp;dview-&gt;opt.ignore_tab_expansion, NULL),</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2360'>dview</a>            2360 src/diffviewer/ydiff.c             QUICK_CHECKBOX (N_("Ignore &amp;space change"), &amp;dview-&gt;opt.ignore_space_change, NULL),</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2361'>dview</a>            2361 src/diffviewer/ydiff.c             QUICK_CHECKBOX (N_("Ignore all &amp;whitespace"), &amp;dview-&gt;opt.ignore_all_space, NULL),</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2362'>dview</a>            2362 src/diffviewer/ydiff.c             QUICK_CHECKBOX (N_("Strip &amp;trailing carriage return"), &amp;dview-&gt;opt.strip_trailing_cr,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2378'>dview</a>            2378 src/diffviewer/ydiff.c         dview_reread (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2384'>dview</a>            2384 src/diffviewer/ydiff.c dview_init (WDiff * dview, const char *args, const char *file1, const char *file2,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2420'>dview</a>            2420 src/diffviewer/ydiff.c     dview-&gt;view_quit = FALSE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2422'>dview</a>            2422 src/diffviewer/ydiff.c     dview-&gt;bias = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2423'>dview</a>            2423 src/diffviewer/ydiff.c     dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2424'>dview</a>            2424 src/diffviewer/ydiff.c     dview-&gt;skip_rows = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2425'>dview</a>            2425 src/diffviewer/ydiff.c     dview-&gt;skip_cols = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2426'>dview</a>            2426 src/diffviewer/ydiff.c     dview-&gt;display_symbols = FALSE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2427'>dview</a>            2427 src/diffviewer/ydiff.c     dview-&gt;display_numbers = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2428'>dview</a>            2428 src/diffviewer/ydiff.c     dview-&gt;show_cr = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2429'>dview</a>            2429 src/diffviewer/ydiff.c     dview-&gt;tab_size = 8;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2430'>dview</a>            2430 src/diffviewer/ydiff.c     dview-&gt;ord = DIFF_LEFT;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2431'>dview</a>            2431 src/diffviewer/ydiff.c     dview-&gt;full = FALSE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2433'>dview</a>            2433 src/diffviewer/ydiff.c     dview-&gt;search.handle = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2434'>dview</a>            2434 src/diffviewer/ydiff.c     dview-&gt;search.last_string = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2435'>dview</a>            2435 src/diffviewer/ydiff.c     dview-&gt;search.last_found_line = -1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2436'>dview</a>            2436 src/diffviewer/ydiff.c     dview-&gt;search.last_accessed_num_line = -1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2438'>dview</a>            2438 src/diffviewer/ydiff.c     dview_load_options (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2440'>dview</a>            2440 src/diffviewer/ydiff.c     dview-&gt;args = args;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2441'>dview</a>            2441 src/diffviewer/ydiff.c     dview-&gt;file[DIFF_LEFT] = file1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2442'>dview</a>            2442 src/diffviewer/ydiff.c     dview-&gt;file[DIFF_RIGHT] = file2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2443'>dview</a>            2443 src/diffviewer/ydiff.c     dview-&gt;label[DIFF_LEFT] = g_strdup (label1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2444'>dview</a>            2444 src/diffviewer/ydiff.c     dview-&gt;label[DIFF_RIGHT] = g_strdup (label2);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2445'>dview</a>            2445 src/diffviewer/ydiff.c     dview-&gt;f[DIFF_LEFT] = f[0];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2446'>dview</a>            2446 src/diffviewer/ydiff.c     dview-&gt;f[DIFF_RIGHT] = f[1];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2447'>dview</a>            2447 src/diffviewer/ydiff.c     dview-&gt;merged[DIFF_LEFT] = FALSE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2448'>dview</a>            2448 src/diffviewer/ydiff.c     dview-&gt;merged[DIFF_RIGHT] = FALSE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2449'>dview</a>            2449 src/diffviewer/ydiff.c     dview-&gt;hdiff = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2450'>dview</a>            2450 src/diffviewer/ydiff.c     dview-&gt;dsrc = dsrc;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2452'>dview</a>            2452 src/diffviewer/ydiff.c     dview-&gt;converter = str_cnv_from_term;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2453'>dview</a>            2453 src/diffviewer/ydiff.c     dview_set_codeset (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2455'>dview</a>            2455 src/diffviewer/ydiff.c     dview-&gt;a[DIFF_LEFT] = g_array_new (FALSE, FALSE, sizeof (DIFFLN));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2456'>dview</a>            2456 src/diffviewer/ydiff.c     g_array_set_clear_func (dview-&gt;a[DIFF_LEFT], cc_free_elt);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2457'>dview</a>            2457 src/diffviewer/ydiff.c     dview-&gt;a[DIFF_RIGHT] = g_array_new (FALSE, FALSE, sizeof (DIFFLN));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2458'>dview</a>            2458 src/diffviewer/ydiff.c     g_array_set_clear_func (dview-&gt;a[DIFF_RIGHT], cc_free_elt);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2460'>dview</a>            2460 src/diffviewer/ydiff.c     ndiff = redo_diff (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2469'>dview</a>            2469 src/diffviewer/ydiff.c     dview-&gt;ndiff = ndiff;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2471'>dview</a>            2471 src/diffviewer/ydiff.c     dview_compute_areas (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2479'>dview</a>            2479 src/diffviewer/ydiff.c dview_fini (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2481'>dview</a>            2481 src/diffviewer/ydiff.c     if (dview-&gt;dsrc != DATA_SRC_MEM)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2483'>dview</a>            2483 src/diffviewer/ydiff.c         dview_fclose (dview-&gt;f[DIFF_RIGHT]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2484'>dview</a>            2484 src/diffviewer/ydiff.c         dview_fclose (dview-&gt;f[DIFF_LEFT]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2488'>dview</a>            2488 src/diffviewer/ydiff.c     if (dview-&gt;converter != str_cnv_from_term)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2489'>dview</a>            2489 src/diffviewer/ydiff.c         str_close_conv (dview-&gt;converter);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2492'>dview</a>            2492 src/diffviewer/ydiff.c     destroy_hdiff (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2493'>dview</a>            2493 src/diffviewer/ydiff.c     if (dview-&gt;a[DIFF_LEFT] != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2495'>dview</a>            2495 src/diffviewer/ydiff.c         g_array_free (dview-&gt;a[DIFF_LEFT], TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2496'>dview</a>            2496 src/diffviewer/ydiff.c         dview-&gt;a[DIFF_LEFT] = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2498'>dview</a>            2498 src/diffviewer/ydiff.c     if (dview-&gt;a[DIFF_RIGHT] != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2500'>dview</a>            2500 src/diffviewer/ydiff.c         g_array_free (dview-&gt;a[DIFF_RIGHT], TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2501'>dview</a>            2501 src/diffviewer/ydiff.c         dview-&gt;a[DIFF_RIGHT] = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2504'>dview</a>            2504 src/diffviewer/ydiff.c     g_free (dview-&gt;label[DIFF_LEFT]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2505'>dview</a>            2505 src/diffviewer/ydiff.c     g_free (dview-&gt;label[DIFF_RIGHT]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2511'>dview</a>            2511 src/diffviewer/ydiff.c dview_display_file (const WDiff * dview, diff_place_t ord, int r, int c, int height, int width)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2516'>dview</a>            2516 src/diffviewer/ydiff.c     FBUF *f = dview-&gt;f[ord];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2517'>dview</a>            2517 src/diffviewer/ydiff.c     int skip = dview-&gt;skip_cols;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2518'>dview</a>            2518 src/diffviewer/ydiff.c     gboolean display_symbols = dview-&gt;display_symbols;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2519'>dview</a>            2519 src/diffviewer/ydiff.c     int display_numbers = dview-&gt;display_numbers;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2520'>dview</a>            2520 src/diffviewer/ydiff.c     gboolean show_cr = dview-&gt;show_cr;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2529'>dview</a>            2529 src/diffviewer/ydiff.c     if (dview-&gt;tab_size &gt; 0 &amp;&amp; dview-&gt;tab_size &lt; 9)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2530'>dview</a>            2530 src/diffviewer/ydiff.c         tab_size = dview-&gt;tab_size;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2558'>dview</a>            2558 src/diffviewer/ydiff.c     for (i = dview-&gt;skip_rows, j = 0; i &lt; dview-&gt;a[ord]-&gt;len &amp;&amp; j &lt; height; j++, i++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2565'>dview</a>            2565 src/diffviewer/ydiff.c         p = (DIFFLN *) &amp; g_array_index (dview-&gt;a[ord], DIFFLN, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2587'>dview</a>            2587 src/diffviewer/ydiff.c                 if (i == (size_t) dview-&gt;search.last_found_line)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2589'>dview</a>            2589 src/diffviewer/ydiff.c                 else if (dview-&gt;hdiff != NULL &amp;&amp; g_ptr_array_index (dview-&gt;hdiff, i) != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2594'>dview</a>            2594 src/diffviewer/ydiff.c                     if (dview-&gt;utf8)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2601'>dview</a>            2601 src/diffviewer/ydiff.c                                g_ptr_array_index (dview-&gt;hdiff, i), ord, att);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2610'>dview</a>            2610 src/diffviewer/ydiff.c                         if (dview-&gt;utf8)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2630'>dview</a>            2630 src/diffviewer/ydiff.c                                 if (!dview-&gt;utf8)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2634'>dview</a>            2634 src/diffviewer/ydiff.c                                                                     dview-&gt;converter);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2637'>dview</a>            2637 src/diffviewer/ydiff.c                             else if (dview-&gt;utf8)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2638'>dview</a>            2638 src/diffviewer/ydiff.c                                 next_ch = convert_from_utf_to_current_c (next_ch, dview-&gt;converter);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2653'>dview</a>            2653 src/diffviewer/ydiff.c                 if (dview-&gt;utf8)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2685'>dview</a>            2685 src/diffviewer/ydiff.c             if (dview-&gt;utf8)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2704'>dview</a>            2704 src/diffviewer/ydiff.c                     if (!dview-&gt;utf8)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2706'>dview</a>            2706 src/diffviewer/ydiff.c                             convert_from_8bit_to_utf_c ((unsigned char) next_ch, dview-&gt;converter);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2708'>dview</a>            2708 src/diffviewer/ydiff.c                 else if (dview-&gt;utf8)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2709'>dview</a>            2709 src/diffviewer/ydiff.c                     next_ch = convert_from_utf_to_current_c (next_ch, dview-&gt;converter);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2743'>dview</a>            2743 src/diffviewer/ydiff.c dview_status (const WDiff * dview, diff_place_t ord, int width, int c)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2754'>dview</a>            2754 src/diffviewer/ydiff.c     get_line_numbers (dview-&gt;a[ord], dview-&gt;skip_rows, &amp;linenum, &amp;lineofs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2760'>dview</a>            2760 src/diffviewer/ydiff.c     vpath = vfs_path_from_str (dview-&gt;label[ord]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2765'>dview</a>            2765 src/diffviewer/ydiff.c         tty_printf ("%s%-*s %6d+%-4d Col %-4d ", dview-&gt;merged[ord] ? "* " : "  ", filename_width,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2766'>dview</a>            2766 src/diffviewer/ydiff.c                     buf, linenum, lineofs, dview-&gt;skip_cols);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2768'>dview</a>            2768 src/diffviewer/ydiff.c         tty_printf ("%s%-*s %6d+%-4d Dif %-4d ", dview-&gt;merged[ord] ? "* " : "  ", filename_width,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2769'>dview</a>            2769 src/diffviewer/ydiff.c                     buf, linenum, lineofs, dview-&gt;ndiff);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2776'>dview</a>            2776 src/diffviewer/ydiff.c dview_redo (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2778'>dview</a>            2778 src/diffviewer/ydiff.c     if (dview-&gt;display_numbers != 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2782'>dview</a>            2782 src/diffviewer/ydiff.c         old = dview-&gt;display_numbers;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2783'>dview</a>            2783 src/diffviewer/ydiff.c         dview-&gt;display_numbers = calc_nwidth ((const GArray * const *) dview-&gt;a);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2784'>dview</a>            2784 src/diffviewer/ydiff.c         dview-&gt;new_frame = (old != dview-&gt;display_numbers);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2786'>dview</a>            2786 src/diffviewer/ydiff.c     dview_reread (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2792'>dview</a>            2792 src/diffviewer/ydiff.c dview_update (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2794'>dview</a>            2794 src/diffviewer/ydiff.c     int height = dview-&gt;height;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2798'>dview</a>            2798 src/diffviewer/ydiff.c     last = dview-&gt;a[DIFF_LEFT]-&gt;len - 1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2800'>dview</a>            2800 src/diffviewer/ydiff.c     if (dview-&gt;skip_rows &gt; last)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2801'>dview</a>            2801 src/diffviewer/ydiff.c         dview-&gt;skip_rows = dview-&gt;search.last_accessed_num_line = last;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2802'>dview</a>            2802 src/diffviewer/ydiff.c     if (dview-&gt;skip_rows &lt; 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2803'>dview</a>            2803 src/diffviewer/ydiff.c         dview-&gt;skip_rows = dview-&gt;search.last_accessed_num_line = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2804'>dview</a>            2804 src/diffviewer/ydiff.c     if (dview-&gt;skip_cols &lt; 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2805'>dview</a>            2805 src/diffviewer/ydiff.c         dview-&gt;skip_cols = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2811'>dview</a>            2811 src/diffviewer/ydiff.c     if (dview-&gt;display_numbers != 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2812'>dview</a>            2812 src/diffviewer/ydiff.c         dview-&gt;display_numbers = calc_nwidth ((const GArray * const *) dview-&gt;a);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2814'>dview</a>            2814 src/diffviewer/ydiff.c     width1 = dview-&gt;half1 + dview-&gt;bias;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2815'>dview</a>            2815 src/diffviewer/ydiff.c     width2 = dview-&gt;half2 - dview-&gt;bias;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2816'>dview</a>            2816 src/diffviewer/ydiff.c     if (dview-&gt;full)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2822'>dview</a>            2822 src/diffviewer/ydiff.c     if (dview-&gt;new_frame)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2827'>dview</a>            2827 src/diffviewer/ydiff.c         xwidth = dview-&gt;display_numbers;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2828'>dview</a>            2828 src/diffviewer/ydiff.c         if (dview-&gt;display_symbols)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2855'>dview</a>            2855 src/diffviewer/ydiff.c         dview-&gt;new_frame = FALSE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2860'>dview</a>            2860 src/diffviewer/ydiff.c         dview_status (dview, dview-&gt;ord, width1, 0);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2861'>dview</a>            2861 src/diffviewer/ydiff.c         dview_display_file (dview, dview-&gt;ord, 2, 1, height - 2, width1 - 2);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2867'>dview</a>            2867 src/diffviewer/ydiff.c         ord = dview-&gt;ord == DIFF_LEFT ? DIFF_RIGHT : DIFF_LEFT;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2868'>dview</a>            2868 src/diffviewer/ydiff.c         dview_status (dview, ord, width2, width1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2869'>dview</a>            2869 src/diffviewer/ydiff.c         dview_display_file (dview, ord, 2, width1 + 1, height - 2, width2 - 2);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2876'>dview</a>            2876 src/diffviewer/ydiff.c dview_edit (WDiff * dview, diff_place_t ord)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2882'>dview</a>            2882 src/diffviewer/ydiff.c     if (dview-&gt;dsrc == DATA_SRC_TMP)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2888'>dview</a>            2888 src/diffviewer/ydiff.c     h = WIDGET (WIDGET (dview)-&gt;owner);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2891'>dview</a>            2891 src/diffviewer/ydiff.c     get_line_numbers (dview-&gt;a[ord], dview-&gt;skip_rows, &amp;linenum, &amp;lineofs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2899'>dview</a>            2899 src/diffviewer/ydiff.c         tmp_vpath = vfs_path_from_str (dview-&gt;file[ord]);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2905'>dview</a>            2905 src/diffviewer/ydiff.c     dview_redo (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2906'>dview</a>            2906 src/diffviewer/ydiff.c     dview_update (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2912'>dview</a>            2912 src/diffviewer/ydiff.c dview_goto_cmd (WDiff * dview, diff_place_t ord)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2938'>dview</a>            2938 src/diffviewer/ydiff.c                 for (; i &lt; dview-&gt;a[ord]-&gt;len; i++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2942'>dview</a>            2942 src/diffviewer/ydiff.c                     p = &amp;g_array_index (dview-&gt;a[ord], DIFFLN, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2947'>dview</a>            2947 src/diffviewer/ydiff.c             dview-&gt;skip_rows = dview-&gt;search.last_accessed_num_line = (ssize_t) i;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2959'>dview</a>            2959 src/diffviewer/ydiff.c dview_labels (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2961'>dview</a>            2961 src/diffviewer/ydiff.c     Widget *d = WIDGET (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2978'>dview</a>            2978 src/diffviewer/ydiff.c dview_save (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2982'>dview</a>            2982 src/diffviewer/ydiff.c     if (dview-&gt;merged[DIFF_LEFT])</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2984'>dview</a>            2984 src/diffviewer/ydiff.c         res = mc_util_unlink_backup_if_possible (dview-&gt;file[DIFF_LEFT], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2985'>dview</a>            2985 src/diffviewer/ydiff.c         dview-&gt;merged[DIFF_LEFT] = !res;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2987'>dview</a>            2987 src/diffviewer/ydiff.c     if (dview-&gt;merged[DIFF_RIGHT])</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2989'>dview</a>            2989 src/diffviewer/ydiff.c         res = mc_util_unlink_backup_if_possible (dview-&gt;file[DIFF_RIGHT], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2990'>dview</a>            2990 src/diffviewer/ydiff.c         dview-&gt;merged[DIFF_RIGHT] = !res;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2998'>dview</a>            2998 src/diffviewer/ydiff.c dview_do_save (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3000'>dview</a>            3000 src/diffviewer/ydiff.c     (void) dview_save (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3010'>dview</a>            3010 src/diffviewer/ydiff.c dview_ok_to_exit (WDiff * dview)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3015'>dview</a>            3015 src/diffviewer/ydiff.c     if (!dview-&gt;merged[DIFF_LEFT] &amp;&amp; !dview-&gt;merged[DIFF_RIGHT])</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3033'>dview</a>            3033 src/diffviewer/ydiff.c         (void) dview_save (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3037'>dview</a>            3037 src/diffviewer/ydiff.c         if (mc_util_restore_from_backup_if_possible (dview-&gt;file[DIFF_LEFT], "~~~"))</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3038'>dview</a>            3038 src/diffviewer/ydiff.c             res = mc_util_unlink_backup_if_possible (dview-&gt;file[DIFF_LEFT], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3039'>dview</a>            3039 src/diffviewer/ydiff.c         if (mc_util_restore_from_backup_if_possible (dview-&gt;file[DIFF_RIGHT], "~~~"))</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3040'>dview</a>            3040 src/diffviewer/ydiff.c             res = mc_util_unlink_backup_if_possible (dview-&gt;file[DIFF_RIGHT], "~~~");</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3052'>dview</a>            3052 src/diffviewer/ydiff.c dview_execute_cmd (WDiff * dview, long command)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3059'>dview</a>            3059 src/diffviewer/ydiff.c         dview-&gt;display_symbols = !dview-&gt;display_symbols;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3060'>dview</a>            3060 src/diffviewer/ydiff.c         dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3063'>dview</a>            3063 src/diffviewer/ydiff.c         dview-&gt;display_numbers ^= calc_nwidth ((const GArray * const *) dview-&gt;a);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3064'>dview</a>            3064 src/diffviewer/ydiff.c         dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3067'>dview</a>            3067 src/diffviewer/ydiff.c         dview-&gt;full = !dview-&gt;full;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3068'>dview</a>            3068 src/diffviewer/ydiff.c         dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3071'>dview</a>            3071 src/diffviewer/ydiff.c         if (!dview-&gt;full)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3073'>dview</a>            3073 src/diffviewer/ydiff.c             dview-&gt;bias = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3074'>dview</a>            3074 src/diffviewer/ydiff.c             dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3078'>dview</a>            3078 src/diffviewer/ydiff.c         if (!dview-&gt;full)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3080'>dview</a>            3080 src/diffviewer/ydiff.c             dview_compute_split (dview, 1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3081'>dview</a>            3081 src/diffviewer/ydiff.c             dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3086'>dview</a>            3086 src/diffviewer/ydiff.c         if (!dview-&gt;full)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3088'>dview</a>            3088 src/diffviewer/ydiff.c             dview_compute_split (dview, -1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3089'>dview</a>            3089 src/diffviewer/ydiff.c             dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3093'>dview</a>            3093 src/diffviewer/ydiff.c         dview-&gt;tab_size = 2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3096'>dview</a>            3096 src/diffviewer/ydiff.c         dview-&gt;tab_size = 3;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3099'>dview</a>            3099 src/diffviewer/ydiff.c         dview-&gt;tab_size = 4;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3102'>dview</a>            3102 src/diffviewer/ydiff.c         dview-&gt;tab_size = 8;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3105'>dview</a>            3105 src/diffviewer/ydiff.c         dview-&gt;ord ^= 1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3108'>dview</a>            3108 src/diffviewer/ydiff.c         dview_redo (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3111'>dview</a>            3111 src/diffviewer/ydiff.c         dview-&gt;skip_rows = dview-&gt;search.last_accessed_num_line =</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3112'>dview</a>            3112 src/diffviewer/ydiff.c             find_next_hunk (dview-&gt;a[DIFF_LEFT], dview-&gt;skip_rows);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3115'>dview</a>            3115 src/diffviewer/ydiff.c         dview-&gt;skip_rows = dview-&gt;search.last_accessed_num_line =</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3116'>dview</a>            3116 src/diffviewer/ydiff.c             find_prev_hunk (dview-&gt;a[DIFF_LEFT], dview-&gt;skip_rows);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3119'>dview</a>            3119 src/diffviewer/ydiff.c         dview_goto_cmd (dview, DIFF_RIGHT);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3122'>dview</a>            3122 src/diffviewer/ydiff.c         dview_edit (dview, dview-&gt;ord);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3125'>dview</a>            3125 src/diffviewer/ydiff.c         do_merge_hunk (dview, FROM_LEFT_TO_RIGHT);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3126'>dview</a>            3126 src/diffviewer/ydiff.c         dview_redo (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3129'>dview</a>            3129 src/diffviewer/ydiff.c         do_merge_hunk (dview, FROM_RIGHT_TO_LEFT);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3130'>dview</a>            3130 src/diffviewer/ydiff.c         dview_redo (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3133'>dview</a>            3133 src/diffviewer/ydiff.c         dview_edit (dview, dview-&gt;ord ^ 1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3136'>dview</a>            3136 src/diffviewer/ydiff.c         dview_search_cmd (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3139'>dview</a>            3139 src/diffviewer/ydiff.c         dview_continue_search_cmd (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3142'>dview</a>            3142 src/diffviewer/ydiff.c         dview-&gt;skip_rows = dview-&gt;search.last_accessed_num_line = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3145'>dview</a>            3145 src/diffviewer/ydiff.c         dview-&gt;skip_rows = dview-&gt;search.last_accessed_num_line = dview-&gt;a[DIFF_LEFT]-&gt;len - 1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3148'>dview</a>            3148 src/diffviewer/ydiff.c         if (dview-&gt;skip_rows &gt; 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3150'>dview</a>            3150 src/diffviewer/ydiff.c             dview-&gt;skip_rows--;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3151'>dview</a>            3151 src/diffviewer/ydiff.c             dview-&gt;search.last_accessed_num_line = dview-&gt;skip_rows;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3155'>dview</a>            3155 src/diffviewer/ydiff.c         dview-&gt;skip_rows++;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3156'>dview</a>            3156 src/diffviewer/ydiff.c         dview-&gt;search.last_accessed_num_line = dview-&gt;skip_rows;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3159'>dview</a>            3159 src/diffviewer/ydiff.c         if (dview-&gt;height &gt; 2)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3161'>dview</a>            3161 src/diffviewer/ydiff.c             dview-&gt;skip_rows += dview-&gt;height - 2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3162'>dview</a>            3162 src/diffviewer/ydiff.c             dview-&gt;search.last_accessed_num_line = dview-&gt;skip_rows;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3166'>dview</a>            3166 src/diffviewer/ydiff.c         if (dview-&gt;height &gt; 2)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3168'>dview</a>            3168 src/diffviewer/ydiff.c             dview-&gt;skip_rows -= dview-&gt;height - 2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3169'>dview</a>            3169 src/diffviewer/ydiff.c             dview-&gt;search.last_accessed_num_line = dview-&gt;skip_rows;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3173'>dview</a>            3173 src/diffviewer/ydiff.c         dview-&gt;skip_cols--;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3176'>dview</a>            3176 src/diffviewer/ydiff.c         dview-&gt;skip_cols++;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3179'>dview</a>            3179 src/diffviewer/ydiff.c         dview-&gt;skip_cols -= 8;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3182'>dview</a>            3182 src/diffviewer/ydiff.c         dview-&gt;skip_cols += 8;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3185'>dview</a>            3185 src/diffviewer/ydiff.c         dview-&gt;skip_cols = 0;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3191'>dview</a>            3191 src/diffviewer/ydiff.c         dview-&gt;view_quit = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3194'>dview</a>            3194 src/diffviewer/ydiff.c         dview_do_save (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3197'>dview</a>            3197 src/diffviewer/ydiff.c         dview_diff_options (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3201'>dview</a>            3201 src/diffviewer/ydiff.c         dview_select_encoding (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3216'>dview</a>            3216 src/diffviewer/ydiff.c dview_handle_key (WDiff * dview, int key)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3224'>dview</a>            3224 src/diffviewer/ydiff.c     command = widget_lookup_key (WIDGET (dview), key);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3228'>dview</a>            3228 src/diffviewer/ydiff.c     return dview_execute_cmd (dview, command);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3236'>dview</a>            3236 src/diffviewer/ydiff.c     WDiff *dview = (WDiff *) w;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3243'>dview</a>            3243 src/diffviewer/ydiff.c         dview_labels (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3244'>dview</a>            3244 src/diffviewer/ydiff.c         dview_update (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3248'>dview</a>            3248 src/diffviewer/ydiff.c         dview-&gt;new_frame = TRUE;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3249'>dview</a>            3249 src/diffviewer/ydiff.c         dview_update (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3253'>dview</a>            3253 src/diffviewer/ydiff.c         i = dview_handle_key (dview, parm);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3254'>dview</a>            3254 src/diffviewer/ydiff.c         if (dview-&gt;view_quit)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3257'>dview</a>            3257 src/diffviewer/ydiff.c             dview_update (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3261'>dview</a>            3261 src/diffviewer/ydiff.c         i = dview_execute_cmd (dview, parm);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3262'>dview</a>            3262 src/diffviewer/ydiff.c         if (dview-&gt;view_quit)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3265'>dview</a>            3265 src/diffviewer/ydiff.c             dview_update (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3270'>dview</a>            3270 src/diffviewer/ydiff.c         dview_compute_areas (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3274'>dview</a>            3274 src/diffviewer/ydiff.c         dview_save_options (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3275'>dview</a>            3275 src/diffviewer/ydiff.c         dview_fini (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3288'>dview</a>            3288 src/diffviewer/ydiff.c     WDiff *dview = (WDiff *) w;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3297'>dview</a>            3297 src/diffviewer/ydiff.c             dview-&gt;skip_rows -= 2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3299'>dview</a>            3299 src/diffviewer/ydiff.c             dview-&gt;skip_rows += 2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3301'>dview</a>            3301 src/diffviewer/ydiff.c         dview-&gt;search.last_accessed_num_line = dview-&gt;skip_rows;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3302'>dview</a>            3302 src/diffviewer/ydiff.c         dview_update (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3315'>dview</a>            3315 src/diffviewer/ydiff.c     WDiff *dview;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3328'>dview</a>            3328 src/diffviewer/ydiff.c         dview = (WDiff *) widget_find_by_type (CONST_WIDGET (h), dview_callback);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3331'>dview</a>            3331 src/diffviewer/ydiff.c         if (dview_ok_to_exit (dview))</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3345'>dview</a>            3345 src/diffviewer/ydiff.c     const WDiff *dview;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3351'>dview</a>            3351 src/diffviewer/ydiff.c     dview = (const WDiff *) widget_find_by_type (CONST_WIDGET (h), dview_callback);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3356'>dview</a>            3356 src/diffviewer/ydiff.c     g_string_append (title, dview-&gt;merged[DIFF_LEFT] ? modified : notmodified);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3357'>dview</a>            3357 src/diffviewer/ydiff.c     g_string_append (title, str_term_trim (dview-&gt;label[DIFF_LEFT], len1));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3359'>dview</a>            3359 src/diffviewer/ydiff.c     g_string_append (title, dview-&gt;merged[DIFF_RIGHT] ? modified : notmodified);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3360'>dview</a>            3360 src/diffviewer/ydiff.c     g_string_append (title, str_term_trim (dview-&gt;label[DIFF_RIGHT], len1));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3371'>dview</a>            3371 src/diffviewer/ydiff.c     WDiff *dview;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3388'>dview</a>            3388 src/diffviewer/ydiff.c     dview = g_new0 (WDiff, 1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3389'>dview</a>            3389 src/diffviewer/ydiff.c     w = WIDGET (dview);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3401'>dview</a>            3401 src/diffviewer/ydiff.c     error = dview_init (dview, "-a", file1, file2, label1, label2, DATA_SRC_MEM);       /* XXX binary diff? */</span>
+</pre>
+</body>
+</html>

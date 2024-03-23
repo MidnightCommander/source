@@ -1,0 +1,803 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>me</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L88'>me</a>                 88 lib/vfs/direntry.c         if (VFS_SUBCLASS (me)-&gt;x != NULL) \</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L89'>me</a>                 89 lib/vfs/direntry.c             VFS_SUBCLASS (me)-&gt;x</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L110'>me</a>                110 lib/vfs/direntry.c vfs_s_automake (struct vfs_class *me, struct vfs_s_inode *dir, char *path, int flags)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L119'>me</a>                119 lib/vfs/direntry.c     res = vfs_s_generate_entry (me, path, dir, (flags &amp; FL_MKDIR) != 0 ? (0777 | S_IFDIR) : 0777);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L120'>me</a>                120 lib/vfs/direntry.c     vfs_s_insert_entry (me, dir, res);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L132'>me</a>                132 lib/vfs/direntry.c vfs_s_resolve_symlink (struct vfs_class *me, struct vfs_s_entry *entry, int follow)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L156'>me</a>                156 lib/vfs/direntry.c         fullpath = vfs_s_fullpath (me, entry-&gt;dir);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L166'>me</a>                166 lib/vfs/direntry.c         VFS_SUBCLASS (me)-&gt;find_entry (me, entry-&gt;dir-&gt;super-&gt;root, linkname, follow - 1, FL_NONE);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L178'>me</a>                178 lib/vfs/direntry.c vfs_s_find_entry_tree (struct vfs_class *me, struct vfs_s_inode *root,</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L216'>me</a>                216 lib/vfs/direntry.c             ent = vfs_s_automake (me, root, path, flags);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L219'>me</a>                219 lib/vfs/direntry.c             me-&gt;verrno = ENOENT;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L226'>me</a>                226 lib/vfs/direntry.c         ent = vfs_s_resolve_symlink (me, ent,</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L240'>me</a>                240 lib/vfs/direntry.c vfs_s_find_entry_linear (struct vfs_class *me, struct vfs_s_inode *root,</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L260'>me</a>                260 lib/vfs/direntry.c         ino = vfs_s_find_inode (me, root-&gt;super, dirname, follow, flags | FL_DIR);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L261'>me</a>                261 lib/vfs/direntry.c         ent = vfs_s_find_entry_tree (me, ino, name, follow, flags);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L271'>me</a>                271 lib/vfs/direntry.c     if (ent != NULL &amp;&amp; !VFS_SUBCLASS (me)-&gt;dir_uptodate (me, ent-&gt;ino))</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L276'>me</a>                276 lib/vfs/direntry.c         vfs_s_free_entry (me, ent);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L284'>me</a>                284 lib/vfs/direntry.c         ino = vfs_s_new_inode (me, root-&gt;super, vfs_s_default_stat (me, S_IFDIR | 0755));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L285'>me</a>                285 lib/vfs/direntry.c         ent = vfs_s_new_entry (me, path, ino);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L286'>me</a>                286 lib/vfs/direntry.c         if (VFS_SUBCLASS (me)-&gt;dir_load (me, ino, path) == -1)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L288'>me</a>                288 lib/vfs/direntry.c             vfs_s_free_entry (me, ent);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L293'>me</a>                293 lib/vfs/direntry.c         vfs_s_insert_entry (me, root, ent);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L302'>me</a>                302 lib/vfs/direntry.c     if (vfs_s_resolve_symlink (me, ent, follow) == NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L317'>me</a>                317 lib/vfs/direntry.c vfs_s_new_super (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L322'>me</a>                322 lib/vfs/direntry.c     super-&gt;me = me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L329'>me</a>                329 lib/vfs/direntry.c vfs_s_insert_super (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L331'>me</a>                331 lib/vfs/direntry.c     VFS_SUBCLASS (me)-&gt;supers = g_list_prepend (VFS_SUBCLASS (me)-&gt;supers, super);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L337'>me</a>                337 lib/vfs/direntry.c vfs_s_free_super (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L341'>me</a>                341 lib/vfs/direntry.c         vfs_s_free_inode (me, super-&gt;root);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L355'>me</a>                355 lib/vfs/direntry.c     VFS_SUBCLASS (me)-&gt;supers = g_list_remove (VFS_SUBCLASS (me)-&gt;supers, super);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L357'>me</a>                357 lib/vfs/direntry.c     CALL (free_archive) (me, super);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L399'>me</a>                399 lib/vfs/direntry.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L405'>me</a>                405 lib/vfs/direntry.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L408'>me</a>                408 lib/vfs/direntry.c         vfs_s_find_inode (me, super, q,</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L414'>me</a>                414 lib/vfs/direntry.c             vfs_s_find_inode (me, super, q,</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L427'>me</a>                427 lib/vfs/direntry.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L433'>me</a>                433 lib/vfs/direntry.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L437'>me</a>                437 lib/vfs/direntry.c         me-&gt;verrno = ENOTDIR;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L445'>me</a>                445 lib/vfs/direntry.c         me-&gt;verrno = EAGAIN;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L487'>me</a>                487 lib/vfs/direntry.c     vfs_s_free_inode (dir-&gt;super-&gt;me, dir);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L528'>me</a>                528 lib/vfs/direntry.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L534'>me</a>                534 lib/vfs/direntry.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L538'>me</a>                538 lib/vfs/direntry.c         me-&gt;verrno = EINVAL;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L544'>me</a>                544 lib/vfs/direntry.c         me-&gt;verrno = EFAULT;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L562'>me</a>                562 lib/vfs/direntry.c     struct vfs_class *me = VFS_FILE_HANDLER_SUPER (fh)-&gt;me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L566'>me</a>                566 lib/vfs/direntry.c         if (VFS_SUBCLASS (me)-&gt;linear_start (me, file, file-&gt;pos) == 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L574'>me</a>                574 lib/vfs/direntry.c         return VFS_SUBCLASS (me)-&gt;linear_read (me, file, buffer, count);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L582'>me</a>                582 lib/vfs/direntry.c             me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L595'>me</a>                595 lib/vfs/direntry.c     struct vfs_class *me = VFS_FILE_HANDLER_SUPER (fh)-&gt;me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L607'>me</a>                607 lib/vfs/direntry.c             me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L631'>me</a>                631 lib/vfs/direntry.c             VFS_FILE_HANDLER_SUPER (fh)-&gt;me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L662'>me</a>                662 lib/vfs/direntry.c     struct vfs_class *me = super-&gt;me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L663'>me</a>                663 lib/vfs/direntry.c     struct vfs_s_subclass *sub = VFS_SUBCLASS (me);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L666'>me</a>                666 lib/vfs/direntry.c     if (me == NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L671'>me</a>                671 lib/vfs/direntry.c         vfs_stamp_create (me, VFS_FILE_HANDLER_SUPER (fh));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L674'>me</a>                674 lib/vfs/direntry.c         sub-&gt;linear_close (me, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L676'>me</a>                676 lib/vfs/direntry.c         res = sub-&gt;fh_close (me, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L677'>me</a>                677 lib/vfs/direntry.c     if ((me-&gt;flags &amp; VFSF_USETMP) != 0 &amp;&amp; file-&gt;changed &amp;&amp; sub-&gt;file_store != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L681'>me</a>                681 lib/vfs/direntry.c         s = vfs_s_fullpath (me, file-&gt;ino);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L687'>me</a>                687 lib/vfs/direntry.c             res = sub-&gt;file_store (me, fh, s, file-&gt;ino-&gt;localname);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L690'>me</a>                690 lib/vfs/direntry.c         vfs_s_invalidate (me, super);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L699'>me</a>                699 lib/vfs/direntry.c     vfs_s_free_inode (me, file-&gt;ino);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L723'>me</a>                723 lib/vfs/direntry.c vfs_s_fill_names (struct vfs_class *me, fill_names_f func)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L727'>me</a>                727 lib/vfs/direntry.c     for (iter = VFS_SUBCLASS (me)-&gt;supers; iter != NULL; iter = g_list_next (iter))</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L732'>me</a>                732 lib/vfs/direntry.c         name = g_strconcat (super-&gt;name, PATH_SEP_STR, me-&gt;prefix, VFS_PATH_URL_DELIMITER,</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L742'>me</a>                742 lib/vfs/direntry.c vfs_s_ferrno (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L744'>me</a>                744 lib/vfs/direntry.c     return me-&gt;verrno;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L766'>me</a>                766 lib/vfs/direntry.c         const struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L768'>me</a>                768 lib/vfs/direntry.c         me = vfs_path_get_last_path_vfs (vpath);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L769'>me</a>                769 lib/vfs/direntry.c         if ((me-&gt;flags &amp; VFSF_USETMP) != 0 &amp;&amp; fh-&gt;ino != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L798'>me</a>                798 lib/vfs/direntry.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L800'>me</a>                800 lib/vfs/direntry.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L816'>me</a>                816 lib/vfs/direntry.c                 vfs_s_invalidate (me, ino-&gt;super);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L821'>me</a>                821 lib/vfs/direntry.c         me-&gt;logfile = fopen ((char *) arg, "w");</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L824'>me</a>                824 lib/vfs/direntry.c         me-&gt;flush = TRUE;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L860'>me</a>                860 lib/vfs/direntry.c     vfs_s_free_super (VFS_SUPER (id)-&gt;me, VFS_SUPER (id));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L866'>me</a>                866 lib/vfs/direntry.c vfs_s_dir_uptodate (struct vfs_class *me, struct vfs_s_inode *ino)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L870'>me</a>                870 lib/vfs/direntry.c     if (me-&gt;flush)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L872'>me</a>                872 lib/vfs/direntry.c         me-&gt;flush = FALSE;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L886'>me</a>                886 lib/vfs/direntry.c vfs_s_new_inode (struct vfs_class *me, struct vfs_s_super *super, struct stat *initstat)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L899'>me</a>                899 lib/vfs/direntry.c     ino-&gt;st.st_ino = VFS_SUBCLASS (me)-&gt;inode_counter++;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L900'>me</a>                900 lib/vfs/direntry.c     ino-&gt;st.st_dev = VFS_SUBCLASS (me)-&gt;rdev;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L904'>me</a>                904 lib/vfs/direntry.c     CALL (init_inode) (me, ino);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L912'>me</a>                912 lib/vfs/direntry.c vfs_s_free_inode (struct vfs_class *me, struct vfs_s_inode *ino)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L929'>me</a>                929 lib/vfs/direntry.c         vfs_s_free_entry (me, entry);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L935'>me</a>                935 lib/vfs/direntry.c     CALL (free_inode) (me, ino);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L937'>me</a>                937 lib/vfs/direntry.c     if ((me-&gt;flags &amp; VFSF_USETMP) != 0 &amp;&amp; ino-&gt;localname != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L949'>me</a>                949 lib/vfs/direntry.c vfs_s_new_entry (struct vfs_class *me, const char *name, struct vfs_s_inode *inode)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L958'>me</a>                958 lib/vfs/direntry.c     CALL (init_entry) (me, entry);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L966'>me</a>                966 lib/vfs/direntry.c vfs_s_free_entry (struct vfs_class *me, struct vfs_s_entry *ent)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L976'>me</a>                976 lib/vfs/direntry.c         vfs_s_free_inode (me, ent-&gt;ino);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L985'>me</a>                985 lib/vfs/direntry.c vfs_s_insert_entry (struct vfs_class *me, struct vfs_s_inode *dir, struct vfs_s_entry *ent)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L987'>me</a>                987 lib/vfs/direntry.c     (void) me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1009'>me</a>               1009 lib/vfs/direntry.c vfs_s_default_stat (struct vfs_class *me, mode_t mode)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1014'>me</a>               1014 lib/vfs/direntry.c     (void) me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1080'>me</a>               1080 lib/vfs/direntry.c vfs_s_generate_entry (struct vfs_class *me, const char *name, struct vfs_s_inode *parent,</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1086'>me</a>               1086 lib/vfs/direntry.c     st = vfs_s_default_stat (me, mode);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1087'>me</a>               1087 lib/vfs/direntry.c     inode = vfs_s_new_inode (me, parent-&gt;super, st);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1089'>me</a>               1089 lib/vfs/direntry.c     return vfs_s_new_entry (me, name, inode);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1095'>me</a>               1095 lib/vfs/direntry.c vfs_s_find_inode (struct vfs_class *me, const struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1100'>me</a>               1100 lib/vfs/direntry.c     if (((me-&gt;flags &amp; VFSF_REMOTE) == 0) &amp;&amp; (*path == '\0'))</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1103'>me</a>               1103 lib/vfs/direntry.c     ent = VFS_SUBCLASS (me)-&gt;find_entry (me, super-&gt;root, path, follow, flags);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1235'>me</a>               1235 lib/vfs/direntry.c vfs_s_invalidate (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1239'>me</a>               1239 lib/vfs/direntry.c         vfs_s_free_inode (me, super-&gt;root);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1240'>me</a>               1240 lib/vfs/direntry.c         super-&gt;root = vfs_s_new_inode (me, super, vfs_s_default_stat (me, S_IFDIR | 0755));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1247'>me</a>               1247 lib/vfs/direntry.c vfs_s_fullpath (struct vfs_class *me, struct vfs_s_inode *ino)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1252'>me</a>               1252 lib/vfs/direntry.c     if ((me-&gt;flags &amp; VFSF_USETMP) == 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1303'>me</a>               1303 lib/vfs/direntry.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1310'>me</a>               1310 lib/vfs/direntry.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1312'>me</a>               1312 lib/vfs/direntry.c     ino = vfs_s_find_inode (me, super, q, LINK_FOLLOW, FL_NONE);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1315'>me</a>               1315 lib/vfs/direntry.c         me-&gt;verrno = EEXIST;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1319'>me</a>               1319 lib/vfs/direntry.c     s = VFS_SUBCLASS (me);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1328'>me</a>               1328 lib/vfs/direntry.c         if ((flags &amp; O_CREAT) == 0 || me-&gt;write == NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1332'>me</a>               1332 lib/vfs/direntry.c         dir = vfs_s_find_inode (me, super, name, LINK_FOLLOW, FL_DIR);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1338'>me</a>               1338 lib/vfs/direntry.c         ent = vfs_s_generate_entry (me, name, dir, 0755);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1340'>me</a>               1340 lib/vfs/direntry.c         vfs_s_insert_entry (me, dir, ent);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1346'>me</a>               1346 lib/vfs/direntry.c             tmp_handle = vfs_mkstemps (&amp;tmp_vpath, me-&gt;name, name);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1363'>me</a>               1363 lib/vfs/direntry.c         me-&gt;verrno = EISDIR;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1379'>me</a>               1379 lib/vfs/direntry.c         if (s-&gt;fh_open != NULL &amp;&amp; s-&gt;fh_open (me, fh, flags, mode) != 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1392'>me</a>               1392 lib/vfs/direntry.c             me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1398'>me</a>               1398 lib/vfs/direntry.c     vfs_rmstamp (me, (vfsid) super);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1432'>me</a>               1432 lib/vfs/direntry.c vfs_s_retrieve_file (struct vfs_class *me, struct vfs_s_inode *ino)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1442'>me</a>               1442 lib/vfs/direntry.c     struct vfs_s_subclass *s = VFS_SUBCLASS (me);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1444'>me</a>               1444 lib/vfs/direntry.c     if ((me-&gt;flags &amp; VFSF_USETMP) == 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1447'>me</a>               1447 lib/vfs/direntry.c     handle = vfs_mkstemps (&amp;tmp_vpath, me-&gt;name, ino-&gt;ent-&gt;name);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1451'>me</a>               1451 lib/vfs/direntry.c         me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1457'>me</a>               1457 lib/vfs/direntry.c     if (s-&gt;linear_start (me, fh, 0) == 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1464'>me</a>               1464 lib/vfs/direntry.c     while ((n = s-&gt;linear_read (me, fh, buffer, sizeof (buffer))) != 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1472'>me</a>               1472 lib/vfs/direntry.c         vfs_s_print_stats (me-&gt;name, _("Getting file"), ino-&gt;ent-&gt;name, total, stat_size);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1481'>me</a>               1481 lib/vfs/direntry.c                 me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1485'>me</a>               1485 lib/vfs/direntry.c     s-&gt;linear_close (me, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1493'>me</a>               1493 lib/vfs/direntry.c     s-&gt;linear_close (me, fh);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1576'>me</a>               1576 lib/vfs/direntry.c     const struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1578'>me</a>               1578 lib/vfs/direntry.c     me = vfs_path_get_last_path_vfs (vpath);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1579'>me</a>               1579 lib/vfs/direntry.c     if (me == NULL || me-&gt;getid == NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1582'>me</a>               1582 lib/vfs/direntry.c     return me-&gt;getid (vpath);</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1616'>me</a>               1616 lib/vfs/direntry.c vfs_s_get_line (struct vfs_class *me, int sock, char *buf, int buf_len, char term)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1618'>me</a>               1618 lib/vfs/direntry.c     FILE *logfile = me-&gt;logfile;</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1668'>me</a>               1668 lib/vfs/direntry.c vfs_s_get_line_interruptible (struct vfs_class *me, char *buffer, int size, int fd)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L1673'>me</a>               1673 lib/vfs/direntry.c     (void) me;</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L189'>me</a>                189 lib/vfs/gc.c       struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L191'>me</a>                191 lib/vfs/gc.c       me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L193'>me</a>                193 lib/vfs/gc.c       vfs_addstamp (me, id);</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L208'>me</a>                208 lib/vfs/gc.c       struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L219'>me</a>                219 lib/vfs/gc.c       me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L222'>me</a>                222 lib/vfs/gc.c       vfs_rmstamp (me, nvfsid);</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L224'>me</a>                224 lib/vfs/gc.c       if (!(id == NULL || (me == vclass &amp;&amp; nvfsid == id)))</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L319'>me</a>                319 lib/vfs/gc.c       struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L321'>me</a>                321 lib/vfs/gc.c       me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L323'>me</a>                323 lib/vfs/gc.c       vfs_stamp_create (me, id);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L195'>me</a>                195 lib/vfs/interface.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L213'>me</a>                213 lib/vfs/interface.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L214'>me</a>                214 lib/vfs/interface.c     if (me != NULL &amp;&amp; me-&gt;open != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L219'>me</a>                219 lib/vfs/interface.c         info = me-&gt;open (vpath, flags, mode);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L221'>me</a>                221 lib/vfs/interface.c             errno = vfs_ferrno (me);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L223'>me</a>                223 lib/vfs/interface.c             result = vfs_new_handle (me, info);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L239'>me</a>                239 lib/vfs/interface.c     struct vfs_class *me; \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L244'>me</a>                244 lib/vfs/interface.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath)); \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L245'>me</a>                245 lib/vfs/interface.c     if (me == NULL) \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L248'>me</a>                248 lib/vfs/interface.c     result = me-&gt;name != NULL ? me-&gt;name callarg : -1; \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L250'>me</a>                250 lib/vfs/interface.c         errno = me-&gt;name != NULL ? vfs_ferrno (me) : ENOTSUP; \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L276'>me</a>                276 lib/vfs/interface.c         struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L278'>me</a>                278 lib/vfs/interface.c         me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath2));</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L279'>me</a>                279 lib/vfs/interface.c         if (me != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L281'>me</a>                281 lib/vfs/interface.c             result = me-&gt;symlink != NULL ? me-&gt;symlink (vpath1, vpath2) : -1;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L283'>me</a>                283 lib/vfs/interface.c                 errno = me-&gt;symlink != NULL ? vfs_ferrno (me) : ENOTSUP;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L367'>me</a>                367 lib/vfs/interface.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L372'>me</a>                372 lib/vfs/interface.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L373'>me</a>                373 lib/vfs/interface.c     if (me != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L374'>me</a>                374 lib/vfs/interface.c         result = me-&gt;setctl != NULL ? me-&gt;setctl (vpath, ctlop, arg) : 0;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L538'>me</a>                538 lib/vfs/interface.c     struct vfs_class *me; \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L543'>me</a>                543 lib/vfs/interface.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath)); \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L544'>me</a>                544 lib/vfs/interface.c     if (me != NULL) \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L546'>me</a>                546 lib/vfs/interface.c         result = me-&gt;name ? me-&gt;name (vpath, buf) : -1; \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L548'>me</a>                548 lib/vfs/interface.c             errno = me-&gt;name ? vfs_ferrno (me) : ENOTSUP; \</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L563'>me</a>                563 lib/vfs/interface.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L568'>me</a>                568 lib/vfs/interface.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (pathname_vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L569'>me</a>                569 lib/vfs/interface.c     if (me != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L571'>me</a>                571 lib/vfs/interface.c         result = me-&gt;getlocalcopy != NULL ?</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L572'>me</a>                572 lib/vfs/interface.c             me-&gt;getlocalcopy (pathname_vpath) : mc_def_getlocalcopy (pathname_vpath);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L574'>me</a>                574 lib/vfs/interface.c             errno = vfs_ferrno (me);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L586'>me</a>                586 lib/vfs/interface.c     const struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L591'>me</a>                591 lib/vfs/interface.c     me = vfs_path_get_last_path_vfs (pathname_vpath);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L592'>me</a>                592 lib/vfs/interface.c     if (me != NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L593'>me</a>                593 lib/vfs/interface.c         result = me-&gt;ungetlocalcopy != NULL ?</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L594'>me</a>                594 lib/vfs/interface.c             me-&gt;ungetlocalcopy (pathname_vpath, local_vpath, has_changed) :</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L616'>me</a>                616 lib/vfs/interface.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L631'>me</a>                631 lib/vfs/interface.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (cd_vpath));</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L632'>me</a>                632 lib/vfs/interface.c     if (me == NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L638'>me</a>                638 lib/vfs/interface.c     if (me-&gt;chdir == NULL)</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L644'>me</a>                644 lib/vfs/interface.c     result = me-&gt;chdir (cd_vpath);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L647'>me</a>                647 lib/vfs/interface.c         errno = vfs_ferrno (me);</span>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L656'>me</a>                656 lib/vfs/interface.c     current_vfs = me;</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.c.html#L640'>me</a>                640 lib/vfs/vfs.c      const struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.c.html#L660'>me</a>                660 lib/vfs/vfs.c      me = vfs_path_get_last_path_vfs (vfs_get_raw_current_dir ());</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.c.html#L661'>me</a>                661 lib/vfs/vfs.c      if ((me-&gt;flags &amp; VFSF_LOCAL) != 0)</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L142'>me</a>                142 lib/vfs/vfs.h      int (*init) (struct vfs_class * me);</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L143'>me</a>                143 lib/vfs/vfs.h      void (*done) (struct vfs_class * me);</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L149'>me</a>                149 lib/vfs/vfs.h      void (*fill_names) (struct vfs_class * me, fill_names_f);</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L155'>me</a>                155 lib/vfs/vfs.h      int (*which) (struct vfs_class * me, const char *path);</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L184'>me</a>                184 lib/vfs/vfs.h      int (*ferrno) (struct vfs_class * me);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L35'>me</a>                 35 lib/vfs/xdirentry.h #define ERRNOR(a, b) do { me-&gt;verrno = a; return b; } while (0)</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L62'>me</a>                 62 lib/vfs/xdirentry.h     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L124'>me</a>                124 lib/vfs/xdirentry.h     int (*init_inode) (struct vfs_class * me, struct vfs_s_inode * ino);        /* optional */</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L125'>me</a>                125 lib/vfs/xdirentry.h     void (*free_inode) (struct vfs_class * me, struct vfs_s_inode * ino);       /* optional */</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L126'>me</a>                126 lib/vfs/xdirentry.h     int (*init_entry) (struct vfs_class * me, struct vfs_s_entry * entry);      /* optional */</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L131'>me</a>                131 lib/vfs/xdirentry.h     struct vfs_s_super *(*new_archive) (struct vfs_class * me);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L134'>me</a>                134 lib/vfs/xdirentry.h     void (*free_archive) (struct vfs_class * me, struct vfs_s_super * psup);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L137'>me</a>                137 lib/vfs/xdirentry.h     int (*fh_open) (struct vfs_class * me, vfs_file_handler_t * fh, int flags, mode_t mode);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L138'>me</a>                138 lib/vfs/xdirentry.h     int (*fh_close) (struct vfs_class * me, vfs_file_handler_t * fh);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L141'>me</a>                141 lib/vfs/xdirentry.h     struct vfs_s_entry *(*find_entry) (struct vfs_class * me,</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L144'>me</a>                144 lib/vfs/xdirentry.h     int (*dir_load) (struct vfs_class * me, struct vfs_s_inode * ino, const char *path);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L145'>me</a>                145 lib/vfs/xdirentry.h     gboolean (*dir_uptodate) (struct vfs_class * me, struct vfs_s_inode * ino);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L146'>me</a>                146 lib/vfs/xdirentry.h     int (*file_store) (struct vfs_class * me, vfs_file_handler_t * fh, char *path, char *localname);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L148'>me</a>                148 lib/vfs/xdirentry.h     int (*linear_start) (struct vfs_class * me, vfs_file_handler_t * fh, off_t from);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L149'>me</a>                149 lib/vfs/xdirentry.h     ssize_t (*linear_read) (struct vfs_class * me, vfs_file_handler_t * fh, void *buf, size_t len);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L150'>me</a>                150 lib/vfs/xdirentry.h     void (*linear_close) (struct vfs_class * me, vfs_file_handler_t * fh);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L159'>me</a>                159 lib/vfs/xdirentry.h struct vfs_s_inode *vfs_s_new_inode (struct vfs_class *me,</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L161'>me</a>                161 lib/vfs/xdirentry.h void vfs_s_free_inode (struct vfs_class *me, struct vfs_s_inode *ino);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L163'>me</a>                163 lib/vfs/xdirentry.h struct vfs_s_entry *vfs_s_new_entry (struct vfs_class *me, const char *name,</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L165'>me</a>                165 lib/vfs/xdirentry.h void vfs_s_free_entry (struct vfs_class *me, struct vfs_s_entry *ent);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L166'>me</a>                166 lib/vfs/xdirentry.h void vfs_s_insert_entry (struct vfs_class *me, struct vfs_s_inode *dir, struct vfs_s_entry *ent);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L168'>me</a>                168 lib/vfs/xdirentry.h struct stat *vfs_s_default_stat (struct vfs_class *me, mode_t mode);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L170'>me</a>                170 lib/vfs/xdirentry.h struct vfs_s_entry *vfs_s_generate_entry (struct vfs_class *me, const char *name,</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L172'>me</a>                172 lib/vfs/xdirentry.h struct vfs_s_inode *vfs_s_find_inode (struct vfs_class *me,</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L175'>me</a>                175 lib/vfs/xdirentry.h struct vfs_s_inode *vfs_s_find_root (struct vfs_class *me, struct vfs_s_entry *entry);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L183'>me</a>                183 lib/vfs/xdirentry.h void vfs_s_invalidate (struct vfs_class *me, struct vfs_s_super *super);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L184'>me</a>                184 lib/vfs/xdirentry.h char *vfs_s_fullpath (struct vfs_class *me, struct vfs_s_inode *ino);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L190'>me</a>                190 lib/vfs/xdirentry.h int vfs_s_get_line (struct vfs_class *me, int sock, char *buf, int buf_len, char term);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L191'>me</a>                191 lib/vfs/xdirentry.h int vfs_s_get_line_interruptible (struct vfs_class *me, char *buffer, int size, int fd);</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L193'>me</a>                193 lib/vfs/xdirentry.h int vfs_s_retrieve_file (struct vfs_class *me, struct vfs_s_inode *ino);</span>
+<span class='curline'><a href='../S/lib--widget--menu.h.html#L46'>me</a>                 46 lib/widget/menu.h void menu_entry_free (menu_entry_t * me);</span>
+<span class='curline'><a href='../S/lib--widget--mouse.c.html#L220'>me</a>                220 lib/widget/mouse.c     mouse_event_t me;</span>
+<span class='curline'><a href='../S/lib--widget--mouse.c.html#L222'>me</a>                222 lib/widget/mouse.c     me = mouse_translate_event (w, event);</span>
+<span class='curline'><a href='../S/lib--widget--mouse.c.html#L224'>me</a>                224 lib/widget/mouse.c     return mouse_process_event (w, &amp;me);</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L629'>me</a>                629 src/editor/editwidget.c     GSList *me;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L653'>me</a>                653 src/editor/editwidget.c     for (me = m; me != NULL; me = g_slist_next (me))</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L655'>me</a>                655 src/editor/editwidget.c         e = EDIT (me-&gt;data);</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L664'>me</a>                664 src/editor/editwidget.c     if (me == NULL)</span>
+<span class='curline'><a href='../S/src--filemanager--filemanager.c.html#L468'>me</a>                468 src/filemanager/filemanager.c         const struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--filemanager--filemanager.c.html#L470'>me</a>                470 src/filemanager/filemanager.c         me = vfs_path_get_last_path_vfs (panel-&gt;cwd_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--filemanager.c.html#L471'>me</a>                471 src/filemanager/filemanager.c         if (me != vclass)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L381'>me</a>                381 src/filemanager/mountlist.c free_mount_entry (struct mount_entry *me)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L383'>me</a>                383 src/filemanager/mountlist.c     if (me == NULL)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L385'>me</a>                385 src/filemanager/mountlist.c     g_free (me-&gt;me_devname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L386'>me</a>                386 src/filemanager/mountlist.c     g_free (me-&gt;me_mountdir);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L387'>me</a>                387 src/filemanager/mountlist.c     g_free (me-&gt;me_mntroot);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L388'>me</a>                388 src/filemanager/mountlist.c     if (me-&gt;me_type_malloced)</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L389'>me</a>                389 src/filemanager/mountlist.c         g_free (me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L390'>me</a>                390 src/filemanager/mountlist.c     g_free (me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L620'>me</a>                620 src/filemanager/mountlist.c     struct mount_entry *me;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L682'>me</a>                682 src/filemanager/mountlist.c                 me = g_malloc (sizeof *me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L684'>me</a>                684 src/filemanager/mountlist.c                 me-&gt;me_devname = g_strdup (dash + source_s);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L685'>me</a>                685 src/filemanager/mountlist.c                 me-&gt;me_mountdir = g_strdup (line + target_s);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L686'>me</a>                686 src/filemanager/mountlist.c                 me-&gt;me_mntroot = g_strdup (line + mntroot_s);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L687'>me</a>                687 src/filemanager/mountlist.c                 me-&gt;me_type = g_strdup (dash + type_s);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L688'>me</a>                688 src/filemanager/mountlist.c                 me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L689'>me</a>                689 src/filemanager/mountlist.c                 me-&gt;me_dev = makedev (devmaj, devmin);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L694'>me</a>                694 src/filemanager/mountlist.c                 me-&gt;me_dummy = ME_DUMMY (me-&gt;me_devname, me-&gt;me_type, FALSE);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L695'>me</a>                695 src/filemanager/mountlist.c                 me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L697'>me</a>                697 src/filemanager/mountlist.c                 mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L730'>me</a>                730 src/filemanager/mountlist.c                 me = g_malloc (sizeof (*me));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L731'>me</a>                731 src/filemanager/mountlist.c                 me-&gt;me_devname = g_strdup (mnt-&gt;mnt_fsname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L732'>me</a>                732 src/filemanager/mountlist.c                 me-&gt;me_mountdir = g_strdup (mnt-&gt;mnt_dir);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L733'>me</a>                733 src/filemanager/mountlist.c                 me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L734'>me</a>                734 src/filemanager/mountlist.c                 me-&gt;me_type = g_strdup (mnt-&gt;mnt_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L735'>me</a>                735 src/filemanager/mountlist.c                 me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L736'>me</a>                736 src/filemanager/mountlist.c                 me-&gt;me_dummy = ME_DUMMY (me-&gt;me_devname, me-&gt;me_type, bind);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L737'>me</a>                737 src/filemanager/mountlist.c                 me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L738'>me</a>                738 src/filemanager/mountlist.c                 me-&gt;me_dev = dev_from_mount_options (mnt-&gt;mnt_opts);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L740'>me</a>                740 src/filemanager/mountlist.c                 mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L761'>me</a>                761 src/filemanager/mountlist.c             me = g_malloc (sizeof (*me));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L762'>me</a>                762 src/filemanager/mountlist.c             me-&gt;me_devname = g_strdup (fsp-&gt;f_mntfromname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L763'>me</a>                763 src/filemanager/mountlist.c             me-&gt;me_mountdir = g_strdup (fsp-&gt;f_mntonname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L764'>me</a>                764 src/filemanager/mountlist.c             me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L765'>me</a>                765 src/filemanager/mountlist.c             me-&gt;me_type = fs_type;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L766'>me</a>                766 src/filemanager/mountlist.c             me-&gt;me_type_malloced = 0;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L767'>me</a>                767 src/filemanager/mountlist.c             me-&gt;me_dummy = ME_DUMMY (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L768'>me</a>                768 src/filemanager/mountlist.c             me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L769'>me</a>                769 src/filemanager/mountlist.c             me-&gt;me_dev = (dev_t) (-1);  /* Magic; means not known yet. */</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L771'>me</a>                771 src/filemanager/mountlist.c             mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L786'>me</a>                786 src/filemanager/mountlist.c             me = g_malloc (sizeof (*me));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L787'>me</a>                787 src/filemanager/mountlist.c             me-&gt;me_devname = g_strdup (fsp-&gt;f_mntfromname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L788'>me</a>                788 src/filemanager/mountlist.c             me-&gt;me_mountdir = g_strdup (fsp-&gt;f_mntonname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L789'>me</a>                789 src/filemanager/mountlist.c             me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L790'>me</a>                790 src/filemanager/mountlist.c             me-&gt;me_type = g_strdup (fsp-&gt;f_fstypename);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L791'>me</a>                791 src/filemanager/mountlist.c             me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L792'>me</a>                792 src/filemanager/mountlist.c             me-&gt;me_dummy = ME_DUMMY (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L793'>me</a>                793 src/filemanager/mountlist.c             me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L794'>me</a>                794 src/filemanager/mountlist.c             me-&gt;me_dev = (dev_t) (-1);  /* Magic; means not known yet. */</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L796'>me</a>                796 src/filemanager/mountlist.c             mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L876'>me</a>                876 src/filemanager/mountlist.c                 me = g_malloc (sizeof (*me));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L877'>me</a>                877 src/filemanager/mountlist.c                 me-&gt;me_devname =</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L879'>me</a>                879 src/filemanager/mountlist.c                 me-&gt;me_mountdir = g_strdup (re != NULL ? re-&gt;name : fi.fsh_name);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L880'>me</a>                880 src/filemanager/mountlist.c                 me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L881'>me</a>                881 src/filemanager/mountlist.c                 me-&gt;me_type = g_strdup (fi.fsh_name);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L882'>me</a>                882 src/filemanager/mountlist.c                 me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L883'>me</a>                883 src/filemanager/mountlist.c                 me-&gt;me_dev = fi.dev;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L884'>me</a>                884 src/filemanager/mountlist.c                 me-&gt;me_dummy = 0;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L885'>me</a>                885 src/filemanager/mountlist.c                 me-&gt;me_remote = (fi.flags &amp; B_FS_IS_SHARED) != 0;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L887'>me</a>                887 src/filemanager/mountlist.c                 mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L928'>me</a>                928 src/filemanager/mountlist.c             me = g_malloc (sizeof (*me));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L929'>me</a>                929 src/filemanager/mountlist.c             me-&gt;me_devname = g_strdup (stats[counter].f_mntfromname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L930'>me</a>                930 src/filemanager/mountlist.c             me-&gt;me_mountdir = g_strdup (stats[counter].f_mntonname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L931'>me</a>                931 src/filemanager/mountlist.c             me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L932'>me</a>                932 src/filemanager/mountlist.c             me-&gt;me_type = g_strdup (FS_TYPE (stats[counter]));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L933'>me</a>                933 src/filemanager/mountlist.c             me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L934'>me</a>                934 src/filemanager/mountlist.c             me-&gt;me_dummy = ME_DUMMY (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L935'>me</a>                935 src/filemanager/mountlist.c             me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L936'>me</a>                936 src/filemanager/mountlist.c             me-&gt;me_dev = (dev_t) (-1);  /* Magic; means not known yet. */</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L938'>me</a>                938 src/filemanager/mountlist.c             mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L957'>me</a>                957 src/filemanager/mountlist.c             me = g_malloc (sizeof (*me));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L958'>me</a>                958 src/filemanager/mountlist.c             me-&gt;me_devname = g_strdup (mnt.mt_dev);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L959'>me</a>                959 src/filemanager/mountlist.c             me-&gt;me_mountdir = g_strdup (mnt.mt_filsys);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L960'>me</a>                960 src/filemanager/mountlist.c             me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L961'>me</a>                961 src/filemanager/mountlist.c             me-&gt;me_dev = (dev_t) (-1);  /* Magic; means not known yet. */</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L962'>me</a>                962 src/filemanager/mountlist.c             me-&gt;me_type = "";</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L963'>me</a>                963 src/filemanager/mountlist.c             me-&gt;me_type_malloced = 0;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L968'>me</a>                968 src/filemanager/mountlist.c                 if (statfs (me-&gt;me_mountdir, &amp;fsd, sizeof (fsd), 0) != -1</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L971'>me</a>                971 src/filemanager/mountlist.c                     me-&gt;me_type = g_strdup (typebuf);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L972'>me</a>                972 src/filemanager/mountlist.c                     me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L975'>me</a>                975 src/filemanager/mountlist.c             me-&gt;me_dummy = ME_DUMMY (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L976'>me</a>                976 src/filemanager/mountlist.c             me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L978'>me</a>                978 src/filemanager/mountlist.c             mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1013'>me</a>               1013 src/filemanager/mountlist.c                 me = g_malloc (sizeof *me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1014'>me</a>               1014 src/filemanager/mountlist.c                 me-&gt;me_devname = g_strdup (mnt.mnt_special);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1015'>me</a>               1015 src/filemanager/mountlist.c                 me-&gt;me_mountdir = g_strdup (mnt.mnt_mountp);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1016'>me</a>               1016 src/filemanager/mountlist.c                 me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1017'>me</a>               1017 src/filemanager/mountlist.c                 me-&gt;me_type = g_strdup (mnt.mnt_fstype);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1018'>me</a>               1018 src/filemanager/mountlist.c                 me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1019'>me</a>               1019 src/filemanager/mountlist.c                 me-&gt;me_dummy = MNT_IGNORE (&amp;mnt) != 0;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1020'>me</a>               1020 src/filemanager/mountlist.c                 me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1021'>me</a>               1021 src/filemanager/mountlist.c                 me-&gt;me_dev = makedev (mnt.mnt_major, mnt.mnt_minor);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1023'>me</a>               1023 src/filemanager/mountlist.c                 mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1084'>me</a>               1084 src/filemanager/mountlist.c                 me = g_malloc (sizeof (*me));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1085'>me</a>               1085 src/filemanager/mountlist.c                 me-&gt;me_devname = g_strdup (mnt.mnt_special);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1086'>me</a>               1086 src/filemanager/mountlist.c                 me-&gt;me_mountdir = g_strdup (mnt.mnt_mountp);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1087'>me</a>               1087 src/filemanager/mountlist.c                 me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1088'>me</a>               1088 src/filemanager/mountlist.c                 me-&gt;me_type = g_strdup (mnt.mnt_fstype);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1089'>me</a>               1089 src/filemanager/mountlist.c                 me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1090'>me</a>               1090 src/filemanager/mountlist.c                 me-&gt;me_dummy = MNT_IGNORE (&amp;mnt) != 0;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1091'>me</a>               1091 src/filemanager/mountlist.c                 me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1092'>me</a>               1092 src/filemanager/mountlist.c                 me-&gt;me_dev = dev_from_mount_options (mnt.mnt_mntopts);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1094'>me</a>               1094 src/filemanager/mountlist.c                 mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1143'>me</a>               1143 src/filemanager/mountlist.c             me = g_malloc (sizeof (*me));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1148'>me</a>               1148 src/filemanager/mountlist.c                 me-&gt;me_remote = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1152'>me</a>               1152 src/filemanager/mountlist.c                 me-&gt;me_devname = g_strconcat (host, ":", dir, (char *) NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1156'>me</a>               1156 src/filemanager/mountlist.c                 me-&gt;me_remote = 0;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1157'>me</a>               1157 src/filemanager/mountlist.c                 me-&gt;me_devname = g_strdup (thisent + vmp-&gt;vmt_data[VMT_OBJECT].vmt_off);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1159'>me</a>               1159 src/filemanager/mountlist.c             me-&gt;me_mountdir = g_strdup (thisent + vmp-&gt;vmt_data[VMT_STUB].vmt_off);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1160'>me</a>               1160 src/filemanager/mountlist.c             me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1161'>me</a>               1161 src/filemanager/mountlist.c             me-&gt;me_type = g_strdup (fstype_to_string (vmp-&gt;vmt_gfstype));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1162'>me</a>               1162 src/filemanager/mountlist.c             me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1165'>me</a>               1165 src/filemanager/mountlist.c             me-&gt;me_dummy = (ignore</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1169'>me</a>               1169 src/filemanager/mountlist.c             me-&gt;me_dev = (dev_t) (-1);  /* vmt_fsid might be the info we want.  */</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1171'>me</a>               1171 src/filemanager/mountlist.c             mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1199'>me</a>               1199 src/filemanager/mountlist.c                 me = g_malloc (sizeof *me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1200'>me</a>               1200 src/filemanager/mountlist.c                 me-&gt;me_devname = g_strdup (dev.f_mntfromname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1201'>me</a>               1201 src/filemanager/mountlist.c                 me-&gt;me_mountdir = g_strdup (dev.f_mntonname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1202'>me</a>               1202 src/filemanager/mountlist.c                 me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1203'>me</a>               1203 src/filemanager/mountlist.c                 me-&gt;me_type = g_strdup (dev.f_fstypename);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1204'>me</a>               1204 src/filemanager/mountlist.c                 me-&gt;me_type_malloced = 1;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1205'>me</a>               1205 src/filemanager/mountlist.c                 me-&gt;me_dummy = ME_DUMMY (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1206'>me</a>               1206 src/filemanager/mountlist.c                 me-&gt;me_remote = ME_REMOTE (me-&gt;me_devname, me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1207'>me</a>               1207 src/filemanager/mountlist.c                 me-&gt;me_dev = (dev_t) (-1);      /* Magic; means not known yet. */</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1209'>me</a>               1209 src/filemanager/mountlist.c                 mount_list = g_slist_prepend (mount_list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1247'>me</a>               1247 src/filemanager/mountlist.c     struct mount_entry *me = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1252'>me</a>               1252 src/filemanager/mountlist.c         me = (struct mount_entry *) list-&gt;data;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1254'>me</a>               1254 src/filemanager/mountlist.c         g_free (me-&gt;me_devname);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1255'>me</a>               1255 src/filemanager/mountlist.c         g_free (me-&gt;me_mountdir);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1256'>me</a>               1256 src/filemanager/mountlist.c         g_free (me-&gt;me_mntroot);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1257'>me</a>               1257 src/filemanager/mountlist.c         g_free (me-&gt;me_type);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1261'>me</a>               1261 src/filemanager/mountlist.c         me = (struct mount_entry *) g_malloc (sizeof (struct mount_entry));</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1262'>me</a>               1262 src/filemanager/mountlist.c         list = g_slist_prepend (list, me);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1312'>me</a>               1312 src/filemanager/mountlist.c     me-&gt;me_devname = g_strdup (dev);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1313'>me</a>               1313 src/filemanager/mountlist.c     me-&gt;me_mountdir = g_strdup (dir);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1314'>me</a>               1314 src/filemanager/mountlist.c     me-&gt;me_mntroot = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1315'>me</a>               1315 src/filemanager/mountlist.c     me-&gt;me_type = g_strdup (tp);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1316'>me</a>               1316 src/filemanager/mountlist.c     me-&gt;me_dev = de.disk_type;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1504'>me</a>               1504 src/filemanager/mountlist.c         struct mount_entry *me;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1507'>me</a>               1507 src/filemanager/mountlist.c         me = (struct mount_entry *) temp-&gt;data;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1508'>me</a>               1508 src/filemanager/mountlist.c         i = strlen (me-&gt;me_mountdir);</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1509'>me</a>               1509 src/filemanager/mountlist.c         if (i &gt; len &amp;&amp; (strncmp (path, me-&gt;me_mountdir, i) == 0) &amp;&amp;</span>
+<span class='curline'><a href='../S/src--filemanager--mountlist.c.html#L1513'>me</a>               1513 src/filemanager/mountlist.c             entry = me;</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L144'>me</a>                144 src/vfs/cpio/cpio.c static ssize_t cpio_find_head (struct vfs_class *me, struct vfs_s_super *super);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L145'>me</a>                145 src/vfs/cpio/cpio.c static ssize_t cpio_read_bin_head (struct vfs_class *me, struct vfs_s_super *super);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L146'>me</a>                146 src/vfs/cpio/cpio.c static ssize_t cpio_read_oldc_head (struct vfs_class *me, struct vfs_s_super *super);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L147'>me</a>                147 src/vfs/cpio/cpio.c static ssize_t cpio_read_crc_head (struct vfs_class *me, struct vfs_s_super *super);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L193'>me</a>                193 src/vfs/cpio/cpio.c cpio_new_archive (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L198'>me</a>                198 src/vfs/cpio/cpio.c     arch-&gt;base.me = me;</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L208'>me</a>                208 src/vfs/cpio/cpio.c cpio_free_archive (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L212'>me</a>                212 src/vfs/cpio/cpio.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L226'>me</a>                226 src/vfs/cpio/cpio.c cpio_open_cpio_file (struct vfs_class *me, struct vfs_s_super *super, const vfs_path_t * vpath)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L272'>me</a>                272 src/vfs/cpio/cpio.c     root = vfs_s_new_inode (me, super, &amp;arch-&gt;st);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L276'>me</a>                276 src/vfs/cpio/cpio.c     root-&gt;st.st_dev = VFS_SUBCLASS (me)-&gt;rdev++;</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L288'>me</a>                288 src/vfs/cpio/cpio.c cpio_read_head (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L290'>me</a>                290 src/vfs/cpio/cpio.c     switch (cpio_find_head (me, super))</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L296'>me</a>                296 src/vfs/cpio/cpio.c         return cpio_read_bin_head (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L298'>me</a>                298 src/vfs/cpio/cpio.c         return cpio_read_oldc_head (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L301'>me</a>                301 src/vfs/cpio/cpio.c         return cpio_read_crc_head (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L311'>me</a>                311 src/vfs/cpio/cpio.c cpio_find_head (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L337'>me</a>                337 src/vfs/cpio/cpio.c                 cpio_free_archive (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L375'>me</a>                375 src/vfs/cpio/cpio.c cpio_create_entry (struct vfs_class *me, struct vfs_s_super *super, struct stat *st, char *name)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L449'>me</a>                449 src/vfs/cpio/cpio.c         root = vfs_s_find_inode (me, super, name, LINK_FOLLOW, FL_MKDIR);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L454'>me</a>                454 src/vfs/cpio/cpio.c     entry = VFS_SUBCLASS (me)-&gt;find_entry (me, root, tn, LINK_FOLLOW, FL_NONE); /* In case entry is already there */</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L496'>me</a>                496 src/vfs/cpio/cpio.c                 inode = vfs_s_new_inode (me, super, st);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L514'>me</a>                514 src/vfs/cpio/cpio.c             entry = vfs_s_new_entry (me, tn, inode);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L515'>me</a>                515 src/vfs/cpio/cpio.c             vfs_s_insert_entry (me, root, entry);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L550'>me</a>                550 src/vfs/cpio/cpio.c cpio_read_bin_head (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L612'>me</a>                612 src/vfs/cpio/cpio.c     return cpio_create_entry (me, super, &amp;st, name);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L621'>me</a>                621 src/vfs/cpio/cpio.c cpio_read_oldc_head (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L684'>me</a>                684 src/vfs/cpio/cpio.c     return cpio_create_entry (me, super, &amp;u.st, name);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L693'>me</a>                693 src/vfs/cpio/cpio.c cpio_read_crc_head (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L765'>me</a>                765 src/vfs/cpio/cpio.c     return cpio_create_entry (me, super, &amp;u.st, name);</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L854'>me</a>                854 src/vfs/cpio/cpio.c     struct vfs_class *me = VFS_FILE_HANDLER_SUPER (fh)-&gt;me;</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L875'>me</a>                875 src/vfs/cpio/cpio.c cpio_fh_open (struct vfs_class *me, vfs_file_handler_t * fh, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L119'>me</a>                119 src/vfs/extfs/extfs.c extfs_super_new (struct vfs_class *me, const char *name, const vfs_path_t * local_name_vpath,</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L128'>me</a>                128 src/vfs/extfs/extfs.c     vsuper-&gt;me = me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L139'>me</a>                139 src/vfs/extfs/extfs.c     VFS_SUBCLASS (me)-&gt;supers = g_list_prepend (VFS_SUBCLASS (me)-&gt;supers, super);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L148'>me</a>                148 src/vfs/extfs/extfs.c extfs_entry_new (struct vfs_class *me, const char *name, struct vfs_s_inode *inode)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L152'>me</a>                152 src/vfs/extfs/extfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L197'>me</a>                197 src/vfs/extfs/extfs.c     struct vfs_class *me = VFS_SUPER (archive)-&gt;me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L216'>me</a>                216 src/vfs/extfs/extfs.c     inode = vfs_s_new_inode (me, VFS_SUPER (archive), &amp;st);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L217'>me</a>                217 src/vfs/extfs/extfs.c     entry = vfs_s_new_entry (me, name, inode);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L219'>me</a>                219 src/vfs/extfs/extfs.c         vfs_s_insert_entry (me, parent, entry);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L328'>me</a>                328 src/vfs/extfs/extfs.c extfs_fill_names (struct vfs_class *me, fill_names_f func)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L330'>me</a>                330 src/vfs/extfs/extfs.c     g_list_foreach (VFS_SUBCLASS (me)-&gt;supers, extfs_fill_name, func);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L337'>me</a>                337 src/vfs/extfs/extfs.c extfs_free_inode (struct vfs_class *me, struct vfs_s_inode *ino)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L339'>me</a>                339 src/vfs/extfs/extfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L351'>me</a>                351 src/vfs/extfs/extfs.c extfs_free_archive (struct vfs_class *me, struct vfs_s_super *psup)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L355'>me</a>                355 src/vfs/extfs/extfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L444'>me</a>                444 src/vfs/extfs/extfs.c                 entry = extfs_entry_new (super-&gt;me, p, pent-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L450'>me</a>                450 src/vfs/extfs/extfs.c                 entry = extfs_entry_new (super-&gt;me, p, super-&gt;root);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L489'>me</a>                489 src/vfs/extfs/extfs.c                 inode = vfs_s_new_inode (super-&gt;me, super, &amp;st);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L699'>me</a>                699 src/vfs/extfs/extfs.c extfs_which (struct vfs_class *me, const char *path)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L704'>me</a>                704 src/vfs/extfs/extfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L749'>me</a>                749 src/vfs/extfs/extfs.c             VFS_SUPER (a)-&gt;me-&gt;free (VFS_SUPER (a));</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1158'>me</a>               1158 src/vfs/extfs/extfs.c extfs_errno (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1160'>me</a>               1160 src/vfs/extfs/extfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1384'>me</a>               1384 src/vfs/extfs/extfs.c     vfs_s_free_entry (VFS_SUPER (archive)-&gt;me, entry);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1399'>me</a>               1399 src/vfs/extfs/extfs.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1403'>me</a>               1403 src/vfs/extfs/extfs.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1410'>me</a>               1410 src/vfs/extfs/extfs.c         me-&gt;verrno = EEXIST;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1421'>me</a>               1421 src/vfs/extfs/extfs.c         me-&gt;verrno = ENOTDIR;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1428'>me</a>               1428 src/vfs/extfs/extfs.c         vfs_s_free_entry (VFS_SUPER (archive)-&gt;me, entry);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1466'>me</a>               1466 src/vfs/extfs/extfs.c     vfs_s_free_entry (VFS_SUPER (archive)-&gt;me, entry);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1656'>me</a>               1656 src/vfs/extfs/extfs.c extfs_init (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1660'>me</a>               1660 src/vfs/extfs/extfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1673'>me</a>               1673 src/vfs/extfs/extfs.c extfs_done (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1677'>me</a>               1677 src/vfs/extfs/extfs.c     while (VFS_SUBCLASS (me)-&gt;supers != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L1678'>me</a>               1678 src/vfs/extfs/extfs.c         me-&gt;free ((vfsid) VFS_SUBCLASS (me)-&gt;supers-&gt;data);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L237'>me</a>                237 src/vfs/ftpfs/ftpfs.c static char *ftpfs_get_current_directory (struct vfs_class *me, struct vfs_s_super *super);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L238'>me</a>                238 src/vfs/ftpfs/ftpfs.c static int ftpfs_chdir_internal (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L240'>me</a>                240 src/vfs/ftpfs/ftpfs.c static int ftpfs_open_socket (struct vfs_class *me, struct vfs_s_super *super);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L241'>me</a>                241 src/vfs/ftpfs/ftpfs.c static gboolean ftpfs_login_server (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L276'>me</a>                276 src/vfs/ftpfs/ftpfs.c ftpfs_default_stat (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L280'>me</a>                280 src/vfs/ftpfs/ftpfs.c     s = vfs_s_default_stat (me, S_IFDIR | 0755);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L301'>me</a>                301 src/vfs/ftpfs/ftpfs.c ftpfs_translate_path (struct vfs_class *me, struct vfs_s_super *super, const char *remote_path)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L308'>me</a>                308 src/vfs/ftpfs/ftpfs.c     if (me-&gt;logfile != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L310'>me</a>                310 src/vfs/ftpfs/ftpfs.c         fprintf (me-&gt;logfile, "MC -- ftpfs_translate_path: %s\n", remote_path);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L311'>me</a>                311 src/vfs/ftpfs/ftpfs.c         fflush (me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L389'>me</a>                389 src/vfs/ftpfs/ftpfs.c ftpfs_get_reply (struct vfs_class *me, int sock, char *string_buf, int string_len)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L395'>me</a>                395 src/vfs/ftpfs/ftpfs.c         if (vfs_s_get_line (me, sock, answer, sizeof (answer), '\n') == 0)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L418'>me</a>                418 src/vfs/ftpfs/ftpfs.c                     if (vfs_s_get_line (me, sock, answer, sizeof (answer), '\n') == 0)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L442'>me</a>                442 src/vfs/ftpfs/ftpfs.c ftpfs_reconnect (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L447'>me</a>                447 src/vfs/ftpfs/ftpfs.c     sock = ftpfs_open_socket (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L456'>me</a>                456 src/vfs/ftpfs/ftpfs.c         if (ftpfs_login_server (me, super, super-&gt;path_element-&gt;password))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L461'>me</a>                461 src/vfs/ftpfs/ftpfs.c             sock = ftpfs_chdir_internal (me, super, cwdir);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L476'>me</a>                476 src/vfs/ftpfs/ftpfs.c ftpfs_command (struct vfs_class *me, struct vfs_s_super *super, int wait_reply, const char *fmt,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L492'>me</a>                492 src/vfs/ftpfs/ftpfs.c     if (me-&gt;logfile != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L495'>me</a>                495 src/vfs/ftpfs/ftpfs.c             fputs ("PASS &lt;Password not logged&gt;\r\n", me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L500'>me</a>                500 src/vfs/ftpfs/ftpfs.c             ret = fwrite (cmdstr-&gt;str, cmdstr-&gt;len, 1, me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L504'>me</a>                504 src/vfs/ftpfs/ftpfs.c         fflush (me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L520'>me</a>                520 src/vfs/ftpfs/ftpfs.c                 status = ftpfs_reconnect (me, super) ? 1 : 0;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L540'>me</a>                540 src/vfs/ftpfs/ftpfs.c         status = ftpfs_get_reply (me, ftp_super-&gt;sock,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L547'>me</a>                547 src/vfs/ftpfs/ftpfs.c             status = ftpfs_reconnect (me, super) ? 1 : 0;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L564'>me</a>                564 src/vfs/ftpfs/ftpfs.c ftpfs_new_archive (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L569'>me</a>                569 src/vfs/ftpfs/ftpfs.c     arch-&gt;base.me = me;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L582'>me</a>                582 src/vfs/ftpfs/ftpfs.c ftpfs_free_archive (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L589'>me</a>                589 src/vfs/ftpfs/ftpfs.c         ftpfs_command (me, super, NONE, "%s", "QUIT");</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L598'>me</a>                598 src/vfs/ftpfs/ftpfs.c ftpfs_changetype (struct vfs_class *me, struct vfs_s_super *super, int binary)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L602'>me</a>                602 src/vfs/ftpfs/ftpfs.c         if (ftpfs_command (me, super, WAIT_REPLY, "TYPE %c", binary ? 'I' : 'A') != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L613'>me</a>                613 src/vfs/ftpfs/ftpfs.c ftpfs_login_server (struct vfs_class *me, struct vfs_s_super *super, const char *netrcpass)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L648'>me</a>                648 src/vfs/ftpfs/ftpfs.c     if (!anon || me-&gt;logfile != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L666'>me</a>                666 src/vfs/ftpfs/ftpfs.c     if (ftpfs_get_reply (me, ftp_super-&gt;sock, reply_string, sizeof (reply_string) - 1) == COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L676'>me</a>                676 src/vfs/ftpfs/ftpfs.c         if (me-&gt;logfile != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L678'>me</a>                678 src/vfs/ftpfs/ftpfs.c             fprintf (me-&gt;logfile, "MC -- remote_is_amiga = %s\n",</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L680'>me</a>                680 src/vfs/ftpfs/ftpfs.c             fflush (me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L685'>me</a>                685 src/vfs/ftpfs/ftpfs.c         switch (ftpfs_command (me, super, WAIT_REPLY, "USER %s", name))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L689'>me</a>                689 src/vfs/ftpfs/ftpfs.c             code = ftpfs_command (me, super, WAIT_REPLY, "PASS %s", pass);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L702'>me</a>                702 src/vfs/ftpfs/ftpfs.c                 code = ftpfs_command (me, super, WAIT_REPLY, "ACCT %s", op);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L847'>me</a>                847 src/vfs/ftpfs/ftpfs.c ftpfs_open_socket (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L856'>me</a>                856 src/vfs/ftpfs/ftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L861'>me</a>                861 src/vfs/ftpfs/ftpfs.c         me-&gt;verrno = EINVAL;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L908'>me</a>                908 src/vfs/ftpfs/ftpfs.c         me-&gt;verrno = EINVAL;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L925'>me</a>                925 src/vfs/ftpfs/ftpfs.c             me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L935'>me</a>                935 src/vfs/ftpfs/ftpfs.c         me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L959'>me</a>                959 src/vfs/ftpfs/ftpfs.c ftpfs_open_archive_int (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L972'>me</a>                972 src/vfs/ftpfs/ftpfs.c         ftp_super-&gt;sock = ftpfs_open_socket (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L976'>me</a>                976 src/vfs/ftpfs/ftpfs.c         if (ftpfs_login_server (me, super, NULL))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1010'>me</a>               1010 src/vfs/ftpfs/ftpfs.c     ftp_super-&gt;current_dir = ftpfs_get_current_directory (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1060'>me</a>               1060 src/vfs/ftpfs/ftpfs.c ftpfs_get_current_directory (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1064'>me</a>               1064 src/vfs/ftpfs/ftpfs.c     if (ftpfs_command (me, super, NONE, "%s", "PWD") == COMPLETE &amp;&amp;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1065'>me</a>               1065 src/vfs/ftpfs/ftpfs.c         ftpfs_get_reply (me, FTP_SUPER (super)-&gt;sock, buf, sizeof (buf)) == COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1101'>me</a>               1101 src/vfs/ftpfs/ftpfs.c     me-&gt;verrno = EIO;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1109'>me</a>               1109 src/vfs/ftpfs/ftpfs.c ftpfs_setup_passive_pasv (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1116'>me</a>               1116 src/vfs/ftpfs/ftpfs.c     if (ftpfs_command (me, super, WAIT_REPLY | WANT_STRING, "%s", "PASV") != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1147'>me</a>               1147 src/vfs/ftpfs/ftpfs.c ftpfs_setup_passive_epsv (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1153'>me</a>               1153 src/vfs/ftpfs/ftpfs.c     if (ftpfs_command (me, super, WAIT_REPLY | WANT_STRING, "%s", "EPSV") != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1187'>me</a>               1187 src/vfs/ftpfs/ftpfs.c ftpfs_setup_passive (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1193'>me</a>               1193 src/vfs/ftpfs/ftpfs.c         if (!ftpfs_setup_passive_pasv (me, super, my_socket, sa, salen))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1195'>me</a>               1195 src/vfs/ftpfs/ftpfs.c             if (!ftpfs_setup_passive_epsv (me, super, my_socket, sa, salen))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1199'>me</a>               1199 src/vfs/ftpfs/ftpfs.c     else if (!ftpfs_setup_passive_epsv (me, super, my_socket, sa, salen))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1209'>me</a>               1209 src/vfs/ftpfs/ftpfs.c ftpfs_setup_active (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1247'>me</a>               1247 src/vfs/ftpfs/ftpfs.c             me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1248'>me</a>               1248 src/vfs/ftpfs/ftpfs.c             err_str = unix_error_string (me-&gt;verrno);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1252'>me</a>               1252 src/vfs/ftpfs/ftpfs.c             me-&gt;verrno = EIO;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1267'>me</a>               1267 src/vfs/ftpfs/ftpfs.c         if (ftpfs_command (me, super, WAIT_REPLY,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1286'>me</a>               1286 src/vfs/ftpfs/ftpfs.c         (ftpfs_command (me, super, WAIT_REPLY, "EPRT |%u|%s|%hu|", af, addr, port) ==</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1296'>me</a>               1296 src/vfs/ftpfs/ftpfs.c ftpfs_init_data_socket (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1315'>me</a>               1315 src/vfs/ftpfs/ftpfs.c             me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1317'>me</a>               1317 src/vfs/ftpfs/ftpfs.c             if (me-&gt;verrno == ENOTCONN)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1320'>me</a>               1320 src/vfs/ftpfs/ftpfs.c                 if (ftpfs_reconnect (me, super))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1327'>me</a>               1327 src/vfs/ftpfs/ftpfs.c                                    unix_error_string (me-&gt;verrno));</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1336'>me</a>               1336 src/vfs/ftpfs/ftpfs.c             me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1339'>me</a>               1339 src/vfs/ftpfs/ftpfs.c             if (ftpfs_reconnect (me, super))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1368'>me</a>               1368 src/vfs/ftpfs/ftpfs.c         me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1369'>me</a>               1369 src/vfs/ftpfs/ftpfs.c         vfs_print_message (_("ftpfs: could not create socket: %s"), unix_error_string (me-&gt;verrno));</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1380'>me</a>               1380 src/vfs/ftpfs/ftpfs.c ftpfs_initconn (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1397'>me</a>               1397 src/vfs/ftpfs/ftpfs.c         data_sock = ftpfs_init_data_socket (me, super, &amp;data_addr, &amp;data_addrlen);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1401'>me</a>               1401 src/vfs/ftpfs/ftpfs.c         if (ftpfs_setup_passive (me, super, data_sock, &amp;data_addr, &amp;data_addrlen))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1415'>me</a>               1415 src/vfs/ftpfs/ftpfs.c         data_sock = ftpfs_init_data_socket (me, super, &amp;data_addr, &amp;data_addrlen);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1427'>me</a>               1427 src/vfs/ftpfs/ftpfs.c         if (ftpfs_setup_active (me, super, data_addr, data_addrlen) != 0)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1438'>me</a>               1438 src/vfs/ftpfs/ftpfs.c     me-&gt;verrno = EIO;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1445'>me</a>               1445 src/vfs/ftpfs/ftpfs.c ftpfs_open_data_connection (struct vfs_class *me, struct vfs_s_super *super, const char *cmd,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1455'>me</a>               1455 src/vfs/ftpfs/ftpfs.c     s = ftpfs_initconn (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1459'>me</a>               1459 src/vfs/ftpfs/ftpfs.c     if (ftpfs_changetype (me, super, isbinary) == -1)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1467'>me</a>               1467 src/vfs/ftpfs/ftpfs.c         j = ftpfs_command (me, super, WAIT_REPLY, "REST %d", reget);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1476'>me</a>               1476 src/vfs/ftpfs/ftpfs.c         j = ftpfs_command (me, super, WAIT_REPLY, "%s", cmd);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1481'>me</a>               1481 src/vfs/ftpfs/ftpfs.c         remote_path = ftpfs_translate_path (me, super, remote);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1482'>me</a>               1482 src/vfs/ftpfs/ftpfs.c         j = ftpfs_command (me, super, WAIT_REPLY, "%s /%s", cmd,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1504'>me</a>               1504 src/vfs/ftpfs/ftpfs.c             me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1518'>me</a>               1518 src/vfs/ftpfs/ftpfs.c ftpfs_linear_abort (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1539'>me</a>               1539 src/vfs/ftpfs/ftpfs.c     if (ftpfs_command (me, super, NONE, "%cABOR", DM) != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1570'>me</a>               1570 src/vfs/ftpfs/ftpfs.c                     ftpfs_reconnect (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1578'>me</a>               1578 src/vfs/ftpfs/ftpfs.c     if ((ftpfs_get_reply (me, ftp_super-&gt;sock, NULL, 0) == TRANSIENT) &amp;&amp; (code == 426))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1579'>me</a>               1579 src/vfs/ftpfs/ftpfs.c         ftpfs_get_reply (me, ftp_super-&gt;sock, NULL, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1586'>me</a>               1586 src/vfs/ftpfs/ftpfs.c resolve_symlink_without_ls_options (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1666'>me</a>               1666 src/vfs/ftpfs/ftpfs.c resolve_symlink_with_ls_options (struct vfs_class *me, struct vfs_s_super *super,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1724'>me</a>               1724 src/vfs/ftpfs/ftpfs.c             if (me-&gt;logfile != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1726'>me</a>               1726 src/vfs/ftpfs/ftpfs.c                 fputs (buffer, me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1727'>me</a>               1727 src/vfs/ftpfs/ftpfs.c                 fflush (me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1767'>me</a>               1767 src/vfs/ftpfs/ftpfs.c     ftpfs_get_reply (me, FTP_SUPER (super)-&gt;sock, NULL, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1773'>me</a>               1773 src/vfs/ftpfs/ftpfs.c resolve_symlink (struct vfs_class *me, struct vfs_s_super *super, struct vfs_s_inode *dir)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1778'>me</a>               1778 src/vfs/ftpfs/ftpfs.c         resolve_symlink_without_ls_options (me, super, dir);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1780'>me</a>               1780 src/vfs/ftpfs/ftpfs.c         resolve_symlink_with_ls_options (me, super, dir);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1787'>me</a>               1787 src/vfs/ftpfs/ftpfs.c ftpfs_dir_load (struct vfs_class *me, struct vfs_s_inode *dir, const char *remote_path)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1809'>me</a>               1809 src/vfs/ftpfs/ftpfs.c     if (cd_first &amp;&amp; ftpfs_chdir_internal (me, super, remote_path) != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1811'>me</a>               1811 src/vfs/ftpfs/ftpfs.c         me-&gt;verrno = ENOENT;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1819'>me</a>               1819 src/vfs/ftpfs/ftpfs.c         sock = ftpfs_open_data_connection (me, super, "LIST", 0, TYPE_ASCII, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1823'>me</a>               1823 src/vfs/ftpfs/ftpfs.c         sock = ftpfs_open_data_connection (me, super, "LIST -la", 0, TYPE_ASCII, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1830'>me</a>               1830 src/vfs/ftpfs/ftpfs.c         sock = ftpfs_open_data_connection (me, super, "LIST -la", path, TYPE_ASCII, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1853'>me</a>               1853 src/vfs/ftpfs/ftpfs.c     while ((res = vfs_s_get_line_interruptible (me, lc_buffer, sizeof (lc_buffer), sock)) != 0)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1857'>me</a>               1857 src/vfs/ftpfs/ftpfs.c             me-&gt;verrno = ECONNRESET;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1860'>me</a>               1860 src/vfs/ftpfs/ftpfs.c             ftpfs_get_reply (me, ftp_super-&gt;sock, NULL, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1862'>me</a>               1862 src/vfs/ftpfs/ftpfs.c             vfs_print_message (_("%s: failure"), me-&gt;name);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1866'>me</a>               1866 src/vfs/ftpfs/ftpfs.c         if (me-&gt;logfile != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1868'>me</a>               1868 src/vfs/ftpfs/ftpfs.c             fputs (lc_buffer, me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1869'>me</a>               1869 src/vfs/ftpfs/ftpfs.c             fputs ("\n", me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1870'>me</a>               1870 src/vfs/ftpfs/ftpfs.c             fflush (me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1878'>me</a>               1878 src/vfs/ftpfs/ftpfs.c     me-&gt;verrno = E_REMOTE;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1879'>me</a>               1879 src/vfs/ftpfs/ftpfs.c     if ((ftpfs_get_reply (me, ftp_super-&gt;sock, NULL, 0) != COMPLETE))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1903'>me</a>               1903 src/vfs/ftpfs/ftpfs.c     entlist = ftpfs_parse_long_list (me, dir, dirlist, &amp;err_count);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1907'>me</a>               1907 src/vfs/ftpfs/ftpfs.c         vfs_s_insert_entry (me, dir, VFS_ENTRY (iter-&gt;data));</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1914'>me</a>               1914 src/vfs/ftpfs/ftpfs.c     vfs_print_message (_("%s: done."), me-&gt;name);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1921'>me</a>               1921 src/vfs/ftpfs/ftpfs.c ftpfs_file_store (struct vfs_class *me, vfs_file_handler_t * fh, char *name, char *localname)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1944'>me</a>               1944 src/vfs/ftpfs/ftpfs.c         me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1950'>me</a>               1950 src/vfs/ftpfs/ftpfs.c         ftpfs_open_data_connection (me, super, ftp-&gt;append ? "APPE" : "STOR", name, TYPE_BINARY, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1973'>me</a>               1973 src/vfs/ftpfs/ftpfs.c                 me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1978'>me</a>               1978 src/vfs/ftpfs/ftpfs.c                 me-&gt;verrno = EINTR;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1995'>me</a>               1995 src/vfs/ftpfs/ftpfs.c                 me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2012'>me</a>               2012 src/vfs/ftpfs/ftpfs.c     if (ftpfs_get_reply (me, ftp_super-&gt;sock, NULL, 0) != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2022'>me</a>               2022 src/vfs/ftpfs/ftpfs.c     ftpfs_get_reply (me, ftp_super-&gt;sock, NULL, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2029'>me</a>               2029 src/vfs/ftpfs/ftpfs.c ftpfs_linear_start (struct vfs_class *me, vfs_file_handler_t * fh, off_t offset)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2033'>me</a>               2033 src/vfs/ftpfs/ftpfs.c     name = vfs_s_fullpath (me, fh-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2038'>me</a>               2038 src/vfs/ftpfs/ftpfs.c         ftpfs_open_data_connection (me, VFS_FILE_HANDLER_SUPER (fh), "RETR", name, TYPE_BINARY,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2052'>me</a>               2052 src/vfs/ftpfs/ftpfs.c ftpfs_linear_read (struct vfs_class *me, vfs_file_handler_t * fh, void *buf, size_t len)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2065'>me</a>               2065 src/vfs/ftpfs/ftpfs.c         ftpfs_linear_abort (me, fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2071'>me</a>               2071 src/vfs/ftpfs/ftpfs.c         if ((ftpfs_get_reply (me, FTP_SUPER (super)-&gt;sock, NULL, 0) != COMPLETE))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2082'>me</a>               2082 src/vfs/ftpfs/ftpfs.c ftpfs_linear_close (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2085'>me</a>               2085 src/vfs/ftpfs/ftpfs.c         ftpfs_linear_abort (me, fh);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2124'>me</a>               2124 src/vfs/ftpfs/ftpfs.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2127'>me</a>               2127 src/vfs/ftpfs/ftpfs.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2133'>me</a>               2133 src/vfs/ftpfs/ftpfs.c     p = ftpfs_translate_path (me, super, rpath);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2134'>me</a>               2134 src/vfs/ftpfs/ftpfs.c     r = ftpfs_command (me, super, WAIT_REPLY, cmd, p);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2141'>me</a>               2141 src/vfs/ftpfs/ftpfs.c         me-&gt;verrno = EPERM;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2145'>me</a>               2145 src/vfs/ftpfs/ftpfs.c         vfs_s_invalidate (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2208'>me</a>               2208 src/vfs/ftpfs/ftpfs.c     me-&gt;verrno = EPERM;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2232'>me</a>               2232 src/vfs/ftpfs/ftpfs.c ftpfs_is_same_dir (struct vfs_class *me, struct vfs_s_super *super, const char *path)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2234'>me</a>               2234 src/vfs/ftpfs/ftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2243'>me</a>               2243 src/vfs/ftpfs/ftpfs.c ftpfs_chdir_internal (struct vfs_class *me, struct vfs_s_super *super, const char *remote_path)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2249'>me</a>               2249 src/vfs/ftpfs/ftpfs.c     if (!ftp_super-&gt;cwd_deferred &amp;&amp; ftpfs_is_same_dir (me, super, remote_path))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2252'>me</a>               2252 src/vfs/ftpfs/ftpfs.c     p = ftpfs_translate_path (me, super, remote_path);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2253'>me</a>               2253 src/vfs/ftpfs/ftpfs.c     r = ftpfs_command (me, super, WAIT_REPLY, "CWD /%s", p);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2257'>me</a>               2257 src/vfs/ftpfs/ftpfs.c         me-&gt;verrno = EIO;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2311'>me</a>               2311 src/vfs/ftpfs/ftpfs.c ftpfs_fh_open (struct vfs_class *me, vfs_file_handler_t * fh, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2338'>me</a>               2338 src/vfs/ftpfs/ftpfs.c                 handle = vfs_mkstemps (&amp;vpath, me-&gt;name, fh-&gt;ino-&gt;ent-&gt;name);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2348'>me</a>               2348 src/vfs/ftpfs/ftpfs.c         name = vfs_s_fullpath (me, fh-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2353'>me</a>               2353 src/vfs/ftpfs/ftpfs.c             ftpfs_open_data_connection (me, VFS_FILE_HANDLER_SUPER (fh),</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2375'>me</a>               2375 src/vfs/ftpfs/ftpfs.c     if (fh-&gt;ino-&gt;localname == NULL &amp;&amp; vfs_s_retrieve_file (me, fh-&gt;ino) == -1)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2386'>me</a>               2386 src/vfs/ftpfs/ftpfs.c ftpfs_fh_close (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2399'>me</a>               2399 src/vfs/ftpfs/ftpfs.c         if (ftpfs_get_reply (me, ftp-&gt;sock, NULL, 0) != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2401'>me</a>               2401 src/vfs/ftpfs/ftpfs.c         vfs_s_invalidate (me, VFS_FILE_HANDLER_SUPER (fh));</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2410'>me</a>               2410 src/vfs/ftpfs/ftpfs.c ftpfs_done (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2412'>me</a>               2412 src/vfs/ftpfs/ftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2423'>me</a>               2423 src/vfs/ftpfs/ftpfs.c ftpfs_fill_names (struct vfs_class *me, fill_names_f func)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2427'>me</a>               2427 src/vfs/ftpfs/ftpfs.c     for (iter = VFS_SUBCLASS (me)-&gt;supers; iter != NULL; iter = g_list_next (iter))</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.h.html#L42'>me</a>                 42 src/vfs/ftpfs/ftpfs.h GSList *ftpfs_parse_long_list (struct vfs_class *me, struct vfs_s_inode *dir, GSList * buf,</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs_parse_ls.c.html#L1108'>me</a>               1108 src/vfs/ftpfs/ftpfs_parse_ls.c ftpfs_parse_long_list (struct vfs_class * me, struct vfs_s_inode * dir, GSList * buf, int *err_ret)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs_parse_ls.c.html#L1156'>me</a>               1156 src/vfs/ftpfs/ftpfs_parse_ls.c                 info = vfs_s_generate_entry (me, NULL, dir, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs_parse_ls.c.html#L1166'>me</a>               1166 src/vfs/ftpfs/ftpfs_parse_ls.c                     vfs_s_free_entry (me, info);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs_parse_ls.c.html#L1197'>me</a>               1197 src/vfs/ftpfs/ftpfs_parse_ls.c             info = vfs_s_generate_entry (me, NULL, dir, 0);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs_parse_ls.c.html#L1207'>me</a>               1207 src/vfs/ftpfs/ftpfs_parse_ls.c                 vfs_s_free_entry (me, info);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs_parse_ls.c.html#L1225'>me</a>               1225 src/vfs/ftpfs/ftpfs_parse_ls.c                 vfs_s_free_entry (me, VFS_ENTRY (bufp-&gt;data));</span>
+<span class='curline'><a href='../S/src--vfs--local--local.c.html#L386'>me</a>                386 src/vfs/local/local.c local_which (struct vfs_class *me, const char *path)</span>
+<span class='curline'><a href='../S/src--vfs--local--local.c.html#L388'>me</a>                388 src/vfs/local/local.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--local--local.c.html#L443'>me</a>                443 src/vfs/local/local.c local_errno (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--local--local.c.html#L445'>me</a>                445 src/vfs/local/local.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--local--local.h.html#L28'>me</a>                 28 src/vfs/local/local.h extern int local_errno (struct vfs_class *me);</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L406'>me</a>                406 src/vfs/sfs/sfs.c sfs_fill_names (struct vfs_class *me, fill_names_f func)</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L410'>me</a>                410 src/vfs/sfs/sfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L449'>me</a>                449 src/vfs/sfs/sfs.c sfs_init (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L455'>me</a>                455 src/vfs/sfs/sfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L534'>me</a>                534 src/vfs/sfs/sfs.c sfs_done (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L538'>me</a>                538 src/vfs/sfs/sfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L551'>me</a>                551 src/vfs/sfs/sfs.c sfs_which (struct vfs_class *me, const char *path)</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L555'>me</a>                555 src/vfs/sfs/sfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L67'>me</a>                 67 src/vfs/sftpfs/sftpfs.c sftpfs_cb_init (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L69'>me</a>                 69 src/vfs/sftpfs/sftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L87'>me</a>                 87 src/vfs/sftpfs/sftpfs.c sftpfs_cb_done (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L89'>me</a>                 89 src/vfs/sftpfs/sftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L110'>me</a>                110 src/vfs/sftpfs/sftpfs.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L121'>me</a>                121 src/vfs/sftpfs/sftpfs.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L123'>me</a>                123 src/vfs/sftpfs/sftpfs.c     path_inode = vfs_s_find_inode (me, super, path_super, LINK_FOLLOW, FL_NONE);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L126'>me</a>                126 src/vfs/sftpfs/sftpfs.c         me-&gt;verrno = EEXIST;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L137'>me</a>                137 src/vfs/sftpfs/sftpfs.c         dir = vfs_s_find_inode (me, super, name, LINK_FOLLOW, FL_DIR);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L143'>me</a>                143 src/vfs/sftpfs/sftpfs.c         ent = vfs_s_generate_entry (me, name, dir, 0755);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L146'>me</a>                146 src/vfs/sftpfs/sftpfs.c         vfs_s_insert_entry (me, dir, ent);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L152'>me</a>                152 src/vfs/sftpfs/sftpfs.c         me-&gt;verrno = EISDIR;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L165'>me</a>                165 src/vfs/sftpfs/sftpfs.c     vfs_rmstamp (me, (vfsid) super);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L641'>me</a>                641 src/vfs/sftpfs/sftpfs.c sftpfs_cb_errno (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L643'>me</a>                643 src/vfs/sftpfs/sftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L658'>me</a>                658 src/vfs/sftpfs/sftpfs.c sftpfs_cb_fill_names (struct vfs_class *me, fill_names_f func)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L662'>me</a>                662 src/vfs/sftpfs/sftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L709'>me</a>                709 src/vfs/sftpfs/sftpfs.c sftpfs_new_archive (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L714'>me</a>                714 src/vfs/sftpfs/sftpfs.c     arch-&gt;base.me = me;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L778'>me</a>                778 src/vfs/sftpfs/sftpfs.c sftpfs_free_archive (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L782'>me</a>                782 src/vfs/sftpfs/sftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L802'>me</a>                802 src/vfs/sftpfs/sftpfs.c sftpfs_cb_dir_load (struct vfs_class *me, struct vfs_s_inode *dir, const char *remote_path)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L804'>me</a>                804 src/vfs/sftpfs/sftpfs.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L183'>me</a>                183 src/vfs/shell/shell.c shell_default_stat (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L187'>me</a>                187 src/vfs/shell/shell.c     s = vfs_s_default_stat (me, S_IFDIR | 0755);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L247'>me</a>                247 src/vfs/shell/shell.c shell_get_reply (struct vfs_class *me, int sock, char *string_buf, int string_len)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L254'>me</a>                254 src/vfs/shell/shell.c         if (!vfs_s_get_line (me, sock, answer, sizeof (answer), '\n'))</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L273'>me</a>                273 src/vfs/shell/shell.c shell_command (struct vfs_class *me, struct vfs_s_super *super, int wait_reply, const char *cmd,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L277'>me</a>                277 src/vfs/shell/shell.c     FILE *logfile = me-&gt;logfile;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L299'>me</a>                299 src/vfs/shell/shell.c         return shell_get_reply (me, SHELL_SUPER (super)-&gt;sockr,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L309'>me</a>                309 src/vfs/shell/shell.c shell_command_va (struct vfs_class *me, struct vfs_s_super *super, int wait_reply, const char *scr,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L318'>me</a>                318 src/vfs/shell/shell.c     r = shell_command (me, super, wait_reply, command-&gt;str, command-&gt;len);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L328'>me</a>                328 src/vfs/shell/shell.c shell_command_v (struct vfs_class *me, struct vfs_s_super *super, int wait_reply, const char *scr,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L335'>me</a>                335 src/vfs/shell/shell.c     r = shell_command_va (me, super, wait_reply, scr, vars, ap);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L345'>me</a>                345 src/vfs/shell/shell.c shell_send_command (struct vfs_class *me, struct vfs_s_super *super, int flags, const char *scr,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L352'>me</a>                352 src/vfs/shell/shell.c     r = shell_command_va (me, super, WAIT_REPLY, scr, vars, ap);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L359'>me</a>                359 src/vfs/shell/shell.c         vfs_s_invalidate (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L367'>me</a>                367 src/vfs/shell/shell.c shell_new_archive (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L372'>me</a>                372 src/vfs/shell/shell.c     arch-&gt;base.me = me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L380'>me</a>                380 src/vfs/shell/shell.c shell_free_archive (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L389'>me</a>                389 src/vfs/shell/shell.c         shell_command (me, super, NONE, "exit\n", -1);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L493'>me</a>                493 src/vfs/shell/shell.c shell_info (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L497'>me</a>                497 src/vfs/shell/shell.c     if (shell_command (me, super, NONE, shell_super-&gt;scr_info, -1) == COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L504'>me</a>                504 src/vfs/shell/shell.c             res = vfs_s_get_line_interruptible (me, buffer, sizeof (buffer), shell_super-&gt;sockr);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L565'>me</a>                565 src/vfs/shell/shell.c shell_open_archive_talk (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L572'>me</a>                572 src/vfs/shell/shell.c     if (vfs_s_get_line (me, shell_super-&gt;sockr, answer, sizeof (answer), ':') == 0)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L615'>me</a>                615 src/vfs/shell/shell.c shell_open_archive_int (struct vfs_class *me, struct vfs_s_super *super)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L626'>me</a>                626 src/vfs/shell/shell.c     ftalk = shell_open_archive_talk (me, super);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L638'>me</a>                638 src/vfs/shell/shell.c         (me, super, WAIT_REPLY,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L644'>me</a>                644 src/vfs/shell/shell.c     if (shell_info (me, super))</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L655'>me</a>                655 src/vfs/shell/shell.c     super-&gt;root = vfs_s_new_inode (me, super, shell_default_stat (me));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L910'>me</a>                910 src/vfs/shell/shell.c shell_dir_load (struct vfs_class *me, struct vfs_s_inode *dir, const char *remote_path)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L922'>me</a>                922 src/vfs/shell/shell.c     if (me-&gt;logfile == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L923'>me</a>                923 src/vfs/shell/shell.c         me-&gt;logfile = fopen ("/tmp/mc-SHELL.sh", "w");</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L931'>me</a>                931 src/vfs/shell/shell.c     (void) shell_command_v (me, super, NONE, SHELL_SUPER (super)-&gt;scr_ls, "SHELL_FILENAME=%s;\n",</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L935'>me</a>                935 src/vfs/shell/shell.c     ent = vfs_s_generate_entry (me, NULL, dir, 0);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L942'>me</a>                942 src/vfs/shell/shell.c             vfs_s_get_line_interruptible (me, buffer, sizeof (buffer), SHELL_SUPER (super)-&gt;sockr);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L946'>me</a>                946 src/vfs/shell/shell.c             vfs_s_free_entry (me, ent);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L947'>me</a>                947 src/vfs/shell/shell.c             me-&gt;verrno = ECONNRESET;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L950'>me</a>                950 src/vfs/shell/shell.c         if (me-&gt;logfile != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L952'>me</a>                952 src/vfs/shell/shell.c             fputs (buffer, me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L953'>me</a>                953 src/vfs/shell/shell.c             fputs ("\n", me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L954'>me</a>                954 src/vfs/shell/shell.c             fflush (me-&gt;logfile);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L963'>me</a>                963 src/vfs/shell/shell.c             vfs_s_insert_entry (me, dir, ent);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L964'>me</a>                964 src/vfs/shell/shell.c             ent = vfs_s_generate_entry (me, NULL, dir, 0);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L968'>me</a>                968 src/vfs/shell/shell.c     vfs_s_free_entry (me, ent);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L972'>me</a>                972 src/vfs/shell/shell.c         vfs_print_message (_("%s: done."), me-&gt;name);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L976'>me</a>                976 src/vfs/shell/shell.c     me-&gt;verrno = reply_code == ERROR ? EACCES : E_REMOTE;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L979'>me</a>                979 src/vfs/shell/shell.c     vfs_print_message (_("%s: failure"), me-&gt;name);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L986'>me</a>                986 src/vfs/shell/shell.c shell_file_store (struct vfs_class *me, vfs_file_handler_t * fh, char *name, char *localname)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1041'>me</a>               1041 src/vfs/shell/shell.c         shell_command_v (me, super, WAIT_REPLY,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1073'>me</a>               1073 src/vfs/shell/shell.c                 me-&gt;verrno = errno;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1075'>me</a>               1075 src/vfs/shell/shell.c                 me-&gt;verrno = EIO;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1085'>me</a>               1085 src/vfs/shell/shell.c     if (shell_get_reply (me, shell_super-&gt;sockr, NULL, 0) != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1091'>me</a>               1091 src/vfs/shell/shell.c     shell_get_reply (me, shell_super-&gt;sockr, NULL, 0);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1098'>me</a>               1098 src/vfs/shell/shell.c shell_linear_start (struct vfs_class *me, vfs_file_handler_t * fh, off_t offset)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1105'>me</a>               1105 src/vfs/shell/shell.c     name = vfs_s_fullpath (me, fh-&gt;ino);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1120'>me</a>               1120 src/vfs/shell/shell.c         shell_command_v (me, super, WANT_STRING, SHELL_SUPER (super)-&gt;scr_get,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1143'>me</a>               1143 src/vfs/shell/shell.c shell_linear_abort (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1165'>me</a>               1165 src/vfs/shell/shell.c     if (shell_get_reply (me, SHELL_SUPER (super)-&gt;sockr, NULL, 0) != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1174'>me</a>               1174 src/vfs/shell/shell.c shell_linear_read (struct vfs_class *me, vfs_file_handler_t * fh, void *buf, size_t len)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1193'>me</a>               1193 src/vfs/shell/shell.c         shell_linear_abort (me, fh);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1194'>me</a>               1194 src/vfs/shell/shell.c     else if (shell_get_reply (me, SHELL_SUPER (super)-&gt;sockr, NULL, 0) != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1202'>me</a>               1202 src/vfs/shell/shell.c shell_linear_close (struct vfs_class *me, vfs_file_handler_t * fh)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1207'>me</a>               1207 src/vfs/shell/shell.c         shell_linear_abort (me, fh);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1252'>me</a>               1252 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1266'>me</a>               1266 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath1));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1269'>me</a>               1269 src/vfs/shell/shell.c         shell_send_command (me, super2, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_mv,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1286'>me</a>               1286 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1300'>me</a>               1300 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath1));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1303'>me</a>               1303 src/vfs/shell/shell.c         shell_send_command (me, super2, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_hardlink,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1321'>me</a>               1321 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1331'>me</a>               1331 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath2));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1334'>me</a>               1334 src/vfs/shell/shell.c         shell_send_command (me, super, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_ln,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1387'>me</a>               1387 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1396'>me</a>               1396 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1399'>me</a>               1399 src/vfs/shell/shell.c         shell_send_command (me, super, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_chmod,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1419'>me</a>               1419 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1439'>me</a>               1439 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1443'>me</a>               1443 src/vfs/shell/shell.c         shell_send_command (me, super, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_chown,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1493'>me</a>               1493 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1520'>me</a>               1520 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1522'>me</a>               1522 src/vfs/shell/shell.c     ret = shell_send_command (me, super, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_utime,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1541'>me</a>               1541 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1550'>me</a>               1550 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1553'>me</a>               1553 src/vfs/shell/shell.c         shell_send_command (me, super, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_unlink,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1569'>me</a>               1569 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1578'>me</a>               1578 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1581'>me</a>               1581 src/vfs/shell/shell.c         shell_send_command (me, super, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_exists,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1597'>me</a>               1597 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1608'>me</a>               1608 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1611'>me</a>               1611 src/vfs/shell/shell.c         shell_send_command (me, super, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_mkdir,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1620'>me</a>               1620 src/vfs/shell/shell.c         me-&gt;verrno = EACCES;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1634'>me</a>               1634 src/vfs/shell/shell.c     struct vfs_class *me;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1643'>me</a>               1643 src/vfs/shell/shell.c     me = VFS_CLASS (vfs_path_get_last_path_vfs (vpath));</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1646'>me</a>               1646 src/vfs/shell/shell.c         shell_send_command (me, super, OPT_FLUSH, SHELL_SUPER (super)-&gt;scr_rmdir,</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1670'>me</a>               1670 src/vfs/shell/shell.c shell_fh_open (struct vfs_class *me, vfs_file_handler_t * fh, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1688'>me</a>               1688 src/vfs/shell/shell.c             tmp_handle = vfs_mkstemps (&amp;vpath, me-&gt;name, fh-&gt;ino-&gt;ent-&gt;name);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1698'>me</a>               1698 src/vfs/shell/shell.c     if (fh-&gt;ino-&gt;localname == NULL &amp;&amp; vfs_s_retrieve_file (me, fh-&gt;ino) == -1)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1709'>me</a>               1709 src/vfs/shell/shell.c shell_fill_names (struct vfs_class *me, fill_names_f func)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1713'>me</a>               1713 src/vfs/shell/shell.c     for (iter = VFS_SUBCLASS (me)-&gt;supers; iter != NULL; iter = g_list_next (iter))</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L517'>me</a>                517 src/vfs/tar/tar.c tar_free_inode (struct vfs_class *me, struct vfs_s_inode *ino)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L519'>me</a>                519 src/vfs/tar/tar.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L529'>me</a>                529 src/vfs/tar/tar.c tar_insert_entry (struct vfs_class *me, struct vfs_s_super *archive, union block *header,</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L552'>me</a>                552 src/vfs/tar/tar.c     parent = vfs_s_find_inode (me, archive, q, LINK_NO_FOLLOW, FL_MKDIR);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L566'>me</a>                566 src/vfs/tar/tar.c             *inode = vfs_s_find_inode (me, archive, link_name, LINK_NO_FOLLOW, FL_NONE);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L576'>me</a>                576 src/vfs/tar/tar.c             entry = VFS_SUBCLASS (me)-&gt;find_entry (me, parent, p, LINK_NO_FOLLOW, FL_NONE);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L581'>me</a>                581 src/vfs/tar/tar.c         *inode = vfs_s_new_inode (me, archive, &amp;current_stat_info.stat);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L591'>me</a>                591 src/vfs/tar/tar.c     entry = vfs_s_new_entry (me, p, *inode);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L592'>me</a>                592 src/vfs/tar/tar.c     vfs_s_insert_entry (me, parent, entry);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L600'>me</a>                600 src/vfs/tar/tar.c tar_read_header (struct vfs_class *me, struct vfs_s_super *archive)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L820'>me</a>                820 src/vfs/tar/tar.c         status = tar_insert_entry (me, archive, header, &amp;inode);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L851'>me</a>                851 src/vfs/tar/tar.c tar_new_archive (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L857'>me</a>                857 src/vfs/tar/tar.c     arch-&gt;base.me = me;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L880'>me</a>                880 src/vfs/tar/tar.c tar_free_archive (struct vfs_class *me, struct vfs_s_super *archive)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L884'>me</a>                884 src/vfs/tar/tar.c     (void) me;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L900'>me</a>                900 src/vfs/tar/tar.c tar_open_archive_int (struct vfs_class *me, const vfs_path_t * vpath, struct vfs_s_super *archive)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L951'>me</a>                951 src/vfs/tar/tar.c     root = vfs_s_new_inode (me, archive, &amp;arch-&gt;st);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L955'>me</a>                955 src/vfs/tar/tar.c     root-&gt;st.st_dev = VFS_SUBCLASS (me)-&gt;rdev++;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1229'>me</a>               1229 src/vfs/tar/tar.c     struct vfs_class *me = VFS_FILE_HANDLER_SUPER (fh)-&gt;me;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1263'>me</a>               1263 src/vfs/tar/tar.c tar_fh_open (struct vfs_class *me, vfs_file_handler_t * fh, int flags, mode_t mode)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L784'>me</a>                784 src/vfs/undelfs/undelfs.c undelfs_init (struct vfs_class *me)</span>
+<span class='curline'><a href='../S/src--vfs--undelfs--undelfs.c.html#L786'>me</a>                786 src/vfs/undelfs/undelfs.c     (void) me;</span>
+<span class='curline'><a href='../S/tests--lib--vfs--vfs_parse_ls_lga.c.html#L68'>me</a>                 68 tests/lib/vfs/vfs_parse_ls_lga.c     vfs_test_super-&gt;me = vfs_test_ops1;</span>
+<span class='curline'><a href='../S/tests--lib--vfs--vfs_prefix_to_class.c.html#L41'>me</a>                 41 tests/lib/vfs/vfs_prefix_to_class.c test_which (struct vfs_class *me, const char *path)</span>
+<span class='curline'><a href='../S/tests--lib--vfs--vfs_prefix_to_class.c.html#L43'>me</a>                 43 tests/lib/vfs/vfs_prefix_to_class.c     (void) me;</span>
+<span class='curline'><a href='../S/tests--src--vfs--ftpfs--ftpfs_parse_long_list.c.html#L37'>me</a>                 37 tests/src/vfs/ftpfs/ftpfs_parse_long_list.c static struct vfs_class *me = VFS_CLASS (&amp;ftpfs_subclass);</span>
+<span class='curline'><a href='../S/tests--src--vfs--ftpfs--ftpfs_parse_long_list.c.html#L49'>me</a>                 49 tests/src/vfs/ftpfs/ftpfs_parse_long_list.c     super = vfs_s_new_super (me);</span>
+<span class='curline'><a href='../S/tests--src--vfs--ftpfs--ftpfs_parse_long_list.c.html#L51'>me</a>                 51 tests/src/vfs/ftpfs/ftpfs_parse_long_list.c     super-&gt;root = vfs_s_new_inode (me, super, vfs_s_default_stat (me, S_IFDIR | 0755));</span>
+<span class='curline'><a href='../S/tests--src--vfs--ftpfs--ftpfs_parse_long_list.c.html#L60'>me</a>                 60 tests/src/vfs/ftpfs/ftpfs_parse_long_list.c     vfs_s_free_super (me, super);</span>
+<span class='curline'><a href='../S/tests--src--vfs--ftpfs--ftpfs_parse_long_list.c.html#L124'>me</a>                124 tests/src/vfs/ftpfs/ftpfs_parse_long_list.c     parsed = ftpfs_parse_long_list (me, super-&gt;root, input, &amp;err_count);</span>
+<span class='curline'><a href='../S/tests--src--vfs--ftpfs--ftpfs_parse_long_list.c.html#L137'>me</a>                137 tests/src/vfs/ftpfs/ftpfs_parse_long_list.c         vfs_s_free_entry (me, VFS_ENTRY (parsed_iter-&gt;data));</span>
+</pre>
+</body>
+</html>

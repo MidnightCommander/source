@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/mc-ext2fs-attr.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/mc-ext2fs-attr.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/mc-ext2fs-attr.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/mc-ext2fs-attr.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>dnl
+<a id='L2' name='L2'></a>dnl Support for attributes on a Linux second extended file system
+<a id='L3' name='L3'></a>dnl
+<a id='L4' name='L4'></a>AC_DEFUN([mc_EXT2FS_ATTR],
+<a id='L5' name='L5'></a>[
+<a id='L6' name='L6'></a>    ext2fs_attr_msg="no"
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a>    PKG_CHECK_MODULES(EXT2FS, [ext2fs &gt;= 1.42.4], [found_ext2fs=yes], [:])
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a>    if test x"$found_ext2fs" = "xyes"; then
+<a id='L11' name='L11'></a>        PKG_CHECK_MODULES(E2P, [e2p &gt;= 1.42.4], [found_e2p=yes], [:])
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>        if test x"$found_e2p" = "xyes"; then
+<a id='L14' name='L14'></a>            AC_DEFINE(ENABLE_EXT2FS_ATTR, 1, [Define to enable support for ext2fs attributes])
+<a id='L15' name='L15'></a>            MCLIBS="$MCLIBS $E2P_LIBS"
+<a id='L16' name='L16'></a>            CPPFLAGS="$CPPFLAGS $EXT2FS_CFLAGS $E2P_CFLAGS"
+<a id='L17' name='L17'></a>            ext2fs_attr_msg="yes"
+<a id='L18' name='L18'></a>        else
+<a id='L19' name='L19'></a>            AC_MSG_WARN([e2p library not found or version too old (must be &gt;= 1.42.4)])
+<a id='L20' name='L20'></a>            ext2fs_attr_msg="no"
+<a id='L21' name='L21'></a>        fi
+<a id='L22' name='L22'></a>    else
+<a id='L23' name='L23'></a>        AC_MSG_WARN([ext2fs library not found or version too old (must be &gt;= 1.42.4)])
+<a id='L24' name='L24'></a>        ext2fs_attr_msg="no"
+<a id='L25' name='L25'></a>    fi
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>    AM_CONDITIONAL(ENABLE_EXT2FS_ATTR, [test "x$ext2fs_attr_msg" = "xyes"])
+<a id='L28' name='L28'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+28 m4.include/mc-ext2fs-attr.m4'  /> */</em>
+</body>
+</html>

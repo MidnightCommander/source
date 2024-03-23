@@ -1,0 +1,653 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/uc1541</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uc1541</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uc1541</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/uc1541'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#!/usr/bin/env python3
+<a id='L2' name='L2'></a>"""
+<a id='L3' name='L3'></a>UC1541 Virtual filesystem
+<a id='L4' name='L4'></a> 
+<a id='L5' name='L5'></a>Author: Roman 'gryf' Dobosz &lt;gryf73@gmail.com&gt;
+<a id='L6' name='L6'></a>Date: 2023-10-04
+<a id='L7' name='L7'></a>Version: 3.6
+<a id='L8' name='L8'></a>Licence: BSD
+<a id='L9' name='L9'></a>source: https://bitbucket.org/gryf/uc1541
+<a id='L10' name='L10'></a>mirror: https://github.com/gryf/uc1541
+<a id='L11' name='L11'></a>"""
+<a id='L12' name='L12'></a>import argparse
+<a id='L13' name='L13'></a>import gzip
+<a id='L14' name='L14'></a>import logging
+<a id='L15' name='L15'></a>import os
+<a id='L16' name='L16'></a>import re
+<a id='L17' name='L17'></a>import subprocess
+<a id='L18' name='L18'></a>import sys
+<a id='L19' name='L19'></a> 
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>LOG = logging.getLogger('UC1541')
+<a id='L22' name='L22'></a>if os.getenv('UC1541_DEBUG'):
+<a id='L23' name='L23'></a>    LOG.setLevel(logging.DEBUG)
+<a id='L24' name='L24'></a>    FILE_HANDLER = logging.FileHandler("/tmp/uc1541.log")
+<a id='L25' name='L25'></a>    FILE_FORMATTER = logging.Formatter("%(asctime)s %(levelname)-8s "
+<a id='L26' name='L26'></a>                                       "%(lineno)s %(funcName)s - %(message)s")
+<a id='L27' name='L27'></a>    FILE_HANDLER.setFormatter(FILE_FORMATTER)
+<a id='L28' name='L28'></a>    FILE_HANDLER.setLevel(logging.DEBUG)
+<a id='L29' name='L29'></a>    LOG.addHandler(FILE_HANDLER)
+<a id='L30' name='L30'></a> 
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>SECLEN = 256
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>def _get_raw(dimage):
+<a id='L36' name='L36'></a>    """
+<a id='L37' name='L37'></a>    Try to get contents of the D64 image either it's gzip compressed or not.
+<a id='L38' name='L38'></a>    """
+<a id='L39' name='L39'></a>    raw = None
+<a id='L40' name='L40'></a>    with gzip.open(dimage, 'rb') as fobj:
+<a id='L41' name='L41'></a>        # Although the common approach with gzipped files is to check the
+<a id='L42' name='L42'></a>        # magic number, in this case there is no guarantee that first track
+<a id='L43' name='L43'></a>        # does not contain exactly the same byte sequence as the magic number.
+<a id='L44' name='L44'></a>        # So the only way left is to actually try to uncompress the file.
+<a id='L45' name='L45'></a>        try:
+<a id='L46' name='L46'></a>            raw = fobj.read()
+<a id='L47' name='L47'></a>        except (IOError, OSError):
+<a id='L48' name='L48'></a>            pass
+<a id='L49' name='L49'></a>    if not raw:
+<a id='L50' name='L50'></a>        with open(dimage, 'rb') as fobj:
+<a id='L51' name='L51'></a>            raw = fobj.read()
+<a id='L52' name='L52'></a> 
+<a id='L53' name='L53'></a>    return raw
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a>def _get_implementation(disk):
+<a id='L57' name='L57'></a>    """
+<a id='L58' name='L58'></a>    Check the file under fname and return right class for creating an object
+<a id='L59' name='L59'></a>    corresponding for the file
+<a id='L60' name='L60'></a>    """
+<a id='L61' name='L61'></a>    len_map = {822400: D81,  # 80 tracks
+<a id='L62' name='L62'></a>               819200: D81,  # 80 tracks, 3200 error bytes
+<a id='L63' name='L63'></a>               349696: D71,  # 70 tracks
+<a id='L64' name='L64'></a>               351062: D71,  # 70 tracks, 1366 error bytes
+<a id='L65' name='L65'></a>               174848: D64,  # usual d64 disc image, 35 tracks, no errors
+<a id='L66' name='L66'></a>               175531: D64,  # 35 track, 683 error bytes
+<a id='L67' name='L67'></a>               196608: D64,  # 40 track, no errors
+<a id='L68' name='L68'></a>               197376: D64}  # 40 track, 768 error bytes
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a>    if disk[:32].startswith(b'C64'):
+<a id='L71' name='L71'></a>        return  # T64
+<a id='L72' name='L72'></a> 
+<a id='L73' name='L73'></a>    return len_map.get(len(disk))(disk)
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a> 
+<a id='L76' name='L76'></a>class Disk(object):
+<a id='L77' name='L77'></a>    """
+<a id='L78' name='L78'></a>    Represent common disk interface
+<a id='L79' name='L79'></a>    """
+<a id='L80' name='L80'></a>    CHAR_MAP = {32: ' ', 33: '!', 34: '"', 35: '#', 37: '%', 38: '&amp;', 39: "'",
+<a id='L81' name='L81'></a>                40: '(', 41: ')', 42: '*', 43: '+', 44: ',', 45: '-', 46: '.',
+<a id='L82' name='L82'></a>                47: '/', 48: '0', 49: '1', 50: '2', 51: '3', 52: '4', 53: '5',
+<a id='L83' name='L83'></a>                54: '6', 55: '7', 56: '8', 57: '9', 59: ';', 60: '&lt;', 61: '=',
+<a id='L84' name='L84'></a>                62: '&gt;', 63: '?', 64: '@', 65: 'a', 66: 'b', 67: 'c', 68: 'd',
+<a id='L85' name='L85'></a>                69: 'e', 70: 'f', 71: 'g', 72: 'h', 73: 'i', 74: 'j', 75: 'k',
+<a id='L86' name='L86'></a>                76: 'l', 77: 'm', 78: 'n', 79: 'o', 80: 'p', 81: 'q', 82: 'r',
+<a id='L87' name='L87'></a>                83: 's', 84: 't', 85: 'u', 86: 'v', 87: 'w', 88: 'x', 89: 'y',
+<a id='L88' name='L88'></a>                90: 'z', 91: '[', 93: ']', 97: 'A', 98: 'B', 99: 'C',
+<a id='L89' name='L89'></a>                100: 'D', 101: 'E', 102: 'F', 103: 'G', 104: 'H', 105: 'I',
+<a id='L90' name='L90'></a>                106: 'J', 107: 'K', 108: 'L', 109: 'M', 110: 'N', 111: 'O',
+<a id='L91' name='L91'></a>                112: 'P', 113: 'Q', 114: 'R', 115: 'S', 116: 'T', 117: 'U',
+<a id='L92' name='L92'></a>                118: 'V', 119: 'W', 120: 'X', 121: 'Y', 122: 'Z', 193: 'A',
+<a id='L93' name='L93'></a>                194: 'B', 195: 'C', 196: 'D', 197: 'E', 198: 'F', 199: 'G',
+<a id='L94' name='L94'></a>                200: 'H', 201: 'I', 202: 'J', 203: 'K', 204: 'L', 205: 'M',
+<a id='L95' name='L95'></a>                206: 'N', 207: 'O', 208: 'P', 209: 'Q', 210: 'R', 211: 'S',
+<a id='L96' name='L96'></a>                212: 'T', 213: 'U', 214: 'V', 215: 'W', 216: 'X', 217: 'Y',
+<a id='L97' name='L97'></a>                218: 'Z'}
+<a id='L98' name='L98'></a> 
+<a id='L99' name='L99'></a>    FILE_TYPES = {0b000: 'del',
+<a id='L100' name='L100'></a>                  0b001: 'seq',
+<a id='L101' name='L101'></a>                  0b010: 'prg',
+<a id='L102' name='L102'></a>                  0b011: 'usr',
+<a id='L103' name='L103'></a>                  0b100: 'rel'}
+<a id='L104' name='L104'></a> 
+<a id='L105' name='L105'></a>    DIR_TRACK = 18
+<a id='L106' name='L106'></a>    DIR_SECTOR = 1
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a>    def __init__(self, raw):
+<a id='L109' name='L109'></a>        """
+<a id='L110' name='L110'></a>        Init
+<a id='L111' name='L111'></a>        """
+<a id='L112' name='L112'></a>        self.raw = raw
+<a id='L113' name='L113'></a>        self.current_sector_data = None
+<a id='L114' name='L114'></a>        self.next_sector = 0
+<a id='L115' name='L115'></a>        self.next_track = None
+<a id='L116' name='L116'></a>        self._dir_contents = []
+<a id='L117' name='L117'></a>        self._already_done = []
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>    def _map_filename(self, string):
+<a id='L120' name='L120'></a>        """
+<a id='L121' name='L121'></a>        Transcode filename to ASCII compatible. Replace not supported
+<a id='L122' name='L122'></a>        characters with jokers.
+<a id='L123' name='L123'></a>        """
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>        filename = list()
+<a id='L126' name='L126'></a> 
+<a id='L127' name='L127'></a>        for chr_ in string:
+<a id='L128' name='L128'></a>            if chr_ == 160:  # shift+space character; $a0
+<a id='L129' name='L129'></a>                break
+<a id='L130' name='L130'></a> 
+<a id='L131' name='L131'></a>            character = D64.CHAR_MAP.get(chr_, '?')
+<a id='L132' name='L132'></a>            filename.append(character)
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a>        # special cases
+<a id='L135' name='L135'></a>        if filename[0] == "-":
+<a id='L136' name='L136'></a>            filename[0] = "?"
+<a id='L137' name='L137'></a> 
+<a id='L138' name='L138'></a>        LOG.debug("string: ``%s'' mapped to: ``%s''", string,
+<a id='L139' name='L139'></a>                  "".join(filename))
+<a id='L140' name='L140'></a>        return "".join(filename)
+<a id='L141' name='L141'></a> 
+<a id='L142' name='L142'></a>    def _go_to_next_sector(self):
+<a id='L143' name='L143'></a>        """
+<a id='L144' name='L144'></a>        Fetch (if exist) next sector from a directory chain
+<a id='L145' name='L145'></a>        Return False if the chain ends, True otherwise
+<a id='L146' name='L146'></a>        """
+<a id='L147' name='L147'></a> 
+<a id='L148' name='L148'></a>        # Well, self.next_sector _should_ have value $FF, but apparently there
+<a id='L149' name='L149'></a>        # are the cases where it is not, therefore checking for that will not
+<a id='L150' name='L150'></a>        # be performed and value of $00 on the next track will end the
+<a id='L151' name='L151'></a>        # directory
+<a id='L152' name='L152'></a>        if self.next_track == 0:
+<a id='L153' name='L153'></a>            LOG.debug("End of directory")
+<a id='L154' name='L154'></a>            return False
+<a id='L155' name='L155'></a> 
+<a id='L156' name='L156'></a>        if self.next_track is None:
+<a id='L157' name='L157'></a>            LOG.debug("Going to the track: %s, %s", self.DIR_TRACK,
+<a id='L158' name='L158'></a>                      self.DIR_SECTOR)
+<a id='L159' name='L159'></a>            offset = self._get_offset(self.DIR_TRACK, self.DIR_SECTOR)
+<a id='L160' name='L160'></a>        else:
+<a id='L161' name='L161'></a>            offset = self._get_offset(self.next_track, self.next_sector)
+<a id='L162' name='L162'></a>            LOG.debug("Going to the track: %s,%s", self.next_track,
+<a id='L163' name='L163'></a>                      self.next_sector)
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a>        self.current_sector_data = self.raw[offset:offset + SECLEN]
+<a id='L166' name='L166'></a> 
+<a id='L167' name='L167'></a>        # Guard for reading data out of bound - that happened for discs which
+<a id='L168' name='L168'></a>        # store only raw data, even on directory track
+<a id='L169' name='L169'></a>        if not self.current_sector_data:
+<a id='L170' name='L170'></a>            return False
+<a id='L171' name='L171'></a> 
+<a id='L172' name='L172'></a>        self.next_track = self.current_sector_data[0]
+<a id='L173' name='L173'></a>        self.next_sector = self.current_sector_data[1]
+<a id='L174' name='L174'></a> 
+<a id='L175' name='L175'></a>        if (self.next_track, self.next_sector) in self._already_done:
+<a id='L176' name='L176'></a>            # Just a failsafe. Endless loop is not what is expected.
+<a id='L177' name='L177'></a>            LOG.debug("Loop in track/sector pointer at %d,%d",
+<a id='L178' name='L178'></a>                      self.next_track, self.next_sector)
+<a id='L179' name='L179'></a>            self._already_done = []
+<a id='L180' name='L180'></a>            return False
+<a id='L181' name='L181'></a> 
+<a id='L182' name='L182'></a>        self._already_done.append((self.next_track, self.next_sector))
+<a id='L183' name='L183'></a>        LOG.debug("Next track: %s,%s", self.next_track, self.next_sector)
+<a id='L184' name='L184'></a>        return True
+<a id='L185' name='L185'></a> 
+<a id='L186' name='L186'></a>    def _get_ftype(self, num):
+<a id='L187' name='L187'></a>        """
+<a id='L188' name='L188'></a>        Get filetype as a string
+<a id='L189' name='L189'></a>        """
+<a id='L190' name='L190'></a>        return D64.FILE_TYPES.get(int("%d%d%d" % (num &amp; 4 and 1,
+<a id='L191' name='L191'></a>                                                  num &amp; 2 and 1,
+<a id='L192' name='L192'></a>                                                  num &amp; 1), 2), '???')
+<a id='L193' name='L193'></a> 
+<a id='L194' name='L194'></a>    def _get_offset(self, track, sector):
+<a id='L195' name='L195'></a>        """
+<a id='L196' name='L196'></a>        Return offset (in bytes) for specified track and sector.
+<a id='L197' name='L197'></a>        """
+<a id='L198' name='L198'></a>        return 0
+<a id='L199' name='L199'></a> 
+<a id='L200' name='L200'></a>    def _harvest_entries(self):
+<a id='L201' name='L201'></a>        """
+<a id='L202' name='L202'></a>        Traverse through sectors and store entries in _dir_contents
+<a id='L203' name='L203'></a>        """
+<a id='L204' name='L204'></a>        sector = self.current_sector_data
+<a id='L205' name='L205'></a>        for dummy in range(8):
+<a id='L206' name='L206'></a>            entry = sector[:32]
+<a id='L207' name='L207'></a>            ftype = entry[2]
+<a id='L208' name='L208'></a> 
+<a id='L209' name='L209'></a>            if ftype == 0:  # deleted
+<a id='L210' name='L210'></a>                sector = sector[32:]
+<a id='L211' name='L211'></a>                continue
+<a id='L212' name='L212'></a> 
+<a id='L213' name='L213'></a>            type_verbose = self._get_ftype(ftype)
+<a id='L214' name='L214'></a> 
+<a id='L215' name='L215'></a>            protect = entry[2] &amp; 64 and "&lt;" or " "
+<a id='L216' name='L216'></a>            fname = entry[5:21]
+<a id='L217' name='L217'></a>            if ftype == 'rel':
+<a id='L218' name='L218'></a>                size = entry[23]
+<a id='L219' name='L219'></a>            else:
+<a id='L220' name='L220'></a>                size = entry[30] + entry[31] * 226
+<a id='L221' name='L221'></a> 
+<a id='L222' name='L222'></a>            self._dir_contents.append({'fname': self._map_filename(fname),
+<a id='L223' name='L223'></a>                                       'ftype': type_verbose,
+<a id='L224' name='L224'></a>                                       'size': size,
+<a id='L225' name='L225'></a>                                       'protect': protect})
+<a id='L226' name='L226'></a>            sector = sector[32:]
+<a id='L227' name='L227'></a> 
+<a id='L228' name='L228'></a>    def list_dir(self):
+<a id='L229' name='L229'></a>        """
+<a id='L230' name='L230'></a>        Return directory list as list of dict with keys:
+<a id='L231' name='L231'></a>            fname, ftype, protect and size
+<a id='L232' name='L232'></a>        """
+<a id='L233' name='L233'></a>        while self._go_to_next_sector():
+<a id='L234' name='L234'></a>            self._harvest_entries()
+<a id='L235' name='L235'></a> 
+<a id='L236' name='L236'></a>        return self._dir_contents
+<a id='L237' name='L237'></a> 
+<a id='L238' name='L238'></a> 
+<a id='L239' name='L239'></a>class D64(Disk):
+<a id='L240' name='L240'></a>    """
+<a id='L241' name='L241'></a>    Implement d64 directory reader
+<a id='L242' name='L242'></a>    """
+<a id='L243' name='L243'></a> 
+<a id='L244' name='L244'></a>    def _get_offset(self, track, sector):
+<a id='L245' name='L245'></a>        """
+<a id='L246' name='L246'></a>        Return offset (in bytes) for specified track and sector.
+<a id='L247' name='L247'></a> 
+<a id='L248' name='L248'></a>        Track   Sectors/track   # Tracks
+<a id='L249' name='L249'></a>        -----   -------------   ---------
+<a id='L250' name='L250'></a>         1-17        21            17
+<a id='L251' name='L251'></a>        18-24        19             7
+<a id='L252' name='L252'></a>        25-30        18             6
+<a id='L253' name='L253'></a>        31-40        17            10
+<a id='L254' name='L254'></a>        """
+<a id='L255' name='L255'></a>        offset = 0
+<a id='L256' name='L256'></a>        truncate_track = 0
+<a id='L257' name='L257'></a> 
+<a id='L258' name='L258'></a>        if track &gt; 17:
+<a id='L259' name='L259'></a>            offset = 17 * 21 * SECLEN
+<a id='L260' name='L260'></a>            truncate_track = 17
+<a id='L261' name='L261'></a> 
+<a id='L262' name='L262'></a>        if track &gt; 24:
+<a id='L263' name='L263'></a>            offset += 7 * 19 * SECLEN
+<a id='L264' name='L264'></a>            truncate_track = 24
+<a id='L265' name='L265'></a> 
+<a id='L266' name='L266'></a>        if track &gt; 30:
+<a id='L267' name='L267'></a>            offset += 6 * 18 * SECLEN
+<a id='L268' name='L268'></a>            truncate_track = 30
+<a id='L269' name='L269'></a> 
+<a id='L270' name='L270'></a>        track = track - truncate_track
+<a id='L271' name='L271'></a>        offset += track * sector * SECLEN
+<a id='L272' name='L272'></a> 
+<a id='L273' name='L273'></a>        return offset
+<a id='L274' name='L274'></a> 
+<a id='L275' name='L275'></a> 
+<a id='L276' name='L276'></a>class D71(Disk):
+<a id='L277' name='L277'></a>    """
+<a id='L278' name='L278'></a>    Implement d71 directory reader
+<a id='L279' name='L279'></a>    """
+<a id='L280' name='L280'></a> 
+<a id='L281' name='L281'></a>    def _get_offset(self, track, sector):
+<a id='L282' name='L282'></a>        """
+<a id='L283' name='L283'></a>        Return offset (in bytes) for specified track and sector.
+<a id='L284' name='L284'></a> 
+<a id='L285' name='L285'></a>            Track       Sec/trk   # Tracks
+<a id='L286' name='L286'></a>        --------------  -------   ---------
+<a id='L287' name='L287'></a>         1-17 (side 0)    21         17
+<a id='L288' name='L288'></a>        18-24 (side 0)    19          7
+<a id='L289' name='L289'></a>        25-30 (side 0)    18          6
+<a id='L290' name='L290'></a>        31-35 (side 0)    17          5
+<a id='L291' name='L291'></a>        36-52 (side 1)    21         17
+<a id='L292' name='L292'></a>        53-59 (side 1)    19          7
+<a id='L293' name='L293'></a>        60-65 (side 1)    18          6
+<a id='L294' name='L294'></a>        66-70 (side 1)    17          5
+<a id='L295' name='L295'></a>        """
+<a id='L296' name='L296'></a>        offset = 0
+<a id='L297' name='L297'></a>        truncate_track = 0
+<a id='L298' name='L298'></a> 
+<a id='L299' name='L299'></a>        if track &gt; 17:
+<a id='L300' name='L300'></a>            offset = 17 * 21 * SECLEN
+<a id='L301' name='L301'></a>            truncate_track = 17
+<a id='L302' name='L302'></a> 
+<a id='L303' name='L303'></a>        if track &gt; 24:
+<a id='L304' name='L304'></a>            offset += 7 * 19 * SECLEN
+<a id='L305' name='L305'></a>            truncate_track = 24
+<a id='L306' name='L306'></a> 
+<a id='L307' name='L307'></a>        if track &gt; 30:
+<a id='L308' name='L308'></a>            offset += 6 * 18 * SECLEN
+<a id='L309' name='L309'></a>            truncate_track = 30
+<a id='L310' name='L310'></a> 
+<a id='L311' name='L311'></a>        if track &gt; 35:
+<a id='L312' name='L312'></a>            offset += 5 * 17 * SECLEN
+<a id='L313' name='L313'></a>            truncate_track = 35
+<a id='L314' name='L314'></a> 
+<a id='L315' name='L315'></a>        if track &gt; 52:
+<a id='L316' name='L316'></a>            offset = 17 * 21 * SECLEN
+<a id='L317' name='L317'></a>            truncate_track = 17
+<a id='L318' name='L318'></a> 
+<a id='L319' name='L319'></a>        if track &gt; 59:
+<a id='L320' name='L320'></a>            offset += 7 * 19 * SECLEN
+<a id='L321' name='L321'></a>            truncate_track = 24
+<a id='L322' name='L322'></a> 
+<a id='L323' name='L323'></a>        if track &gt; 65:
+<a id='L324' name='L324'></a>            offset += 6 * 18 * SECLEN
+<a id='L325' name='L325'></a>            truncate_track = 30
+<a id='L326' name='L326'></a> 
+<a id='L327' name='L327'></a>        track = track - truncate_track
+<a id='L328' name='L328'></a>        offset += track * sector * SECLEN
+<a id='L329' name='L329'></a> 
+<a id='L330' name='L330'></a>        return offset
+<a id='L331' name='L331'></a> 
+<a id='L332' name='L332'></a> 
+<a id='L333' name='L333'></a>class D81(Disk):
+<a id='L334' name='L334'></a>    """
+<a id='L335' name='L335'></a>    Implement d81 directory reader
+<a id='L336' name='L336'></a>    """
+<a id='L337' name='L337'></a>    DIR_TRACK = 40
+<a id='L338' name='L338'></a>    DIR_SECTOR = 3
+<a id='L339' name='L339'></a>    FILE_TYPES = {0b000: 'del',
+<a id='L340' name='L340'></a>                  0b001: 'seq',
+<a id='L341' name='L341'></a>                  0b010: 'prg',
+<a id='L342' name='L342'></a>                  0b011: 'usr',
+<a id='L343' name='L343'></a>                  0b100: 'rel',
+<a id='L344' name='L344'></a>                  0b101: 'cbm'}
+<a id='L345' name='L345'></a> 
+<a id='L346' name='L346'></a>    def _get_offset(self, track, sector):
+<a id='L347' name='L347'></a>        """
+<a id='L348' name='L348'></a>        Return offset (in bytes) for specified track and sector. In d81 is
+<a id='L349' name='L349'></a>        easy, since we have 80 tracks with 40 sectors for 256 bytes each.
+<a id='L350' name='L350'></a>        """
+<a id='L351' name='L351'></a>        # we wan to go to the beginning (first sector) of the track, not it's
+<a id='L352' name='L352'></a>        # max, so that we need to extract its amount.
+<a id='L353' name='L353'></a>        return (track * 40 - 40) * SECLEN + sector * SECLEN
+<a id='L354' name='L354'></a> 
+<a id='L355' name='L355'></a> 
+<a id='L356' name='L356'></a>class Uc1541(object):
+<a id='L357' name='L357'></a>    """
+<a id='L358' name='L358'></a>    Class for interact with c1541 program and MC
+<a id='L359' name='L359'></a>    """
+<a id='L360' name='L360'></a>    PRG = re.compile(r'(\d+)\s+"([^"]*)".+?(del|prg|rel|seq|usr)([\s&lt;])')
+<a id='L361' name='L361'></a> 
+<a id='L362' name='L362'></a>    def __init__(self, archname):
+<a id='L363' name='L363'></a>        self.arch = archname
+<a id='L364' name='L364'></a>        self.out = ''
+<a id='L365' name='L365'></a>        self.err = ''
+<a id='L366' name='L366'></a>        self._verbose = os.getenv("UC1541_VERBOSE", False)
+<a id='L367' name='L367'></a>        self._hide_del = os.getenv("UC1541_HIDE_DEL", False)
+<a id='L368' name='L368'></a> 
+<a id='L369' name='L369'></a>        self.dirlist = _get_implementation(_get_raw(archname)).list_dir()
+<a id='L370' name='L370'></a>        self.file_map = {}
+<a id='L371' name='L371'></a>        self.directory = []
+<a id='L372' name='L372'></a> 
+<a id='L373' name='L373'></a>    def list(self):
+<a id='L374' name='L374'></a>        """
+<a id='L375' name='L375'></a>        Output list contents of D64 image.
+<a id='L376' name='L376'></a>        Convert filenames to be Unix filesystem friendly
+<a id='L377' name='L377'></a>        Add suffix to show user what kind of file do he dealing with.
+<a id='L378' name='L378'></a>        """
+<a id='L379' name='L379'></a>        LOG.info("List contents of %s", self.arch)
+<a id='L380' name='L380'></a>        directory = self._get_dir()
+<a id='L381' name='L381'></a> 
+<a id='L382' name='L382'></a>        # If there is an error reading directory, show the reason to the user
+<a id='L383' name='L383'></a>        if self.out.startswith("Error"):
+<a id='L384' name='L384'></a>            sys.stderr.write(self.out.split("\n")[0] + "\n")
+<a id='L385' name='L385'></a>            return 2
+<a id='L386' name='L386'></a> 
+<a id='L387' name='L387'></a>        for entry in directory:
+<a id='L388' name='L388'></a>            sys.stdout.write("%(perms)s   1 %(uid)-8d %(gid)-8d %(size)8d "
+<a id='L389' name='L389'></a>                             "Jan 01 1980 %(display_name)s\n" % entry)
+<a id='L390' name='L390'></a>        return 0
+<a id='L391' name='L391'></a> 
+<a id='L392' name='L392'></a>    def rm(self, dst):
+<a id='L393' name='L393'></a>        """
+<a id='L394' name='L394'></a>        Remove file from D64 image
+<a id='L395' name='L395'></a>        """
+<a id='L396' name='L396'></a>        LOG.info("Removing file %s", dst)
+<a id='L397' name='L397'></a>        dst = self._get_masked_fname(dst)
+<a id='L398' name='L398'></a>        return self._call_command('delete', dst=dst)
+<a id='L399' name='L399'></a> 
+<a id='L400' name='L400'></a>    def copyin(self, dst, src):
+<a id='L401' name='L401'></a>        """
+<a id='L402' name='L402'></a>        Copy file to the D64 image. Destination filename has to be corrected.
+<a id='L403' name='L403'></a>        """
+<a id='L404' name='L404'></a>        LOG.info("Copy into D64 %s as %s", src, dst)
+<a id='L405' name='L405'></a>        dst = self._correct_fname(dst)
+<a id='L406' name='L406'></a>        return self._call_command('write', src=src, dst=dst)
+<a id='L407' name='L407'></a> 
+<a id='L408' name='L408'></a>    def copyout(self, src, dst):
+<a id='L409' name='L409'></a>        """
+<a id='L410' name='L410'></a>        Copy file form the D64 image. Source filename has to be corrected,
+<a id='L411' name='L411'></a>        since it's representation differ from the real one inside D64 image.
+<a id='L412' name='L412'></a>        """
+<a id='L413' name='L413'></a>        LOG.info("Copy form D64 %s as %s", src, dst)
+<a id='L414' name='L414'></a>        if not src.endswith(".prg"):
+<a id='L415' name='L415'></a>            return "cannot read"
+<a id='L416' name='L416'></a> 
+<a id='L417' name='L417'></a>        src = self._get_masked_fname(src)
+<a id='L418' name='L418'></a> 
+<a id='L419' name='L419'></a>        return self._call_command('read', src=src, dst=dst)
+<a id='L420' name='L420'></a> 
+<a id='L421' name='L421'></a>    def mkdir(self, dirname):
+<a id='L422' name='L422'></a>        """Not supported"""
+<a id='L423' name='L423'></a>        self.err = "D64 format doesn't support directories"
+<a id='L424' name='L424'></a>        return self._show_error()
+<a id='L425' name='L425'></a> 
+<a id='L426' name='L426'></a>    def run(self, fname):
+<a id='L427' name='L427'></a>        """Not supported"""
+<a id='L428' name='L428'></a>        self.err = "Not supported, unless you are using MC on real C64 ;)"
+<a id='L429' name='L429'></a>        return self._show_error()
+<a id='L430' name='L430'></a> 
+<a id='L431' name='L431'></a>    def _correct_fname(self, fname):
+<a id='L432' name='L432'></a>        """
+<a id='L433' name='L433'></a>        Return filename with mapped characters, without .prg extension.
+<a id='L434' name='L434'></a>        Characters like $, *, + in filenames are perfectly legal, but c1541
+<a id='L435' name='L435'></a>        program seem to have issues with it while writing, so it will also be
+<a id='L436' name='L436'></a>        replaced.
+<a id='L437' name='L437'></a>        """
+<a id='L438' name='L438'></a>        char_map = {'|': "/",
+<a id='L439' name='L439'></a>                    "\\": "/",
+<a id='L440' name='L440'></a>                    "~": " ",
+<a id='L441' name='L441'></a>                    "$": "?",
+<a id='L442' name='L442'></a>                    "*": "?"}
+<a id='L443' name='L443'></a> 
+<a id='L444' name='L444'></a>        if fname.lower().endswith(".prg"):
+<a id='L445' name='L445'></a>            fname = fname[:-4]
+<a id='L446' name='L446'></a> 
+<a id='L447' name='L447'></a>        new_fname = []
+<a id='L448' name='L448'></a>        for char in fname:
+<a id='L449' name='L449'></a>            trans = char_map.get(char)
+<a id='L450' name='L450'></a>            new_fname.append(trans if trans else char)
+<a id='L451' name='L451'></a> 
+<a id='L452' name='L452'></a>        return "".join(new_fname)
+<a id='L453' name='L453'></a> 
+<a id='L454' name='L454'></a>    def _get_masked_fname(self, fname):
+<a id='L455' name='L455'></a>        """
+<a id='L456' name='L456'></a>        Return masked filename with '?' jokers instead of non ASCII
+<a id='L457' name='L457'></a>        characters, useful for copying or deleting files with c1541. In case
+<a id='L458' name='L458'></a>        of several files with same name exists in directory, only first one
+<a id='L459' name='L459'></a>        will be operative (first as appeared in directory).
+<a id='L460' name='L460'></a> 
+<a id='L461' name='L461'></a>        Warning! If there are two different names but the only difference is in
+<a id='L462' name='L462'></a>        non-ASCII characters (some PET ASCII or control characters) there is
+<a id='L463' name='L463'></a>        a risk that one can remove both files.
+<a id='L464' name='L464'></a>        """
+<a id='L465' name='L465'></a>        directory = self._get_dir()
+<a id='L466' name='L466'></a> 
+<a id='L467' name='L467'></a>        for entry in directory:
+<a id='L468' name='L468'></a>            if entry['display_name'] == fname:
+<a id='L469' name='L469'></a>                return entry['pattern_name']
+<a id='L470' name='L470'></a> 
+<a id='L471' name='L471'></a>    def _get_dir(self):
+<a id='L472' name='L472'></a>        """
+<a id='L473' name='L473'></a>        Retrieve directory via c1541 program
+<a id='L474' name='L474'></a>        """
+<a id='L475' name='L475'></a>        directory = []
+<a id='L476' name='L476'></a> 
+<a id='L477' name='L477'></a>        uid = os.getuid()
+<a id='L478' name='L478'></a>        gid = os.getgid()
+<a id='L479' name='L479'></a> 
+<a id='L480' name='L480'></a>        res = self._call_command('list')
+<a id='L481' name='L481'></a>        if res != 0:
+<a id='L482' name='L482'></a>            return res
+<a id='L483' name='L483'></a> 
+<a id='L484' name='L484'></a>        idx = 0
+<a id='L485' name='L485'></a>        for line in self.out.split("\n"):
+<a id='L486' name='L486'></a>            if Uc1541.PRG.match(line):
+<a id='L487' name='L487'></a>                blocks, fname, ext, rw = Uc1541.PRG.match(line).groups()
+<a id='L488' name='L488'></a> 
+<a id='L489' name='L489'></a>                if ext == 'del' and self._hide_del:
+<a id='L490' name='L490'></a>                    continue
+<a id='L491' name='L491'></a> 
+<a id='L492' name='L492'></a>                display_name = ".".join([fname, ext])
+<a id='L493' name='L493'></a>                pattern_name = self.dirlist[idx]['fname']
+<a id='L494' name='L494'></a> 
+<a id='L495' name='L495'></a>                if '/' in display_name:
+<a id='L496' name='L496'></a>                    display_name = display_name.replace('/', '|')
+<a id='L497' name='L497'></a> 
+<a id='L498' name='L498'></a>                # workaround for space and dash at the beggining of the
+<a id='L499' name='L499'></a>                # filename
+<a id='L500' name='L500'></a>                char_map = {' ': '~',
+<a id='L501' name='L501'></a>                            '-': '_'}
+<a id='L502' name='L502'></a>                display_name = "".join([char_map.get(display_name[0],
+<a id='L503' name='L503'></a>                                                     display_name[0]),
+<a id='L504' name='L504'></a>                                        display_name[1:]])
+<a id='L505' name='L505'></a> 
+<a id='L506' name='L506'></a>                if ext == 'del':
+<a id='L507' name='L507'></a>                    perms = "----------"
+<a id='L508' name='L508'></a>                else:
+<a id='L509' name='L509'></a>                    perms = "-r%s-r--r--" % (rw.strip() and "-" or "w")
+<a id='L510' name='L510'></a> 
+<a id='L511' name='L511'></a>                directory.append({'pattern_name': pattern_name,
+<a id='L512' name='L512'></a>                                  'display_name': display_name,
+<a id='L513' name='L513'></a>                                  'uid': uid,
+<a id='L514' name='L514'></a>                                  'gid': gid,
+<a id='L515' name='L515'></a>                                  'size': int(blocks) * SECLEN,
+<a id='L516' name='L516'></a>                                  'perms': perms})
+<a id='L517' name='L517'></a>                idx += 1
+<a id='L518' name='L518'></a>        return directory
+<a id='L519' name='L519'></a> 
+<a id='L520' name='L520'></a>    def _show_error(self):
+<a id='L521' name='L521'></a>        """
+<a id='L522' name='L522'></a>        Pass out error output from c1541 execution
+<a id='L523' name='L523'></a>        """
+<a id='L524' name='L524'></a>        if self._verbose:
+<a id='L525' name='L525'></a>            return self.err
+<a id='L526' name='L526'></a>        else:
+<a id='L527' name='L527'></a>            return 1
+<a id='L528' name='L528'></a> 
+<a id='L529' name='L529'></a>    def _call_command(self, cmd, src=None, dst=None):
+<a id='L530' name='L530'></a>        """
+<a id='L531' name='L531'></a>        Return status of the provided command, which can be one of:
+<a id='L532' name='L532'></a>            write
+<a id='L533' name='L533'></a>            read
+<a id='L534' name='L534'></a>            delete
+<a id='L535' name='L535'></a>            dir/list
+<a id='L536' name='L536'></a>        """
+<a id='L537' name='L537'></a>        command = ['c1541', '-attach', self.arch, '-%s' % cmd]
+<a id='L538' name='L538'></a>        if src:
+<a id='L539' name='L539'></a>            command.append(src)
+<a id='L540' name='L540'></a>        if dst:
+<a id='L541' name='L541'></a>            command.append(dst)
+<a id='L542' name='L542'></a> 
+<a id='L543' name='L543'></a>        LOG.debug('executing command: %s', ' '.join(command))
+<a id='L544' name='L544'></a>        # For some reason using write and delete commands and reading output
+<a id='L545' name='L545'></a>        # confuses Python3 beneath MC and as a consequence MC report an
+<a id='L546' name='L546'></a>        # error...therefore for those commands let's not use
+<a id='L547' name='L547'></a>        # universal_newlines...
+<a id='L548' name='L548'></a>        universal_newlines = True
+<a id='L549' name='L549'></a>        if cmd in ['delete', 'write']:
+<a id='L550' name='L550'></a>            universal_newlines = False
+<a id='L551' name='L551'></a>        (self.out,
+<a id='L552' name='L552'></a>         self.err) = subprocess.Popen(command,
+<a id='L553' name='L553'></a>                                      universal_newlines=universal_newlines,
+<a id='L554' name='L554'></a>                                      stdout=subprocess.PIPE,
+<a id='L555' name='L555'></a>                                      stderr=subprocess.PIPE).communicate()
+<a id='L556' name='L556'></a> 
+<a id='L557' name='L557'></a>        if self.err:
+<a id='L558' name='L558'></a>            LOG.debug('an err: %s', self.err)
+<a id='L559' name='L559'></a>            return self._show_error()
+<a id='L560' name='L560'></a>        return 0
+<a id='L561' name='L561'></a> 
+<a id='L562' name='L562'></a> 
+<a id='L563' name='L563'></a>CALL_MAP = {'list': lambda a: Uc1541(a.arch).list(),
+<a id='L564' name='L564'></a>            'copyin': lambda a: Uc1541(a.arch).copyin(a.src, a.dst),
+<a id='L565' name='L565'></a>            'copyout': lambda a: Uc1541(a.arch).copyout(a.src, a.dst),
+<a id='L566' name='L566'></a>            'mkdir': lambda a: Uc1541(a.arch).mkdir(a.dst),
+<a id='L567' name='L567'></a>            'rm': lambda a: Uc1541(a.arch).rm(a.dst),
+<a id='L568' name='L568'></a>            'run': lambda a: Uc1541(a.arch).run(a.dst)}
+<a id='L569' name='L569'></a> 
+<a id='L570' name='L570'></a> 
+<a id='L571' name='L571'></a>def parse_args():
+<a id='L572' name='L572'></a>    """Use ArgumentParser to check for script arguments and execute."""
+<a id='L573' name='L573'></a>    parser = argparse.ArgumentParser()
+<a id='L574' name='L574'></a>    subparsers = parser.add_subparsers(help='supported commands',
+<a id='L575' name='L575'></a>                                       dest='subcommand')
+<a id='L576' name='L576'></a>    subparsers.required = True
+<a id='L577' name='L577'></a>    parser_list = subparsers.add_parser('list', help="List contents of D64 "
+<a id='L578' name='L578'></a>                                        "image")
+<a id='L579' name='L579'></a>    parser_copyin = subparsers.add_parser('copyin', help="Copy file into D64 "
+<a id='L580' name='L580'></a>                                          "image")
+<a id='L581' name='L581'></a>    parser_copyout = subparsers.add_parser('copyout', help="Copy file out of "
+<a id='L582' name='L582'></a>                                           "D64 image")
+<a id='L583' name='L583'></a>    parser_rm = subparsers.add_parser('rm', help="Delete file from D64 image")
+<a id='L584' name='L584'></a>    parser_mkdir = subparsers.add_parser('mkdir', help="Create directory in "
+<a id='L585' name='L585'></a>                                         "archive")
+<a id='L586' name='L586'></a>    parser_run = subparsers.add_parser('run', help="Execute archived file")
+<a id='L587' name='L587'></a> 
+<a id='L588' name='L588'></a>    parser_list.add_argument('arch', help="D64 Image filename")
+<a id='L589' name='L589'></a>    parser_list.set_defaults(func=CALL_MAP['list'])
+<a id='L590' name='L590'></a> 
+<a id='L591' name='L591'></a>    parser_copyin.add_argument('arch', help="D64 Image filename")
+<a id='L592' name='L592'></a>    parser_copyin.add_argument('src', help="Source filename")
+<a id='L593' name='L593'></a>    parser_copyin.add_argument('dst', help="Destination filename (to be "
+<a id='L594' name='L594'></a>                               "written into D64 image)")
+<a id='L595' name='L595'></a>    parser_copyin.set_defaults(func=CALL_MAP['copyin'])
+<a id='L596' name='L596'></a> 
+<a id='L597' name='L597'></a>    parser_copyout.add_argument('arch', help="D64 Image filename")
+<a id='L598' name='L598'></a>    parser_copyout.add_argument('src', help="Source filename (to be read from"
+<a id='L599' name='L599'></a>                                " D64 image")
+<a id='L600' name='L600'></a>    parser_copyout.add_argument('dst', help="Destination filename")
+<a id='L601' name='L601'></a>    parser_copyout.set_defaults(func=CALL_MAP['copyout'])
+<a id='L602' name='L602'></a> 
+<a id='L603' name='L603'></a>    parser_rm.add_argument('arch', help="D64 Image filename")
+<a id='L604' name='L604'></a>    parser_rm.add_argument('dst', help="File inside D64 image to be deleted")
+<a id='L605' name='L605'></a>    parser_rm.set_defaults(func=CALL_MAP['rm'])
+<a id='L606' name='L606'></a> 
+<a id='L607' name='L607'></a>    parser_mkdir.add_argument('arch', help="archive filename")
+<a id='L608' name='L608'></a>    parser_mkdir.add_argument('dst', help="Directory name inside archive to "
+<a id='L609' name='L609'></a>                              "be created")
+<a id='L610' name='L610'></a>    parser_mkdir.set_defaults(func=CALL_MAP['mkdir'])
+<a id='L611' name='L611'></a> 
+<a id='L612' name='L612'></a>    parser_run.add_argument('arch', help="archive filename")
+<a id='L613' name='L613'></a>    parser_run.add_argument('dst', help="File to be executed")
+<a id='L614' name='L614'></a>    parser_run.set_defaults(func=CALL_MAP['run'])
+<a id='L615' name='L615'></a> 
+<a id='L616' name='L616'></a>    args = parser.parse_args()
+<a id='L617' name='L617'></a>    return args.func(args)
+<a id='L618' name='L618'></a> 
+<a id='L619' name='L619'></a> 
+<a id='L620' name='L620'></a>if __name__ == "__main__":
+<a id='L621' name='L621'></a>    LOG.debug("Script params: %s", str(sys.argv))
+<a id='L622' name='L622'></a>    sys.exit(parse_args())
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+622 src/vfs/extfs/helpers/uc1541'  /> */</em>
+</body>
+</html>
