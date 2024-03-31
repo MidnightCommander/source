@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>maint/utils/check-indent.sh</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/maint.html'>maint</a>/<a href='../files/maint--utils.html'>utils</a>/check-indent.sh</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/maint.html'>maint</a>/<a href='../files/maint--utils.html'>utils</a>/check-indent.sh</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 maint/utils/check-indent.sh'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#!/bin/bash
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Midnight Commander - check source code indentation
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a># Copyright (C) 2015
+<a id='L6' name='L6'></a># The Free Software Foundation, Inc.
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a># Written by:
+<a id='L9' name='L9'></a>#  Slava Zanko &lt;slavazanko@gmail.com&gt;, 2015
+<a id='L10' name='L10'></a>#
+<a id='L11' name='L11'></a># This file is part of the Midnight Commander.
+<a id='L12' name='L12'></a>#
+<a id='L13' name='L13'></a># The Midnight Commander is free software: you can redistribute it
+<a id='L14' name='L14'></a># and/or modify it under the terms of the GNU General Public License as
+<a id='L15' name='L15'></a># published by the Free Software Foundation, either version 3 of the License,
+<a id='L16' name='L16'></a># or (at your option) any later version.
+<a id='L17' name='L17'></a>#
+<a id='L18' name='L18'></a># The Midnight Commander is distributed in the hope that it will be useful,
+<a id='L19' name='L19'></a># but WITHOUT ANY WARRANTY; without even the implied warranty of
+<a id='L20' name='L20'></a># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<a id='L21' name='L21'></a># GNU General Public License for more details.
+<a id='L22' name='L22'></a>#
+<a id='L23' name='L23'></a># You should have received a copy of the GNU General Public License
+<a id='L24' name='L24'></a># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>set -e
+<a id='L27' name='L27'></a>set -x
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>findUnindentedFiles() {
+<a id='L30' name='L30'></a>  local directory=$1
+<a id='L31' name='L31'></a>  find "${directory}" -name '*.[ch]' -print0 | \
+<a id='L32' name='L32'></a>    xargs -0 indent \
+<a id='L33' name='L33'></a>      --gnu-style \
+<a id='L34' name='L34'></a>      --format-first-column-comments \
+<a id='L35' name='L35'></a>      --indent-level4 \
+<a id='L36' name='L36'></a>      --brace-indent0 \
+<a id='L37' name='L37'></a>      --line-length100 \
+<a id='L38' name='L38'></a>      --no-tabs \
+<a id='L39' name='L39'></a>      --blank-lines-after-procedures
+<a id='L40' name='L40'></a>  return $(git ls-files --modified | wc -l)
+<a id='L41' name='L41'></a>}
+<a id='L42' name='L42'></a> 
+<a id='L43' name='L43'></a>( findUnindentedFiles "lib" &amp;&amp; findUnindentedFiles "src" &amp;&amp; findUnindentedFiles "tests" ) || {
+<a id='L44' name='L44'></a>  echo "Sources not indented"
+<a id='L45' name='L45'></a>  git ls-files --modified
+<a id='L46' name='L46'></a>  exit 1
+<a id='L47' name='L47'></a>}
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+47 maint/utils/check-indent.sh'  /> */</em>
+</body>
+</html>

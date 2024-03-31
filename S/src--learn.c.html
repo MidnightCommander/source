@@ -1,0 +1,476 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/learn.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L85'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L394'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/learn.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/learn.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/learn.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L85' title='Defined at 85.'>learn_button</a></li>
+<li><a href='#L138' title='Defined at 138.'>learn_move</a></li>
+<li><a href='#L172' title='Defined at 172.'>learn_check_key</a></li>
+<li><a href='#L236' title='Defined at 236.'>learn_callback</a></li>
+<li><a href='#L251' title='Defined at 251.'>init_learn</a></li>
+<li><a href='#L347' title='Defined at 347.'>learn_done</a></li>
+<li><a href='#L356' title='Defined at 356.'>learn_save</a></li>
+<li><a href='#L394' title='Defined at 394.'>learn_keys</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Learn keys</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 1995-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Jakub Jelinek, 1995</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2012, 2013</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'></em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'></em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='comment'>/** \file learn.c</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> *  \brief Source: learn keys module</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'> */</em>
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;stdlib.h&gt;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>lib/tty/tty.h</a>"
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> "<a href='lib--tty--key.h.html'>lib/tty/key.h</a>"
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> "<a href='lib--mcconfig.h.html'>lib/mcconfig.h</a>"
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='lib--strescape.h.html'>lib/strescape.h</a>"
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"           <em class='comment'>/* convert_controls() */</em>
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> "<a href='src--setup.h.html'>setup.h</a>"
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#include</em> "<a href='src--learn.h.html'>learn.h</a>"
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <em class='sharp'>#define</em> <a href='../R/UX.html' title='Multiple referred from 25 places.'>UX</a> 4
+<a id='L53' name='L53'></a>  53 <em class='sharp'>#define</em> <a href='../R/UY.html' title='Multiple referred from 17 places.'>UY</a> 2
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='sharp'>#define</em> <a href='../R/ROWS.html' title='Multiple referred from 10 places.'>ROWS</a>     13
+<a id='L56' name='L56'></a>  56 <em class='sharp'>#define</em> <a href='../S/src--learn.c.html#L323' title='Referred from 323 in src/learn.c.'>COLSHIFT</a> 23
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong>
+<a id='L61' name='L61'></a>  61 <em class='brace'>{</em>
+<a id='L62' name='L62'></a>  62     <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *<a href='../Y/button.html' title='Multiple used in 75 places.'>button</a>;
+<a id='L63' name='L63'></a>  63     <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *<a href='../Y/label.html' title='Multiple used in 142 places.'>label</a>;
+<a id='L64' name='L64'></a>  64     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a>;
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>char</strong> *<a href='../Y/sequence.html' title='Multiple used in 7 places.'>sequence</a>;
+<a id='L66' name='L66'></a>  66 <em class='brace'>}</em> <a href='../R/learnkey_t.html' title='Multiple referred from 2 places.'>learnkey_t</a>;
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72 <strong class='reserved'>static</strong> <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *<a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>;
+<a id='L73' name='L73'></a>  73 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/learn_title.html' title='Multiple used in 5 places.'>learn_title</a> = <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Learn keys");
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 <strong class='reserved'>static</strong> <a href='../S/src--learn.c.html#L66' title='Defined at 66 in src/learn.c.'>learnkey_t</a> *<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L76' name='L76'></a>  76 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>;
+<a id='L77' name='L77'></a>  77 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/learnok.html' title='Multiple used in 4 places.'>learnok</a>;
+<a id='L78' name='L78'></a>  78 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/learnchanged.html' title='Multiple used in 4 places.'>learnchanged</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L85' name='L85'></a>  85 <a href='../S/src--learn.c.html#L315' title='Referred from 315 in src/learn.c.'>learn_button</a> (<a href='../D/WButton.html' title='Multiple defined in 2 places.'>WButton</a> * <a href='../Y/button.html' title='Multiple used in 75 places.'>button</a>, <strong class='reserved'>int</strong> <a href='../Y/action.html' title='Multiple used in 148 places.'>action</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L138'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+85 src/learn.c'  /> */</em>
+<a id='L86' name='L86'></a>  86 <em class='brace'>{</em>
+<a id='L87' name='L87'></a>  87     <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *<a href='../Y/d.html' title='Multiple used in 195 places.'>d</a>;
+<a id='L88' name='L88'></a>  88     <strong class='reserved'>char</strong> *<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>;
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90     (<strong class='reserved'>void</strong>) <a href='../Y/button.html' title='Multiple used in 75 places.'>button</a>;
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92     <a href='../Y/d.html' title='Multiple used in 195 places.'>d</a> = <a href='../S/lib--widget--wtools.c.html#L394' title='Defined at 394 in lib/widget/wtools.c.'>create_message</a> (<a href='../S/lib--widget--wtools.h.html#L31' title='Defined at 31 in lib/widget/wtools.h.'>D_ERROR</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Teach me a key"),
+<a id='L93' name='L93'></a>  93                         <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Please press the %s\n"
+<a id='L94' name='L94'></a>  94                           "and then wait until this message disappears.\n\n"
+<a id='L95' name='L95'></a>  95                           "Then, press it again to see if OK appears\n"
+<a id='L96' name='L96'></a>  96                           "next to its button.\n\n"
+<a id='L97' name='L97'></a>  97                           "If you want to escape, press a single Escape key\n"
+<a id='L98' name='L98'></a>  98                           "and wait as well."), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/key_name_conv_tab.html' title='Multiple used in 11 places.'>key_name_conv_tab</a>[<a href='../Y/action.html' title='Multiple used in 148 places.'>action</a> - <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>].<a href='../Y/longname.html' title='Multiple used in 7 places.'>longname</a>));
+<a id='L99' name='L99'></a>  99     <a href='../D/mc_refresh.html' title='Multiple defined in 2 places.'>mc_refresh</a> ();
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>if</strong> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/action.html' title='Multiple used in 148 places.'>action</a> - <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>].<a href='../Y/sequence.html' title='Multiple used in 7 places.'>sequence</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L101' name='L101'></a> 101         <a href='../S/lib--util.h.html#L25' title='Defined at 25 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/action.html' title='Multiple used in 148 places.'>action</a> - <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>].<a href='../Y/sequence.html' title='Multiple used in 7 places.'>sequence</a>);
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103     <a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a> = <a href='../S/lib--tty--key.c.html#L2149' title='Defined at 2149 in lib/tty/key.c.'>learn_key</a> ();
+<a id='L104' name='L104'></a> 104     <strong class='reserved'>if</strong> (<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L105' name='L105'></a> 105     <em class='brace'>{</em>
+<a id='L106' name='L106'></a> 106         <em class='comment'>/* Esc hides the dialog and do not allow definitions of</em>
+<a id='L107' name='L107'></a> 107 <em class='comment'>         * regular characters</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'>         */</em>
+<a id='L109' name='L109'></a> 109         <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/seq_ok.html' title='Multiple used in 3 places.'>seq_ok</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111         <strong class='reserved'>if</strong> (<a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>, "\\e") != 0 &amp;&amp; <a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>, "\\e\\e") != 0
+<a id='L112' name='L112'></a> 112             &amp;&amp; <a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>, "^m") != 0 &amp;&amp; <a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>, "^i") != 0
+<a id='L113' name='L113'></a> 113             &amp;&amp; (<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>[1] != '\0' || *<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a> &lt; ' ' || *<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a> &gt; '~'))
+<a id='L114' name='L114'></a> 114         <em class='brace'>{</em>
+<a id='L115' name='L115'></a> 115             <a href='../Y/learnchanged.html' title='Multiple used in 4 places.'>learnchanged</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L116' name='L116'></a> 116             <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/action.html' title='Multiple used in 148 places.'>action</a> - <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>].<a href='../Y/sequence.html' title='Multiple used in 7 places.'>sequence</a> = <a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>;
+<a id='L117' name='L117'></a> 117             <a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a> = <a href='../S/lib--util.c.html#L977' title='Defined at 977 in lib/util.c.'>convert_controls</a> (<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>);
+<a id='L118' name='L118'></a> 118             <a href='../Y/seq_ok.html' title='Multiple used in 3 places.'>seq_ok</a> = <a href='../S/lib--tty--key.c.html#L1632' title='Defined at 1632 in lib/tty/key.c.'>define_sequence</a> (<a href='../Y/key_name_conv_tab.html' title='Multiple used in 11 places.'>key_name_conv_tab</a>[<a href='../Y/action.html' title='Multiple used in 148 places.'>action</a> - <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>].<a href='../Y/code.html' title='Multiple used in 84 places.'>code</a>, <a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>, <a href='../S/lib--tty--key.h.html#L30' title='Defined at 30 in lib/tty/key.h.'>MCKEY_NOACTION</a>);
+<a id='L119' name='L119'></a> 119         <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121         <strong class='reserved'>if</strong> (!<a href='../Y/seq_ok.html' title='Multiple used in 3 places.'>seq_ok</a>)
+<a id='L122' name='L122'></a> 122             <a href='../D/message.html' title='Multiple defined in 5 places.'>message</a> (<a href='../S/lib--widget--wtools.h.html#L30' title='Defined at 30 in lib/widget/wtools.h.'>D_NORMAL</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Cannot accept this key"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("You have entered \"%s\""), <a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>);
+<a id='L123' name='L123'></a> 123 
+<a id='L124' name='L124'></a> 124         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/seq.html' title='Multiple used in 32 places.'>seq</a>);
+<a id='L125' name='L125'></a> 125     <em class='brace'>}</em>
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127     <a href='../S/lib--widget--dialog.c.html#L548' title='Defined at 548 in lib/widget/dialog.c.'>dlg_run_done</a> (<a href='../Y/d.html' title='Multiple used in 195 places.'>d</a>);
+<a id='L128' name='L128'></a> 128     <a href='../S/lib--widget--widget-common.h.html#L394' title='Defined at 394 in lib/widget/widget-common.h.'>widget_destroy</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/d.html' title='Multiple used in 195 places.'>d</a>));
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <a href='../S/lib--widget--widget-common.c.html#L625' title='Defined at 625 in lib/widget/widget-common.c.'>widget_select</a> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/action.html' title='Multiple used in 148 places.'>action</a> - <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>].<a href='../Y/button.html' title='Multiple used in 75 places.'>button</a>);
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132     <strong class='reserved'>return</strong> 0;                   <em class='comment'>/* Do not kill learn_dlg */</em>
+<a id='L133' name='L133'></a> 133 <em class='brace'>}</em>
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L138' name='L138'></a> 138 <a href='../R/learn_move.html' title='Multiple referred from 2 places.'>learn_move</a> (<a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/right.html' title='Multiple used in 17 places.'>right</a>)
+     <em class='comment'>/* <a href='#L85'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L172'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+138 src/learn.c'  /> */</em>
+<a id='L139' name='L139'></a> 139 <em class='brace'>{</em>
+<a id='L140' name='L140'></a> 140     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>, <a href='../Y/totalcols.html' title='Multiple used in 5 places.'>totalcols</a>;
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <a href='../Y/totalcols.html' title='Multiple used in 5 places.'>totalcols</a> = (<a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a> - 1) / <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a> + 1;
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L144' name='L144'></a> 144         <strong class='reserved'>if</strong> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/button.html' title='Multiple used in 75 places.'>button</a> == <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../S/lib--widget--group.h.html#L16' title='Defined at 16 in lib/widget/group.h.'>GROUP</a> (<a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>)-&gt;<a href='../Y/current.html' title='Multiple used in 573 places.'>current</a>-&gt;<a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>))
+<a id='L145' name='L145'></a> 145         <em class='brace'>{</em>
+<a id='L146' name='L146'></a> 146             <strong class='reserved'>if</strong> (<a href='../Y/right.html' title='Multiple used in 17 places.'>right</a>)
+<a id='L147' name='L147'></a> 147             <em class='brace'>{</em>
+<a id='L148' name='L148'></a> 148                 <strong class='reserved'>if</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a> - <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a>)
+<a id='L149' name='L149'></a> 149                     <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> += <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a>;
+<a id='L150' name='L150'></a> 150                 <strong class='reserved'>else</strong>
+<a id='L151' name='L151'></a> 151                     <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> %= <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a>;
+<a id='L152' name='L152'></a> 152             <em class='brace'>}</em>
+<a id='L153' name='L153'></a> 153             <strong class='reserved'>else</strong>
+<a id='L154' name='L154'></a> 154             <em class='brace'>{</em>
+<a id='L155' name='L155'></a> 155                 <strong class='reserved'>if</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> / <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a> != 0)
+<a id='L156' name='L156'></a> 156                     <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> -= <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a>;
+<a id='L157' name='L157'></a> 157                 <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> + (<a href='../Y/totalcols.html' title='Multiple used in 5 places.'>totalcols</a> - 1) * <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a> &gt;= <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>)
+<a id='L158' name='L158'></a> 158                     <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> += (<a href='../Y/totalcols.html' title='Multiple used in 5 places.'>totalcols</a> - 2) * <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a>;
+<a id='L159' name='L159'></a> 159                 <strong class='reserved'>else</strong>
+<a id='L160' name='L160'></a> 160                     <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> += (<a href='../Y/totalcols.html' title='Multiple used in 5 places.'>totalcols</a> - 1) * <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a>;
+<a id='L161' name='L161'></a> 161             <em class='brace'>}</em>
+<a id='L162' name='L162'></a> 162             <a href='../S/lib--widget--widget-common.c.html#L625' title='Defined at 625 in lib/widget/widget-common.c.'>widget_select</a> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/button.html' title='Multiple used in 75 places.'>button</a>);
+<a id='L163' name='L163'></a> 163             <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L164' name='L164'></a> 164         <em class='brace'>}</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166     <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L167' name='L167'></a> 167 <em class='brace'>}</em>
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L172' name='L172'></a> 172 <a href='../S/src--learn.c.html#L241' title='Referred from 241 in src/learn.c.'>learn_check_key</a> (<strong class='reserved'>int</strong> <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>)
+     <em class='comment'>/* <a href='#L138'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L236'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+172 src/learn.c'  /> */</em>
+<a id='L173' name='L173'></a> 173 <em class='brace'>{</em>
+<a id='L174' name='L174'></a> 174     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L177' name='L177'></a> 177     <em class='brace'>{</em>
+<a id='L178' name='L178'></a> 178         <strong class='reserved'>if</strong> (<a href='../Y/key_name_conv_tab.html' title='Multiple used in 11 places.'>key_name_conv_tab</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/code.html' title='Multiple used in 84 places.'>code</a> != <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> || <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a>)
+<a id='L179' name='L179'></a> 179             <strong class='reserved'>continue</strong>;
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181         <a href='../S/lib--widget--widget-common.c.html#L625' title='Defined at 625 in lib/widget/widget-common.c.'>widget_select</a> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/button.html' title='Multiple used in 75 places.'>button</a>);
+<a id='L182' name='L182'></a> 182         <em class='comment'>/* TRANSLATORS: This label appears near learned keys.  Keep it short.  */</em>
+<a id='L183' name='L183'></a> 183         <a href='../S/lib--widget--label.c.html#L157' title='Defined at 157 in lib/widget/label.c.'>label_set_text</a> (<a href='../S/lib--widget--label.h.html#L11' title='Defined at 11 in lib/widget/label.h.'>LABEL</a> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/label.html' title='Multiple used in 142 places.'>label</a>), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("OK"));
+<a id='L184' name='L184'></a> 184         <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L185' name='L185'></a> 185         <a href='../Y/learnok.html' title='Multiple used in 4 places.'>learnok</a>++;
+<a id='L186' name='L186'></a> 186         <strong class='reserved'>if</strong> (<a href='../Y/learnok.html' title='Multiple used in 4 places.'>learnok</a> &gt;= <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>)
+<a id='L187' name='L187'></a> 187         <em class='brace'>{</em>
+<a id='L188' name='L188'></a> 188             <a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>-&gt;<a href='../Y/ret_value.html' title='Multiple used in 52 places.'>ret_value</a> = <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>;
+<a id='L189' name='L189'></a> 189             <strong class='reserved'>if</strong> (<a href='../Y/learnchanged.html' title='Multiple used in 4 places.'>learnchanged</a>)
+<a id='L190' name='L190'></a> 190             <em class='brace'>{</em>
+<a id='L191' name='L191'></a> 191                 <strong class='reserved'>if</strong> (<a href='../S/lib--widget--wtools.c.html#L280' title='Defined at 280 in lib/widget/wtools.c.'>query_dialog</a> (<a href='../Y/learn_title.html' title='Multiple used in 5 places.'>learn_title</a>,
+<a id='L192' name='L192'></a> 192                                   <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>
+<a id='L193' name='L193'></a> 193                                   ("It seems that all your keys already\n"
+<a id='L194' name='L194'></a> 194                                    "work fine. That's great."), <a href='../S/lib--widget--wtools.h.html#L31' title='Defined at 31 in lib/widget/wtools.h.'>D_ERROR</a>, 2,
+<a id='L195' name='L195'></a> 195                                   <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Save"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Discard")) == 0)
+<a id='L196' name='L196'></a> 196                     <a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>-&gt;<a href='../Y/ret_value.html' title='Multiple used in 52 places.'>ret_value</a> = <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>;
+<a id='L197' name='L197'></a> 197             <em class='brace'>}</em>
+<a id='L198' name='L198'></a> 198             <strong class='reserved'>else</strong>
+<a id='L199' name='L199'></a> 199             <em class='brace'>{</em>
+<a id='L200' name='L200'></a> 200                 <a href='../D/message.html' title='Multiple defined in 5 places.'>message</a> (<a href='../S/lib--widget--wtools.h.html#L31' title='Defined at 31 in lib/widget/wtools.h.'>D_ERROR</a>, <a href='../Y/learn_title.html' title='Multiple used in 5 places.'>learn_title</a>, "%s",
+<a id='L201' name='L201'></a> 201                          <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>
+<a id='L202' name='L202'></a> 202                          ("Great! You have a complete terminal database!\n"
+<a id='L203' name='L203'></a> 203                           "All your keys work well."));
+<a id='L204' name='L204'></a> 204             <em class='brace'>}</em>
+<a id='L205' name='L205'></a> 205             <a href='../S/lib--widget--dialog.c.html#L477' title='Defined at 477 in lib/widget/dialog.c.'>dlg_close</a> (<a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>);
+<a id='L206' name='L206'></a> 206         <em class='brace'>}</em>
+<a id='L207' name='L207'></a> 207         <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L208' name='L208'></a> 208     <em class='brace'>}</em>
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <strong class='reserved'>switch</strong> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>)
+<a id='L211' name='L211'></a> 211     <em class='brace'>{</em>
+<a id='L212' name='L212'></a> 212     <strong class='reserved'>case</strong> <a href='../S/lib--tty--tty-slang.h.html#L33' title='Defined at 33 in lib/tty/tty-slang.h.'>KEY_LEFT</a>:
+<a id='L213' name='L213'></a> 213     <strong class='reserved'>case</strong> 'h':
+<a id='L214' name='L214'></a> 214         <strong class='reserved'>return</strong> <a href='../S/src--learn.c.html#L138' title='Defined at 138 in src/learn.c.'>learn_move</a> (<a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L215' name='L215'></a> 215     <strong class='reserved'>case</strong> <a href='../S/lib--tty--tty-slang.h.html#L33' title='Defined at 33 in lib/tty/tty-slang.h.'>KEY_RIGHT</a>:
+<a id='L216' name='L216'></a> 216     <strong class='reserved'>case</strong> 'l':
+<a id='L217' name='L217'></a> 217         <strong class='reserved'>return</strong> <a href='../S/src--learn.c.html#L138' title='Defined at 138 in src/learn.c.'>learn_move</a> (<a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L218' name='L218'></a> 218     <strong class='reserved'>case</strong> 'j':
+<a id='L219' name='L219'></a> 219         <a href='../S/lib--widget--group.c.html#L920' title='Defined at 920 in lib/widget/group.c.'>group_select_next_widget</a> (<a href='../S/lib--widget--group.h.html#L16' title='Defined at 16 in lib/widget/group.h.'>GROUP</a> (<a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>));
+<a id='L220' name='L220'></a> 220         <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L221' name='L221'></a> 221     <strong class='reserved'>case</strong> 'k':
+<a id='L222' name='L222'></a> 222         <a href='../S/lib--widget--group.c.html#L933' title='Defined at 933 in lib/widget/group.c.'>group_select_prev_widget</a> (<a href='../S/lib--widget--group.h.html#L16' title='Defined at 16 in lib/widget/group.h.'>GROUP</a> (<a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>));
+<a id='L223' name='L223'></a> 223         <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L224' name='L224'></a> 224     <strong class='reserved'>default</strong>:
+<a id='L225' name='L225'></a> 225         <strong class='reserved'>break</strong>;
+<a id='L226' name='L226'></a> 226     <em class='brace'>}</em>
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228     <em class='comment'>/* Prevent from disappearing if a non-defined sequence is pressed</em>
+<a id='L229' name='L229'></a> 229 <em class='comment'>       and contains a button hotkey.  Only recognize hotkeys with ALT.  */</em>
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>return</strong> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> &lt; 255 &amp;&amp; <a href='../Y/g_ascii_isalnum.html' title='Multiple used in 5 places.'>g_ascii_isalnum</a> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>));
+<a id='L231' name='L231'></a> 231 <em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235 <strong class='reserved'>static</strong> <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a>
+<a id='L236' name='L236'></a> 236 <a href='../S/src--learn.c.html#L283' title='Referred from 283 in src/learn.c.'>learn_callback</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../S/lib--widget--widget-common.h.html#L52' title='Defined at 52 in lib/widget/widget-common.h.'>widget_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <strong class='reserved'>int</strong> <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>, <strong class='reserved'>void</strong> *<a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>)
+     <em class='comment'>/* <a href='#L172'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L251'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+236 src/learn.c'  /> */</em>
+<a id='L237' name='L237'></a> 237 <em class='brace'>{</em>
+<a id='L238' name='L238'></a> 238     <strong class='reserved'>switch</strong> (<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>)
+<a id='L239' name='L239'></a> 239     <em class='brace'>{</em>
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>case</strong> <a href='../S/lib--widget--widget-common.h.html#L38' title='Defined at 38 in lib/widget/widget-common.h.'>MSG_KEY</a>:
+<a id='L241' name='L241'></a> 241         <strong class='reserved'>return</strong> <a href='../S/src--learn.c.html#L172' title='Defined at 172 in src/learn.c.'>learn_check_key</a> (<a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>) ? <a href='../S/lib--widget--widget-common.h.html#L64' title='Defined at 64 in lib/widget/widget-common.h.'>MSG_HANDLED</a> : <a href='../S/lib--widget--widget-common.h.html#L63' title='Defined at 63 in lib/widget/widget-common.h.'>MSG_NOT_HANDLED</a>;
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <strong class='reserved'>default</strong>:
+<a id='L244' name='L244'></a> 244         <strong class='reserved'>return</strong> <a href='../S/lib--widget--dialog.c.html#L352' title='Defined at 352 in lib/widget/dialog.c.'>dlg_default_callback</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>);
+<a id='L245' name='L245'></a> 245     <em class='brace'>}</em>
+<a id='L246' name='L246'></a> 246 <em class='brace'>}</em>
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L251' name='L251'></a> 251 <a href='../S/src--learn.c.html#L409' title='Referred from 409 in src/learn.c.'>init_learn</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L236'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L347'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+251 src/learn.c'  /> */</em>
+<a id='L252' name='L252'></a> 252 <em class='brace'>{</em>
+<a id='L253' name='L253'></a> 253     <a href='../D/WGroup.html' title='Multiple defined in 2 places.'>WGroup</a> *<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>;
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255     <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/dlg_width.html' title='Multiple used in 29 places.'>dlg_width</a> = 78;
+<a id='L256' name='L256'></a> 256     <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/dlg_height.html' title='Multiple used in 14 places.'>dlg_height</a> = 23;
+<a id='L257' name='L257'></a> 257 
+<a id='L258' name='L258'></a> 258     <em class='comment'>/* buttons */</em>
+<a id='L259' name='L259'></a> 259     <strong class='reserved'>int</strong> <a href='../Y/bx0.html' title='Multiple used in 4 places.'>bx0</a>, <a href='../Y/bx1.html' title='Multiple used in 3 places.'>bx1</a>;
+<a id='L260' name='L260'></a> 260     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/b0.html' title='Multiple used in 8 places.'>b0</a> = <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("&amp;Save");
+<a id='L261' name='L261'></a> 261     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/b1.html' title='Multiple used in 38 places.'>b1</a> = <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("&amp;Cancel");
+<a id='L262' name='L262'></a> 262     <strong class='reserved'>int</strong> <a href='../Y/bl0.html' title='Multiple used in 4 places.'>bl0</a>, <a href='../Y/bl1.html' title='Multiple used in 3 places.'>bl1</a>;
+<a id='L263' name='L263'></a> 263 
+<a id='L264' name='L264'></a> 264     <strong class='reserved'>int</strong> <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>, <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L265' name='L265'></a> 265     <strong class='reserved'>const</strong> <a href='../S/lib--tty--key.h.html#L53' title='Defined at 53 in lib/tty/key.h.'>key_code_name_t</a> *<a href='../Y/key.html' title='Multiple used in 199 places.'>key</a>;
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_NLS.html' title='Multiple used in 30 places.'>ENABLE_NLS</a>
+<a id='L268' name='L268'></a> 268     <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/i18n_flag.html' title='Multiple used in 18 places.'>i18n_flag</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L269' name='L269'></a> 269     <strong class='reserved'>if</strong> (!<a href='../Y/i18n_flag.html' title='Multiple used in 18 places.'>i18n_flag</a>)
+<a id='L270' name='L270'></a> 270     <em class='brace'>{</em>
+<a id='L271' name='L271'></a> 271         <a href='../Y/learn_title.html' title='Multiple used in 5 places.'>learn_title</a> = <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/learn_title.html' title='Multiple used in 5 places.'>learn_title</a>);
+<a id='L272' name='L272'></a> 272         <a href='../Y/i18n_flag.html' title='Multiple used in 18 places.'>i18n_flag</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L273' name='L273'></a> 273     <em class='brace'>}</em>
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275     <a href='../Y/b0.html' title='Multiple used in 8 places.'>b0</a> = <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/b0.html' title='Multiple used in 8 places.'>b0</a>);
+<a id='L276' name='L276'></a> 276     <a href='../Y/b1.html' title='Multiple used in 38 places.'>b1</a> = <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/b1.html' title='Multiple used in 38 places.'>b1</a>);
+<a id='L277' name='L277'></a> 277 <em class='sharp'>#endif</em> <em class='comment'>/* ENABLE_NLS */</em>
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279     <a href='../S/lib--widget--dialog-switch.c.html#L327' title='Defined at 327 in lib/widget/dialog-switch.c.'>do_refresh</a> ();
+<a id='L280' name='L280'></a> 280 
+<a id='L281' name='L281'></a> 281     <a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a> =
+<a id='L282' name='L282'></a> 282         <a href='../S/lib--widget--dialog.c.html#L399' title='Defined at 399 in lib/widget/dialog.c.'>dlg_create</a> (<a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>, 0, 0, <a href='../Y/dlg_height.html' title='Multiple used in 14 places.'>dlg_height</a>, <a href='../Y/dlg_width.html' title='Multiple used in 29 places.'>dlg_width</a>, <a href='../S/lib--widget--widget-common.h.html#L101' title='Defined at 101 in lib/widget/widget-common.h.'>WPOS_CENTER</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/dialog_colors.html' title='Multiple used in 35 places.'>dialog_colors</a>,
+<a id='L283' name='L283'></a> 283                     <a href='../S/src--learn.c.html#L236' title='Defined at 236 in src/learn.c.'>learn_callback</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, "[Learn keys]", <a href='../Y/learn_title.html' title='Multiple used in 5 places.'>learn_title</a>);
+<a id='L284' name='L284'></a> 284     <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a> = <a href='../S/lib--widget--group.h.html#L16' title='Defined at 16 in lib/widget/group.h.'>GROUP</a> (<a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>);
+<a id='L285' name='L285'></a> 285 
+<a id='L286' name='L286'></a> 286     <em class='comment'>/* find first unshown button */</em>
+<a id='L287' name='L287'></a> 287     <strong class='reserved'>for</strong> (<a href='../Y/key.html' title='Multiple used in 199 places.'>key</a> = <a href='../Y/key_name_conv_tab.html' title='Multiple used in 11 places.'>key_name_conv_tab</a>, <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a> = 0;
+<a id='L288' name='L288'></a> 288          <a href='../Y/key.html' title='Multiple used in 199 places.'>key</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; <a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/key.html' title='Multiple used in 199 places.'>key</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>, "kpleft") != 0; <a href='../Y/key.html' title='Multiple used in 199 places.'>key</a>++, <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>++)
+<a id='L289' name='L289'></a> 289         ;
+<a id='L290' name='L290'></a> 290 
+<a id='L291' name='L291'></a> 291     <a href='../Y/learnok.html' title='Multiple used in 4 places.'>learnok</a> = 0;
+<a id='L292' name='L292'></a> 292     <a href='../Y/learnchanged.html' title='Multiple used in 4 places.'>learnchanged</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L293' name='L293'></a> 293 
+<a id='L294' name='L294'></a> 294     <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a> = <a href='../Y/g_new.html' title='Multiple used in 60 places.'>g_new</a> (<a href='../S/src--learn.c.html#L66' title='Defined at 66 in src/learn.c.'>learnkey_t</a>, <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>);
+<a id='L295' name='L295'></a> 295 
+<a id='L296' name='L296'></a> 296     <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> = <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a>;
+<a id='L297' name='L297'></a> 297     <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> = <a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a>;
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299     <em class='comment'>/* add buttons and "OK" labels */</em>
+<a id='L300' name='L300'></a> 300     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L301' name='L301'></a> 301     <em class='brace'>{</em>
+<a id='L302' name='L302'></a> 302         <strong class='reserved'>char</strong> <a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>[<a href='../S/lib--global.h.html#L110' title='Defined at 110 in lib/global.h.'>BUF_TINY</a>];
+<a id='L303' name='L303'></a> 303         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/label.html' title='Multiple used in 142 places.'>label</a>;
+<a id='L304' name='L304'></a> 304         <strong class='reserved'>int</strong> <a href='../Y/padding.html' title='Multiple used in 4 places.'>padding</a>;
+<a id='L305' name='L305'></a> 305 
+<a id='L306' name='L306'></a> 306         <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L307' name='L307'></a> 307         <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/sequence.html' title='Multiple used in 7 places.'>sequence</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L308' name='L308'></a> 308 
+<a id='L309' name='L309'></a> 309         <a href='../Y/label.html' title='Multiple used in 142 places.'>label</a> = <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/key_name_conv_tab.html' title='Multiple used in 11 places.'>key_name_conv_tab</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/longname.html' title='Multiple used in 7 places.'>longname</a>);
+<a id='L310' name='L310'></a> 310         <a href='../Y/padding.html' title='Multiple used in 4 places.'>padding</a> = 16 - <a href='../S/lib--strutil--strutil.c.html#L655' title='Defined at 655 in lib/strutil/strutil.c.'>str_term_width1</a> (<a href='../Y/label.html' title='Multiple used in 142 places.'>label</a>);
+<a id='L311' name='L311'></a> 311         <a href='../Y/padding.html' title='Multiple used in 4 places.'>padding</a> = <a href='../Y/MAX.html' title='Multiple used in 120 places.'>MAX</a> (0, <a href='../Y/padding.html' title='Multiple used in 4 places.'>padding</a>);
+<a id='L312' name='L312'></a> 312         <a href='../Y/g_snprintf.html' title='Multiple used in 109 places.'>g_snprintf</a> (<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>), "%s%*s", <a href='../Y/label.html' title='Multiple used in 142 places.'>label</a>, <a href='../Y/padding.html' title='Multiple used in 4 places.'>padding</a>, "");
+<a id='L313' name='L313'></a> 313 
+<a id='L314' name='L314'></a> 314         <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/button.html' title='Multiple used in 75 places.'>button</a> =
+<a id='L315' name='L315'></a> 315             <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>, <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a> + <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>, <a href='../S/lib--widget--button.h.html#L24' title='Defined at 24 in lib/widget/button.h.'>NARROW_BUTTON</a>, <a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>, <a href='../S/src--learn.c.html#L85' title='Defined at 85 in src/learn.c.'>learn_button</a>));
+<a id='L316' name='L316'></a> 316         <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/label.html' title='Multiple used in 142 places.'>label</a> = <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../S/lib--widget--label.c.html#L134' title='Defined at 134 in lib/widget/label.c.'>label_new</a> (<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> + 19, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>));
+<a id='L317' name='L317'></a> 317         <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/button.html' title='Multiple used in 75 places.'>button</a>);
+<a id='L318' name='L318'></a> 318         <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/label.html' title='Multiple used in 142 places.'>label</a>);
+<a id='L319' name='L319'></a> 319 
+<a id='L320' name='L320'></a> 320         <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>++;
+<a id='L321' name='L321'></a> 321         <strong class='reserved'>if</strong> (<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> == <a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + <a href='../S/src--learn.c.html#L55' title='Defined at 55 in src/learn.c.'>ROWS</a>)
+<a id='L322' name='L322'></a> 322         <em class='brace'>{</em>
+<a id='L323' name='L323'></a> 323             <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> += <a href='../S/src--learn.c.html#L56' title='Defined at 56 in src/learn.c.'>COLSHIFT</a>;
+<a id='L324' name='L324'></a> 324             <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> = <a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a>;
+<a id='L325' name='L325'></a> 325         <em class='brace'>}</em>
+<a id='L326' name='L326'></a> 326     <em class='brace'>}</em>
+<a id='L327' name='L327'></a> 327 
+<a id='L328' name='L328'></a> 328     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--hline.c.html#L147' title='Defined at 147 in lib/widget/hline.c.'>hline_new</a> (<a href='../Y/dlg_height.html' title='Multiple used in 14 places.'>dlg_height</a> - 8, -1, -1));
+<a id='L329' name='L329'></a> 329     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--label.c.html#L134' title='Defined at 134 in lib/widget/label.c.'>label_new</a> (<a href='../Y/dlg_height.html' title='Multiple used in 14 places.'>dlg_height</a> - 7, 5,
+<a id='L330' name='L330'></a> 330                                     <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>
+<a id='L331' name='L331'></a> 331                                     ("Press all the keys mentioned here. After you have done it, check\n"
+<a id='L332' name='L332'></a> 332                                      "which keys are not marked with OK. Press space on the missing\n"
+<a id='L333' name='L333'></a> 333                                      "key, or click with the mouse to define it. Move around with Tab.")));
+<a id='L334' name='L334'></a> 334     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--hline.c.html#L147' title='Defined at 147 in lib/widget/hline.c.'>hline_new</a> (<a href='../Y/dlg_height.html' title='Multiple used in 14 places.'>dlg_height</a> - 4, -1, -1));
+<a id='L335' name='L335'></a> 335     <em class='comment'>/* buttons */</em>
+<a id='L336' name='L336'></a> 336     <a href='../Y/bl0.html' title='Multiple used in 4 places.'>bl0</a> = <a href='../S/lib--strutil--strutil.c.html#L655' title='Defined at 655 in lib/strutil/strutil.c.'>str_term_width1</a> (<a href='../Y/b0.html' title='Multiple used in 8 places.'>b0</a>) + 5;     <em class='comment'>/* default button */</em>
+<a id='L337' name='L337'></a> 337     <a href='../Y/bl1.html' title='Multiple used in 3 places.'>bl1</a> = <a href='../S/lib--strutil--strutil.c.html#L655' title='Defined at 655 in lib/strutil/strutil.c.'>str_term_width1</a> (<a href='../Y/b1.html' title='Multiple used in 38 places.'>b1</a>) + 3;     <em class='comment'>/* normal button */</em>
+<a id='L338' name='L338'></a> 338     <a href='../Y/bx0.html' title='Multiple used in 4 places.'>bx0</a> = (<a href='../Y/dlg_width.html' title='Multiple used in 29 places.'>dlg_width</a> - (<a href='../Y/bl0.html' title='Multiple used in 4 places.'>bl0</a> + <a href='../Y/bl1.html' title='Multiple used in 3 places.'>bl1</a> + 1)) / 2;
+<a id='L339' name='L339'></a> 339     <a href='../Y/bx1.html' title='Multiple used in 3 places.'>bx1</a> = <a href='../Y/bx0.html' title='Multiple used in 4 places.'>bx0</a> + <a href='../Y/bl0.html' title='Multiple used in 4 places.'>bl0</a> + 1;
+<a id='L340' name='L340'></a> 340     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (<a href='../Y/dlg_height.html' title='Multiple used in 14 places.'>dlg_height</a> - 3, <a href='../Y/bx0.html' title='Multiple used in 4 places.'>bx0</a>, <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>, <a href='../S/lib--widget--button.h.html#L26' title='Defined at 26 in lib/widget/button.h.'>DEFPUSH_BUTTON</a>, <a href='../Y/b0.html' title='Multiple used in 8 places.'>b0</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>));
+<a id='L341' name='L341'></a> 341     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (<a href='../Y/dlg_height.html' title='Multiple used in 14 places.'>dlg_height</a> - 3, <a href='../Y/bx1.html' title='Multiple used in 3 places.'>bx1</a>, <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>, <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, <a href='../Y/b1.html' title='Multiple used in 38 places.'>b1</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>));
+<a id='L342' name='L342'></a> 342 <em class='brace'>}</em>
+<a id='L343' name='L343'></a> 343 
+<a id='L344' name='L344'></a> 344 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L345' name='L345'></a> 345 
+<a id='L346' name='L346'></a> 346 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L347' name='L347'></a> 347 <a href='../S/src--learn.c.html#L421' title='Referred from 421 in src/learn.c.'>learn_done</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L251'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L356'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+347 src/learn.c'  /> */</em>
+<a id='L348' name='L348'></a> 348 <em class='brace'>{</em>
+<a id='L349' name='L349'></a> 349     <a href='../S/lib--widget--widget-common.h.html#L394' title='Defined at 394 in lib/widget/widget-common.h.'>widget_destroy</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>));
+<a id='L350' name='L350'></a> 350     <a href='../S/lib--widget--dialog-switch.c.html#L357' title='Defined at 357 in lib/widget/dialog-switch.c.'>repaint_screen</a> ();
+<a id='L351' name='L351'></a> 351 <em class='brace'>}</em>
+<a id='L352' name='L352'></a> 352 
+<a id='L353' name='L353'></a> 353 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L354' name='L354'></a> 354 
+<a id='L355' name='L355'></a> 355 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L356' name='L356'></a> 356 <a href='../S/src--learn.c.html#L419' title='Referred from 419 in src/learn.c.'>learn_save</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L347'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L394'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+356 src/learn.c'  /> */</em>
+<a id='L357' name='L357'></a> 357 <em class='brace'>{</em>
+<a id='L358' name='L358'></a> 358     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L359' name='L359'></a> 359     <strong class='reserved'>char</strong> *<a href='../Y/section.html' title='Multiple used in 49 places.'>section</a>;
+<a id='L360' name='L360'></a> 360     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/profile_changed.html' title='Multiple used in 3 places.'>profile_changed</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L361' name='L361'></a> 361 
+<a id='L362' name='L362'></a> 362     <a href='../Y/section.html' title='Multiple used in 49 places.'>section</a> = <a href='../Y/g_strconcat.html' title='Multiple used in 69 places.'>g_strconcat</a> ("terminal:", <a href='../Y/getenv.html' title='Multiple used in 38 places.'>getenv</a> ("TERM"), (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L363' name='L363'></a> 363 
+<a id='L364' name='L364'></a> 364     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/learn_total.html' title='Multiple used in 12 places.'>learn_total</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L365' name='L365'></a> 365         <strong class='reserved'>if</strong> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/sequence.html' title='Multiple used in 7 places.'>sequence</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L366' name='L366'></a> 366         <em class='brace'>{</em>
+<a id='L367' name='L367'></a> 367             <strong class='reserved'>char</strong> *<a href='../Y/esc_str.html' title='Multiple used in 12 places.'>esc_str</a>;
+<a id='L368' name='L368'></a> 368 
+<a id='L369' name='L369'></a> 369             <a href='../Y/esc_str.html' title='Multiple used in 12 places.'>esc_str</a> = <a href='../S/lib--strutil--strescape.c.html#L55' title='Defined at 55 in lib/strutil/strescape.c.'>strutils_escape</a> (<a href='../Y/learnkeys.html' title='Multiple used in 20 places.'>learnkeys</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/sequence.html' title='Multiple used in 7 places.'>sequence</a>, -1, ";\\", <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L370' name='L370'></a> 370             <a href='../S/lib--mcconfig--set.c.html#L87' title='Defined at 87 in lib/mcconfig/set.c.'>mc_config_set_string_raw_value</a> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/main_config.html' title='Multiple used in 123 places.'>main_config</a>, <a href='../Y/section.html' title='Multiple used in 49 places.'>section</a>,
+<a id='L371' name='L371'></a> 371                                             <a href='../Y/key_name_conv_tab.html' title='Multiple used in 11 places.'>key_name_conv_tab</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>, <a href='../Y/esc_str.html' title='Multiple used in 12 places.'>esc_str</a>);
+<a id='L372' name='L372'></a> 372             <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/esc_str.html' title='Multiple used in 12 places.'>esc_str</a>);
+<a id='L373' name='L373'></a> 373 
+<a id='L374' name='L374'></a> 374             <a href='../Y/profile_changed.html' title='Multiple used in 3 places.'>profile_changed</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L375' name='L375'></a> 375         <em class='brace'>}</em>
+<a id='L376' name='L376'></a> 376 
+<a id='L377' name='L377'></a> 377     <em class='comment'>/* On the one hand no good idea to save the complete setup but </em>
+<a id='L378' name='L378'></a> 378 <em class='comment'>     * without 'Auto save setup' the new key-definitions will not be </em>
+<a id='L379' name='L379'></a> 379 <em class='comment'>     * saved unless the user does an 'Options/Save Setup'. </em>
+<a id='L380' name='L380'></a> 380 <em class='comment'>     * On the other hand a save-button that does not save anything to </em>
+<a id='L381' name='L381'></a> 381 <em class='comment'>     * disk is much worse.</em>
+<a id='L382' name='L382'></a> 382 <em class='comment'>     */</em>
+<a id='L383' name='L383'></a> 383     <strong class='reserved'>if</strong> (<a href='../Y/profile_changed.html' title='Multiple used in 3 places.'>profile_changed</a>)
+<a id='L384' name='L384'></a> 384         <a href='../S/lib--mcconfig--common.c.html#L264' title='Defined at 264 in lib/mcconfig/common.c.'>mc_config_save_file</a> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/main_config.html' title='Multiple used in 123 places.'>main_config</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L385' name='L385'></a> 385 
+<a id='L386' name='L386'></a> 386     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/section.html' title='Multiple used in 49 places.'>section</a>);
+<a id='L387' name='L387'></a> 387 <em class='brace'>}</em>
+<a id='L388' name='L388'></a> 388 
+<a id='L389' name='L389'></a> 389 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L390' name='L390'></a> 390 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L391' name='L391'></a> 391 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L392' name='L392'></a> 392 
+<a id='L393' name='L393'></a> 393 <strong class='reserved'>void</strong>
+<a id='L394' name='L394'></a> 394 <a href='../R/learn_keys.html' title='Multiple referred from 3 places.'>learn_keys</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L356'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+394 src/learn.c'  /> */</em>
+<a id='L395' name='L395'></a> 395 <em class='brace'>{</em>
+<a id='L396' name='L396'></a> 396     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/save_old_esc_mode.html' title='Multiple used in 2 places.'>save_old_esc_mode</a> = <a href='../Y/old_esc_mode.html' title='Multiple used in 10 places.'>old_esc_mode</a>;
+<a id='L397' name='L397'></a> 397     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/save_alternate_plus_minus.html' title='Multiple used in 2 places.'>save_alternate_plus_minus</a> = <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/tty.html' title='Multiple used in 192 places.'>tty</a>.<a href='../Y/alternate_plus_minus.html' title='Multiple used in 15 places.'>alternate_plus_minus</a>;
+<a id='L398' name='L398'></a> 398     <strong class='reserved'>int</strong> <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>;
+<a id='L399' name='L399'></a> 399 
+<a id='L400' name='L400'></a> 400     <em class='comment'>/* old_esc_mode cannot work in learn keys dialog */</em>
+<a id='L401' name='L401'></a> 401     <a href='../Y/old_esc_mode.html' title='Multiple used in 10 places.'>old_esc_mode</a> = 0;
+<a id='L402' name='L402'></a> 402 
+<a id='L403' name='L403'></a> 403     <em class='comment'>/* don't translate KP_ADD, KP_SUBTRACT and</em>
+<a id='L404' name='L404'></a> 404 <em class='comment'>       KP_MULTIPLY to '+', '-' and '*' in</em>
+<a id='L405' name='L405'></a> 405 <em class='comment'>       correct_key_code */</em>
+<a id='L406' name='L406'></a> 406     <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/tty.html' title='Multiple used in 192 places.'>tty</a>.<a href='../Y/alternate_plus_minus.html' title='Multiple used in 15 places.'>alternate_plus_minus</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L407' name='L407'></a> 407     <a href='../S/lib--tty--key.c.html#L2216' title='Defined at 2216 in lib/tty/key.c.'>application_keypad_mode</a> ();
+<a id='L408' name='L408'></a> 408 
+<a id='L409' name='L409'></a> 409     <a href='../S/src--learn.c.html#L251' title='Defined at 251 in src/learn.c.'>init_learn</a> ();
+<a id='L410' name='L410'></a> 410     <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a> = <a href='../S/lib--widget--dialog.c.html#L570' title='Defined at 570 in lib/widget/dialog.c.'>dlg_run</a> (<a href='../Y/learn_dlg.html' title='Multiple used in 11 places.'>learn_dlg</a>);
+<a id='L411' name='L411'></a> 411 
+<a id='L412' name='L412'></a> 412     <a href='../Y/old_esc_mode.html' title='Multiple used in 10 places.'>old_esc_mode</a> = <a href='../Y/save_old_esc_mode.html' title='Multiple used in 2 places.'>save_old_esc_mode</a>;
+<a id='L413' name='L413'></a> 413     <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/tty.html' title='Multiple used in 192 places.'>tty</a>.<a href='../Y/alternate_plus_minus.html' title='Multiple used in 15 places.'>alternate_plus_minus</a> = <a href='../Y/save_alternate_plus_minus.html' title='Multiple used in 2 places.'>save_alternate_plus_minus</a>;
+<a id='L414' name='L414'></a> 414 
+<a id='L415' name='L415'></a> 415     <strong class='reserved'>if</strong> (!<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/tty.html' title='Multiple used in 192 places.'>tty</a>.<a href='../Y/alternate_plus_minus.html' title='Multiple used in 15 places.'>alternate_plus_minus</a>)
+<a id='L416' name='L416'></a> 416         <a href='../S/lib--tty--key.c.html#L2204' title='Defined at 2204 in lib/tty/key.c.'>numeric_keypad_mode</a> ();
+<a id='L417' name='L417'></a> 417 
+<a id='L418' name='L418'></a> 418     <strong class='reserved'>if</strong> (<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a> == <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>)
+<a id='L419' name='L419'></a> 419         <a href='../S/src--learn.c.html#L356' title='Defined at 356 in src/learn.c.'>learn_save</a> ();
+<a id='L420' name='L420'></a> 420 
+<a id='L421' name='L421'></a> 421     <a href='../S/src--learn.c.html#L347' title='Defined at 347 in src/learn.c.'>learn_done</a> ();
+<a id='L422' name='L422'></a> 422 <em class='brace'>}</em>
+<a id='L423' name='L423'></a> 423 
+<a id='L424' name='L424'></a> 424 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L85'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L394'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+424 src/learn.c'  /> */</em>
+</body>
+</html>

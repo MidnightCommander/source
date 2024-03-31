@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/debd.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/debd.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/debd.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/debd.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># 1999 (c) Piotr Roszatycki &lt;dexter@debian.org&gt;
+<a id='L4' name='L4'></a># This software is under GNU license
+<a id='L5' name='L5'></a># last modification: 1999-12-08
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a># debd
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>sub quote {
+<a id='L10' name='L10'></a>    $_ = shift(@_);
+<a id='L11' name='L11'></a>    s/([^\w\/.+-])/\\$1/g;
+<a id='L12' name='L12'></a>    return($_);
+<a id='L13' name='L13'></a>}
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>sub bt
+<a id='L16' name='L16'></a>{
+<a id='L17' name='L17'></a>    my ($dt) = @_;
+<a id='L18' name='L18'></a>    my (@time);
+<a id='L19' name='L19'></a>    @time = localtime($dt);
+<a id='L20' name='L20'></a>    $bt = sprintf "%02d-%02d-%d %02d:%02d", $time[4] + 1, $time[3],
+<a id='L21' name='L21'></a>                  $time[5] + 1900, $time[2], $time[1];
+<a id='L22' name='L22'></a>    return $bt;
+<a id='L23' name='L23'></a>}
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>sub ft
+<a id='L27' name='L27'></a>{
+<a id='L28' name='L28'></a>    my ($f) = @_;
+<a id='L29' name='L29'></a>    return "d" if -d $f;
+<a id='L30' name='L30'></a>    return "l" if -l $f;
+<a id='L31' name='L31'></a>    return "p" if -p $f;
+<a id='L32' name='L32'></a>    return "S" if -S $f;
+<a id='L33' name='L33'></a>    return "b" if -b $f;
+<a id='L34' name='L34'></a>    return "c" if -c $f;
+<a id='L35' name='L35'></a>    return "-";
+<a id='L36' name='L36'></a>}
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a>sub fm
+<a id='L39' name='L39'></a>{
+<a id='L40' name='L40'></a>    my ($n) = @_;
+<a id='L41' name='L41'></a>    my ($m);
+<a id='L42' name='L42'></a> 
+<a id='L43' name='L43'></a>    if( $n &amp; 0400 ) {
+<a id='L44' name='L44'></a>       $m .= "r";
+<a id='L45' name='L45'></a>    } else {
+<a id='L46' name='L46'></a>       $m .= "-";
+<a id='L47' name='L47'></a>    }
+<a id='L48' name='L48'></a>    if( $n &amp; 0200 ) {
+<a id='L49' name='L49'></a>       $m .= "w";
+<a id='L50' name='L50'></a>    } else {
+<a id='L51' name='L51'></a>       $m .= "-";
+<a id='L52' name='L52'></a>    }
+<a id='L53' name='L53'></a>    if( $n &amp; 04000 ) {
+<a id='L54' name='L54'></a>       $m .= "s";
+<a id='L55' name='L55'></a>    } elsif( $n &amp; 0100 ) {
+<a id='L56' name='L56'></a>       $m .= "x";
+<a id='L57' name='L57'></a>    } else {
+<a id='L58' name='L58'></a>       $m .= "-";
+<a id='L59' name='L59'></a>    }
+<a id='L60' name='L60'></a> 
+<a id='L61' name='L61'></a>    if( $n &amp; 0040 ) {
+<a id='L62' name='L62'></a>       $m .= "r";
+<a id='L63' name='L63'></a>    } else {
+<a id='L64' name='L64'></a>       $m .= "-";
+<a id='L65' name='L65'></a>    }
+<a id='L66' name='L66'></a>    if( $n &amp; 0020 ) {
+<a id='L67' name='L67'></a>       $m .= "w";
+<a id='L68' name='L68'></a>    } else {
+<a id='L69' name='L69'></a>       $m .= "-";
+<a id='L70' name='L70'></a>    }
+<a id='L71' name='L71'></a>    if( $n &amp; 02000 ) {
+<a id='L72' name='L72'></a>       $m .= "s";
+<a id='L73' name='L73'></a>    } elsif( $n &amp; 0010 ) {
+<a id='L74' name='L74'></a>       $m .= "x";
+<a id='L75' name='L75'></a>    } else {
+<a id='L76' name='L76'></a>       $m .= "-";
+<a id='L77' name='L77'></a>    }
+<a id='L78' name='L78'></a> 
+<a id='L79' name='L79'></a>    if( $n &amp; 0004 ) {
+<a id='L80' name='L80'></a>       $m .= "r";
+<a id='L81' name='L81'></a>    } else {
+<a id='L82' name='L82'></a>       $m .= "-";
+<a id='L83' name='L83'></a>    }
+<a id='L84' name='L84'></a>    if( $n &amp; 0002 ) {
+<a id='L85' name='L85'></a>       $m .= "w";
+<a id='L86' name='L86'></a>    } else {
+<a id='L87' name='L87'></a>       $m .= "-";
+<a id='L88' name='L88'></a>    }
+<a id='L89' name='L89'></a>    if( $n &amp; 01000 ) {
+<a id='L90' name='L90'></a>       $m .= "t";
+<a id='L91' name='L91'></a>    } elsif( $n &amp; 0001 ) {
+<a id='L92' name='L92'></a>       $m .= "x";
+<a id='L93' name='L93'></a>    } else {
+<a id='L94' name='L94'></a>       $m .= "-";
+<a id='L95' name='L95'></a>    }
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a>    return $m;
+<a id='L98' name='L98'></a>}
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>sub ls {
+<a id='L101' name='L101'></a>    my ($file) = @_;
+<a id='L102' name='L102'></a>    my @stat = stat($file);
+<a id='L103' name='L103'></a>    # mode, nlink, uid, gid, size, mtime, filename
+<a id='L104' name='L104'></a>    printf "%s%s %d %d %d %d %s CONTENTS%s\n", ft($file), fm($stat[2] &amp; 07777),
+<a id='L105' name='L105'></a>    $stat[3], $stat[4], $stat[5], $stat[7], bt($stat[9]), $file;
+<a id='L106' name='L106'></a>}
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a>sub list
+<a id='L109' name='L109'></a>{
+<a id='L110' name='L110'></a>       my($archive)=@_;
+<a id='L111' name='L111'></a>       my $qarchive = quote($archive);
+<a id='L112' name='L112'></a>       chop($date=`LC_ALL=C date "+%m-%d-%Y %H:%M"`);
+<a id='L113' name='L113'></a>       chop($info_size=`dpkg -s $qarchive | wc -c`);
+<a id='L114' name='L114'></a>       $repack_size=length($pressrepack);
+<a id='L115' name='L115'></a>       $reinstall_size=length($pressreinstall);
+<a id='L116' name='L116'></a>       $remove_size=length($pressremove);
+<a id='L117' name='L117'></a>       $purge_size=length($presspurge);
+<a id='L118' name='L118'></a>       $reconfigure_size=length($pressreconfigure);
+<a id='L119' name='L119'></a>       $reinstall_size=length($pressreinstall);
+<a id='L120' name='L120'></a>       $select_size=length($pressselect);
+<a id='L121' name='L121'></a>       $unselect_size=length($pressunselect);
+<a id='L122' name='L122'></a> 
+<a id='L123' name='L123'></a>       print "dr-xr-xr-x   1 root     root     0 $date CONTENTS\n";
+<a id='L124' name='L124'></a>       print "dr-xr-xr-x   1 root     root     0 $date DEBIAN\n";
+<a id='L125' name='L125'></a>       print "-r--r--r--   1 root     root     $info_size $date INFO\n";
+<a id='L126' name='L126'></a>       print "-r-xr--r--   1 root     root     $purge_size $date DPKG-PURGE\n";
+<a id='L127' name='L127'></a> 
+<a id='L128' name='L128'></a>       chop($status = `dpkg -s $qarchive | grep ^Status`);
+<a id='L129' name='L129'></a>       if( $status =~ /deinstall/ ) {
+<a id='L130' name='L130'></a>           print "-r-xr--r--   1 root     root     $select_size $date DPKG-SELECT\n";
+<a id='L131' name='L131'></a>       } elsif( $status =~ /install/ ) {
+<a id='L132' name='L132'></a>           print "-r-xr--r--   1 root     root     $unselect_size $date DPKG-UNSELECT\n";
+<a id='L133' name='L133'></a>       } 
+<a id='L134' name='L134'></a>       if( $status !~ /config-files/ ) {
+<a id='L135' name='L135'></a>           if ( -x "/usr/bin/dpkg-repack" ) {
+<a id='L136' name='L136'></a>               print "-r-xr--r--   1 root     root     $repack_size $date DPKG-REPACK\n";
+<a id='L137' name='L137'></a>           }
+<a id='L138' name='L138'></a>           print "-r-xr--r--   1 root     root     $remove_size $date DPKG-REMOVE\n";
+<a id='L139' name='L139'></a>           if ( -x "/usr/bin/apt-get" ) {
+<a id='L140' name='L140'></a>               print "-r-xr--r--   1 root     root     $remove_size $date APT-REMOVE\n";
+<a id='L141' name='L141'></a>               print "-r-xr--r--   1 root     root     $reinstall_size $date APT-REINSTALL\n";
+<a id='L142' name='L142'></a>               print "-r-xr--r--   1 root     root     $purge_size $date APT-PURGE\n";
+<a id='L143' name='L143'></a>           }
+<a id='L144' name='L144'></a>       }
+<a id='L145' name='L145'></a>       if( -x "/usr/bin/dpkg-reconfigure" &amp;&amp; -x "/var/lib/dpkg/info/$archive.config" ) {
+<a id='L146' name='L146'></a>           print "-r-xr--r--   1 root     root     $reconfigure_size $date DPKG-RECONFIGURE\n";
+<a id='L147' name='L147'></a>       }
+<a id='L148' name='L148'></a> 
+<a id='L149' name='L149'></a> 
+<a id='L150' name='L150'></a> 
+<a id='L151' name='L151'></a>       if ( open(PIPEIN, "LC_TIME=C LANG=C ls -l /var/lib/dpkg/info/$qarchive.* |") ) {
+<a id='L152' name='L152'></a>           while(&lt;PIPEIN&gt;) {
+<a id='L153' name='L153'></a>               chop;
+<a id='L154' name='L154'></a>               next if /\.list$/;
+<a id='L155' name='L155'></a>               s%/var/lib/dpkg/info/$archive.%DEBIAN/%;
+<a id='L156' name='L156'></a>               print $_, "\n";
+<a id='L157' name='L157'></a>           }
+<a id='L158' name='L158'></a>           close PIPEIN;
+<a id='L159' name='L159'></a>       }
+<a id='L160' name='L160'></a> 
+<a id='L161' name='L161'></a>        if ( open(LIST, "/var/lib/dpkg/info/$archive.list") ) {
+<a id='L162' name='L162'></a>            while(&lt;LIST&gt;) {
+<a id='L163' name='L163'></a>               chop;
+<a id='L164' name='L164'></a>               ls($_);
+<a id='L165' name='L165'></a>            }
+<a id='L166' name='L166'></a>           close LIST;
+<a id='L167' name='L167'></a>        }
+<a id='L168' name='L168'></a>}
+<a id='L169' name='L169'></a> 
+<a id='L170' name='L170'></a>sub copyout
+<a id='L171' name='L171'></a>{
+<a id='L172' name='L172'></a>       my($archive,$filename,$destfile)=@_;
+<a id='L173' name='L173'></a>       my $qarchive = quote($archive);
+<a id='L174' name='L174'></a>       my $qfilename = quote($filename);
+<a id='L175' name='L175'></a>       my $qdestfile = quote($destfile);
+<a id='L176' name='L176'></a> 
+<a id='L177' name='L177'></a>       if($filename eq "INFO") {
+<a id='L178' name='L178'></a>           system("dpkg -s $qarchive &gt; $qdestfile");
+<a id='L179' name='L179'></a>        } elsif($filename eq "DPKG-REPACK") {
+<a id='L180' name='L180'></a>           if ( open(FILEOUT,"&gt;$destfile") ) {
+<a id='L181' name='L181'></a>               print FILEOUT $pressrepack;
+<a id='L182' name='L182'></a>               close FILEOUT;
+<a id='L183' name='L183'></a>               system("chmod a+x $qdestfile");
+<a id='L184' name='L184'></a>           }
+<a id='L185' name='L185'></a>        } elsif($filename =~ /^DEBIAN/) {
+<a id='L186' name='L186'></a>            $qfilename=~s!^DEBIAN/!!;
+<a id='L187' name='L187'></a>            system("cat /var/lib/dpkg/info/$qarchive.$qfilename &gt; $qdestfile");
+<a id='L188' name='L188'></a>       } elsif($filename eq "DPKG-REMOVE" || $filename eq "APT-REMOVE") {
+<a id='L189' name='L189'></a>           if ( open(FILEOUT,"&gt;$destfile") ) {
+<a id='L190' name='L190'></a>               print FILEOUT $pressremove;
+<a id='L191' name='L191'></a>               close FILEOUT;
+<a id='L192' name='L192'></a>               system("chmod a+x $qdestfile");
+<a id='L193' name='L193'></a>           }
+<a id='L194' name='L194'></a>       } elsif($filename eq "DPKG-PURGE" || $filename eq "APT-PURGE") {
+<a id='L195' name='L195'></a>           if ( open(FILEOUT,"&gt;$destfile") ) {
+<a id='L196' name='L196'></a>               print FILEOUT $presspurge;
+<a id='L197' name='L197'></a>               close FILEOUT;
+<a id='L198' name='L198'></a>               system("chmod a+x $qdestfile");
+<a id='L199' name='L199'></a>           }
+<a id='L200' name='L200'></a>       } elsif($filename eq "DPKG-RECONFIGURE") {
+<a id='L201' name='L201'></a>           if ( open(FILEOUT,"&gt;$destfile") ) {
+<a id='L202' name='L202'></a>               print FILEOUT $pressreconfigure;
+<a id='L203' name='L203'></a>               close FILEOUT;
+<a id='L204' name='L204'></a>               system("chmod a+x $qdestfile");
+<a id='L205' name='L205'></a>           }
+<a id='L206' name='L206'></a>       } elsif($filename eq "APT-REINSTALL") {
+<a id='L207' name='L207'></a>           if ( open(FILEOUT,"&gt;$destfile") ) {
+<a id='L208' name='L208'></a>               print FILEOUT $pressreinstall;
+<a id='L209' name='L209'></a>               close FILEOUT;
+<a id='L210' name='L210'></a>               system("chmod a+x $destfile");
+<a id='L211' name='L211'></a>           }
+<a id='L212' name='L212'></a>       } elsif($filename eq "DPKG-SELECT") {
+<a id='L213' name='L213'></a>           if ( open(FILEOUT,"&gt;$destfile") ) {
+<a id='L214' name='L214'></a>               print FILEOUT $pressselect;
+<a id='L215' name='L215'></a>               close FILEOUT;
+<a id='L216' name='L216'></a>               system("chmod a+x $destfile");
+<a id='L217' name='L217'></a>           }
+<a id='L218' name='L218'></a>       } elsif($filename eq "DPKG-UNSELECT") {
+<a id='L219' name='L219'></a>           if ( open(FILEOUT,"&gt;$destfile") ) {
+<a id='L220' name='L220'></a>               print FILEOUT $pressunselect;
+<a id='L221' name='L221'></a>               close FILEOUT;
+<a id='L222' name='L222'></a>               system("chmod a+x $qdestfile");
+<a id='L223' name='L223'></a>           }
+<a id='L224' name='L224'></a>       } else {
+<a id='L225' name='L225'></a>           $qfilename=~s!^CONTENTS!!;
+<a id='L226' name='L226'></a>           system("cat $qfilename &gt; $qdestfile");
+<a id='L227' name='L227'></a>       }
+<a id='L228' name='L228'></a>}
+<a id='L229' name='L229'></a> 
+<a id='L230' name='L230'></a>sub run
+<a id='L231' name='L231'></a>{
+<a id='L232' name='L232'></a>       my($archive,$filename)=@_;
+<a id='L233' name='L233'></a>       my $qarchive = quote($archive);
+<a id='L234' name='L234'></a>       my $qfilename = quote($filename);
+<a id='L235' name='L235'></a>       if($filename eq "DPKG-REMOVE") {
+<a id='L236' name='L236'></a>           system("dpkg --remove $qarchive");
+<a id='L237' name='L237'></a>       } elsif($filename eq "APT-REMOVE") {
+<a id='L238' name='L238'></a>           system("apt-get remove $qarchive");
+<a id='L239' name='L239'></a>       } elsif($filename eq "DPKG-PURGE") {
+<a id='L240' name='L240'></a>           system("dpkg --purge $qarchive");
+<a id='L241' name='L241'></a>       } elsif($filename eq "APT-PURGE") {
+<a id='L242' name='L242'></a>           system("apt-get --purge remove $qarchive");
+<a id='L243' name='L243'></a>       } elsif($filename eq "DPKG-REPACK") {
+<a id='L244' name='L244'></a>           system("dpkg-repack $qarchive");
+<a id='L245' name='L245'></a>       } elsif($filename eq "DPKG-SELECT") {
+<a id='L246' name='L246'></a>           system("echo $aqrchive install | dpkg --set-selections");
+<a id='L247' name='L247'></a>       } elsif($filename eq "DPKG-UNSELECT") {
+<a id='L248' name='L248'></a>           system("echo $qarchive deinstall | dpkg --set-selections");
+<a id='L249' name='L249'></a>       } elsif($filename eq "APT-REINSTALL") {
+<a id='L250' name='L250'></a>           system("apt-get -u --reinstall install $qarchive");
+<a id='L251' name='L251'></a>       } elsif($filename eq "DPKG-RECONFIGURE") {
+<a id='L252' name='L252'></a>           system("dpkg-reconfigure $qarchive");
+<a id='L253' name='L253'></a>       } elsif($filename=~/^DEBIAN/) {
+<a id='L254' name='L254'></a>           $qfilename=~s!^DEBIAN!!;
+<a id='L255' name='L255'></a>           system("/var/lib/dpkg/info/$qarchive.$qfilename");
+<a id='L256' name='L256'></a>       } else {
+<a id='L257' name='L257'></a>           $qfilename=~s!^CONTENTS!!;
+<a id='L258' name='L258'></a>           system($qfilename);
+<a id='L259' name='L259'></a>       }
+<a id='L260' name='L260'></a>}
+<a id='L261' name='L261'></a> 
+<a id='L262' name='L262'></a>$pressrepack=&lt;&lt;EOInstall;
+<a id='L263' name='L263'></a> 
+<a id='L264' name='L264'></a>                                WARNING
+<a id='L265' name='L265'></a>  Don\'t use this method if you are not willing to repack this package...
+<a id='L266' name='L266'></a> 
+<a id='L267' name='L267'></a>This is not a real file. It is a way to repack the package you are browsing.
+<a id='L268' name='L268'></a> 
+<a id='L269' name='L269'></a>To repack this package go back to the panel and press Enter on this file.
+<a id='L270' name='L270'></a> 
+<a id='L271' name='L271'></a>EOInstall
+<a id='L272' name='L272'></a> 
+<a id='L273' name='L273'></a>$pressreinstall=&lt;&lt;EOInstall;
+<a id='L274' name='L274'></a> 
+<a id='L275' name='L275'></a>                                WARNING
+<a id='L276' name='L276'></a>  Don\'t use this method if you are not willing to reinstall this package...
+<a id='L277' name='L277'></a> 
+<a id='L278' name='L278'></a>This is not a real file. It is a way to reinstall the package you are browsing.
+<a id='L279' name='L279'></a> 
+<a id='L280' name='L280'></a>To reinstall this package go back to the panel and press Enter on this file.
+<a id='L281' name='L281'></a> 
+<a id='L282' name='L282'></a>EOInstall
+<a id='L283' name='L283'></a> 
+<a id='L284' name='L284'></a>$pressremove=&lt;&lt;EOInstall;
+<a id='L285' name='L285'></a> 
+<a id='L286' name='L286'></a>                                WARNING
+<a id='L287' name='L287'></a>  Don\'t use this method if you are not willing to remove this package...
+<a id='L288' name='L288'></a> 
+<a id='L289' name='L289'></a>This is not a real file. It is a way to remove the package you are browsing.
+<a id='L290' name='L290'></a> 
+<a id='L291' name='L291'></a>To remove this package go back to the panel and press Enter on this file.
+<a id='L292' name='L292'></a> 
+<a id='L293' name='L293'></a>EOInstall
+<a id='L294' name='L294'></a> 
+<a id='L295' name='L295'></a>$presspurge=&lt;&lt;EOInstall;
+<a id='L296' name='L296'></a> 
+<a id='L297' name='L297'></a>                                WARNING
+<a id='L298' name='L298'></a>  Don\'t use this method if you are not willing to purge this package...
+<a id='L299' name='L299'></a> 
+<a id='L300' name='L300'></a>This is not a real file. It is a way to purge the package you are browsing.
+<a id='L301' name='L301'></a> 
+<a id='L302' name='L302'></a>To purge this package go back to the panel and press Enter on this file.
+<a id='L303' name='L303'></a> 
+<a id='L304' name='L304'></a>EOInstall
+<a id='L305' name='L305'></a> 
+<a id='L306' name='L306'></a>$pressreconfigure=&lt;&lt;EOInstall;
+<a id='L307' name='L307'></a> 
+<a id='L308' name='L308'></a>                                WARNING
+<a id='L309' name='L309'></a>  Don\'t use this method if you are not willing to reconfigure this package...
+<a id='L310' name='L310'></a> 
+<a id='L311' name='L311'></a>This is not a real file. It is a way to reconfigure the package you are browsing.
+<a id='L312' name='L312'></a> 
+<a id='L313' name='L313'></a>To reconfigure this package go back to the panel and press Enter on this file.
+<a id='L314' name='L314'></a> 
+<a id='L315' name='L315'></a>EOInstall
+<a id='L316' name='L316'></a> 
+<a id='L317' name='L317'></a>$pressreinstall=&lt;&lt;EOInstall;
+<a id='L318' name='L318'></a> 
+<a id='L319' name='L319'></a>                                WARNING
+<a id='L320' name='L320'></a>  Don\'t use this method if you are not willing to reinstall this package...
+<a id='L321' name='L321'></a> 
+<a id='L322' name='L322'></a>This is not a real file. It is a way to reinstall the package you are browsing.
+<a id='L323' name='L323'></a> 
+<a id='L324' name='L324'></a>To reinstall this package go back to the panel and press Enter on this file.
+<a id='L325' name='L325'></a> 
+<a id='L326' name='L326'></a>EOInstall
+<a id='L327' name='L327'></a> 
+<a id='L328' name='L328'></a>$pressselect=&lt;&lt;EOInstall;
+<a id='L329' name='L329'></a> 
+<a id='L330' name='L330'></a>                                WARNING
+<a id='L331' name='L331'></a>  Don\'t use this method if you are not willing to select this package...
+<a id='L332' name='L332'></a> 
+<a id='L333' name='L333'></a>This is not a real file. It is a way to select the package you are browsing.
+<a id='L334' name='L334'></a> 
+<a id='L335' name='L335'></a>To select this package go back to the panel and press Enter on this file.
+<a id='L336' name='L336'></a> 
+<a id='L337' name='L337'></a>EOInstall
+<a id='L338' name='L338'></a> 
+<a id='L339' name='L339'></a>$pressunselect=&lt;&lt;EOInstall;
+<a id='L340' name='L340'></a> 
+<a id='L341' name='L341'></a>                                WARNING
+<a id='L342' name='L342'></a>  Don\'t use this method if you are not willing to unselect this package...
+<a id='L343' name='L343'></a> 
+<a id='L344' name='L344'></a>This is not a real file. It is a way to unselect the package you are browsing.
+<a id='L345' name='L345'></a> 
+<a id='L346' name='L346'></a>To unselect this package go back to the panel and press Enter on this file.
+<a id='L347' name='L347'></a> 
+<a id='L348' name='L348'></a>EOInstall
+<a id='L349' name='L349'></a> 
+<a id='L350' name='L350'></a>umask 077;
+<a id='L351' name='L351'></a> 
+<a id='L352' name='L352'></a>chop($name = `if [ -f "$ARGV[1]" ]; then cat $ARGV[1]; else echo $ARGV[1]; fi`);
+<a id='L353' name='L353'></a>$name =~ s%.*/([0-9a-z.-]*)_.*%$1%;
+<a id='L354' name='L354'></a> 
+<a id='L355' name='L355'></a>exit 1 unless $name;
+<a id='L356' name='L356'></a> 
+<a id='L357' name='L357'></a>if($ARGV[0] eq "list") { &amp;list($name); exit 0; }
+<a id='L358' name='L358'></a>elsif($ARGV[0] eq "copyout") { &amp;copyout($name,$ARGV[2],$ARGV[3]); exit 0; }
+<a id='L359' name='L359'></a>elsif($ARGV[0] eq "run") { &amp;run($name,$ARGV[2]); exit 0; }
+<a id='L360' name='L360'></a> 
+<a id='L361' name='L361'></a>exit 1;
+<a id='L362' name='L362'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+362 src/vfs/extfs/helpers/debd.in'  /> */</em>
+</body>
+</html>

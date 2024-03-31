@@ -1,0 +1,502 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/viewer/datasource.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L79'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L427'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--viewer.html'>viewer</a>/datasource.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--viewer.html'>viewer</a>/datasource.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/viewer/datasource.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L79' title='Defined at 79.'>mcview_set_datasource_stdio_pipe</a></li>
+<li><a href='#L97' title='Defined at 97.'>mcview_set_datasource_none</a></li>
+<li><a href='#L105' title='Defined at 105.'>mcview_get_filesize</a></li>
+<li><a href='#L124' title='Defined at 124.'>mcview_update_filesize</a></li>
+<li><a href='#L137' title='Defined at 137.'>mcview_get_ptr_file</a></li>
+<li><a href='#L152' title='Defined at 152.'>mcview_get_utf</a></li>
+<li><a href='#L224' title='Defined at 224.'>mcview_get_ptr_string</a></li>
+<li><a href='#L236' title='Defined at 236.'>mcview_get_byte_string</a></li>
+<li><a href='#L255' title='Defined at 255.'>mcview_get_byte_none</a></li>
+<li><a href='#L270' title='Defined at 270.'>mcview_set_byte</a></li>
+<li><a href='#L284' title='Defined at 284.'>mcview_file_load_data</a></li>
+<li><a href='#L333' title='Defined at 333.'>mcview_close_datasource</a></li>
+<li><a href='#L369' title='Defined at 369.'>mcview_set_datasource_file</a></li>
+<li><a href='#L383' title='Defined at 383.'>mcview_load_command_output</a></li>
+<li><a href='#L414' title='Defined at 414.'>mcview_set_datasource_vfs_pipe</a></li>
+<li><a href='#L427' title='Defined at 427.'>mcview_set_datasource_string</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Internal file viewer for the Midnight Commander</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   Functions for datasources</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'></em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Copyright (C) 1994-2024</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'></em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Written by:</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Miguel de Icaza, 1994, 1995, 1998</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   Janne Kukonlehto, 1994, 1995</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   Jakub Jelinek, 1995</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   Joseph M. Hinkle, 1996</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   Norbert Warmuth, 1997</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   Pavel Machek, 1998</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   Roland Illig &lt;roland.illig@gmx.de&gt;, 2004, 2005</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   Slava Zanko &lt;slavazanko@google.com&gt;, 2009</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2009</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   Ilia Maslakov &lt;il.smind@gmail.com&gt;, 2009</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'></em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'></em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'></em>
+<a id='L27' name='L27'></a>  27 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L30' name='L30'></a>  30 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'></em>
+<a id='L32' name='L32'></a>  32 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L34' name='L34'></a>  34 <em class='comment'> */</em>
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='comment'>/*</em>
+<a id='L37' name='L37'></a>  37 <em class='comment'>   The data source provides the viewer with data from either a file, a</em>
+<a id='L38' name='L38'></a>  38 <em class='comment'>   string or the output of a command. The mcview_get_byte() function can be</em>
+<a id='L39' name='L39'></a>  39 <em class='comment'>   used to get the value of a byte at a specific offset. If the offset</em>
+<a id='L40' name='L40'></a>  40 <em class='comment'>   is out of range, -1 is returned. The function mcview_get_byte_indexed(a,b)</em>
+<a id='L41' name='L41'></a>  41 <em class='comment'>   returns the byte at the offset a+b, or -1 if a+b is out of range.</em>
+<a id='L42' name='L42'></a>  42 <em class='comment'></em>
+<a id='L43' name='L43'></a>  43 <em class='comment'>   The mcview_set_byte() function has the effect that later calls to</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'>   mcview_get_byte() will return the specified byte for this offset. This</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'>   function is designed only for use by the hexedit component after</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'>   saving its changes. Inspect the source before you want to use it for</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'>   other purposes.</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'></em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>   The mcview_get_filesize() function returns the current size of the</em>
+<a id='L50' name='L50'></a>  50 <em class='comment'>   data source. If the growing buffer is used, this size may increase</em>
+<a id='L51' name='L51'></a>  51 <em class='comment'>   later on. Use the mcview_may_still_grow() function when you want to</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'>   know if the size can change later.</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'> */</em>
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L58' name='L58'></a>  58 <em class='sharp'>#include</em> "<a href='lib--vfs--vfs.h.html'>lib/vfs/vfs.h</a>"
+<a id='L59' name='L59'></a>  59 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"
+<a id='L60' name='L60'></a>  60 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"         <em class='comment'>/* D_NORMAL, D_ERROR */</em>
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <em class='sharp'>#include</em> "<a href='../I/internal.h.html'>internal.h</a>"
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L75' name='L75'></a>  75 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L76' name='L76'></a>  76 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L79' name='L79'></a>  79 <a href='../S/src--viewer--datasource.c.html#L400' title='Referred from 400 in src/viewer/datasource.c.'>mcview_set_datasource_stdio_pipe</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../S/lib--util.h.html#L122' title='Defined at 122 in lib/util.h.'>mc_pipe_t</a> * <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L97'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+79 src/viewer/datasource.c'  /> */</em>
+<a id='L80' name='L80'></a>  80 <em class='brace'>{</em>
+<a id='L81' name='L81'></a>  81     <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>-&gt;<a href='../Y/out.html' title='Multiple used in 76 places.'>out</a>.<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a> = <a href='../S/lib--util.h.html#L33' title='Defined at 33 in lib/util.h.'>MC_PIPE_BUFSIZE</a>;
+<a id='L82' name='L82'></a>  82     <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>-&gt;<a href='../Y/out.html' title='Multiple used in 76 places.'>out</a>.<a href='../Y/null_term.html' title='Multiple used in 12 places.'>null_term</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L83' name='L83'></a>  83     <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>-&gt;<a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>.<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a> = <a href='../S/lib--util.h.html#L33' title='Defined at 33 in lib/util.h.'>MC_PIPE_BUFSIZE</a>;
+<a id='L84' name='L84'></a>  84     <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>-&gt;<a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>.<a href='../Y/null_term.html' title='Multiple used in 12 places.'>null_term</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L85' name='L85'></a>  85     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> = <a href='../S/src--viewer--internal.h.html#L34' title='Defined at 34 in src/viewer/internal.h.'>DS_STDIO_PIPE</a>;
+<a id='L86' name='L86'></a>  86     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_stdio_pipe.html' title='Multiple used in 7 places.'>ds_stdio_pipe</a> = <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>;
+<a id='L87' name='L87'></a>  87     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/pipe_first_err_msg.html' title='Multiple used in 4 places.'>pipe_first_err_msg</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <a href='../S/src--viewer--growbuf.c.html#L65' title='Defined at 65 in src/viewer/growbuf.c.'>mcview_growbuf_init</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L90' name='L90'></a>  90 <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L93' name='L93'></a>  93 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96 <strong class='reserved'>void</strong>
+<a id='L97' name='L97'></a>  97 <a href='../R/mcview_set_datasource_none.html' title='Multiple referred from 2 places.'>mcview_set_datasource_none</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>)
+     <em class='comment'>/* <a href='#L79'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L105'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+97 src/viewer/datasource.c'  /> */</em>
+<a id='L98' name='L98'></a>  98 <em class='brace'>{</em>
+<a id='L99' name='L99'></a>  99     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> = <a href='../S/src--viewer--internal.h.html#L33' title='Defined at 33 in src/viewer/internal.h.'>DS_NONE</a>;
+<a id='L100' name='L100'></a> 100 <em class='brace'>}</em>
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a>
+<a id='L105' name='L105'></a> 105 <a href='../R/mcview_get_filesize.html' title='Multiple referred from 17 places.'>mcview_get_filesize</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>)
+     <em class='comment'>/* <a href='#L97'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L124'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+105 src/viewer/datasource.c'  /> */</em>
+<a id='L106' name='L106'></a> 106 <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107     <strong class='reserved'>switch</strong> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a>)
+<a id='L108' name='L108'></a> 108     <em class='brace'>{</em>
+<a id='L109' name='L109'></a> 109     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L34' title='Defined at 34 in src/viewer/internal.h.'>DS_STDIO_PIPE</a>:
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L35' title='Defined at 35 in src/viewer/internal.h.'>DS_VFS_PIPE</a>:
+<a id='L111' name='L111'></a> 111         <strong class='reserved'>return</strong> <a href='../S/src--viewer--growbuf.c.html#L107' title='Defined at 107 in src/viewer/growbuf.c.'>mcview_growbuf_filesize</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L36' title='Defined at 36 in src/viewer/internal.h.'>DS_FILE</a>:
+<a id='L113' name='L113'></a> 113         <strong class='reserved'>return</strong> <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_filesize.html' title='Multiple used in 7 places.'>ds_file_filesize</a>;
+<a id='L114' name='L114'></a> 114     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L37' title='Defined at 37 in src/viewer/internal.h.'>DS_STRING</a>:
+<a id='L115' name='L115'></a> 115         <strong class='reserved'>return</strong> <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_string_len.html' title='Multiple used in 5 places.'>ds_string_len</a>;
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>default</strong>:
+<a id='L117' name='L117'></a> 117         <strong class='reserved'>return</strong> 0;
+<a id='L118' name='L118'></a> 118     <em class='brace'>}</em>
+<a id='L119' name='L119'></a> 119 <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123 <strong class='reserved'>void</strong>
+<a id='L124' name='L124'></a> 124 <a href='../R/mcview_update_filesize.html' title='Multiple referred from 2 places.'>mcview_update_filesize</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>)
+     <em class='comment'>/* <a href='#L105'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L137'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+124 src/viewer/datasource.c'  /> */</em>
+<a id='L125' name='L125'></a> 125 <em class='brace'>{</em>
+<a id='L126' name='L126'></a> 126     <strong class='reserved'>if</strong> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> == <a href='../S/src--viewer--internal.h.html#L36' title='Defined at 36 in src/viewer/internal.h.'>DS_FILE</a>)
+<a id='L127' name='L127'></a> 127     <em class='brace'>{</em>
+<a id='L128' name='L128'></a> 128         <strong class='reserved'>struct</strong> <a href='../Y/stat.html' title='Multiple used in 284 places.'>stat</a> <a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>;
+<a id='L129' name='L129'></a> 129         <strong class='reserved'>if</strong> (<a href='../Y/mc_fstat.html' title='Multiple used in 7 places.'>mc_fstat</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_fd.html' title='Multiple used in 7 places.'>ds_file_fd</a>, &amp;<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>) != -1)
+<a id='L130' name='L130'></a> 130             <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_filesize.html' title='Multiple used in 7 places.'>ds_file_filesize</a> = <a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>.<a href='../Y/st_size.html' title='Multiple used in 119 places.'>st_size</a>;
+<a id='L131' name='L131'></a> 131     <em class='brace'>}</em>
+<a id='L132' name='L132'></a> 132 <em class='brace'>}</em>
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136 <strong class='reserved'>char</strong> *
+<a id='L137' name='L137'></a> 137 <a href='../R/mcview_get_ptr_file.html' title='Multiple referred from 2 places.'>mcview_get_ptr_file</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>)
+     <em class='comment'>/* <a href='#L124'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L152'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+137 src/viewer/datasource.c'  /> */</em>
+<a id='L138' name='L138'></a> 138 <em class='brace'>{</em>
+<a id='L139' name='L139'></a> 139     <a href='../Y/g_assert.html' title='Multiple used in 32 places.'>g_assert</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> == <a href='../S/src--viewer--internal.h.html#L36' title='Defined at 36 in src/viewer/internal.h.'>DS_FILE</a>);
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141     <a href='../S/src--viewer--datasource.c.html#L284' title='Defined at 284 in src/viewer/datasource.c.'>mcview_file_load_data</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>);
+<a id='L142' name='L142'></a> 142     <strong class='reserved'>if</strong> (<a href='../S/src--viewer--internal.h.html#L367' title='Defined at 367 in src/viewer/internal.h.'>mcview_already_loaded</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_offset.html' title='Multiple used in 10 places.'>ds_file_offset</a>, <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>, <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datalen.html' title='Multiple used in 9 places.'>ds_file_datalen</a>))
+<a id='L143' name='L143'></a> 143         <strong class='reserved'>return</strong> (<strong class='reserved'>char</strong> *) (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_data.html' title='Multiple used in 6 places.'>ds_file_data</a> + (<a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a> - <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_offset.html' title='Multiple used in 10 places.'>ds_file_offset</a>));
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L145' name='L145'></a> 145 <em class='brace'>}</em>
+<a id='L146' name='L146'></a> 146 
+<a id='L147' name='L147'></a> 147 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149 <em class='comment'>/* Invalid UTF-8 is reported as negative integers (one for each byte),</em>
+<a id='L150' name='L150'></a> 150 <em class='comment'> * see ticket 3783. */</em>
+<a id='L151' name='L151'></a> 151 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L152' name='L152'></a> 152 <a href='../R/mcview_get_utf.html' title='Multiple referred from 3 places.'>mcview_get_utf</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>, <strong class='reserved'>int</strong> *<a href='../Y/ch.html' title='Multiple used in 246 places.'>ch</a>, <strong class='reserved'>int</strong> *<a href='../Y/ch_len.html' title='Multiple used in 4 places.'>ch_len</a>)
+     <em class='comment'>/* <a href='#L137'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L224'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+152 src/viewer/datasource.c'  /> */</em>
+<a id='L153' name='L153'></a> 153 <em class='brace'>{</em>
+<a id='L154' name='L154'></a> 154     <a href='../Y/gchar.html' title='Multiple used in 324 places.'>gchar</a> *<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>int</strong> <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L156' name='L156'></a> 156     <a href='../Y/gchar.html' title='Multiple used in 324 places.'>gchar</a> <a href='../Y/utf8buf.html' title='Multiple used in 13 places.'>utf8buf</a>[<a href='../S/lib--global.h.html#L129' title='Defined at 129 in lib/global.h.'>UTF8_CHAR_LEN</a> + 1];
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <strong class='reserved'>switch</strong> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a>)
+<a id='L159' name='L159'></a> 159     <em class='brace'>{</em>
+<a id='L160' name='L160'></a> 160     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L34' title='Defined at 34 in src/viewer/internal.h.'>DS_STDIO_PIPE</a>:
+<a id='L161' name='L161'></a> 161     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L35' title='Defined at 35 in src/viewer/internal.h.'>DS_VFS_PIPE</a>:
+<a id='L162' name='L162'></a> 162         <a href='../Y/str.html' title='Multiple used in 682 places.'>str</a> = <a href='../S/src--viewer--growbuf.c.html#L274' title='Defined at 274 in src/viewer/growbuf.c.'>mcview_get_ptr_growing_buffer</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>);
+<a id='L163' name='L163'></a> 163         <strong class='reserved'>break</strong>;
+<a id='L164' name='L164'></a> 164     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L36' title='Defined at 36 in src/viewer/internal.h.'>DS_FILE</a>:
+<a id='L165' name='L165'></a> 165         <a href='../Y/str.html' title='Multiple used in 682 places.'>str</a> = <a href='../S/src--viewer--datasource.c.html#L137' title='Defined at 137 in src/viewer/datasource.c.'>mcview_get_ptr_file</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>);
+<a id='L166' name='L166'></a> 166         <strong class='reserved'>break</strong>;
+<a id='L167' name='L167'></a> 167     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L37' title='Defined at 37 in src/viewer/internal.h.'>DS_STRING</a>:
+<a id='L168' name='L168'></a> 168         <a href='../Y/str.html' title='Multiple used in 682 places.'>str</a> = <a href='../S/src--viewer--datasource.c.html#L224' title='Defined at 224 in src/viewer/datasource.c.'>mcview_get_ptr_string</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>);
+<a id='L169' name='L169'></a> 169         <strong class='reserved'>break</strong>;
+<a id='L170' name='L170'></a> 170     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L33' title='Defined at 33 in src/viewer/internal.h.'>DS_NONE</a>:
+<a id='L171' name='L171'></a> 171     <strong class='reserved'>default</strong>:
+<a id='L172' name='L172'></a> 172         <strong class='reserved'>break</strong>;
+<a id='L173' name='L173'></a> 173     <em class='brace'>}</em>
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175     *<a href='../Y/ch.html' title='Multiple used in 246 places.'>ch</a> = 0;
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>if</strong> (<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L178' name='L178'></a> 178         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180     <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> = <a href='../Y/g_utf8_get_char_validated.html' title='Multiple used in 27 places.'>g_utf8_get_char_validated</a> (<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, -1);
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> &lt; 0)
+<a id='L183' name='L183'></a> 183     <em class='brace'>{</em>
+<a id='L184' name='L184'></a> 184         <em class='comment'>/* Retry with explicit bytes to make sure it's not a buffer boundary */</em>
+<a id='L185' name='L185'></a> 185         <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187         <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../S/lib--global.h.html#L129' title='Defined at 129 in lib/global.h.'>UTF8_CHAR_LEN</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L188' name='L188'></a> 188         <em class='brace'>{</em>
+<a id='L189' name='L189'></a> 189             <strong class='reserved'>if</strong> (<a href='../S/src--viewer--internal.h.html#L394' title='Defined at 394 in src/viewer/internal.h.'>mcview_get_byte</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a> + <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>, &amp;<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>))
+<a id='L190' name='L190'></a> 190                 <a href='../Y/utf8buf.html' title='Multiple used in 13 places.'>utf8buf</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>] = <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L191' name='L191'></a> 191             <strong class='reserved'>else</strong>
+<a id='L192' name='L192'></a> 192             <em class='brace'>{</em>
+<a id='L193' name='L193'></a> 193                 <a href='../Y/utf8buf.html' title='Multiple used in 13 places.'>utf8buf</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>] = '\0';
+<a id='L194' name='L194'></a> 194                 <strong class='reserved'>break</strong>;
+<a id='L195' name='L195'></a> 195             <em class='brace'>}</em>
+<a id='L196' name='L196'></a> 196         <em class='brace'>}</em>
+<a id='L197' name='L197'></a> 197         <a href='../Y/utf8buf.html' title='Multiple used in 13 places.'>utf8buf</a>[<a href='../S/lib--global.h.html#L129' title='Defined at 129 in lib/global.h.'>UTF8_CHAR_LEN</a>] = '\0';
+<a id='L198' name='L198'></a> 198         <a href='../Y/str.html' title='Multiple used in 682 places.'>str</a> = <a href='../Y/utf8buf.html' title='Multiple used in 13 places.'>utf8buf</a>;
+<a id='L199' name='L199'></a> 199         <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> = <a href='../Y/g_utf8_get_char_validated.html' title='Multiple used in 27 places.'>g_utf8_get_char_validated</a> (<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, -1);
+<a id='L200' name='L200'></a> 200     <em class='brace'>}</em>
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202     <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> &lt; 0)
+<a id='L203' name='L203'></a> 203     <em class='brace'>{</em>
+<a id='L204' name='L204'></a> 204         <em class='comment'>/* Implicit conversion from signed char to signed int keeps negative values. */</em>
+<a id='L205' name='L205'></a> 205         *<a href='../Y/ch.html' title='Multiple used in 246 places.'>ch</a> = *<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>;
+<a id='L206' name='L206'></a> 206         *<a href='../Y/ch_len.html' title='Multiple used in 4 places.'>ch_len</a> = 1;
+<a id='L207' name='L207'></a> 207     <em class='brace'>}</em>
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>else</strong>
+<a id='L209' name='L209'></a> 209     <em class='brace'>{</em>
+<a id='L210' name='L210'></a> 210         <a href='../Y/gchar.html' title='Multiple used in 324 places.'>gchar</a> *<a href='../Y/next_ch.html' title='Multiple used in 34 places.'>next_ch</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212         *<a href='../Y/ch.html' title='Multiple used in 246 places.'>ch</a> = <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L213' name='L213'></a> 213         <em class='comment'>/* Calculate UTF-8 char length */</em>
+<a id='L214' name='L214'></a> 214         <a href='../Y/next_ch.html' title='Multiple used in 34 places.'>next_ch</a> = <a href='../Y/g_utf8_next_char.html' title='Multiple used in 18 places.'>g_utf8_next_char</a> (<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>);
+<a id='L215' name='L215'></a> 215         *<a href='../Y/ch_len.html' title='Multiple used in 4 places.'>ch_len</a> = <a href='../Y/next_ch.html' title='Multiple used in 34 places.'>next_ch</a> - <a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>;
+<a id='L216' name='L216'></a> 216     <em class='brace'>}</em>
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L219' name='L219'></a> 219 <em class='brace'>}</em>
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223 <strong class='reserved'>char</strong> *
+<a id='L224' name='L224'></a> 224 <a href='../R/mcview_get_ptr_string.html' title='Multiple referred from 3 places.'>mcview_get_ptr_string</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>)
+     <em class='comment'>/* <a href='#L152'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L236'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+224 src/viewer/datasource.c'  /> */</em>
+<a id='L225' name='L225'></a> 225 <em class='brace'>{</em>
+<a id='L226' name='L226'></a> 226     <a href='../Y/g_assert.html' title='Multiple used in 32 places.'>g_assert</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> == <a href='../S/src--viewer--internal.h.html#L37' title='Defined at 37 in src/viewer/internal.h.'>DS_STRING</a>);
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228     <strong class='reserved'>if</strong> (<a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a> &gt;= 0 &amp;&amp; <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a> &lt; (<a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a>) <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_string_len.html' title='Multiple used in 5 places.'>ds_string_len</a>)
+<a id='L229' name='L229'></a> 229         <strong class='reserved'>return</strong> (<strong class='reserved'>char</strong> *) (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_string_data.html' title='Multiple used in 4 places.'>ds_string_data</a> + <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>);
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L231' name='L231'></a> 231 <em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L236' name='L236'></a> 236 <a href='../R/mcview_get_byte_string.html' title='Multiple referred from 2 places.'>mcview_get_byte_string</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>, <strong class='reserved'>int</strong> *<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a>)
+     <em class='comment'>/* <a href='#L224'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L255'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+236 src/viewer/datasource.c'  /> */</em>
+<a id='L237' name='L237'></a> 237 <em class='brace'>{</em>
+<a id='L238' name='L238'></a> 238     <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>;
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>if</strong> (<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L241' name='L241'></a> 241         *<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> = -1;
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a> = <a href='../S/src--viewer--datasource.c.html#L224' title='Defined at 224 in src/viewer/datasource.c.'>mcview_get_ptr_string</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>);
+<a id='L244' name='L244'></a> 244     <strong class='reserved'>if</strong> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L245' name='L245'></a> 245         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L246' name='L246'></a> 246 
+<a id='L247' name='L247'></a> 247     <strong class='reserved'>if</strong> (<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L248' name='L248'></a> 248         *<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> = (<strong class='reserved'>unsigned</strong> <strong class='reserved'>char</strong>) (*<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>);
+<a id='L249' name='L249'></a> 249     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L250' name='L250'></a> 250 <em class='brace'>}</em>
+<a id='L251' name='L251'></a> 251 
+<a id='L252' name='L252'></a> 252 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L255' name='L255'></a> 255 <a href='../R/mcview_get_byte_none.html' title='Multiple referred from 2 places.'>mcview_get_byte_none</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>, <strong class='reserved'>int</strong> *<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a>)
+     <em class='comment'>/* <a href='#L236'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L270'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+255 src/viewer/datasource.c'  /> */</em>
+<a id='L256' name='L256'></a> 256 <em class='brace'>{</em>
+<a id='L257' name='L257'></a> 257     (<strong class='reserved'>void</strong>) &amp;<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>;
+<a id='L258' name='L258'></a> 258     (<strong class='reserved'>void</strong>) <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>;
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260     <a href='../Y/g_assert.html' title='Multiple used in 32 places.'>g_assert</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> == <a href='../S/src--viewer--internal.h.html#L33' title='Defined at 33 in src/viewer/internal.h.'>DS_NONE</a>);
+<a id='L261' name='L261'></a> 261 
+<a id='L262' name='L262'></a> 262     <strong class='reserved'>if</strong> (<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L263' name='L263'></a> 263         *<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> = -1;
+<a id='L264' name='L264'></a> 264     <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L265' name='L265'></a> 265 <em class='brace'>}</em>
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269 <strong class='reserved'>void</strong>
+<a id='L270' name='L270'></a> 270 <a href='../R/mcview_set_byte.html' title='Multiple referred from 2 places.'>mcview_set_byte</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a>, <a href='../S/src--viewer--internal.h.html#L26' title='Defined at 26 in src/viewer/internal.h.'>byte</a> <a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>)
+     <em class='comment'>/* <a href='#L255'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L284'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+270 src/viewer/datasource.c'  /> */</em>
+<a id='L271' name='L271'></a> 271 <em class='brace'>{</em>
+<a id='L272' name='L272'></a> 272     (<strong class='reserved'>void</strong>) &amp;<a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>;
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274     <a href='../Y/g_assert.html' title='Multiple used in 32 places.'>g_assert</a> (<a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a> &lt; <a href='../S/src--viewer--datasource.c.html#L105' title='Defined at 105 in src/viewer/datasource.c.'>mcview_get_filesize</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>));
+<a id='L275' name='L275'></a> 275     <a href='../Y/g_assert.html' title='Multiple used in 32 places.'>g_assert</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> == <a href='../S/src--viewer--internal.h.html#L36' title='Defined at 36 in src/viewer/internal.h.'>DS_FILE</a>);
+<a id='L276' name='L276'></a> 276 
+<a id='L277' name='L277'></a> 277     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datalen.html' title='Multiple used in 9 places.'>ds_file_datalen</a> = 0;  <em class='comment'>/* just force reloading */</em>
+<a id='L278' name='L278'></a> 278 <em class='brace'>}</em>
+<a id='L279' name='L279'></a> 279 
+<a id='L280' name='L280'></a> 280 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L281' name='L281'></a> 281 
+<a id='L282' name='L282'></a> 282 <em class='comment'>/*static */</em>
+<a id='L283' name='L283'></a> 283 <strong class='reserved'>void</strong>
+<a id='L284' name='L284'></a> 284 <a href='../R/mcview_file_load_data.html' title='Multiple referred from 3 places.'>mcview_file_load_data</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>)
+     <em class='comment'>/* <a href='#L270'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L333'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+284 src/viewer/datasource.c'  /> */</em>
+<a id='L285' name='L285'></a> 285 <em class='brace'>{</em>
+<a id='L286' name='L286'></a> 286     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/blockoffset.html' title='Multiple used in 4 places.'>blockoffset</a>;
+<a id='L287' name='L287'></a> 287     <a href='../Y/ssize_t.html' title='Multiple used in 136 places.'>ssize_t</a> <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L288' name='L288'></a> 288     <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/bytes_read.html' title='Multiple used in 25 places.'>bytes_read</a>;
+<a id='L289' name='L289'></a> 289 
+<a id='L290' name='L290'></a> 290     <a href='../Y/g_assert.html' title='Multiple used in 32 places.'>g_assert</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> == <a href='../S/src--viewer--internal.h.html#L36' title='Defined at 36 in src/viewer/internal.h.'>DS_FILE</a>);
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292     <strong class='reserved'>if</strong> (<a href='../S/src--viewer--internal.h.html#L367' title='Defined at 367 in src/viewer/internal.h.'>mcview_already_loaded</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_offset.html' title='Multiple used in 10 places.'>ds_file_offset</a>, <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>, <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datalen.html' title='Multiple used in 9 places.'>ds_file_datalen</a>))
+<a id='L293' name='L293'></a> 293         <strong class='reserved'>return</strong>;
+<a id='L294' name='L294'></a> 294 
+<a id='L295' name='L295'></a> 295     <strong class='reserved'>if</strong> (<a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a> &gt;= <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_filesize.html' title='Multiple used in 7 places.'>ds_file_filesize</a>)
+<a id='L296' name='L296'></a> 296         <strong class='reserved'>return</strong>;
+<a id='L297' name='L297'></a> 297 
+<a id='L298' name='L298'></a> 298     <a href='../Y/blockoffset.html' title='Multiple used in 4 places.'>blockoffset</a> = <a href='../S/src--viewer--internal.h.html#L338' title='Defined at 338 in src/viewer/internal.h.'>mcview_offset_rounddown</a> (<a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>, <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datasize.html' title='Multiple used in 5 places.'>ds_file_datasize</a>);
+<a id='L299' name='L299'></a> 299     <strong class='reserved'>if</strong> (<a href='../S/lib--vfs--interface.c.html#L698' title='Defined at 698 in lib/vfs/interface.c.'>mc_lseek</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_fd.html' title='Multiple used in 7 places.'>ds_file_fd</a>, <a href='../Y/blockoffset.html' title='Multiple used in 4 places.'>blockoffset</a>, <a href='../Y/SEEK_SET.html' title='Multiple used in 18 places.'>SEEK_SET</a>) == -1)
+<a id='L300' name='L300'></a> 300         <strong class='reserved'>goto</strong> <a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>;
+<a id='L301' name='L301'></a> 301 
+<a id='L302' name='L302'></a> 302     <a href='../Y/bytes_read.html' title='Multiple used in 25 places.'>bytes_read</a> = 0;
+<a id='L303' name='L303'></a> 303     <strong class='reserved'>while</strong> (<a href='../Y/bytes_read.html' title='Multiple used in 25 places.'>bytes_read</a> &lt; <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datasize.html' title='Multiple used in 5 places.'>ds_file_datasize</a>)
+<a id='L304' name='L304'></a> 304     <em class='brace'>{</em>
+<a id='L305' name='L305'></a> 305         <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> =
+<a id='L306' name='L306'></a> 306             <a href='../Y/mc_read.html' title='Multiple used in 28 places.'>mc_read</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_fd.html' title='Multiple used in 7 places.'>ds_file_fd</a>, <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_data.html' title='Multiple used in 6 places.'>ds_file_data</a> + <a href='../Y/bytes_read.html' title='Multiple used in 25 places.'>bytes_read</a>,
+<a id='L307' name='L307'></a> 307                      <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datasize.html' title='Multiple used in 5 places.'>ds_file_datasize</a> - <a href='../Y/bytes_read.html' title='Multiple used in 25 places.'>bytes_read</a>);
+<a id='L308' name='L308'></a> 308         <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> == -1)
+<a id='L309' name='L309'></a> 309             <strong class='reserved'>goto</strong> <a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>;
+<a id='L310' name='L310'></a> 310         <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> == 0)
+<a id='L311' name='L311'></a> 311             <strong class='reserved'>break</strong>;
+<a id='L312' name='L312'></a> 312         <a href='../Y/bytes_read.html' title='Multiple used in 25 places.'>bytes_read</a> += (<a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a>) <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L313' name='L313'></a> 313     <em class='brace'>}</em>
+<a id='L314' name='L314'></a> 314     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_offset.html' title='Multiple used in 10 places.'>ds_file_offset</a> = <a href='../Y/blockoffset.html' title='Multiple used in 4 places.'>blockoffset</a>;
+<a id='L315' name='L315'></a> 315     <strong class='reserved'>if</strong> ((<a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a>) <a href='../Y/bytes_read.html' title='Multiple used in 25 places.'>bytes_read</a> &gt; <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_filesize.html' title='Multiple used in 7 places.'>ds_file_filesize</a> - <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_offset.html' title='Multiple used in 10 places.'>ds_file_offset</a>)
+<a id='L316' name='L316'></a> 316     <em class='brace'>{</em>
+<a id='L317' name='L317'></a> 317         <em class='comment'>/* the file has grown in the meantime -- stick to the old size */</em>
+<a id='L318' name='L318'></a> 318         <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datalen.html' title='Multiple used in 9 places.'>ds_file_datalen</a> = <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_filesize.html' title='Multiple used in 7 places.'>ds_file_filesize</a> - <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_offset.html' title='Multiple used in 10 places.'>ds_file_offset</a>;
+<a id='L319' name='L319'></a> 319     <em class='brace'>}</em>
+<a id='L320' name='L320'></a> 320     <strong class='reserved'>else</strong>
+<a id='L321' name='L321'></a> 321     <em class='brace'>{</em>
+<a id='L322' name='L322'></a> 322         <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datalen.html' title='Multiple used in 9 places.'>ds_file_datalen</a> = <a href='../Y/bytes_read.html' title='Multiple used in 25 places.'>bytes_read</a>;
+<a id='L323' name='L323'></a> 323     <em class='brace'>}</em>
+<a id='L324' name='L324'></a> 324     <strong class='reserved'>return</strong>;
+<a id='L325' name='L325'></a> 325 
+<a id='L326' name='L326'></a> 326   <a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>:
+<a id='L327' name='L327'></a> 327     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datalen.html' title='Multiple used in 9 places.'>ds_file_datalen</a> = 0;
+<a id='L328' name='L328'></a> 328 <em class='brace'>}</em>
+<a id='L329' name='L329'></a> 329 
+<a id='L330' name='L330'></a> 330 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332 <strong class='reserved'>void</strong>
+<a id='L333' name='L333'></a> 333 <a href='../R/mcview_close_datasource.html' title='Multiple referred from 8 places.'>mcview_close_datasource</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>)
+     <em class='comment'>/* <a href='#L284'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L369'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+333 src/viewer/datasource.c'  /> */</em>
+<a id='L334' name='L334'></a> 334 <em class='brace'>{</em>
+<a id='L335' name='L335'></a> 335     <strong class='reserved'>switch</strong> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a>)
+<a id='L336' name='L336'></a> 336     <em class='brace'>{</em>
+<a id='L337' name='L337'></a> 337     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L33' title='Defined at 33 in src/viewer/internal.h.'>DS_NONE</a>:
+<a id='L338' name='L338'></a> 338         <strong class='reserved'>break</strong>;
+<a id='L339' name='L339'></a> 339     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L34' title='Defined at 34 in src/viewer/internal.h.'>DS_STDIO_PIPE</a>:
+<a id='L340' name='L340'></a> 340         <strong class='reserved'>if</strong> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_stdio_pipe.html' title='Multiple used in 7 places.'>ds_stdio_pipe</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L341' name='L341'></a> 341         <em class='brace'>{</em>
+<a id='L342' name='L342'></a> 342             <a href='../S/src--viewer--growbuf.c.html#L76' title='Defined at 76 in src/viewer/growbuf.c.'>mcview_growbuf_done</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L343' name='L343'></a> 343             <a href='../S/src--viewer--display.c.html#L248' title='Defined at 248 in src/viewer/display.c.'>mcview_display</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L344' name='L344'></a> 344         <em class='brace'>}</em>
+<a id='L345' name='L345'></a> 345         <a href='../S/src--viewer--growbuf.c.html#L95' title='Defined at 95 in src/viewer/growbuf.c.'>mcview_growbuf_free</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L346' name='L346'></a> 346         <strong class='reserved'>break</strong>;
+<a id='L347' name='L347'></a> 347     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L35' title='Defined at 35 in src/viewer/internal.h.'>DS_VFS_PIPE</a>:
+<a id='L348' name='L348'></a> 348         <strong class='reserved'>if</strong> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_vfs_pipe.html' title='Multiple used in 6 places.'>ds_vfs_pipe</a> != -1)
+<a id='L349' name='L349'></a> 349             <a href='../S/src--viewer--growbuf.c.html#L76' title='Defined at 76 in src/viewer/growbuf.c.'>mcview_growbuf_done</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L350' name='L350'></a> 350         <a href='../S/src--viewer--growbuf.c.html#L95' title='Defined at 95 in src/viewer/growbuf.c.'>mcview_growbuf_free</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L351' name='L351'></a> 351         <strong class='reserved'>break</strong>;
+<a id='L352' name='L352'></a> 352     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L36' title='Defined at 36 in src/viewer/internal.h.'>DS_FILE</a>:
+<a id='L353' name='L353'></a> 353         (<strong class='reserved'>void</strong>) <a href='../S/lib--vfs--interface.c.html#L382' title='Defined at 382 in lib/vfs/interface.c.'>mc_close</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_fd.html' title='Multiple used in 7 places.'>ds_file_fd</a>);
+<a id='L354' name='L354'></a> 354         <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_fd.html' title='Multiple used in 7 places.'>ds_file_fd</a> = -1;
+<a id='L355' name='L355'></a> 355         <a href='../S/lib--util.h.html#L25' title='Defined at 25 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_data.html' title='Multiple used in 6 places.'>ds_file_data</a>);
+<a id='L356' name='L356'></a> 356         <strong class='reserved'>break</strong>;
+<a id='L357' name='L357'></a> 357     <strong class='reserved'>case</strong> <a href='../S/src--viewer--internal.h.html#L37' title='Defined at 37 in src/viewer/internal.h.'>DS_STRING</a>:
+<a id='L358' name='L358'></a> 358         <a href='../S/lib--util.h.html#L25' title='Defined at 25 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_string_data.html' title='Multiple used in 4 places.'>ds_string_data</a>);
+<a id='L359' name='L359'></a> 359         <strong class='reserved'>break</strong>;
+<a id='L360' name='L360'></a> 360     <strong class='reserved'>default</strong>:
+<a id='L361' name='L361'></a> 361         <strong class='reserved'>break</strong>;
+<a id='L362' name='L362'></a> 362     <em class='brace'>}</em>
+<a id='L363' name='L363'></a> 363     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> = <a href='../S/src--viewer--internal.h.html#L33' title='Defined at 33 in src/viewer/internal.h.'>DS_NONE</a>;
+<a id='L364' name='L364'></a> 364 <em class='brace'>}</em>
+<a id='L365' name='L365'></a> 365 
+<a id='L366' name='L366'></a> 366 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L367' name='L367'></a> 367 
+<a id='L368' name='L368'></a> 368 <strong class='reserved'>void</strong>
+<a id='L369' name='L369'></a> 369 <a href='../R/mcview_set_datasource_file.html' title='Multiple referred from 2 places.'>mcview_set_datasource_file</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <strong class='reserved'>int</strong> <a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a>, <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../Y/stat.html' title='Multiple used in 284 places.'>stat</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>)
+     <em class='comment'>/* <a href='#L333'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L383'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+369 src/viewer/datasource.c'  /> */</em>
+<a id='L370' name='L370'></a> 370 <em class='brace'>{</em>
+<a id='L371' name='L371'></a> 371     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> = <a href='../S/src--viewer--internal.h.html#L36' title='Defined at 36 in src/viewer/internal.h.'>DS_FILE</a>;
+<a id='L372' name='L372'></a> 372     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_fd.html' title='Multiple used in 7 places.'>ds_file_fd</a> = <a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a>;
+<a id='L373' name='L373'></a> 373     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_filesize.html' title='Multiple used in 7 places.'>ds_file_filesize</a> = <a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>-&gt;<a href='../Y/st_size.html' title='Multiple used in 119 places.'>st_size</a>;
+<a id='L374' name='L374'></a> 374     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_offset.html' title='Multiple used in 10 places.'>ds_file_offset</a> = 0;
+<a id='L375' name='L375'></a> 375     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_data.html' title='Multiple used in 6 places.'>ds_file_data</a> = <a href='../Y/g_malloc.html' title='Multiple used in 37 places.'>g_malloc</a> (4096);
+<a id='L376' name='L376'></a> 376     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datalen.html' title='Multiple used in 9 places.'>ds_file_datalen</a> = 0;
+<a id='L377' name='L377'></a> 377     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_file_datasize.html' title='Multiple used in 5 places.'>ds_file_datasize</a> = 4096;
+<a id='L378' name='L378'></a> 378 <em class='brace'>}</em>
+<a id='L379' name='L379'></a> 379 
+<a id='L380' name='L380'></a> 380 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L381' name='L381'></a> 381 
+<a id='L382' name='L382'></a> 382 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L383' name='L383'></a> 383 <a href='../R/mcview_load_command_output.html' title='Multiple referred from 2 places.'>mcview_load_command_output</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/command.html' title='Multiple used in 269 places.'>command</a>)
+     <em class='comment'>/* <a href='#L369'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L414'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+383 src/viewer/datasource.c'  /> */</em>
+<a id='L384' name='L384'></a> 384 <em class='brace'>{</em>
+<a id='L385' name='L385'></a> 385     <a href='../S/lib--util.h.html#L122' title='Defined at 122 in lib/util.h.'>mc_pipe_t</a> *<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>;
+<a id='L386' name='L386'></a> 386     <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> *<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L387' name='L387'></a> 387 
+<a id='L388' name='L388'></a> 388     <a href='../S/src--viewer--datasource.c.html#L333' title='Defined at 333 in src/viewer/datasource.c.'>mcview_close_datasource</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L389' name='L389'></a> 389 
+<a id='L390' name='L390'></a> 390     <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a> = <a href='../S/lib--utilunix.c.html#L506' title='Defined at 506 in lib/utilunix.c.'>mc_popen</a> (<a href='../Y/command.html' title='Multiple used in 269 places.'>command</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>, &amp;<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>);
+<a id='L391' name='L391'></a> 391     <strong class='reserved'>if</strong> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L392' name='L392'></a> 392     <em class='brace'>{</em>
+<a id='L393' name='L393'></a> 393         <a href='../S/src--viewer--display.c.html#L248' title='Defined at 248 in src/viewer/display.c.'>mcview_display</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L394' name='L394'></a> 394         <a href='../S/src--viewer--lib.c.html#L300' title='Defined at 300 in src/viewer/lib.c.'>mcview_show_error</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>-&gt;<a href='../D/message.html' title='Multiple defined in 5 places.'>message</a>);
+<a id='L395' name='L395'></a> 395         <a href='../Y/g_error_free.html' title='Multiple used in 27 places.'>g_error_free</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>);
+<a id='L396' name='L396'></a> 396         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L397' name='L397'></a> 397     <em class='brace'>}</em>
+<a id='L398' name='L398'></a> 398 
+<a id='L399' name='L399'></a> 399     <em class='comment'>/* Check if filter produced any output */</em>
+<a id='L400' name='L400'></a> 400     <a href='../S/src--viewer--datasource.c.html#L79' title='Defined at 79 in src/viewer/datasource.c.'>mcview_set_datasource_stdio_pipe</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>);
+<a id='L401' name='L401'></a> 401     <strong class='reserved'>if</strong> (!<a href='../S/src--viewer--internal.h.html#L394' title='Defined at 394 in src/viewer/internal.h.'>mcview_get_byte</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, 0, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>))
+<a id='L402' name='L402'></a> 402     <em class='brace'>{</em>
+<a id='L403' name='L403'></a> 403         <a href='../S/src--viewer--datasource.c.html#L333' title='Defined at 333 in src/viewer/datasource.c.'>mcview_close_datasource</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L404' name='L404'></a> 404         <a href='../S/src--viewer--display.c.html#L248' title='Defined at 248 in src/viewer/display.c.'>mcview_display</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L405' name='L405'></a> 405         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L406' name='L406'></a> 406     <em class='brace'>}</em>
+<a id='L407' name='L407'></a> 407 
+<a id='L408' name='L408'></a> 408     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L409' name='L409'></a> 409 <em class='brace'>}</em>
+<a id='L410' name='L410'></a> 410 
+<a id='L411' name='L411'></a> 411 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L412' name='L412'></a> 412 
+<a id='L413' name='L413'></a> 413 <strong class='reserved'>void</strong>
+<a id='L414' name='L414'></a> 414 <a href='../R/mcview_set_datasource_vfs_pipe.html' title='Multiple referred from 2 places.'>mcview_set_datasource_vfs_pipe</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <strong class='reserved'>int</strong> <a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a>)
+     <em class='comment'>/* <a href='#L383'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L427'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+414 src/viewer/datasource.c'  /> */</em>
+<a id='L415' name='L415'></a> 415 <em class='brace'>{</em>
+<a id='L416' name='L416'></a> 416     <a href='../Y/g_assert.html' title='Multiple used in 32 places.'>g_assert</a> (<a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a> != -1);
+<a id='L417' name='L417'></a> 417 
+<a id='L418' name='L418'></a> 418     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> = <a href='../S/src--viewer--internal.h.html#L35' title='Defined at 35 in src/viewer/internal.h.'>DS_VFS_PIPE</a>;
+<a id='L419' name='L419'></a> 419     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_vfs_pipe.html' title='Multiple used in 6 places.'>ds_vfs_pipe</a> = <a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a>;
+<a id='L420' name='L420'></a> 420 
+<a id='L421' name='L421'></a> 421     <a href='../S/src--viewer--growbuf.c.html#L65' title='Defined at 65 in src/viewer/growbuf.c.'>mcview_growbuf_init</a> (<a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>);
+<a id='L422' name='L422'></a> 422 <em class='brace'>}</em>
+<a id='L423' name='L423'></a> 423 
+<a id='L424' name='L424'></a> 424 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L425' name='L425'></a> 425 
+<a id='L426' name='L426'></a> 426 <strong class='reserved'>void</strong>
+<a id='L427' name='L427'></a> 427 <a href='../R/mcview_set_datasource_string.html' title='Multiple referred from 2 places.'>mcview_set_datasource_string</a> (<a href='../D/WView.html' title='Multiple defined in 2 places.'>WView</a> * <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>)
+     <em class='comment'>/* <a href='#L414'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+427 src/viewer/datasource.c'  /> */</em>
+<a id='L428' name='L428'></a> 428 <em class='brace'>{</em>
+<a id='L429' name='L429'></a> 429     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/datasource.html' title='Multiple used in 22 places.'>datasource</a> = <a href='../S/src--viewer--internal.h.html#L37' title='Defined at 37 in src/viewer/internal.h.'>DS_STRING</a>;
+<a id='L430' name='L430'></a> 430     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_string_len.html' title='Multiple used in 5 places.'>ds_string_len</a> = <a href='../Y/strlen.html' title='Multiple used in 192 places.'>strlen</a> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>);
+<a id='L431' name='L431'></a> 431     <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_string_data.html' title='Multiple used in 4 places.'>ds_string_data</a> = (<a href='../S/src--viewer--internal.h.html#L26' title='Defined at 26 in src/viewer/internal.h.'>byte</a> *) <a href='../Y/g_strndup.html' title='Multiple used in 61 places.'>g_strndup</a> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>, <a href='../Y/view.html' title='Multiple used in 1212 places.'>view</a>-&gt;<a href='../Y/ds_string_len.html' title='Multiple used in 5 places.'>ds_string_len</a>);
+<a id='L432' name='L432'></a> 432 <em class='brace'>}</em>
+<a id='L433' name='L433'></a> 433 
+<a id='L434' name='L434'></a> 434 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L79'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L427'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+434 src/viewer/datasource.c'  /> */</em>
+</body>
+</html>

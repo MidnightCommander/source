@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/widget/listbox-window.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L59'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L150'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--widget.html'>widget</a>/listbox-window.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--widget.html'>widget</a>/listbox-window.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L150'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/widget/listbox-window.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L59' title='Defined at 59.'>listbox_window_centered_new</a></li>
+<li><a href='#L120' title='Defined at 120.'>listbox_window_new</a></li>
+<li><a href='#L129' title='Defined at 129.'>listbox_run</a></li>
+<li><a href='#L150' title='Defined at 150.'>listbox_run_with_data</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Widget based utility functions.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 1994-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Authors:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Miguel de Icaza, 1994, 1995, 1996</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Radek Doulik, 1994, 1995</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   Jakub Jelinek, 1995</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   Andrej Borsenkow, 1995</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2009, 2010, 2013</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'></em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'></em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'></em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'></em>
+<a id='L26' name='L26'></a>  26 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> */</em>
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='comment'>/** \file listbox-window.c</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'> *  \brief Source: Listbox widget, a listbox within dialog window</em>
+<a id='L32' name='L32'></a>  32 <em class='comment'> */</em>
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;stdlib.h&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>lib/tty/tty.h</a>"        <em class='comment'>/* COLS */</em>
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='lib--skin.h.html'>lib/skin.h</a>"
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"        <em class='comment'>/* str_term_width1() */</em>
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <a href='../S/lib--widget--listbox-window.h.html#L21' title='Defined at 21 in lib/widget/listbox-window.h.'>Listbox</a> *
+<a id='L59' name='L59'></a>  59 <a href='../R/listbox_window_centered_new.html' title='Multiple referred from 4 places.'>listbox_window_centered_new</a> (<strong class='reserved'>int</strong> <a href='../Y/center_y.html' title='Multiple used in 7 places.'>center_y</a>, <strong class='reserved'>int</strong> <a href='../Y/center_x.html' title='Multiple used in 7 places.'>center_x</a>, <strong class='reserved'>int</strong> <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>, <strong class='reserved'>int</strong> <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>,
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L120'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L150'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+59 lib/widget/listbox-window.c'  /> */</em>
+<a id='L60' name='L60'></a>  60                              <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/title.html' title='Multiple used in 158 places.'>title</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/help.html' title='Multiple used in 22 places.'>help</a>)
+<a id='L61' name='L61'></a>  61 <em class='brace'>{</em>
+<a id='L62' name='L62'></a>  62     <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/space.html' title='Multiple used in 17 places.'>space</a> = 4;
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64     <strong class='reserved'>int</strong> <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a> = 0, <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> = 0;
+<a id='L65' name='L65'></a>  65     <a href='../S/lib--widget--listbox-window.h.html#L21' title='Defined at 21 in lib/widget/listbox-window.h.'>Listbox</a> *<a href='../Y/listbox.html' title='Multiple used in 43 places.'>listbox</a>;
+<a id='L66' name='L66'></a>  66     <a href='../S/lib--widget--widget-common.h.html#L111' title='Defined at 111 in lib/widget/widget-common.h.'>widget_pos_flags_t</a> <a href='../Y/pos_flags.html' title='Multiple used in 75 places.'>pos_flags</a> = <a href='../S/lib--widget--widget-common.h.html#L102' title='Defined at 102 in lib/widget/widget-common.h.'>WPOS_TRYUP</a>;
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68     <em class='comment'>/* Adjust sizes */</em>
+<a id='L69' name='L69'></a>  69     <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> = <a href='../Y/MIN.html' title='Multiple used in 76 places.'>MIN</a> (<a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>, <a href='../S/lib--tty--tty-slang.h.html#L24' title='Defined at 24 in lib/tty/tty-slang.h.'>LINES</a> - 6);
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71     <strong class='reserved'>if</strong> (<a href='../Y/title.html' title='Multiple used in 158 places.'>title</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L72' name='L72'></a>  72     <em class='brace'>{</em>
+<a id='L73' name='L73'></a>  73         <strong class='reserved'>int</strong> <a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>;
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75         <a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a> = <a href='../S/lib--strutil--strutil.c.html#L655' title='Defined at 655 in lib/strutil/strutil.c.'>str_term_width1</a> (<a href='../Y/title.html' title='Multiple used in 158 places.'>title</a>) + 4;
+<a id='L76' name='L76'></a>  76         <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> = <a href='../Y/MAX.html' title='Multiple used in 120 places.'>MAX</a> (<a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>, <a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>);
+<a id='L77' name='L77'></a>  77     <em class='brace'>}</em>
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79     <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> = <a href='../Y/MIN.html' title='Multiple used in 76 places.'>MIN</a> (<a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>, <a href='../S/lib--tty--tty-slang.h.html#L23' title='Defined at 23 in lib/tty/tty-slang.h.'>COLS</a> - 6);
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <em class='comment'>/* adjust position */</em>
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>if</strong> ((<a href='../Y/center_y.html' title='Multiple used in 7 places.'>center_y</a> &lt; 0) || (<a href='../Y/center_x.html' title='Multiple used in 7 places.'>center_x</a> &lt; 0))
+<a id='L83' name='L83'></a>  83         <a href='../Y/pos_flags.html' title='Multiple used in 75 places.'>pos_flags</a> |= <a href='../S/lib--widget--widget-common.h.html#L101' title='Defined at 101 in lib/widget/widget-common.h.'>WPOS_CENTER</a>;
+<a id='L84' name='L84'></a>  84     <strong class='reserved'>else</strong>
+<a id='L85' name='L85'></a>  85     <em class='brace'>{</em>
+<a id='L86' name='L86'></a>  86         <em class='comment'>/* Actually, this this is not used in MC. */</em>
+<a id='L87' name='L87'></a>  87 
+<a id='L88' name='L88'></a>  88         <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> = <a href='../Y/center_y.html' title='Multiple used in 7 places.'>center_y</a>;
+<a id='L89' name='L89'></a>  89         <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a> = <a href='../Y/center_x.html' title='Multiple used in 7 places.'>center_x</a>;
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91         <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> -= <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> / 2;
+<a id='L92' name='L92'></a>  92         <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a> -= <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> / 2;
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94         <strong class='reserved'>if</strong> (<a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> + <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> &gt;= <a href='../S/lib--tty--tty-slang.h.html#L24' title='Defined at 24 in lib/tty/tty-slang.h.'>LINES</a>)
+<a id='L95' name='L95'></a>  95             <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> = <a href='../S/lib--tty--tty-slang.h.html#L24' title='Defined at 24 in lib/tty/tty-slang.h.'>LINES</a> - <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> - <a href='../Y/space.html' title='Multiple used in 17 places.'>space</a>;
+<a id='L96' name='L96'></a>  96         <strong class='reserved'>if</strong> (<a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> &lt; 0)
+<a id='L97' name='L97'></a>  97             <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> = 0;
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99         <strong class='reserved'>if</strong> (<a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a> + <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> &gt;= <a href='../S/lib--tty--tty-slang.h.html#L23' title='Defined at 23 in lib/tty/tty-slang.h.'>COLS</a>)
+<a id='L100' name='L100'></a> 100             <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a> = <a href='../S/lib--tty--tty-slang.h.html#L23' title='Defined at 23 in lib/tty/tty-slang.h.'>COLS</a> - <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> - <a href='../Y/space.html' title='Multiple used in 17 places.'>space</a>;
+<a id='L101' name='L101'></a> 101         <strong class='reserved'>if</strong> (<a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a> &lt; 0)
+<a id='L102' name='L102'></a> 102             <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a> = 0;
+<a id='L103' name='L103'></a> 103     <em class='brace'>}</em>
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105     <a href='../Y/listbox.html' title='Multiple used in 43 places.'>listbox</a> = <a href='../Y/g_new.html' title='Multiple used in 60 places.'>g_new</a> (<a href='../S/lib--widget--listbox-window.h.html#L21' title='Defined at 21 in lib/widget/listbox-window.h.'>Listbox</a>, 1);
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107     <a href='../Y/listbox.html' title='Multiple used in 43 places.'>listbox</a>-&gt;<a href='../Y/dlg.html' title='Multiple used in 59 places.'>dlg</a> =
+<a id='L108' name='L108'></a> 108         <a href='../S/lib--widget--dialog.c.html#L399' title='Defined at 399 in lib/widget/dialog.c.'>dlg_create</a> (<a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>, <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a>, <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a>, <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> + <a href='../Y/space.html' title='Multiple used in 17 places.'>space</a>, <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> + <a href='../Y/space.html' title='Multiple used in 17 places.'>space</a>, <a href='../Y/pos_flags.html' title='Multiple used in 75 places.'>pos_flags</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/listbox_colors.html' title='Multiple used in 8 places.'>listbox_colors</a>,
+<a id='L109' name='L109'></a> 109                     <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/help.html' title='Multiple used in 22 places.'>help</a>, <a href='../Y/title.html' title='Multiple used in 158 places.'>title</a>);
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <a href='../Y/listbox.html' title='Multiple used in 43 places.'>listbox</a>-&gt;<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a> = <a href='../S/lib--widget--listbox.c.html#L553' title='Defined at 553 in lib/widget/listbox.c.'>listbox_new</a> (2, 2, <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>, <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L112' name='L112'></a> 112     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../S/lib--widget--group.h.html#L16' title='Defined at 16 in lib/widget/group.h.'>GROUP</a> (<a href='../Y/listbox.html' title='Multiple used in 43 places.'>listbox</a>-&gt;<a href='../Y/dlg.html' title='Multiple used in 59 places.'>dlg</a>), <a href='../Y/listbox.html' title='Multiple used in 43 places.'>listbox</a>-&gt;<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>);
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <strong class='reserved'>return</strong> <a href='../Y/listbox.html' title='Multiple used in 43 places.'>listbox</a>;
+<a id='L115' name='L115'></a> 115 <em class='brace'>}</em>
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119 <a href='../S/lib--widget--listbox-window.h.html#L21' title='Defined at 21 in lib/widget/listbox-window.h.'>Listbox</a> *
+<a id='L120' name='L120'></a> 120 <a href='../R/listbox_window_new.html' title='Multiple referred from 6 places.'>listbox_window_new</a> (<strong class='reserved'>int</strong> <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>, <strong class='reserved'>int</strong> <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/title.html' title='Multiple used in 158 places.'>title</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/help.html' title='Multiple used in 22 places.'>help</a>)
+     <em class='comment'>/* <a href='#L59'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L129'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L150'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+120 lib/widget/listbox-window.c'  /> */</em>
+<a id='L121' name='L121'></a> 121 <em class='brace'>{</em>
+<a id='L122' name='L122'></a> 122     <strong class='reserved'>return</strong> <a href='../S/lib--widget--listbox-window.c.html#L59' title='Defined at 59 in lib/widget/listbox-window.c.'>listbox_window_centered_new</a> (-1, -1, <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>, <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>, <a href='../Y/title.html' title='Multiple used in 158 places.'>title</a>, <a href='../Y/help.html' title='Multiple used in 22 places.'>help</a>);
+<a id='L123' name='L123'></a> 123 <em class='brace'>}</em>
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L126' name='L126'></a> 126 
+<a id='L127' name='L127'></a> 127 <em class='comment'>/** Returns the number of the item selected */</em>
+<a id='L128' name='L128'></a> 128 <strong class='reserved'>int</strong>
+<a id='L129' name='L129'></a> 129 <a href='../R/listbox_run.html' title='Multiple referred from 6 places.'>listbox_run</a> (<a href='../S/lib--widget--listbox-window.h.html#L21' title='Defined at 21 in lib/widget/listbox-window.h.'>Listbox</a> * <a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>)
+     <em class='comment'>/* <a href='#L120'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L150'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L150'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+129 lib/widget/listbox-window.c'  /> */</em>
+<a id='L130' name='L130'></a> 130 <em class='brace'>{</em>
+<a id='L131' name='L131'></a> 131     <strong class='reserved'>int</strong> <a href='../Y/val.html' title='Multiple used in 43 places.'>val</a> = -1;
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133     <strong class='reserved'>if</strong> (<a href='../S/lib--widget--dialog.c.html#L570' title='Defined at 570 in lib/widget/dialog.c.'>dlg_run</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/dlg.html' title='Multiple used in 59 places.'>dlg</a>) != <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>)
+<a id='L134' name='L134'></a> 134         <a href='../Y/val.html' title='Multiple used in 43 places.'>val</a> = <a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>-&gt;<a href='../Y/current.html' title='Multiple used in 573 places.'>current</a>;
+<a id='L135' name='L135'></a> 135     <a href='../S/lib--widget--widget-common.h.html#L394' title='Defined at 394 in lib/widget/widget-common.h.'>widget_destroy</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/dlg.html' title='Multiple used in 59 places.'>dlg</a>));
+<a id='L136' name='L136'></a> 136     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>);
+<a id='L137' name='L137'></a> 137     <strong class='reserved'>return</strong> <a href='../Y/val.html' title='Multiple used in 43 places.'>val</a>;
+<a id='L138' name='L138'></a> 138 <em class='brace'>}</em>
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142 <em class='comment'>/**</em>
+<a id='L143' name='L143'></a> 143 <em class='comment'> * A variant of listbox_run() which is more convenient to use when we</em>
+<a id='L144' name='L144'></a> 144 <em class='comment'> * need to select arbitrary 'data'.</em>
+<a id='L145' name='L145'></a> 145 <em class='comment'> *</em>
+<a id='L146' name='L146'></a> 146 <em class='comment'> * @param select  the item to select initially, by its 'data'. Optional.</em>
+<a id='L147' name='L147'></a> 147 <em class='comment'> * @return        the 'data' of the item selected, or NULL if none selected.</em>
+<a id='L148' name='L148'></a> 148 <em class='comment'> */</em>
+<a id='L149' name='L149'></a> 149 <strong class='reserved'>void</strong> *
+<a id='L150' name='L150'></a> 150 <a href='../R/listbox_run_with_data.html' title='Multiple referred from 3 places.'>listbox_run_with_data</a> (<a href='../S/lib--widget--listbox-window.h.html#L21' title='Defined at 21 in lib/widget/listbox-window.h.'>Listbox</a> * <a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>, <strong class='reserved'>const</strong> <strong class='reserved'>void</strong> *<a href='../Y/select.html' title='Multiple used in 22 places.'>select</a>)
+     <em class='comment'>/* <a href='#L129'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+150 lib/widget/listbox-window.c'  /> */</em>
+<a id='L151' name='L151'></a> 151 <em class='brace'>{</em>
+<a id='L152' name='L152'></a> 152     <strong class='reserved'>void</strong> *<a href='../Y/val.html' title='Multiple used in 43 places.'>val</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154     <strong class='reserved'>if</strong> (<a href='../Y/select.html' title='Multiple used in 22 places.'>select</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L155' name='L155'></a> 155         <a href='../S/lib--widget--listbox.c.html#L653' title='Defined at 653 in lib/widget/listbox.c.'>listbox_set_current</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>, <a href='../S/lib--widget--listbox.c.html#L607' title='Defined at 607 in lib/widget/listbox.c.'>listbox_search_data</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>, <a href='../Y/select.html' title='Multiple used in 22 places.'>select</a>));
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157     <strong class='reserved'>if</strong> (<a href='../S/lib--widget--dialog.c.html#L570' title='Defined at 570 in lib/widget/dialog.c.'>dlg_run</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/dlg.html' title='Multiple used in 59 places.'>dlg</a>) != <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>)
+<a id='L158' name='L158'></a> 158     <em class='brace'>{</em>
+<a id='L159' name='L159'></a> 159         <a href='../D/WLEntry.html' title='Multiple defined in 2 places.'>WLEntry</a> *<a href='../Y/e.html' title='Multiple used in 238 places.'>e</a>;
+<a id='L160' name='L160'></a> 160 
+<a id='L161' name='L161'></a> 161         <a href='../Y/e.html' title='Multiple used in 238 places.'>e</a> = <a href='../S/lib--widget--listbox.c.html#L720' title='Defined at 720 in lib/widget/listbox.c.'>listbox_get_nth_entry</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>, <a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>-&gt;<a href='../Y/current.html' title='Multiple used in 573 places.'>current</a>);
+<a id='L162' name='L162'></a> 162         <strong class='reserved'>if</strong> (<a href='../Y/e.html' title='Multiple used in 238 places.'>e</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L163' name='L163'></a> 163         <em class='brace'>{</em>
+<a id='L164' name='L164'></a> 164             <em class='comment'>/* The assert guards against returning a soon-to-be deallocated</em>
+<a id='L165' name='L165'></a> 165 <em class='comment'>             * pointer (as in listbox_add_item(..., TRUE)). */</em>
+<a id='L166' name='L166'></a> 166             <a href='../Y/g_assert.html' title='Multiple used in 32 places.'>g_assert</a> (!<a href='../Y/e.html' title='Multiple used in 238 places.'>e</a>-&gt;<a href='../Y/free_data.html' title='Multiple used in 6 places.'>free_data</a>);
+<a id='L167' name='L167'></a> 167             <a href='../Y/val.html' title='Multiple used in 43 places.'>val</a> = <a href='../Y/e.html' title='Multiple used in 238 places.'>e</a>-&gt;<a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>;
+<a id='L168' name='L168'></a> 168         <em class='brace'>}</em>
+<a id='L169' name='L169'></a> 169     <em class='brace'>}</em>
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171     <a href='../S/lib--widget--widget-common.h.html#L394' title='Defined at 394 in lib/widget/widget-common.h.'>widget_destroy</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>-&gt;<a href='../Y/dlg.html' title='Multiple used in 59 places.'>dlg</a>));
+<a id='L172' name='L172'></a> 172     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>);
+<a id='L173' name='L173'></a> 173     <strong class='reserved'>return</strong> <a href='../Y/val.html' title='Multiple used in 43 places.'>val</a>;
+<a id='L174' name='L174'></a> 174 <em class='brace'>}</em>
+<a id='L175' name='L175'></a> 175 
+<a id='L176' name='L176'></a> 176 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L59'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L150'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+176 lib/widget/listbox-window.c'  /> */</em>
+</body>
+</html>

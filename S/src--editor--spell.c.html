@@ -1,0 +1,902 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/editor/spell.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L146'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L810'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--editor.html'>editor</a>/spell.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--editor.html'>editor</a>/spell.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/editor/spell.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L146' title='Defined at 146.'>spell_decode_lang</a></li>
+<li><a href='#L167' title='Defined at 167.'>spell_available</a></li>
+<li><a href='#L293' title='Defined at 293.'>aspell_init</a></li>
+<li><a href='#L337' title='Defined at 337.'>aspell_clean</a></li>
+<li><a href='#L363' title='Defined at 363.'>aspell_get_lang_list</a></li>
+<li><a href='#L397' title='Defined at 397.'>aspell_array_clean</a></li>
+<li><a href='#L411' title='Defined at 411.'>aspell_get_lang</a></li>
+<li><a href='#L428' title='Defined at 428.'>aspell_set_lang</a></li>
+<li><a href='#L476' title='Defined at 476.'>aspell_check</a></li>
+<li><a href='#L497' title='Defined at 497.'>aspell_suggest</a></li>
+<li><a href='#L539' title='Defined at 539.'>aspell_add_to_dict</a></li>
+<li><a href='#L563' title='Defined at 563.'>edit_suggest_current_word</a></li>
+<li><a href='#L652' title='Defined at 652.'>edit_spellcheck_file</a></li>
+<li><a href='#L684' title='Defined at 684.'>edit_set_spell_lang</a></li>
+<li><a href='#L712' title='Defined at 712.'>spell_dialog_spell_suggest_show</a></li>
+<li><a href='#L810' title='Defined at 810.'>spell_dialog_lang_list_show</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Editor spell checker</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2012-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Ilia Maslakov &lt;il.smind@gmail.com&gt;, 2012</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2013, 2021</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'></em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'></em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'></em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'> */</em>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;stdlib.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;string.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;gmodule.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;aspell.h&gt;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#ifdef</em> <a href='../S/tests--lib--vfs--tempdir.c.html#L31' title='Defined at 31 in tests/lib/vfs/tempdir.c.'>HAVE_CHARSET</a>
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> "<a href='lib--charsets.h.html'>lib/charsets.h</a>"
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#endif</em>
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"           <em class='comment'>/* MC_PTR_FREE() */</em>
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>lib/tty/tty.h</a>"        <em class='comment'>/* COLS, LINES */</em>
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> "<a href='src--setup.h.html'>src/setup.h</a>"
+<a id='L43' name='L43'></a>  43 
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#include</em> "<a href='src--editor--editwidget.h.html'>editwidget.h</a>"
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#include</em> "<a href='src--editor--spell.h.html'>spell.h</a>"
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <em class='sharp'>#define</em> <a href='../R/B_SKIP_WORD.html' title='Multiple referred from 2 places.'>B_SKIP_WORD</a> (<a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>+3)
+<a id='L53' name='L53'></a>  53 <em class='sharp'>#define</em> <a href='../R/B_ADD_WORD.html' title='Multiple referred from 2 places.'>B_ADD_WORD</a> (<a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>+4)
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong> aspell_struct
+<a id='L58' name='L58'></a>  58 <em class='brace'>{</em>
+<a id='L59' name='L59'></a>  59     <a href='../Y/AspellConfig.html' title='Multiple used in 7 places.'>AspellConfig</a> *<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>;
+<a id='L60' name='L60'></a>  60     <a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> *<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>;
+<a id='L61' name='L61'></a>  61 <em class='brace'>}</em> <a href='../R/spell_t.html' title='Multiple referred from 2 places.'>spell_t</a>;
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <strong class='reserved'>static</strong> <a href='../Y/GModule.html' title='Multiple used in 2 places.'>GModule</a> *<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L68' name='L68'></a>  68 <strong class='reserved'>static</strong> <a href='../S/src--editor--spell.c.html#L61' title='Defined at 61 in src/editor/spell.c.'>spell_t</a> *<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 <strong class='reserved'>static</strong> <a href='../Y/AspellConfig.html' title='Multiple used in 7 places.'>AspellConfig</a> *(*<a href='../Y/mc_new_aspell_config.html' title='Multiple used in 3 places.'>mc_new_aspell_config</a>) (<strong class='reserved'>void</strong>);
+<a id='L71' name='L71'></a>  71 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> (*<a href='../Y/mc_aspell_config_replace.html' title='Multiple used in 5 places.'>mc_aspell_config_replace</a>) (<a href='../Y/AspellConfig.html' title='Multiple used in 7 places.'>AspellConfig</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/key.html' title='Multiple used in 199 places.'>key</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/value.html' title='Multiple used in 187 places.'>value</a>);
+<a id='L72' name='L72'></a>  72 <strong class='reserved'>static</strong> <a href='../Y/AspellCanHaveError.html' title='Multiple used in 8 places.'>AspellCanHaveError</a> *(*<a href='../Y/mc_new_aspell_speller.html' title='Multiple used in 4 places.'>mc_new_aspell_speller</a>) (<a href='../Y/AspellConfig.html' title='Multiple used in 7 places.'>AspellConfig</a> * <a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>);
+<a id='L73' name='L73'></a>  73 <strong class='reserved'>static</strong> <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> (*<a href='../Y/mc_aspell_error_number.html' title='Multiple used in 3 places.'>mc_aspell_error_number</a>) (<strong class='reserved'>const</strong> <a href='../Y/AspellCanHaveError.html' title='Multiple used in 8 places.'>AspellCanHaveError</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L74' name='L74'></a>  74 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *(*<a href='../Y/mc_aspell_speller_error_message.html' title='Multiple used in 4 places.'>mc_aspell_speller_error_message</a>) (<strong class='reserved'>const</strong> <a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L75' name='L75'></a>  75 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/AspellError.html' title='Multiple used in 2 places.'>AspellError</a> *(*<a href='../Y/mc_aspell_speller_error.html' title='Multiple used in 4 places.'>mc_aspell_speller_error</a>) (<strong class='reserved'>const</strong> <a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 <strong class='reserved'>static</strong> <a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> *(*<a href='../Y/mc_to_aspell_speller.html' title='Multiple used in 4 places.'>mc_to_aspell_speller</a>) (<a href='../Y/AspellCanHaveError.html' title='Multiple used in 8 places.'>AspellCanHaveError</a> * obj);
+<a id='L78' name='L78'></a>  78 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> (*<a href='../Y/mc_aspell_speller_check.html' title='Multiple used in 3 places.'>mc_aspell_speller_check</a>) (<a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <strong class='reserved'>int</strong> <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>);
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/AspellWordList.html' title='Multiple used in 4 places.'>AspellWordList</a> *(*<a href='../Y/mc_aspell_speller_suggest.html' title='Multiple used in 3 places.'>mc_aspell_speller_suggest</a>) (<a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>,
+<a id='L80' name='L80'></a>  80                                                            <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <strong class='reserved'>int</strong> <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>);
+<a id='L81' name='L81'></a>  81 <strong class='reserved'>static</strong> <a href='../Y/AspellStringEnumeration.html' title='Multiple used in 4 places.'>AspellStringEnumeration</a> *(*<a href='../Y/mc_aspell_word_list_elements.html' title='Multiple used in 3 places.'>mc_aspell_word_list_elements</a>) (<strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../Y/AspellWordList.html' title='Multiple used in 4 places.'>AspellWordList</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L82' name='L82'></a>  82 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *(*<a href='../Y/mc_aspell_config_retrieve.html' title='Multiple used in 3 places.'>mc_aspell_config_retrieve</a>) (<a href='../Y/AspellConfig.html' title='Multiple used in 7 places.'>AspellConfig</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/key.html' title='Multiple used in 199 places.'>key</a>);
+<a id='L83' name='L83'></a>  83 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> (*<a href='../Y/mc_delete_aspell_speller.html' title='Multiple used in 4 places.'>mc_delete_aspell_speller</a>) (<a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L84' name='L84'></a>  84 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> (*<a href='../Y/mc_delete_aspell_config.html' title='Multiple used in 3 places.'>mc_delete_aspell_config</a>) (<a href='../Y/AspellConfig.html' title='Multiple used in 7 places.'>AspellConfig</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L85' name='L85'></a>  85 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> (*<a href='../Y/mc_delete_aspell_can_have_error.html' title='Multiple used in 4 places.'>mc_delete_aspell_can_have_error</a>) (<a href='../Y/AspellCanHaveError.html' title='Multiple used in 8 places.'>AspellCanHaveError</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L86' name='L86'></a>  86 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *(*<a href='../Y/mc_aspell_error_message.html' title='Multiple used in 3 places.'>mc_aspell_error_message</a>) (<strong class='reserved'>const</strong> <a href='../Y/AspellCanHaveError.html' title='Multiple used in 8 places.'>AspellCanHaveError</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L87' name='L87'></a>  87 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> (*<a href='../Y/mc_delete_aspell_string_enumeration.html' title='Multiple used in 3 places.'>mc_delete_aspell_string_enumeration</a>) (<a href='../Y/AspellStringEnumeration.html' title='Multiple used in 4 places.'>AspellStringEnumeration</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L88' name='L88'></a>  88 <strong class='reserved'>static</strong> <a href='../Y/AspellDictInfoEnumeration.html' title='Multiple used in 4 places.'>AspellDictInfoEnumeration</a> *(*<a href='../Y/mc_aspell_dict_info_list_elements.html' title='Multiple used in 3 places.'>mc_aspell_dict_info_list_elements</a>)
+<a id='L89' name='L89'></a>  89     (<strong class='reserved'>const</strong> <a href='../Y/AspellDictInfoList.html' title='Multiple used in 3 places.'>AspellDictInfoList</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L90' name='L90'></a>  90 <strong class='reserved'>static</strong> <a href='../Y/AspellDictInfoList.html' title='Multiple used in 3 places.'>AspellDictInfoList</a> *(*<a href='../Y/mc_get_aspell_dict_info_list.html' title='Multiple used in 3 places.'>mc_get_aspell_dict_info_list</a>) (<a href='../Y/AspellConfig.html' title='Multiple used in 7 places.'>AspellConfig</a> * <a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>);
+<a id='L91' name='L91'></a>  91 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/AspellDictInfo.html' title='Multiple used in 2 places.'>AspellDictInfo</a> *(*<a href='../Y/mc_aspell_dict_info_enumeration_next.html' title='Multiple used in 3 places.'>mc_aspell_dict_info_enumeration_next</a>)
+<a id='L92' name='L92'></a>  92     (<a href='../Y/AspellDictInfoEnumeration.html' title='Multiple used in 4 places.'>AspellDictInfoEnumeration</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L93' name='L93'></a>  93 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *(*<a href='../Y/mc_aspell_string_enumeration_next.html' title='Multiple used in 3 places.'>mc_aspell_string_enumeration_next</a>) (<a href='../Y/AspellStringEnumeration.html' title='Multiple used in 4 places.'>AspellStringEnumeration</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L94' name='L94'></a>  94 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong> (*<a href='../Y/mc_delete_aspell_dict_info_enumeration.html' title='Multiple used in 3 places.'>mc_delete_aspell_dict_info_enumeration</a>) (<a href='../Y/AspellDictInfoEnumeration.html' title='Multiple used in 4 places.'>AspellDictInfoEnumeration</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L95' name='L95'></a>  95 <strong class='reserved'>static</strong> <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> (*<a href='../Y/mc_aspell_word_list_size.html' title='Multiple used in 3 places.'>mc_aspell_word_list_size</a>) (<strong class='reserved'>const</strong> <a href='../Y/AspellWordList.html' title='Multiple used in 4 places.'>AspellWordList</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L96' name='L96'></a>  96 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/AspellError.html' title='Multiple used in 2 places.'>AspellError</a> *(*<a href='../Y/mc_aspell_error.html' title='Multiple used in 3 places.'>mc_aspell_error</a>) (<strong class='reserved'>const</strong> <a href='../Y/AspellCanHaveError.html' title='Multiple used in 8 places.'>AspellCanHaveError</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L97' name='L97'></a>  97 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> (*<a href='../Y/mc_aspell_speller_add_to_personal.html' title='Multiple used in 3 places.'>mc_aspell_speller_add_to_personal</a>) (<a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>,
+<a id='L98' name='L98'></a>  98                                                  <strong class='reserved'>int</strong> <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>);
+<a id='L99' name='L99'></a>  99 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> (*<a href='../Y/mc_aspell_speller_save_all_word_lists.html' title='Multiple used in 3 places.'>mc_aspell_speller_save_all_word_lists</a>) (<a href='../Y/AspellSpeller.html' title='Multiple used in 9 places.'>AspellSpeller</a> * <a href='../Y/ths.html' title='Multiple used in 21 places.'>ths</a>);
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong>
+<a id='L102' name='L102'></a> 102 <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/code.html' title='Multiple used in 84 places.'>code</a>;
+<a id='L104' name='L104'></a> 104     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>;
+<a id='L105' name='L105'></a> 105 <em class='brace'>}</em> <a href='../Y/spell_codes_map.html' title='Multiple used in 4 places.'>spell_codes_map</a>[] =
+<a id='L106' name='L106'></a> 106 <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107     <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L108' name='L108'></a> 108     <em class='brace'>{</em>"br", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Breton")<em class='brace'>}</em>,
+<a id='L109' name='L109'></a> 109     <em class='brace'>{</em>"cs", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Czech")<em class='brace'>}</em>,
+<a id='L110' name='L110'></a> 110     <em class='brace'>{</em>"cy", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Welsh")<em class='brace'>}</em>,
+<a id='L111' name='L111'></a> 111     <em class='brace'>{</em>"da", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Danish")<em class='brace'>}</em>,
+<a id='L112' name='L112'></a> 112     <em class='brace'>{</em>"de", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("German")<em class='brace'>}</em>,
+<a id='L113' name='L113'></a> 113     <em class='brace'>{</em>"el", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Greek")<em class='brace'>}</em>,
+<a id='L114' name='L114'></a> 114     <em class='brace'>{</em>"en", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("English")<em class='brace'>}</em>,
+<a id='L115' name='L115'></a> 115     <em class='brace'>{</em>"en_GB", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("British English")<em class='brace'>}</em>,
+<a id='L116' name='L116'></a> 116     <em class='brace'>{</em>"en_CA", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Canadian English")<em class='brace'>}</em>,
+<a id='L117' name='L117'></a> 117     <em class='brace'>{</em>"en_US", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("American English")<em class='brace'>}</em>,
+<a id='L118' name='L118'></a> 118     <em class='brace'>{</em>"eo", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Esperanto")<em class='brace'>}</em>,
+<a id='L119' name='L119'></a> 119     <em class='brace'>{</em>"es", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Spanish")<em class='brace'>}</em>,
+<a id='L120' name='L120'></a> 120     <em class='brace'>{</em>"fo", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Faroese")<em class='brace'>}</em>,
+<a id='L121' name='L121'></a> 121     <em class='brace'>{</em>"fr", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("French")<em class='brace'>}</em>,
+<a id='L122' name='L122'></a> 122     <em class='brace'>{</em>"it", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Italian")<em class='brace'>}</em>,
+<a id='L123' name='L123'></a> 123     <em class='brace'>{</em>"nl", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Dutch")<em class='brace'>}</em>,
+<a id='L124' name='L124'></a> 124     <em class='brace'>{</em>"no", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Norwegian")<em class='brace'>}</em>,
+<a id='L125' name='L125'></a> 125     <em class='brace'>{</em>"pl", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Polish")<em class='brace'>}</em>,
+<a id='L126' name='L126'></a> 126     <em class='brace'>{</em>"pt", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Portuguese")<em class='brace'>}</em>,
+<a id='L127' name='L127'></a> 127     <em class='brace'>{</em>"ro", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Romanian")<em class='brace'>}</em>,
+<a id='L128' name='L128'></a> 128     <em class='brace'>{</em>"ru", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Russian")<em class='brace'>}</em>,
+<a id='L129' name='L129'></a> 129     <em class='brace'>{</em>"sk", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Slovak")<em class='brace'>}</em>,
+<a id='L130' name='L130'></a> 130     <em class='brace'>{</em>"sv", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Swedish")<em class='brace'>}</em>,
+<a id='L131' name='L131'></a> 131     <em class='brace'>{</em>"uk", <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Ukrainian")<em class='brace'>}</em>,
+<a id='L132' name='L132'></a> 132     <em class='brace'>{</em><a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a><em class='brace'>}</em>
+<a id='L133' name='L133'></a> 133     <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L134' name='L134'></a> 134 <em class='brace'>}</em>;
+<a id='L135' name='L135'></a> 135 
+<a id='L136' name='L136'></a> 136 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L138' name='L138'></a> 138 <em class='comment'>/**</em>
+<a id='L139' name='L139'></a> 139 <em class='comment'> * Found the language name by language code. For example: en_US -&gt; American English.</em>
+<a id='L140' name='L140'></a> 140 <em class='comment'> *</em>
+<a id='L141' name='L141'></a> 141 <em class='comment'> * @param code Short name of the language (ru, en, pl, uk, etc...)</em>
+<a id='L142' name='L142'></a> 142 <em class='comment'> * @return language name</em>
+<a id='L143' name='L143'></a> 143 <em class='comment'> */</em>
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *
+<a id='L146' name='L146'></a> 146 <a href='../S/src--editor--spell.c.html#L416' title='Referred from 416 in src/editor/spell.c.'>spell_decode_lang</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/code.html' title='Multiple used in 84 places.'>code</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L167'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+146 src/editor/spell.c'  /> */</em>
+<a id='L147' name='L147'></a> 147 <em class='brace'>{</em>
+<a id='L148' name='L148'></a> 148     <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/spell_codes_map.html' title='Multiple used in 4 places.'>spell_codes_map</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/code.html' title='Multiple used in 84 places.'>code</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L151' name='L151'></a> 151     <em class='brace'>{</em>
+<a id='L152' name='L152'></a> 152         <strong class='reserved'>if</strong> (<a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/spell_codes_map.html' title='Multiple used in 4 places.'>spell_codes_map</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/code.html' title='Multiple used in 84 places.'>code</a>, <a href='../Y/code.html' title='Multiple used in 84 places.'>code</a>) == 0)
+<a id='L153' name='L153'></a> 153             <strong class='reserved'>return</strong> <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/spell_codes_map.html' title='Multiple used in 4 places.'>spell_codes_map</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>);
+<a id='L154' name='L154'></a> 154     <em class='brace'>}</em>
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <strong class='reserved'>return</strong> <a href='../Y/code.html' title='Multiple used in 84 places.'>code</a>;
+<a id='L157' name='L157'></a> 157 <em class='brace'>}</em>
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L160' name='L160'></a> 160 <em class='comment'>/**</em>
+<a id='L161' name='L161'></a> 161 <em class='comment'> * Checks if aspell library and symbols are available.</em>
+<a id='L162' name='L162'></a> 162 <em class='comment'> *</em>
+<a id='L163' name='L163'></a> 163 <em class='comment'> * @return FALSE or error</em>
+<a id='L164' name='L164'></a> 164 <em class='comment'> */</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L167' name='L167'></a> 167 <a href='../S/src--editor--spell.c.html#L307' title='Referred from 307 in src/editor/spell.c.'>spell_available</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L146'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L293'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+167 src/editor/spell.c'  /> */</em>
+<a id='L168' name='L168'></a> 168 <em class='brace'>{</em>
+<a id='L169' name='L169'></a> 169     <a href='../Y/gchar.html' title='Multiple used in 324 places.'>gchar</a> *<a href='../Y/spell_module_fname.html' title='Multiple used in 4 places.'>spell_module_fname</a>;
+<a id='L170' name='L170'></a> 170     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172     <strong class='reserved'>if</strong> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L173' name='L173'></a> 173         <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175     <a href='../Y/spell_module_fname.html' title='Multiple used in 4 places.'>spell_module_fname</a> = <a href='../Y/g_module_build_path.html' title='Multiple used in 2 places.'>g_module_build_path</a> (<a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, "libaspell");
+<a id='L176' name='L176'></a> 176     <a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a> = <a href='../Y/g_module_open.html' title='Multiple used in 3 places.'>g_module_open</a> (<a href='../Y/spell_module_fname.html' title='Multiple used in 4 places.'>spell_module_fname</a>, <a href='../Y/G_MODULE_BIND_LAZY.html' title='Multiple used in 3 places.'>G_MODULE_BIND_LAZY</a>);
+<a id='L177' name='L177'></a> 177 
+<a id='L178' name='L178'></a> 178     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/spell_module_fname.html' title='Multiple used in 4 places.'>spell_module_fname</a>);
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>if</strong> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L181' name='L181'></a> 181         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L182' name='L182'></a> 182 
+<a id='L183' name='L183'></a> 183     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "new_aspell_config", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_new_aspell_config.html' title='Multiple used in 3 places.'>mc_new_aspell_config</a>))
+<a id='L184' name='L184'></a> 184         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L185' name='L185'></a> 185 
+<a id='L186' name='L186'></a> 186     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_dict_info_list_elements",
+<a id='L187' name='L187'></a> 187                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_dict_info_list_elements.html' title='Multiple used in 3 places.'>mc_aspell_dict_info_list_elements</a>))
+<a id='L188' name='L188'></a> 188         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L189' name='L189'></a> 189 
+<a id='L190' name='L190'></a> 190     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_dict_info_enumeration_next",
+<a id='L191' name='L191'></a> 191                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_dict_info_enumeration_next.html' title='Multiple used in 3 places.'>mc_aspell_dict_info_enumeration_next</a>))
+<a id='L192' name='L192'></a> 192         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "new_aspell_speller", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_new_aspell_speller.html' title='Multiple used in 4 places.'>mc_new_aspell_speller</a>))
+<a id='L195' name='L195'></a> 195         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_error_number", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_error_number.html' title='Multiple used in 3 places.'>mc_aspell_error_number</a>))
+<a id='L198' name='L198'></a> 198         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_speller_error_message",
+<a id='L201' name='L201'></a> 201                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_speller_error_message.html' title='Multiple used in 4 places.'>mc_aspell_speller_error_message</a>))
+<a id='L202' name='L202'></a> 202         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_speller_error", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_speller_error.html' title='Multiple used in 4 places.'>mc_aspell_speller_error</a>))
+<a id='L205' name='L205'></a> 205         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_error", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_error.html' title='Multiple used in 3 places.'>mc_aspell_error</a>))
+<a id='L208' name='L208'></a> 208         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L209' name='L209'></a> 209 
+<a id='L210' name='L210'></a> 210     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "to_aspell_speller", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_to_aspell_speller.html' title='Multiple used in 4 places.'>mc_to_aspell_speller</a>))
+<a id='L211' name='L211'></a> 211         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_speller_check", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_speller_check.html' title='Multiple used in 3 places.'>mc_aspell_speller_check</a>))
+<a id='L214' name='L214'></a> 214         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a>
+<a id='L217' name='L217'></a> 217         (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_speller_suggest", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_speller_suggest.html' title='Multiple used in 3 places.'>mc_aspell_speller_suggest</a>))
+<a id='L218' name='L218'></a> 218         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L219' name='L219'></a> 219 
+<a id='L220' name='L220'></a> 220     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a>
+<a id='L221' name='L221'></a> 221         (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_word_list_elements", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_word_list_elements.html' title='Multiple used in 3 places.'>mc_aspell_word_list_elements</a>))
+<a id='L222' name='L222'></a> 222         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_string_enumeration_next",
+<a id='L225' name='L225'></a> 225                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_string_enumeration_next.html' title='Multiple used in 3 places.'>mc_aspell_string_enumeration_next</a>))
+<a id='L226' name='L226'></a> 226         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a>
+<a id='L229' name='L229'></a> 229         (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_config_replace", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_config_replace.html' title='Multiple used in 5 places.'>mc_aspell_config_replace</a>))
+<a id='L230' name='L230'></a> 230         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_error_message", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_error_message.html' title='Multiple used in 3 places.'>mc_aspell_error_message</a>))
+<a id='L233' name='L233'></a> 233         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a>
+<a id='L236' name='L236'></a> 236         (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "delete_aspell_speller", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_delete_aspell_speller.html' title='Multiple used in 4 places.'>mc_delete_aspell_speller</a>))
+<a id='L237' name='L237'></a> 237         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "delete_aspell_config", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_delete_aspell_config.html' title='Multiple used in 3 places.'>mc_delete_aspell_config</a>))
+<a id='L240' name='L240'></a> 240         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L241' name='L241'></a> 241 
+<a id='L242' name='L242'></a> 242     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "delete_aspell_string_enumeration",
+<a id='L243' name='L243'></a> 243                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_delete_aspell_string_enumeration.html' title='Multiple used in 3 places.'>mc_delete_aspell_string_enumeration</a>))
+<a id='L244' name='L244'></a> 244         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "get_aspell_dict_info_list",
+<a id='L247' name='L247'></a> 247                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_get_aspell_dict_info_list.html' title='Multiple used in 3 places.'>mc_get_aspell_dict_info_list</a>))
+<a id='L248' name='L248'></a> 248         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "delete_aspell_can_have_error",
+<a id='L251' name='L251'></a> 251                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_delete_aspell_can_have_error.html' title='Multiple used in 4 places.'>mc_delete_aspell_can_have_error</a>))
+<a id='L252' name='L252'></a> 252         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "delete_aspell_dict_info_enumeration",
+<a id='L255' name='L255'></a> 255                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_delete_aspell_dict_info_enumeration.html' title='Multiple used in 3 places.'>mc_delete_aspell_dict_info_enumeration</a>))
+<a id='L256' name='L256'></a> 256         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L257' name='L257'></a> 257 
+<a id='L258' name='L258'></a> 258     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a>
+<a id='L259' name='L259'></a> 259         (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_config_retrieve", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_config_retrieve.html' title='Multiple used in 3 places.'>mc_aspell_config_retrieve</a>))
+<a id='L260' name='L260'></a> 260         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L261' name='L261'></a> 261 
+<a id='L262' name='L262'></a> 262     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a>
+<a id='L263' name='L263'></a> 263         (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_word_list_size", (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_word_list_size.html' title='Multiple used in 3 places.'>mc_aspell_word_list_size</a>))
+<a id='L264' name='L264'></a> 264         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L265' name='L265'></a> 265 
+<a id='L266' name='L266'></a> 266     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_speller_add_to_personal",
+<a id='L267' name='L267'></a> 267                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_speller_add_to_personal.html' title='Multiple used in 3 places.'>mc_aspell_speller_add_to_personal</a>))
+<a id='L268' name='L268'></a> 268         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L269' name='L269'></a> 269 
+<a id='L270' name='L270'></a> 270     <strong class='reserved'>if</strong> (!<a href='../Y/g_module_symbol.html' title='Multiple used in 30 places.'>g_module_symbol</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>, "aspell_speller_save_all_word_lists",
+<a id='L271' name='L271'></a> 271                           (<strong class='reserved'>void</strong> *) &amp;<a href='../Y/mc_aspell_speller_save_all_word_lists.html' title='Multiple used in 3 places.'>mc_aspell_speller_save_all_word_lists</a>))
+<a id='L272' name='L272'></a> 272         <strong class='reserved'>goto</strong> <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>;
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274     <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L275' name='L275'></a> 275 
+<a id='L276' name='L276'></a> 276   <a href='../Y/error_ret.html' title='Multiple used in 26 places.'>error_ret</a>:
+<a id='L277' name='L277'></a> 277     <strong class='reserved'>if</strong> (!<a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>)
+<a id='L278' name='L278'></a> 278     <em class='brace'>{</em>
+<a id='L279' name='L279'></a> 279         <a href='../Y/g_module_close.html' title='Multiple used in 3 places.'>g_module_close</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>);
+<a id='L280' name='L280'></a> 280         <a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L281' name='L281'></a> 281     <em class='brace'>}</em>
+<a id='L282' name='L282'></a> 282     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L283' name='L283'></a> 283 <em class='brace'>}</em>
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L286' name='L286'></a> 286 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L287' name='L287'></a> 287 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L288' name='L288'></a> 288 <em class='comment'>/**</em>
+<a id='L289' name='L289'></a> 289 <em class='comment'> * Initialization of Aspell support.</em>
+<a id='L290' name='L290'></a> 290 <em class='comment'> */</em>
+<a id='L291' name='L291'></a> 291 
+<a id='L292' name='L292'></a> 292 <strong class='reserved'>void</strong>
+<a id='L293' name='L293'></a> 293 <a href='../R/aspell_init.html' title='Multiple referred from 2 places.'>aspell_init</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L167'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L337'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+293 src/editor/spell.c'  /> */</em>
+<a id='L294' name='L294'></a> 294 <em class='brace'>{</em>
+<a id='L295' name='L295'></a> 295     <a href='../Y/AspellCanHaveError.html' title='Multiple used in 8 places.'>AspellCanHaveError</a> *<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L296' name='L296'></a> 296 
+<a id='L297' name='L297'></a> 297     <strong class='reserved'>if</strong> (<a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/spell_language.html' title='Multiple used in 11 places.'>spell_language</a>, "NONE") == 0)
+<a id='L298' name='L298'></a> 298         <strong class='reserved'>return</strong>;
+<a id='L299' name='L299'></a> 299 
+<a id='L300' name='L300'></a> 300     <strong class='reserved'>if</strong> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L301' name='L301'></a> 301         <strong class='reserved'>return</strong>;
+<a id='L302' name='L302'></a> 302 
+<a id='L303' name='L303'></a> 303     <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a> = <a href='../Y/g_try_malloc.html' title='Multiple used in 10 places.'>g_try_malloc</a> (<strong class='reserved'>sizeof</strong> (<a href='../S/src--editor--spell.c.html#L61' title='Defined at 61 in src/editor/spell.c.'>spell_t</a>));
+<a id='L304' name='L304'></a> 304     <strong class='reserved'>if</strong> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L305' name='L305'></a> 305         <strong class='reserved'>return</strong>;
+<a id='L306' name='L306'></a> 306 
+<a id='L307' name='L307'></a> 307     <strong class='reserved'>if</strong> (!<a href='../S/src--editor--spell.c.html#L167' title='Defined at 167 in src/editor/spell.c.'>spell_available</a> ())
+<a id='L308' name='L308'></a> 308     <em class='brace'>{</em>
+<a id='L309' name='L309'></a> 309         <a href='../S/lib--util.h.html#L25' title='Defined at 25 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>);
+<a id='L310' name='L310'></a> 310         <strong class='reserved'>return</strong>;
+<a id='L311' name='L311'></a> 311     <em class='brace'>}</em>
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313     <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a> = <a href='../Y/mc_new_aspell_config.html' title='Multiple used in 3 places.'>mc_new_aspell_config</a> ();
+<a id='L314' name='L314'></a> 314     <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L315' name='L315'></a> 315 
+<a id='L316' name='L316'></a> 316     <strong class='reserved'>if</strong> (<a href='../Y/spell_language.html' title='Multiple used in 11 places.'>spell_language</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L317' name='L317'></a> 317         <a href='../Y/mc_aspell_config_replace.html' title='Multiple used in 5 places.'>mc_aspell_config_replace</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>, "lang", <a href='../Y/spell_language.html' title='Multiple used in 11 places.'>spell_language</a>);
+<a id='L318' name='L318'></a> 318 
+<a id='L319' name='L319'></a> 319     <a href='../Y/error.html' title='Multiple used in 271 places.'>error</a> = <a href='../Y/mc_new_aspell_speller.html' title='Multiple used in 4 places.'>mc_new_aspell_speller</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>);
+<a id='L320' name='L320'></a> 320 
+<a id='L321' name='L321'></a> 321     <strong class='reserved'>if</strong> (<a href='../Y/mc_aspell_error_number.html' title='Multiple used in 3 places.'>mc_aspell_error_number</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>) == 0)
+<a id='L322' name='L322'></a> 322         <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a> = <a href='../Y/mc_to_aspell_speller.html' title='Multiple used in 4 places.'>mc_to_aspell_speller</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>);
+<a id='L323' name='L323'></a> 323     <strong class='reserved'>else</strong>
+<a id='L324' name='L324'></a> 324     <em class='brace'>{</em>
+<a id='L325' name='L325'></a> 325         <a href='../S/src--editor--edit-impl.h.html#L76' title='Defined at 76 in src/editor/edit-impl.h.'>edit_error_dialog</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Error"), <a href='../Y/mc_aspell_error_message.html' title='Multiple used in 3 places.'>mc_aspell_error_message</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>));
+<a id='L326' name='L326'></a> 326         <a href='../Y/mc_delete_aspell_can_have_error.html' title='Multiple used in 4 places.'>mc_delete_aspell_can_have_error</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>);
+<a id='L327' name='L327'></a> 327         <a href='../S/src--editor--spell.c.html#L337' title='Defined at 337 in src/editor/spell.c.'>aspell_clean</a> ();
+<a id='L328' name='L328'></a> 328     <em class='brace'>}</em>
+<a id='L329' name='L329'></a> 329 <em class='brace'>}</em>
+<a id='L330' name='L330'></a> 330 
+<a id='L331' name='L331'></a> 331 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L332' name='L332'></a> 332 <em class='comment'>/**</em>
+<a id='L333' name='L333'></a> 333 <em class='comment'> * Deinitialization of Aspell support.</em>
+<a id='L334' name='L334'></a> 334 <em class='comment'> */</em>
+<a id='L335' name='L335'></a> 335 
+<a id='L336' name='L336'></a> 336 <strong class='reserved'>void</strong>
+<a id='L337' name='L337'></a> 337 <a href='../R/aspell_clean.html' title='Multiple referred from 3 places.'>aspell_clean</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L293'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L363'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+337 src/editor/spell.c'  /> */</em>
+<a id='L338' name='L338'></a> 338 <em class='brace'>{</em>
+<a id='L339' name='L339'></a> 339     <strong class='reserved'>if</strong> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L340' name='L340'></a> 340         <strong class='reserved'>return</strong>;
+<a id='L341' name='L341'></a> 341 
+<a id='L342' name='L342'></a> 342     <strong class='reserved'>if</strong> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L343' name='L343'></a> 343         <a href='../Y/mc_delete_aspell_speller.html' title='Multiple used in 4 places.'>mc_delete_aspell_speller</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>);
+<a id='L344' name='L344'></a> 344 
+<a id='L345' name='L345'></a> 345     <strong class='reserved'>if</strong> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L346' name='L346'></a> 346         <a href='../Y/mc_delete_aspell_config.html' title='Multiple used in 3 places.'>mc_delete_aspell_config</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>);
+<a id='L347' name='L347'></a> 347 
+<a id='L348' name='L348'></a> 348     <a href='../S/lib--util.h.html#L25' title='Defined at 25 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>);
+<a id='L349' name='L349'></a> 349 
+<a id='L350' name='L350'></a> 350     <a href='../Y/g_module_close.html' title='Multiple used in 3 places.'>g_module_close</a> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a>);
+<a id='L351' name='L351'></a> 351     <a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L352' name='L352'></a> 352 <em class='brace'>}</em>
+<a id='L353' name='L353'></a> 353 
+<a id='L354' name='L354'></a> 354 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L355' name='L355'></a> 355 <em class='comment'>/**</em>
+<a id='L356' name='L356'></a> 356 <em class='comment'> * Get array of available languages.</em>
+<a id='L357' name='L357'></a> 357 <em class='comment'> *</em>
+<a id='L358' name='L358'></a> 358 <em class='comment'> * @param lang_list Array of languages. Must be cleared before use</em>
+<a id='L359' name='L359'></a> 359 <em class='comment'> * @return language list length</em>
+<a id='L360' name='L360'></a> 360 <em class='comment'> */</em>
+<a id='L361' name='L361'></a> 361 
+<a id='L362' name='L362'></a> 362 <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong>
+<a id='L363' name='L363'></a> 363 <a href='../R/aspell_get_lang_list.html' title='Multiple referred from 2 places.'>aspell_get_lang_list</a> (<a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> * <a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>)
+     <em class='comment'>/* <a href='#L337'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L397'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+363 src/editor/spell.c'  /> */</em>
+<a id='L364' name='L364'></a> 364 <em class='brace'>{</em>
+<a id='L365' name='L365'></a> 365     <a href='../Y/AspellDictInfoList.html' title='Multiple used in 3 places.'>AspellDictInfoList</a> *<a href='../Y/dlist.html' title='Multiple used in 3 places.'>dlist</a>;
+<a id='L366' name='L366'></a> 366     <a href='../Y/AspellDictInfoEnumeration.html' title='Multiple used in 4 places.'>AspellDictInfoEnumeration</a> *<a href='../Y/elem.html' title='Multiple used in 4 places.'>elem</a>;
+<a id='L367' name='L367'></a> 367     <strong class='reserved'>const</strong> <a href='../Y/AspellDictInfo.html' title='Multiple used in 2 places.'>AspellDictInfo</a> *<a href='../Y/entry.html' title='Multiple used in 342 places.'>entry</a>;
+<a id='L368' name='L368'></a> 368     <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0;
+<a id='L369' name='L369'></a> 369 
+<a id='L370' name='L370'></a> 370     <strong class='reserved'>if</strong> (<a href='../Y/spell_module.html' title='Multiple used in 34 places.'>spell_module</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L371' name='L371'></a> 371         <strong class='reserved'>return</strong> 0;
+<a id='L372' name='L372'></a> 372 
+<a id='L373' name='L373'></a> 373     <em class='comment'>/* the returned pointer should _not_ need to be deleted */</em>
+<a id='L374' name='L374'></a> 374     <a href='../Y/dlist.html' title='Multiple used in 3 places.'>dlist</a> = <a href='../Y/mc_get_aspell_dict_info_list.html' title='Multiple used in 3 places.'>mc_get_aspell_dict_info_list</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>);
+<a id='L375' name='L375'></a> 375     <a href='../Y/elem.html' title='Multiple used in 4 places.'>elem</a> = <a href='../Y/mc_aspell_dict_info_list_elements.html' title='Multiple used in 3 places.'>mc_aspell_dict_info_list_elements</a> (<a href='../Y/dlist.html' title='Multiple used in 3 places.'>dlist</a>);
+<a id='L376' name='L376'></a> 376 
+<a id='L377' name='L377'></a> 377     <strong class='reserved'>while</strong> ((<a href='../Y/entry.html' title='Multiple used in 342 places.'>entry</a> = <a href='../Y/mc_aspell_dict_info_enumeration_next.html' title='Multiple used in 3 places.'>mc_aspell_dict_info_enumeration_next</a> (<a href='../Y/elem.html' title='Multiple used in 4 places.'>elem</a>)) != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L378' name='L378'></a> 378         <strong class='reserved'>if</strong> (<a href='../Y/entry.html' title='Multiple used in 342 places.'>entry</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L379' name='L379'></a> 379         <em class='brace'>{</em>
+<a id='L380' name='L380'></a> 380             <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>, <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (<a href='../Y/entry.html' title='Multiple used in 342 places.'>entry</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>));
+<a id='L381' name='L381'></a> 381             <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++;
+<a id='L382' name='L382'></a> 382         <em class='brace'>}</em>
+<a id='L383' name='L383'></a> 383 
+<a id='L384' name='L384'></a> 384     <a href='../Y/mc_delete_aspell_dict_info_enumeration.html' title='Multiple used in 3 places.'>mc_delete_aspell_dict_info_enumeration</a> (<a href='../Y/elem.html' title='Multiple used in 4 places.'>elem</a>);
+<a id='L385' name='L385'></a> 385 
+<a id='L386' name='L386'></a> 386     <strong class='reserved'>return</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L387' name='L387'></a> 387 <em class='brace'>}</em>
+<a id='L388' name='L388'></a> 388 
+<a id='L389' name='L389'></a> 389 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L390' name='L390'></a> 390 <em class='comment'>/**</em>
+<a id='L391' name='L391'></a> 391 <em class='comment'> * Clear the array of languages.</em>
+<a id='L392' name='L392'></a> 392 <em class='comment'> *</em>
+<a id='L393' name='L393'></a> 393 <em class='comment'> * @param array Array of languages</em>
+<a id='L394' name='L394'></a> 394 <em class='comment'> */</em>
+<a id='L395' name='L395'></a> 395 
+<a id='L396' name='L396'></a> 396 <strong class='reserved'>void</strong>
+<a id='L397' name='L397'></a> 397 <a href='../R/aspell_array_clean.html' title='Multiple referred from 2 places.'>aspell_array_clean</a> (<a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> * <a href='../Y/array.html' title='Multiple used in 8 places.'>array</a>)
+     <em class='comment'>/* <a href='#L363'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L411'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+397 src/editor/spell.c'  /> */</em>
+<a id='L398' name='L398'></a> 398 <em class='brace'>{</em>
+<a id='L399' name='L399'></a> 399     <strong class='reserved'>if</strong> (<a href='../Y/array.html' title='Multiple used in 8 places.'>array</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L400' name='L400'></a> 400         <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/array.html' title='Multiple used in 8 places.'>array</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L401' name='L401'></a> 401 <em class='brace'>}</em>
+<a id='L402' name='L402'></a> 402 
+<a id='L403' name='L403'></a> 403 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L404' name='L404'></a> 404 <em class='comment'>/**</em>
+<a id='L405' name='L405'></a> 405 <em class='comment'> * Get the current language name.</em>
+<a id='L406' name='L406'></a> 406 <em class='comment'> *</em>
+<a id='L407' name='L407'></a> 407 <em class='comment'> * @return language name</em>
+<a id='L408' name='L408'></a> 408 <em class='comment'> */</em>
+<a id='L409' name='L409'></a> 409 
+<a id='L410' name='L410'></a> 410 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *
+<a id='L411' name='L411'></a> 411 <a href='../R/aspell_get_lang.html' title='Multiple referred from 2 places.'>aspell_get_lang</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L397'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L428'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+411 src/editor/spell.c'  /> */</em>
+<a id='L412' name='L412'></a> 412 <em class='brace'>{</em>
+<a id='L413' name='L413'></a> 413     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/code.html' title='Multiple used in 84 places.'>code</a>;
+<a id='L414' name='L414'></a> 414 
+<a id='L415' name='L415'></a> 415     <a href='../Y/code.html' title='Multiple used in 84 places.'>code</a> = <a href='../Y/mc_aspell_config_retrieve.html' title='Multiple used in 3 places.'>mc_aspell_config_retrieve</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>, "lang");
+<a id='L416' name='L416'></a> 416     <strong class='reserved'>return</strong> <a href='../S/src--editor--spell.c.html#L146' title='Defined at 146 in src/editor/spell.c.'>spell_decode_lang</a> (<a href='../Y/code.html' title='Multiple used in 84 places.'>code</a>);
+<a id='L417' name='L417'></a> 417 <em class='brace'>}</em>
+<a id='L418' name='L418'></a> 418 
+<a id='L419' name='L419'></a> 419 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L420' name='L420'></a> 420 <em class='comment'>/**</em>
+<a id='L421' name='L421'></a> 421 <em class='comment'> * Set the language.</em>
+<a id='L422' name='L422'></a> 422 <em class='comment'> *</em>
+<a id='L423' name='L423'></a> 423 <em class='comment'> * @param lang Language name</em>
+<a id='L424' name='L424'></a> 424 <em class='comment'> * @return FALSE or error</em>
+<a id='L425' name='L425'></a> 425 <em class='comment'> */</em>
+<a id='L426' name='L426'></a> 426 
+<a id='L427' name='L427'></a> 427 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L428' name='L428'></a> 428 <a href='../R/aspell_set_lang.html' title='Multiple referred from 2 places.'>aspell_set_lang</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/lang.html' title='Multiple used in 21 places.'>lang</a>)
+     <em class='comment'>/* <a href='#L411'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L476'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+428 src/editor/spell.c'  /> */</em>
+<a id='L429' name='L429'></a> 429 <em class='brace'>{</em>
+<a id='L430' name='L430'></a> 430     <strong class='reserved'>if</strong> (<a href='../Y/lang.html' title='Multiple used in 21 places.'>lang</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L431' name='L431'></a> 431     <em class='brace'>{</em>
+<a id='L432' name='L432'></a> 432         <a href='../Y/AspellCanHaveError.html' title='Multiple used in 8 places.'>AspellCanHaveError</a> *<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>;
+<a id='L433' name='L433'></a> 433         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/spell_codeset.html' title='Multiple used in 4 places.'>spell_codeset</a>;
+<a id='L434' name='L434'></a> 434 
+<a id='L435' name='L435'></a> 435         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/spell_language.html' title='Multiple used in 11 places.'>spell_language</a>);
+<a id='L436' name='L436'></a> 436         <a href='../Y/spell_language.html' title='Multiple used in 11 places.'>spell_language</a> = <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (<a href='../Y/lang.html' title='Multiple used in 21 places.'>lang</a>);
+<a id='L437' name='L437'></a> 437 
+<a id='L438' name='L438'></a> 438 <em class='sharp'>#ifdef</em> <a href='../S/tests--lib--vfs--tempdir.c.html#L31' title='Defined at 31 in tests/lib/vfs/tempdir.c.'>HAVE_CHARSET</a>
+<a id='L439' name='L439'></a> 439         <strong class='reserved'>if</strong> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/source_codepage.html' title='Multiple used in 30 places.'>source_codepage</a> &gt; 0)
+<a id='L440' name='L440'></a> 440             <a href='../Y/spell_codeset.html' title='Multiple used in 4 places.'>spell_codeset</a> = <a href='../S/lib--charsets.c.html#L240' title='Defined at 240 in lib/charsets.c.'>get_codepage_id</a> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/source_codepage.html' title='Multiple used in 30 places.'>source_codepage</a>);
+<a id='L441' name='L441'></a> 441         <strong class='reserved'>else</strong>
+<a id='L442' name='L442'></a> 442 <em class='sharp'>#endif</em>
+<a id='L443' name='L443'></a> 443             <a href='../Y/spell_codeset.html' title='Multiple used in 4 places.'>spell_codeset</a> = <a href='../S/lib--strutil--strutil.c.html#L378' title='Defined at 378 in lib/strutil/strutil.c.'>str_detect_termencoding</a> ();
+<a id='L444' name='L444'></a> 444 
+<a id='L445' name='L445'></a> 445         <a href='../Y/mc_aspell_config_replace.html' title='Multiple used in 5 places.'>mc_aspell_config_replace</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>, "lang", <a href='../Y/lang.html' title='Multiple used in 21 places.'>lang</a>);
+<a id='L446' name='L446'></a> 446         <a href='../Y/mc_aspell_config_replace.html' title='Multiple used in 5 places.'>mc_aspell_config_replace</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>, "encoding", <a href='../Y/spell_codeset.html' title='Multiple used in 4 places.'>spell_codeset</a>);
+<a id='L447' name='L447'></a> 447 
+<a id='L448' name='L448'></a> 448         <em class='comment'>/* the returned pointer should _not_ need to be deleted */</em>
+<a id='L449' name='L449'></a> 449         <strong class='reserved'>if</strong> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L450' name='L450'></a> 450             <a href='../Y/mc_delete_aspell_speller.html' title='Multiple used in 4 places.'>mc_delete_aspell_speller</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>);
+<a id='L451' name='L451'></a> 451 
+<a id='L452' name='L452'></a> 452         <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L453' name='L453'></a> 453 
+<a id='L454' name='L454'></a> 454         <a href='../Y/error.html' title='Multiple used in 271 places.'>error</a> = <a href='../Y/mc_new_aspell_speller.html' title='Multiple used in 4 places.'>mc_new_aspell_speller</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/config.html' title='Multiple used in 88 places.'>config</a>);
+<a id='L455' name='L455'></a> 455         <strong class='reserved'>if</strong> (<a href='../Y/mc_aspell_error.html' title='Multiple used in 3 places.'>mc_aspell_error</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>) != 0)
+<a id='L456' name='L456'></a> 456         <em class='brace'>{</em>
+<a id='L457' name='L457'></a> 457             <a href='../Y/mc_delete_aspell_can_have_error.html' title='Multiple used in 4 places.'>mc_delete_aspell_can_have_error</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>);
+<a id='L458' name='L458'></a> 458             <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L459' name='L459'></a> 459         <em class='brace'>}</em>
+<a id='L460' name='L460'></a> 460 
+<a id='L461' name='L461'></a> 461         <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a> = <a href='../Y/mc_to_aspell_speller.html' title='Multiple used in 4 places.'>mc_to_aspell_speller</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>);
+<a id='L462' name='L462'></a> 462     <em class='brace'>}</em>
+<a id='L463' name='L463'></a> 463     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L464' name='L464'></a> 464 <em class='brace'>}</em>
+<a id='L465' name='L465'></a> 465 
+<a id='L466' name='L466'></a> 466 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L467' name='L467'></a> 467 <em class='comment'>/**</em>
+<a id='L468' name='L468'></a> 468 <em class='comment'> * Check word.</em>
+<a id='L469' name='L469'></a> 469 <em class='comment'> *</em>
+<a id='L470' name='L470'></a> 470 <em class='comment'> * @param word Word for spell check</em>
+<a id='L471' name='L471'></a> 471 <em class='comment'> * @param word_size Word size (in bytes)</em>
+<a id='L472' name='L472'></a> 472 <em class='comment'> * @return FALSE if word is not in the dictionary</em>
+<a id='L473' name='L473'></a> 473 <em class='comment'> */</em>
+<a id='L474' name='L474'></a> 474 
+<a id='L475' name='L475'></a> 475 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L476' name='L476'></a> 476 <a href='../R/aspell_check.html' title='Multiple referred from 2 places.'>aspell_check</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>)
+     <em class='comment'>/* <a href='#L428'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L497'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+476 src/editor/spell.c'  /> */</em>
+<a id='L477' name='L477'></a> 477 <em class='brace'>{</em>
+<a id='L478' name='L478'></a> 478     <strong class='reserved'>int</strong> <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> = 0;
+<a id='L479' name='L479'></a> 479 
+<a id='L480' name='L480'></a> 480     <strong class='reserved'>if</strong> (<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L481' name='L481'></a> 481         <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> = <a href='../Y/mc_aspell_speller_check.html' title='Multiple used in 3 places.'>mc_aspell_speller_check</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>, <a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>);
+<a id='L482' name='L482'></a> 482 
+<a id='L483' name='L483'></a> 483     <strong class='reserved'>return</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> == 1);
+<a id='L484' name='L484'></a> 484 <em class='brace'>}</em>
+<a id='L485' name='L485'></a> 485 
+<a id='L486' name='L486'></a> 486 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L487' name='L487'></a> 487 <em class='comment'>/**</em>
+<a id='L488' name='L488'></a> 488 <em class='comment'> * Examine dictionaries and suggest possible words that may repalce the incorrect word.</em>
+<a id='L489' name='L489'></a> 489 <em class='comment'> *</em>
+<a id='L490' name='L490'></a> 490 <em class='comment'> * @param suggest array of words to iterate through</em>
+<a id='L491' name='L491'></a> 491 <em class='comment'> * @param word Word for spell check</em>
+<a id='L492' name='L492'></a> 492 <em class='comment'> * @param word_size Word size (in bytes)</em>
+<a id='L493' name='L493'></a> 493 <em class='comment'> * @return count of suggests for the word</em>
+<a id='L494' name='L494'></a> 494 <em class='comment'> */</em>
+<a id='L495' name='L495'></a> 495 
+<a id='L496' name='L496'></a> 496 <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong>
+<a id='L497' name='L497'></a> 497 <a href='../R/aspell_suggest.html' title='Multiple referred from 2 places.'>aspell_suggest</a> (<a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> * <a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>)
+     <em class='comment'>/* <a href='#L476'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L539'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+497 src/editor/spell.c'  /> */</em>
+<a id='L498' name='L498'></a> 498 <em class='brace'>{</em>
+<a id='L499' name='L499'></a> 499     <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a> = 0;
+<a id='L500' name='L500'></a> 500 
+<a id='L501' name='L501'></a> 501     <strong class='reserved'>if</strong> (<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; <a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L502' name='L502'></a> 502     <em class='brace'>{</em>
+<a id='L503' name='L503'></a> 503         <strong class='reserved'>const</strong> <a href='../Y/AspellWordList.html' title='Multiple used in 4 places.'>AspellWordList</a> *<a href='../Y/wordlist.html' title='Multiple used in 5 places.'>wordlist</a>;
+<a id='L504' name='L504'></a> 504 
+<a id='L505' name='L505'></a> 505         <a href='../Y/wordlist.html' title='Multiple used in 5 places.'>wordlist</a> = <a href='../Y/mc_aspell_speller_suggest.html' title='Multiple used in 3 places.'>mc_aspell_speller_suggest</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>, <a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>);
+<a id='L506' name='L506'></a> 506         <strong class='reserved'>if</strong> (<a href='../Y/wordlist.html' title='Multiple used in 5 places.'>wordlist</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L507' name='L507'></a> 507         <em class='brace'>{</em>
+<a id='L508' name='L508'></a> 508             <a href='../Y/AspellStringEnumeration.html' title='Multiple used in 4 places.'>AspellStringEnumeration</a> *<a href='../Y/elements.html' title='Multiple used in 4 places.'>elements</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L509' name='L509'></a> 509             <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L510' name='L510'></a> 510 
+<a id='L511' name='L511'></a> 511             <a href='../Y/elements.html' title='Multiple used in 4 places.'>elements</a> = <a href='../Y/mc_aspell_word_list_elements.html' title='Multiple used in 3 places.'>mc_aspell_word_list_elements</a> (<a href='../Y/wordlist.html' title='Multiple used in 5 places.'>wordlist</a>);
+<a id='L512' name='L512'></a> 512             <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a> = <a href='../Y/mc_aspell_word_list_size.html' title='Multiple used in 3 places.'>mc_aspell_word_list_size</a> (<a href='../Y/wordlist.html' title='Multiple used in 5 places.'>wordlist</a>);
+<a id='L513' name='L513'></a> 513 
+<a id='L514' name='L514'></a> 514             <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L515' name='L515'></a> 515             <em class='brace'>{</em>
+<a id='L516' name='L516'></a> 516                 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/cur_sugg_word.html' title='Multiple used in 4 places.'>cur_sugg_word</a>;
+<a id='L517' name='L517'></a> 517 
+<a id='L518' name='L518'></a> 518                 <a href='../Y/cur_sugg_word.html' title='Multiple used in 4 places.'>cur_sugg_word</a> = <a href='../Y/mc_aspell_string_enumeration_next.html' title='Multiple used in 3 places.'>mc_aspell_string_enumeration_next</a> (<a href='../Y/elements.html' title='Multiple used in 4 places.'>elements</a>);
+<a id='L519' name='L519'></a> 519                 <strong class='reserved'>if</strong> (<a href='../Y/cur_sugg_word.html' title='Multiple used in 4 places.'>cur_sugg_word</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L520' name='L520'></a> 520                     <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>, <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (<a href='../Y/cur_sugg_word.html' title='Multiple used in 4 places.'>cur_sugg_word</a>));
+<a id='L521' name='L521'></a> 521             <em class='brace'>}</em>
+<a id='L522' name='L522'></a> 522 
+<a id='L523' name='L523'></a> 523             <a href='../Y/mc_delete_aspell_string_enumeration.html' title='Multiple used in 3 places.'>mc_delete_aspell_string_enumeration</a> (<a href='../Y/elements.html' title='Multiple used in 4 places.'>elements</a>);
+<a id='L524' name='L524'></a> 524         <em class='brace'>}</em>
+<a id='L525' name='L525'></a> 525     <em class='brace'>}</em>
+<a id='L526' name='L526'></a> 526 
+<a id='L527' name='L527'></a> 527     <strong class='reserved'>return</strong> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>;
+<a id='L528' name='L528'></a> 528 <em class='brace'>}</em>
+<a id='L529' name='L529'></a> 529 
+<a id='L530' name='L530'></a> 530 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L531' name='L531'></a> 531 <em class='comment'>/*</em>
+<a id='L532' name='L532'></a> 532 <em class='comment'> * Add word to personal dictionary.</em>
+<a id='L533' name='L533'></a> 533 <em class='comment'> *</em>
+<a id='L534' name='L534'></a> 534 <em class='comment'> * @param word Word for spell check</em>
+<a id='L535' name='L535'></a> 535 <em class='comment'> * @param word_size  Word size (in bytes)</em>
+<a id='L536' name='L536'></a> 536 <em class='comment'> * @return FALSE or error</em>
+<a id='L537' name='L537'></a> 537 <em class='comment'> */</em>
+<a id='L538' name='L538'></a> 538 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L539' name='L539'></a> 539 <a href='../R/aspell_add_to_dict.html' title='Multiple referred from 2 places.'>aspell_add_to_dict</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <strong class='reserved'>int</strong> <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>)
+     <em class='comment'>/* <a href='#L497'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L563'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+539 src/editor/spell.c'  /> */</em>
+<a id='L540' name='L540'></a> 540 <em class='brace'>{</em>
+<a id='L541' name='L541'></a> 541     <a href='../Y/mc_aspell_speller_add_to_personal.html' title='Multiple used in 3 places.'>mc_aspell_speller_add_to_personal</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>, <a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <a href='../Y/word_size.html' title='Multiple used in 12 places.'>word_size</a>);
+<a id='L542' name='L542'></a> 542 
+<a id='L543' name='L543'></a> 543     <strong class='reserved'>if</strong> (<a href='../Y/mc_aspell_speller_error.html' title='Multiple used in 4 places.'>mc_aspell_speller_error</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>) != 0)
+<a id='L544' name='L544'></a> 544     <em class='brace'>{</em>
+<a id='L545' name='L545'></a> 545         <a href='../S/src--editor--edit-impl.h.html#L76' title='Defined at 76 in src/editor/edit-impl.h.'>edit_error_dialog</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Error"), <a href='../Y/mc_aspell_speller_error_message.html' title='Multiple used in 4 places.'>mc_aspell_speller_error_message</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>));
+<a id='L546' name='L546'></a> 546         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L547' name='L547'></a> 547     <em class='brace'>}</em>
+<a id='L548' name='L548'></a> 548 
+<a id='L549' name='L549'></a> 549     <a href='../Y/mc_aspell_speller_save_all_word_lists.html' title='Multiple used in 3 places.'>mc_aspell_speller_save_all_word_lists</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>);
+<a id='L550' name='L550'></a> 550 
+<a id='L551' name='L551'></a> 551     <strong class='reserved'>if</strong> (<a href='../Y/mc_aspell_speller_error.html' title='Multiple used in 4 places.'>mc_aspell_speller_error</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>) != 0)
+<a id='L552' name='L552'></a> 552     <em class='brace'>{</em>
+<a id='L553' name='L553'></a> 553         <a href='../S/src--editor--edit-impl.h.html#L76' title='Defined at 76 in src/editor/edit-impl.h.'>edit_error_dialog</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Error"), <a href='../Y/mc_aspell_speller_error_message.html' title='Multiple used in 4 places.'>mc_aspell_speller_error_message</a> (<a href='../Y/global_speller.html' title='Multiple used in 35 places.'>global_speller</a>-&gt;<a href='../Y/speller.html' title='Multiple used in 19 places.'>speller</a>));
+<a id='L554' name='L554'></a> 554         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L555' name='L555'></a> 555     <em class='brace'>}</em>
+<a id='L556' name='L556'></a> 556 
+<a id='L557' name='L557'></a> 557     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L558' name='L558'></a> 558 <em class='brace'>}</em>
+<a id='L559' name='L559'></a> 559 
+<a id='L560' name='L560'></a> 560 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L561' name='L561'></a> 561 
+<a id='L562' name='L562'></a> 562 <strong class='reserved'>int</strong>
+<a id='L563' name='L563'></a> 563 <a href='../R/edit_suggest_current_word.html' title='Multiple referred from 3 places.'>edit_suggest_current_word</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> * <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>)
+     <em class='comment'>/* <a href='#L539'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L652'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+563 src/editor/spell.c'  /> */</em>
+<a id='L564' name='L564'></a> 564 <em class='brace'>{</em>
+<a id='L565' name='L565'></a> 565     <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> <a href='../Y/cut_len.html' title='Multiple used in 6 places.'>cut_len</a> = 0;
+<a id='L566' name='L566'></a> 566     <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a> = 0;
+<a id='L567' name='L567'></a> 567     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--editor--format.c.html#L301' title='Defined at 301 in src/editor/format.c.'>word_start</a> = 0;
+<a id='L568' name='L568'></a> 568     <strong class='reserved'>int</strong> <a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> = <a href='../S/src--editor--spell.c.html#L52' title='Defined at 52 in src/editor/spell.c.'>B_SKIP_WORD</a>;
+<a id='L569' name='L569'></a> 569     <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>;
+<a id='L570' name='L570'></a> 570 
+<a id='L571' name='L571'></a> 571     <em class='comment'>/* search start of word to spell check */</em>
+<a id='L572' name='L572'></a> 572     <a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a> = <a href='../S/src--editor--editbuffer.c.html#L397' title='Defined at 397 in src/editor/editbuffer.c.'>edit_buffer_get_word_from_pos</a> (&amp;<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>, <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>.<a href='../Y/curs1.html' title='Multiple used in 160 places.'>curs1</a>, &amp;<a href='../S/src--editor--format.c.html#L301' title='Defined at 301 in src/editor/format.c.'>word_start</a>,
+<a id='L573' name='L573'></a> 573                                                 &amp;<a href='../Y/cut_len.html' title='Multiple used in 6 places.'>cut_len</a>);
+<a id='L574' name='L574'></a> 574     <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a> = <a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>;
+<a id='L575' name='L575'></a> 575 
+<a id='L576' name='L576'></a> 576 <em class='sharp'>#ifdef</em> <a href='../S/tests--lib--vfs--tempdir.c.html#L31' title='Defined at 31 in tests/lib/vfs/tempdir.c.'>HAVE_CHARSET</a>
+<a id='L577' name='L577'></a> 577     <strong class='reserved'>if</strong> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/source_codepage.html' title='Multiple used in 30 places.'>source_codepage</a> &gt;= 0 &amp;&amp; <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/source_codepage.html' title='Multiple used in 30 places.'>source_codepage</a> != <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/display_codepage.html' title='Multiple used in 28 places.'>display_codepage</a>)
+<a id='L578' name='L578'></a> 578     <em class='brace'>{</em>
+<a id='L579' name='L579'></a> 579         <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/tmp_word.html' title='Multiple used in 7 places.'>tmp_word</a>;
+<a id='L580' name='L580'></a> 580 
+<a id='L581' name='L581'></a> 581         <a href='../Y/tmp_word.html' title='Multiple used in 7 places.'>tmp_word</a> = <a href='../S/lib--charsets.h.html#L106' title='Defined at 106 in lib/charsets.h.'>str_convert_to_display</a> (<a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>);
+<a id='L582' name='L582'></a> 582         <a href='../Y/g_string_free.html' title='Multiple used in 182 places.'>g_string_free</a> (<a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L583' name='L583'></a> 583         <a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a> = <a href='../Y/tmp_word.html' title='Multiple used in 7 places.'>tmp_word</a>;
+<a id='L584' name='L584'></a> 584     <em class='brace'>}</em>
+<a id='L585' name='L585'></a> 585 <em class='sharp'>#endif</em>
+<a id='L586' name='L586'></a> 586     <strong class='reserved'>if</strong> (<a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L587' name='L587'></a> 587     <em class='brace'>{</em>
+<a id='L588' name='L588'></a> 588         <strong class='reserved'>if</strong> (!<a href='../S/src--editor--spell.c.html#L476' title='Defined at 476 in src/editor/spell.c.'>aspell_check</a> (<a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, (<strong class='reserved'>int</strong>) <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>))
+<a id='L589' name='L589'></a> 589         <em class='brace'>{</em>
+<a id='L590' name='L590'></a> 590             <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>;
+<a id='L591' name='L591'></a> 591             <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L592' name='L592'></a> 592             <a href='../Y/guint.html' title='Multiple used in 24 places.'>guint</a> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L593' name='L593'></a> 593 
+<a id='L594' name='L594'></a> 594             <a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a>);
+<a id='L595' name='L595'></a> 595 
+<a id='L596' name='L596'></a> 596             <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> = <a href='../S/src--editor--spell.c.html#L497' title='Defined at 497 in src/editor/spell.c.'>aspell_suggest</a> (<a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>, <a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, (<strong class='reserved'>int</strong>) <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>);
+<a id='L597' name='L597'></a> 597             <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> != 0)
+<a id='L598' name='L598'></a> 598             <em class='brace'>{</em>
+<a id='L599' name='L599'></a> 599                 <strong class='reserved'>char</strong> *<a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L600' name='L600'></a> 600 
+<a id='L601' name='L601'></a> 601                 <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/found_start.html' title='Multiple used in 13 places.'>found_start</a> = <a href='../S/src--editor--format.c.html#L301' title='Defined at 301 in src/editor/format.c.'>word_start</a>;
+<a id='L602' name='L602'></a> 602                 <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/found_len.html' title='Multiple used in 43 places.'>found_len</a> = <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>;
+<a id='L603' name='L603'></a> 603                 <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/force.html' title='Multiple used in 131 places.'>force</a> |= <a href='../S/src--editor--edit-impl.h.html#L31' title='Defined at 31 in src/editor/edit-impl.h.'>REDRAW_PAGE</a>;
+<a id='L604' name='L604'></a> 604                 <a href='../S/src--editor--editdraw.c.html#L1043' title='Defined at 1043 in src/editor/editdraw.c.'>edit_scroll_screen_over_cursor</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>);
+<a id='L605' name='L605'></a> 605                 <a href='../S/src--editor--editdraw.c.html#L1115' title='Defined at 1115 in src/editor/editdraw.c.'>edit_render_keypress</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>);
+<a id='L606' name='L606'></a> 606 
+<a id='L607' name='L607'></a> 607                 <a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> =
+<a id='L608' name='L608'></a> 608                     <a href='../S/src--editor--spell.c.html#L712' title='Defined at 712 in src/editor/spell.c.'>spell_dialog_spell_suggest_show</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, <a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, &amp;<a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a>, <a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>);
+<a id='L609' name='L609'></a> 609                 <a href='../S/src--editor--edit.c.html#L2762' title='Defined at 2762 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a> - <a href='../Y/cut_len.html' title='Multiple used in 6 places.'>cut_len</a>);
+<a id='L610' name='L610'></a> 610 
+<a id='L611' name='L611'></a> 611                 <strong class='reserved'>if</strong> (<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> == <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a> &amp;&amp; <a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L612' name='L612'></a> 612                 <em class='brace'>{</em>
+<a id='L613' name='L613'></a> 613 <em class='sharp'>#ifdef</em> <a href='../S/tests--lib--vfs--tempdir.c.html#L31' title='Defined at 31 in tests/lib/vfs/tempdir.c.'>HAVE_CHARSET</a>
+<a id='L614' name='L614'></a> 614                     <strong class='reserved'>if</strong> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/source_codepage.html' title='Multiple used in 30 places.'>source_codepage</a> &gt;= 0 &amp;&amp;
+<a id='L615' name='L615'></a> 615                         (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/source_codepage.html' title='Multiple used in 30 places.'>source_codepage</a> != <a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/display_codepage.html' title='Multiple used in 28 places.'>display_codepage</a>))
+<a id='L616' name='L616'></a> 616                     <em class='brace'>{</em>
+<a id='L617' name='L617'></a> 617                         <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/tmp_word.html' title='Multiple used in 7 places.'>tmp_word</a>;
+<a id='L618' name='L618'></a> 618 
+<a id='L619' name='L619'></a> 619                         <a href='../Y/tmp_word.html' title='Multiple used in 7 places.'>tmp_word</a> = <a href='../S/lib--charsets.h.html#L98' title='Defined at 98 in lib/charsets.h.'>str_convert_to_input</a> (<a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a>);
+<a id='L620' name='L620'></a> 620                         <a href='../S/lib--util.h.html#L25' title='Defined at 25 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a>);
+<a id='L621' name='L621'></a> 621                         <strong class='reserved'>if</strong> (<a href='../Y/tmp_word.html' title='Multiple used in 7 places.'>tmp_word</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L622' name='L622'></a> 622                             <a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a> = <a href='../Y/g_string_free.html' title='Multiple used in 182 places.'>g_string_free</a> (<a href='../Y/tmp_word.html' title='Multiple used in 7 places.'>tmp_word</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L623' name='L623'></a> 623                     <em class='brace'>}</em>
+<a id='L624' name='L624'></a> 624 <em class='sharp'>#endif</em>
+<a id='L625' name='L625'></a> 625                     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L626' name='L626'></a> 626                         <a href='../S/src--editor--edit.c.html#L2700' title='Defined at 2700 in src/editor/edit.c.'>edit_backspace</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L627' name='L627'></a> 627                     <strong class='reserved'>if</strong> (<a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L628' name='L628'></a> 628                     <em class='brace'>{</em>
+<a id='L629' name='L629'></a> 629                         <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>] != '\0'; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L630' name='L630'></a> 630                             <a href='../S/src--editor--edit.c.html#L2554' title='Defined at 2554 in src/editor/edit.c.'>edit_insert</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, <a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>]);
+<a id='L631' name='L631'></a> 631                         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a>);
+<a id='L632' name='L632'></a> 632                     <em class='brace'>}</em>
+<a id='L633' name='L633'></a> 633                 <em class='brace'>}</em>
+<a id='L634' name='L634'></a> 634                 <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a> == <a href='../S/src--editor--spell.c.html#L53' title='Defined at 53 in src/editor/spell.c.'>B_ADD_WORD</a>)
+<a id='L635' name='L635'></a> 635                     <a href='../S/src--editor--spell.c.html#L539' title='Defined at 539 in src/editor/spell.c.'>aspell_add_to_dict</a> (<a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, (<strong class='reserved'>int</strong>) <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>);
+<a id='L636' name='L636'></a> 636             <em class='brace'>}</em>
+<a id='L637' name='L637'></a> 637 
+<a id='L638' name='L638'></a> 638             <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L639' name='L639'></a> 639             <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/found_start.html' title='Multiple used in 13 places.'>found_start</a> = 0;
+<a id='L640' name='L640'></a> 640             <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/found_len.html' title='Multiple used in 43 places.'>found_len</a> = 0;
+<a id='L641' name='L641'></a> 641         <em class='brace'>}</em>
+<a id='L642' name='L642'></a> 642 
+<a id='L643' name='L643'></a> 643         <a href='../Y/g_string_free.html' title='Multiple used in 182 places.'>g_string_free</a> (<a href='../Y/match_word.html' title='Multiple used in 12 places.'>match_word</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L644' name='L644'></a> 644     <em class='brace'>}</em>
+<a id='L645' name='L645'></a> 645 
+<a id='L646' name='L646'></a> 646     <strong class='reserved'>return</strong> <a href='../Y/retval.html' title='Multiple used in 90 places.'>retval</a>;
+<a id='L647' name='L647'></a> 647 <em class='brace'>}</em>
+<a id='L648' name='L648'></a> 648 
+<a id='L649' name='L649'></a> 649 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L650' name='L650'></a> 650 
+<a id='L651' name='L651'></a> 651 <strong class='reserved'>void</strong>
+<a id='L652' name='L652'></a> 652 <a href='../R/edit_spellcheck_file.html' title='Multiple referred from 2 places.'>edit_spellcheck_file</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> * <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>)
+     <em class='comment'>/* <a href='#L563'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L684'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+652 src/editor/spell.c'  /> */</em>
+<a id='L653' name='L653'></a> 653 <em class='brace'>{</em>
+<a id='L654' name='L654'></a> 654     <strong class='reserved'>if</strong> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>.<a href='../Y/curs_line.html' title='Multiple used in 54 places.'>curs_line</a> &gt; 0)
+<a id='L655' name='L655'></a> 655     <em class='brace'>{</em>
+<a id='L656' name='L656'></a> 656         <a href='../S/src--editor--edit.c.html#L2762' title='Defined at 2762 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, -<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>.<a href='../Y/curs1.html' title='Multiple used in 160 places.'>curs1</a>);
+<a id='L657' name='L657'></a> 657         <a href='../S/src--editor--edit.c.html#L2995' title='Defined at 2995 in src/editor/edit.c.'>edit_move_to_prev_col</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, 0);
+<a id='L658' name='L658'></a> 658         <a href='../S/src--editor--edit.c.html#L2899' title='Defined at 2899 in src/editor/edit.c.'>edit_update_curs_row</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>);
+<a id='L659' name='L659'></a> 659     <em class='brace'>}</em>
+<a id='L660' name='L660'></a> 660 
+<a id='L661' name='L661'></a> 661     <strong class='reserved'>do</strong>
+<a id='L662' name='L662'></a> 662     <em class='brace'>{</em>
+<a id='L663' name='L663'></a> 663         <strong class='reserved'>int</strong> <a href='../Y/c1.html' title='Multiple used in 85 places.'>c1</a>, <a href='../Y/c2.html' title='Multiple used in 79 places.'>c2</a>;
+<a id='L664' name='L664'></a> 664 
+<a id='L665' name='L665'></a> 665         <a href='../Y/c2.html' title='Multiple used in 79 places.'>c2</a> = <a href='../S/src--editor--editbuffer.h.html#L72' title='Defined at 72 in src/editor/editbuffer.h.'>edit_buffer_get_current_byte</a> (&amp;<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>);
+<a id='L666' name='L666'></a> 666 
+<a id='L667' name='L667'></a> 667         <strong class='reserved'>do</strong>
+<a id='L668' name='L668'></a> 668         <em class='brace'>{</em>
+<a id='L669' name='L669'></a> 669             <strong class='reserved'>if</strong> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>.<a href='../Y/curs1.html' title='Multiple used in 160 places.'>curs1</a> &gt;= <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>.<a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>)
+<a id='L670' name='L670'></a> 670                 <strong class='reserved'>return</strong>;
+<a id='L671' name='L671'></a> 671 
+<a id='L672' name='L672'></a> 672             <a href='../Y/c1.html' title='Multiple used in 85 places.'>c1</a> = <a href='../Y/c2.html' title='Multiple used in 79 places.'>c2</a>;
+<a id='L673' name='L673'></a> 673             <a href='../S/src--editor--edit.c.html#L2762' title='Defined at 2762 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, 1);
+<a id='L674' name='L674'></a> 674             <a href='../Y/c2.html' title='Multiple used in 79 places.'>c2</a> = <a href='../S/src--editor--editbuffer.h.html#L72' title='Defined at 72 in src/editor/editbuffer.h.'>edit_buffer_get_current_byte</a> (&amp;<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>);
+<a id='L675' name='L675'></a> 675         <em class='brace'>}</em>
+<a id='L676' name='L676'></a> 676         <strong class='reserved'>while</strong> (<a href='../S/src--editor--edit.c.html#L1984' title='Defined at 1984 in src/editor/edit.c.'>is_break_char</a> (<a href='../Y/c1.html' title='Multiple used in 85 places.'>c1</a>) || <a href='../S/src--editor--edit.c.html#L1984' title='Defined at 1984 in src/editor/edit.c.'>is_break_char</a> (<a href='../Y/c2.html' title='Multiple used in 79 places.'>c2</a>));
+<a id='L677' name='L677'></a> 677     <em class='brace'>}</em>
+<a id='L678' name='L678'></a> 678     <strong class='reserved'>while</strong> (<a href='../S/src--editor--spell.c.html#L563' title='Defined at 563 in src/editor/spell.c.'>edit_suggest_current_word</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>) != <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>);
+<a id='L679' name='L679'></a> 679 <em class='brace'>}</em>
+<a id='L680' name='L680'></a> 680 
+<a id='L681' name='L681'></a> 681 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L682' name='L682'></a> 682 
+<a id='L683' name='L683'></a> 683 <strong class='reserved'>void</strong>
+<a id='L684' name='L684'></a> 684 <a href='../R/edit_set_spell_lang.html' title='Multiple referred from 2 places.'>edit_set_spell_lang</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L652'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L712'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+684 src/editor/spell.c'  /> */</em>
+<a id='L685' name='L685'></a> 685 <em class='brace'>{</em>
+<a id='L686' name='L686'></a> 686     <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>;
+<a id='L687' name='L687'></a> 687 
+<a id='L688' name='L688'></a> 688     <a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a>);
+<a id='L689' name='L689'></a> 689     <strong class='reserved'>if</strong> (<a href='../S/src--editor--spell.c.html#L363' title='Defined at 363 in src/editor/spell.c.'>aspell_get_lang_list</a> (<a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>) != 0)
+<a id='L690' name='L690'></a> 690     <em class='brace'>{</em>
+<a id='L691' name='L691'></a> 691         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/lang.html' title='Multiple used in 21 places.'>lang</a>;
+<a id='L692' name='L692'></a> 692 
+<a id='L693' name='L693'></a> 693         <a href='../Y/lang.html' title='Multiple used in 21 places.'>lang</a> = <a href='../S/src--editor--spell.c.html#L810' title='Defined at 810 in src/editor/spell.c.'>spell_dialog_lang_list_show</a> (<a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>);
+<a id='L694' name='L694'></a> 694         <strong class='reserved'>if</strong> (<a href='../Y/lang.html' title='Multiple used in 21 places.'>lang</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L695' name='L695'></a> 695             (<strong class='reserved'>void</strong>) <a href='../S/src--editor--spell.c.html#L428' title='Defined at 428 in src/editor/spell.c.'>aspell_set_lang</a> (<a href='../Y/lang.html' title='Multiple used in 21 places.'>lang</a>);
+<a id='L696' name='L696'></a> 696     <em class='brace'>}</em>
+<a id='L697' name='L697'></a> 697     <a href='../S/src--editor--spell.c.html#L397' title='Defined at 397 in src/editor/spell.c.'>aspell_array_clean</a> (<a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>);
+<a id='L698' name='L698'></a> 698 <em class='brace'>}</em>
+<a id='L699' name='L699'></a> 699 
+<a id='L700' name='L700'></a> 700 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L701' name='L701'></a> 701 <em class='comment'>/**</em>
+<a id='L702' name='L702'></a> 702 <em class='comment'> * Show suggests for the current word.</em>
+<a id='L703' name='L703'></a> 703 <em class='comment'> *</em>
+<a id='L704' name='L704'></a> 704 <em class='comment'> * @param edit Editor object</em>
+<a id='L705' name='L705'></a> 705 <em class='comment'> * @param word Word for spell check</em>
+<a id='L706' name='L706'></a> 706 <em class='comment'> * @param new_word Word to replace the incorrect word</em>
+<a id='L707' name='L707'></a> 707 <em class='comment'> * @param suggest Array of suggests for current word</em>
+<a id='L708' name='L708'></a> 708 <em class='comment'> * @return code of pressed button</em>
+<a id='L709' name='L709'></a> 709 <em class='comment'> */</em>
+<a id='L710' name='L710'></a> 710 
+<a id='L711' name='L711'></a> 711 <strong class='reserved'>int</strong>
+<a id='L712' name='L712'></a> 712 <a href='../R/spell_dialog_spell_suggest_show.html' title='Multiple referred from 2 places.'>spell_dialog_spell_suggest_show</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> * <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>, <strong class='reserved'>char</strong> **<a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a>,
+     <em class='comment'>/* <a href='#L684'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L810'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+712 src/editor/spell.c'  /> */</em>
+<a id='L713' name='L713'></a> 713                                  <strong class='reserved'>const</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> * <a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>)
+<a id='L714' name='L714'></a> 714 <em class='brace'>{</em>
+<a id='L715' name='L715'></a> 715 
+<a id='L716' name='L716'></a> 716     <strong class='reserved'>int</strong> <a href='../Y/sug_dlg_h.html' title='Multiple used in 7 places.'>sug_dlg_h</a> = 14;         <em class='comment'>/* dialog height */</em>
+<a id='L717' name='L717'></a> 717     <strong class='reserved'>int</strong> <a href='../Y/sug_dlg_w.html' title='Multiple used in 5 places.'>sug_dlg_w</a> = 29;         <em class='comment'>/* dialog width */</em>
+<a id='L718' name='L718'></a> 718     <strong class='reserved'>int</strong> <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a>, <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a>;
+<a id='L719' name='L719'></a> 719     <strong class='reserved'>char</strong> *<a href='../Y/lang_label.html' title='Multiple used in 4 places.'>lang_label</a>;
+<a id='L720' name='L720'></a> 720     <strong class='reserved'>char</strong> *<a href='../Y/word_label.html' title='Multiple used in 5 places.'>word_label</a>;
+<a id='L721' name='L721'></a> 721     <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L722' name='L722'></a> 722     <strong class='reserved'>int</strong> <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L723' name='L723'></a> 723     <strong class='reserved'>char</strong> *<a href='../Y/curr.html' title='Multiple used in 49 places.'>curr</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L724' name='L724'></a> 724     <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *<a href='../Y/sug_dlg.html' title='Multiple used in 5 places.'>sug_dlg</a>;
+<a id='L725' name='L725'></a> 725     <a href='../D/WGroup.html' title='Multiple defined in 2 places.'>WGroup</a> *<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>;
+<a id='L726' name='L726'></a> 726     <a href='../D/WListbox.html' title='Multiple defined in 2 places.'>WListbox</a> *<a href='../Y/sug_list.html' title='Multiple used in 5 places.'>sug_list</a>;
+<a id='L727' name='L727'></a> 727     <strong class='reserved'>int</strong> <a href='../Y/max_btn_len.html' title='Multiple used in 4 places.'>max_btn_len</a> = 0;
+<a id='L728' name='L728'></a> 728     <strong class='reserved'>int</strong> <a href='../Y/replace_len.html' title='Multiple used in 3 places.'>replace_len</a>;
+<a id='L729' name='L729'></a> 729     <strong class='reserved'>int</strong> <a href='../Y/skip_len.html' title='Multiple used in 35 places.'>skip_len</a>;
+<a id='L730' name='L730'></a> 730     <strong class='reserved'>int</strong> <a href='../Y/cancel_len.html' title='Multiple used in 3 places.'>cancel_len</a>;
+<a id='L731' name='L731'></a> 731     <a href='../D/WButton.html' title='Multiple defined in 2 places.'>WButton</a> *<a href='../Y/add_btn.html' title='Multiple used in 3 places.'>add_btn</a>;
+<a id='L732' name='L732'></a> 732     <a href='../D/WButton.html' title='Multiple defined in 2 places.'>WButton</a> *<a href='../Y/replace_btn.html' title='Multiple used in 4 places.'>replace_btn</a>;
+<a id='L733' name='L733'></a> 733     <a href='../D/WButton.html' title='Multiple defined in 2 places.'>WButton</a> *<a href='../Y/skip_btn.html' title='Multiple used in 4 places.'>skip_btn</a>;
+<a id='L734' name='L734'></a> 734     <a href='../D/WButton.html' title='Multiple defined in 2 places.'>WButton</a> *<a href='../Y/cancel_button.html' title='Multiple used in 8 places.'>cancel_button</a>;
+<a id='L735' name='L735'></a> 735     <strong class='reserved'>int</strong> <a href='../Y/word_label_len.html' title='Multiple used in 3 places.'>word_label_len</a>;
+<a id='L736' name='L736'></a> 736 
+<a id='L737' name='L737'></a> 737     <em class='comment'>/* calculate the dialog metrics */</em>
+<a id='L738' name='L738'></a> 738     <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a> = (<a href='../S/lib--tty--tty-slang.h.html#L23' title='Defined at 23 in lib/tty/tty-slang.h.'>COLS</a> - <a href='../Y/sug_dlg_w.html' title='Multiple used in 5 places.'>sug_dlg_w</a>) / 2;
+<a id='L739' name='L739'></a> 739     <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> = (<a href='../S/lib--tty--tty-slang.h.html#L24' title='Defined at 24 in lib/tty/tty-slang.h.'>LINES</a> - <a href='../Y/sug_dlg_h.html' title='Multiple used in 7 places.'>sug_dlg_h</a>) * 2 / 3;
+<a id='L740' name='L740'></a> 740 
+<a id='L741' name='L741'></a> 741     <em class='comment'>/* Sometimes menu can hide replaced text. I don't like it */</em>
+<a id='L742' name='L742'></a> 742     <strong class='reserved'>if</strong> ((<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/curs_row.html' title='Multiple used in 33 places.'>curs_row</a> &gt;= <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> - 1) &amp;&amp; (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/curs_row.html' title='Multiple used in 33 places.'>curs_row</a> &lt;= <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> + <a href='../Y/sug_dlg_h.html' title='Multiple used in 7 places.'>sug_dlg_h</a> - 1))
+<a id='L743' name='L743'></a> 743         <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a> -= <a href='../Y/sug_dlg_h.html' title='Multiple used in 7 places.'>sug_dlg_h</a>;
+<a id='L744' name='L744'></a> 744 
+<a id='L745' name='L745'></a> 745     <a href='../Y/add_btn.html' title='Multiple used in 3 places.'>add_btn</a> = <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (5, 28, <a href='../S/src--editor--spell.c.html#L53' title='Defined at 53 in src/editor/spell.c.'>B_ADD_WORD</a>, <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Add word"), 0);
+<a id='L746' name='L746'></a> 746     <a href='../Y/replace_btn.html' title='Multiple used in 4 places.'>replace_btn</a> = <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (7, 28, <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>, <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Replace"), 0);
+<a id='L747' name='L747'></a> 747     <a href='../Y/replace_len.html' title='Multiple used in 3 places.'>replace_len</a> = <a href='../S/lib--widget--button.c.html#L261' title='Defined at 261 in lib/widget/button.c.'>button_get_len</a> (<a href='../Y/replace_btn.html' title='Multiple used in 4 places.'>replace_btn</a>);
+<a id='L748' name='L748'></a> 748     <a href='../Y/skip_btn.html' title='Multiple used in 4 places.'>skip_btn</a> = <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (9, 28, <a href='../S/src--editor--spell.c.html#L52' title='Defined at 52 in src/editor/spell.c.'>B_SKIP_WORD</a>, <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Skip"), 0);
+<a id='L749' name='L749'></a> 749     <a href='../Y/skip_len.html' title='Multiple used in 35 places.'>skip_len</a> = <a href='../S/lib--widget--button.c.html#L261' title='Defined at 261 in lib/widget/button.c.'>button_get_len</a> (<a href='../Y/skip_btn.html' title='Multiple used in 4 places.'>skip_btn</a>);
+<a id='L750' name='L750'></a> 750     <a href='../Y/cancel_button.html' title='Multiple used in 8 places.'>cancel_button</a> = <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (11, 28, <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>, <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Cancel"), 0);
+<a id='L751' name='L751'></a> 751     <a href='../Y/cancel_len.html' title='Multiple used in 3 places.'>cancel_len</a> = <a href='../S/lib--widget--button.c.html#L261' title='Defined at 261 in lib/widget/button.c.'>button_get_len</a> (<a href='../Y/cancel_button.html' title='Multiple used in 8 places.'>cancel_button</a>);
+<a id='L752' name='L752'></a> 752 
+<a id='L753' name='L753'></a> 753     <a href='../Y/max_btn_len.html' title='Multiple used in 4 places.'>max_btn_len</a> = <a href='../Y/MAX.html' title='Multiple used in 120 places.'>MAX</a> (<a href='../Y/replace_len.html' title='Multiple used in 3 places.'>replace_len</a>, <a href='../Y/skip_len.html' title='Multiple used in 35 places.'>skip_len</a>);
+<a id='L754' name='L754'></a> 754     <a href='../Y/max_btn_len.html' title='Multiple used in 4 places.'>max_btn_len</a> = <a href='../Y/MAX.html' title='Multiple used in 120 places.'>MAX</a> (<a href='../Y/max_btn_len.html' title='Multiple used in 4 places.'>max_btn_len</a>, <a href='../Y/cancel_len.html' title='Multiple used in 3 places.'>cancel_len</a>);
+<a id='L755' name='L755'></a> 755 
+<a id='L756' name='L756'></a> 756     <a href='../Y/lang_label.html' title='Multiple used in 4 places.'>lang_label</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> ("%s: %s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Language"), <a href='../S/src--editor--spell.c.html#L411' title='Defined at 411 in src/editor/spell.c.'>aspell_get_lang</a> ());
+<a id='L757' name='L757'></a> 757     <a href='../Y/word_label.html' title='Multiple used in 5 places.'>word_label</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> ("%s: %s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Misspelled"), <a href='../Y/word.html' title='Multiple used in 49 places.'>word</a>);
+<a id='L758' name='L758'></a> 758     <a href='../Y/word_label_len.html' title='Multiple used in 3 places.'>word_label_len</a> = <a href='../S/lib--strutil--strutil.c.html#L655' title='Defined at 655 in lib/strutil/strutil.c.'>str_term_width1</a> (<a href='../Y/word_label.html' title='Multiple used in 5 places.'>word_label</a>) + 5;
+<a id='L759' name='L759'></a> 759 
+<a id='L760' name='L760'></a> 760     <a href='../Y/sug_dlg_w.html' title='Multiple used in 5 places.'>sug_dlg_w</a> += <a href='../Y/max_btn_len.html' title='Multiple used in 4 places.'>max_btn_len</a>;
+<a id='L761' name='L761'></a> 761     <a href='../Y/sug_dlg_w.html' title='Multiple used in 5 places.'>sug_dlg_w</a> = <a href='../Y/MAX.html' title='Multiple used in 120 places.'>MAX</a> (<a href='../Y/sug_dlg_w.html' title='Multiple used in 5 places.'>sug_dlg_w</a>, <a href='../Y/word_label_len.html' title='Multiple used in 3 places.'>word_label_len</a>) + 1;
+<a id='L762' name='L762'></a> 762 
+<a id='L763' name='L763'></a> 763     <a href='../Y/sug_dlg.html' title='Multiple used in 5 places.'>sug_dlg</a> = <a href='../S/lib--widget--dialog.c.html#L399' title='Defined at 399 in lib/widget/dialog.c.'>dlg_create</a> (<a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>, <a href='../Y/ypos.html' title='Multiple used in 31 places.'>ypos</a>, <a href='../Y/xpos.html' title='Multiple used in 23 places.'>xpos</a>, <a href='../Y/sug_dlg_h.html' title='Multiple used in 7 places.'>sug_dlg_h</a>, <a href='../Y/sug_dlg_w.html' title='Multiple used in 5 places.'>sug_dlg_w</a>, <a href='../S/lib--widget--widget-common.h.html#L110' title='Defined at 110 in lib/widget/widget-common.h.'>WPOS_KEEP_DEFAULT</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>,
+<a id='L764' name='L764'></a> 764                           <a href='../Y/dialog_colors.html' title='Multiple used in 35 places.'>dialog_colors</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, "[ASpell]", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Check word"));
+<a id='L765' name='L765'></a> 765     <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a> = <a href='../S/lib--widget--group.h.html#L16' title='Defined at 16 in lib/widget/group.h.'>GROUP</a> (<a href='../Y/sug_dlg.html' title='Multiple used in 5 places.'>sug_dlg</a>);
+<a id='L766' name='L766'></a> 766 
+<a id='L767' name='L767'></a> 767     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--label.c.html#L134' title='Defined at 134 in lib/widget/label.c.'>label_new</a> (1, 2, <a href='../Y/lang_label.html' title='Multiple used in 4 places.'>lang_label</a>));
+<a id='L768' name='L768'></a> 768     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--label.c.html#L134' title='Defined at 134 in lib/widget/label.c.'>label_new</a> (3, 2, <a href='../Y/word_label.html' title='Multiple used in 5 places.'>word_label</a>));
+<a id='L769' name='L769'></a> 769 
+<a id='L770' name='L770'></a> 770     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--groupbox.c.html#L100' title='Defined at 100 in lib/widget/groupbox.c.'>groupbox_new</a> (4, 2, <a href='../Y/sug_dlg_h.html' title='Multiple used in 7 places.'>sug_dlg_h</a> - 5, 25, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Suggest")));
+<a id='L771' name='L771'></a> 771 
+<a id='L772' name='L772'></a> 772     <a href='../Y/sug_list.html' title='Multiple used in 5 places.'>sug_list</a> = <a href='../S/lib--widget--listbox.c.html#L553' title='Defined at 553 in lib/widget/listbox.c.'>listbox_new</a> (5, 2, <a href='../Y/sug_dlg_h.html' title='Multiple used in 7 places.'>sug_dlg_h</a> - 7, 24, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L773' name='L773'></a> 773     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L774' name='L774'></a> 774         <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/sug_list.html' title='Multiple used in 5 places.'>sug_list</a>, <a href='../S/lib--widget--listbox.h.html#L25' title='Defined at 25 in lib/widget/listbox.h.'>LISTBOX_APPEND_AT_END</a>, 0, <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a> (<a href='../Y/suggest.html' title='Multiple used in 12 places.'>suggest</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>), <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>,
+<a id='L775' name='L775'></a> 775                           <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L776' name='L776'></a> 776     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/sug_list.html' title='Multiple used in 5 places.'>sug_list</a>);
+<a id='L777' name='L777'></a> 777 
+<a id='L778' name='L778'></a> 778     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/add_btn.html' title='Multiple used in 3 places.'>add_btn</a>);
+<a id='L779' name='L779'></a> 779     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/replace_btn.html' title='Multiple used in 4 places.'>replace_btn</a>);
+<a id='L780' name='L780'></a> 780     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/skip_btn.html' title='Multiple used in 4 places.'>skip_btn</a>);
+<a id='L781' name='L781'></a> 781     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/cancel_button.html' title='Multiple used in 8 places.'>cancel_button</a>);
+<a id='L782' name='L782'></a> 782 
+<a id='L783' name='L783'></a> 783     <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> = <a href='../S/lib--widget--dialog.c.html#L570' title='Defined at 570 in lib/widget/dialog.c.'>dlg_run</a> (<a href='../Y/sug_dlg.html' title='Multiple used in 5 places.'>sug_dlg</a>);
+<a id='L784' name='L784'></a> 784     <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> == <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>)
+<a id='L785' name='L785'></a> 785     <em class='brace'>{</em>
+<a id='L786' name='L786'></a> 786         <strong class='reserved'>char</strong> *<a href='../Y/tmp.html' title='Multiple used in 287 places.'>tmp</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L787' name='L787'></a> 787         <a href='../S/lib--widget--listbox.c.html#L700' title='Defined at 700 in lib/widget/listbox.c.'>listbox_get_current</a> (<a href='../Y/sug_list.html' title='Multiple used in 5 places.'>sug_list</a>, &amp;<a href='../Y/curr.html' title='Multiple used in 49 places.'>curr</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L788' name='L788'></a> 788 
+<a id='L789' name='L789'></a> 789         <strong class='reserved'>if</strong> (<a href='../Y/curr.html' title='Multiple used in 49 places.'>curr</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L790' name='L790'></a> 790             <a href='../Y/tmp.html' title='Multiple used in 287 places.'>tmp</a> = <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (<a href='../Y/curr.html' title='Multiple used in 49 places.'>curr</a>);
+<a id='L791' name='L791'></a> 791         *<a href='../Y/new_word.html' title='Multiple used in 13 places.'>new_word</a> = <a href='../Y/tmp.html' title='Multiple used in 287 places.'>tmp</a>;
+<a id='L792' name='L792'></a> 792     <em class='brace'>}</em>
+<a id='L793' name='L793'></a> 793 
+<a id='L794' name='L794'></a> 794     <a href='../S/lib--widget--widget-common.h.html#L394' title='Defined at 394 in lib/widget/widget-common.h.'>widget_destroy</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/sug_dlg.html' title='Multiple used in 5 places.'>sug_dlg</a>));
+<a id='L795' name='L795'></a> 795     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/lang_label.html' title='Multiple used in 4 places.'>lang_label</a>);
+<a id='L796' name='L796'></a> 796     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/word_label.html' title='Multiple used in 5 places.'>word_label</a>);
+<a id='L797' name='L797'></a> 797 
+<a id='L798' name='L798'></a> 798     <strong class='reserved'>return</strong> <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L799' name='L799'></a> 799 <em class='brace'>}</em>
+<a id='L800' name='L800'></a> 800 
+<a id='L801' name='L801'></a> 801 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L802' name='L802'></a> 802 <em class='comment'>/**</em>
+<a id='L803' name='L803'></a> 803 <em class='comment'> * Show dialog to select language for spell check.</em>
+<a id='L804' name='L804'></a> 804 <em class='comment'> *</em>
+<a id='L805' name='L805'></a> 805 <em class='comment'> * @param languages Array of available languages</em>
+<a id='L806' name='L806'></a> 806 <em class='comment'> * @return name of chosen language</em>
+<a id='L807' name='L807'></a> 807 <em class='comment'> */</em>
+<a id='L808' name='L808'></a> 808 
+<a id='L809' name='L809'></a> 809 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *
+<a id='L810' name='L810'></a> 810 <a href='../R/spell_dialog_lang_list_show.html' title='Multiple referred from 2 places.'>spell_dialog_lang_list_show</a> (<strong class='reserved'>const</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> * <a href='../Y/languages.html' title='Multiple used in 5 places.'>languages</a>)
+     <em class='comment'>/* <a href='#L712'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+810 src/editor/spell.c'  /> */</em>
+<a id='L811' name='L811'></a> 811 <em class='brace'>{</em>
+<a id='L812' name='L812'></a> 812 
+<a id='L813' name='L813'></a> 813     <strong class='reserved'>int</strong> <a href='../Y/lang_dlg_h.html' title='Multiple used in 2 places.'>lang_dlg_h</a> = 12;        <em class='comment'>/* dialog height */</em>
+<a id='L814' name='L814'></a> 814     <strong class='reserved'>int</strong> <a href='../Y/lang_dlg_w.html' title='Multiple used in 2 places.'>lang_dlg_w</a> = 30;        <em class='comment'>/* dialog width */</em>
+<a id='L815' name='L815'></a> 815     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/selected_lang.html' title='Multiple used in 3 places.'>selected_lang</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L816' name='L816'></a> 816     <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L817' name='L817'></a> 817     <strong class='reserved'>int</strong> <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>;
+<a id='L818' name='L818'></a> 818     <a href='../S/lib--widget--listbox-window.h.html#L21' title='Defined at 21 in lib/widget/listbox-window.h.'>Listbox</a> *<a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>;
+<a id='L819' name='L819'></a> 819 
+<a id='L820' name='L820'></a> 820     <em class='comment'>/* Create listbox */</em>
+<a id='L821' name='L821'></a> 821     <a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a> = <a href='../S/lib--widget--listbox-window.c.html#L59' title='Defined at 59 in lib/widget/listbox-window.c.'>listbox_window_centered_new</a> (-1, -1, <a href='../Y/lang_dlg_h.html' title='Multiple used in 2 places.'>lang_dlg_h</a>, <a href='../Y/lang_dlg_w.html' title='Multiple used in 2 places.'>lang_dlg_w</a>,
+<a id='L822' name='L822'></a> 822                                              <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Select language"), "[ASpell]");
+<a id='L823' name='L823'></a> 823 
+<a id='L824' name='L824'></a> 824     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/languages.html' title='Multiple used in 5 places.'>languages</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L825' name='L825'></a> 825         <a href='../S/lib--widget--listbox-window.h.html#L10' title='Defined at 10 in lib/widget/listbox-window.h.'>LISTBOX_APPEND_TEXT</a> (<a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>, 0, <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a> (<a href='../Y/languages.html' title='Multiple used in 5 places.'>languages</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>), <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L826' name='L826'></a> 826 
+<a id='L827' name='L827'></a> 827     <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> = <a href='../S/lib--widget--listbox-window.c.html#L129' title='Defined at 129 in lib/widget/listbox-window.c.'>listbox_run</a> (<a href='../Y/lang_list.html' title='Multiple used in 12 places.'>lang_list</a>);
+<a id='L828' name='L828'></a> 828     <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> &gt;= 0)
+<a id='L829' name='L829'></a> 829         <a href='../Y/selected_lang.html' title='Multiple used in 3 places.'>selected_lang</a> = <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a> (<a href='../Y/languages.html' title='Multiple used in 5 places.'>languages</a>, (<strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong>) <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>);
+<a id='L830' name='L830'></a> 830 
+<a id='L831' name='L831'></a> 831     <strong class='reserved'>return</strong> <a href='../Y/selected_lang.html' title='Multiple used in 3 places.'>selected_lang</a>;
+<a id='L832' name='L832'></a> 832 <em class='brace'>}</em>
+<a id='L833' name='L833'></a> 833 
+<a id='L834' name='L834'></a> 834 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L146'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L810'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+834 src/editor/spell.c'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/mc-get-fs-info.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/mc-get-fs-info.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/mc-get-fs-info.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/mc-get-fs-info.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a> 
+<a id='L2' name='L2'></a>dnl
+<a id='L3' name='L3'></a>dnl posix_allocate() function detection
+<a id='L4' name='L4'></a>dnl
+<a id='L5' name='L5'></a> 
+<a id='L6' name='L6'></a>AC_DEFUN([POSIX_FALLOCATE], [
+<a id='L7' name='L7'></a>    dnl * Old glibcs have broken posix_fallocate(). Make sure not to use it.
+<a id='L8' name='L8'></a>    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+<a id='L9' name='L9'></a>        #define _XOPEN_SOURCE 600
+<a id='L10' name='L10'></a>        #include &lt;stdlib.h&gt;
+<a id='L11' name='L11'></a>        #include &lt;fcntl.h&gt;
+<a id='L12' name='L12'></a>        #if defined(__GLIBC__) &amp;&amp; (__GLIBC__ &lt; 2 || __GLIBC_MINOR__ &lt; 7)
+<a id='L13' name='L13'></a>            possibly broken posix_fallocate
+<a id='L14' name='L14'></a>        #endif
+<a id='L15' name='L15'></a>    ]],
+<a id='L16' name='L16'></a>    [[posix_fallocate(0, 0, 0);]])],
+<a id='L17' name='L17'></a>    [AC_DEFINE(
+<a id='L18' name='L18'></a>        [HAVE_POSIX_FALLOCATE],
+<a id='L19' name='L19'></a>        [1],
+<a id='L20' name='L20'></a>        [Define if you have a working posix_fallocate()])
+<a id='L21' name='L21'></a>    ])
+<a id='L22' name='L22'></a>])
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>dnl
+<a id='L25' name='L25'></a>dnl Get from the coreutils package (stat-prog.m4 serial 7)
+<a id='L26' name='L26'></a>dnl
+<a id='L27' name='L27'></a> 
+<a id='L28' name='L28'></a>AC_DEFUN([mc_cu_PREREQ_STAT_PROG],
+<a id='L29' name='L29'></a>[
+<a id='L30' name='L30'></a>  AC_REQUIRE([gl_FSUSAGE])
+<a id='L31' name='L31'></a>  AC_REQUIRE([gl_FSTYPENAME])
+<a id='L32' name='L32'></a>  AC_CHECK_HEADERS_ONCE([OS.h netinet/in.h sys/param.h sys/vfs.h])
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>  dnl Check for vfs.h first, since this avoids a warning with nfs_client.h
+<a id='L35' name='L35'></a>  dnl on Solaris 8.
+<a id='L36' name='L36'></a>  test $ac_cv_header_sys_param_h = yes &amp;&amp;
+<a id='L37' name='L37'></a>  test $ac_cv_header_sys_mount_h = yes &amp;&amp;
+<a id='L38' name='L38'></a>  AC_CHECK_HEADERS([nfs/vfs.h],
+<a id='L39' name='L39'></a>    [AC_CHECK_HEADERS([nfs/nfs_client.h])])
+<a id='L40' name='L40'></a> 
+<a id='L41' name='L41'></a>  statvfs_includes="\
+<a id='L42' name='L42'></a>AC_INCLUDES_DEFAULT
+<a id='L43' name='L43'></a>#include &lt;sys/statvfs.h&gt;
+<a id='L44' name='L44'></a>"
+<a id='L45' name='L45'></a>  statfs_includes="\
+<a id='L46' name='L46'></a>AC_INCLUDES_DEFAULT
+<a id='L47' name='L47'></a>#ifdef HAVE_SYS_VFS_H
+<a id='L48' name='L48'></a># include &lt;sys/vfs.h&gt;
+<a id='L49' name='L49'></a>#elif defined HAVE_SYS_MOUNT_H &amp;&amp; defined HAVE_SYS_PARAM_H
+<a id='L50' name='L50'></a># include &lt;sys/param.h&gt;
+<a id='L51' name='L51'></a># include &lt;sys/mount.h&gt;
+<a id='L52' name='L52'></a># if defined HAVE_NETINET_IN_H &amp;&amp; defined HAVE_NFS_NFS_CLNT_H &amp;&amp; defined HAVE_NFS_VFS_H
+<a id='L53' name='L53'></a>#  include &lt;netinet/in.h&gt;
+<a id='L54' name='L54'></a>#  include &lt;nfs/nfs_clnt.h&gt;
+<a id='L55' name='L55'></a>#  include &lt;nfs/vfs.h&gt;
+<a id='L56' name='L56'></a># endif
+<a id='L57' name='L57'></a>#elif defined HAVE_OS_H
+<a id='L58' name='L58'></a># include &lt;fs_info.h&gt;
+<a id='L59' name='L59'></a>#endif
+<a id='L60' name='L60'></a>"
+<a id='L61' name='L61'></a>  if case "$fu_cv_sys_stat_statvfs$fu_cv_sys_stat_statvfs64" in
+<a id='L62' name='L62'></a>       *yes*) ;; *) false;; esac &amp;&amp;
+<a id='L63' name='L63'></a>     { AC_CHECK_MEMBERS([struct statvfs.f_basetype],,, [$statvfs_includes])
+<a id='L64' name='L64'></a>       test $ac_cv_member_struct_statvfs_f_basetype = yes ||
+<a id='L65' name='L65'></a>       { AC_CHECK_MEMBERS([struct statvfs.f_fstypename],,, [$statvfs_includes])
+<a id='L66' name='L66'></a>         test $ac_cv_member_struct_statvfs_f_fstypename = yes ||
+<a id='L67' name='L67'></a>         { test $ac_cv_member_struct_statfs_f_fstypename != yes &amp;&amp;
+<a id='L68' name='L68'></a>           { AC_CHECK_MEMBERS([struct statvfs.f_type],,, [$statvfs_includes])
+<a id='L69' name='L69'></a>             test $ac_cv_member_struct_statvfs_f_type = yes; }; }; }; }
+<a id='L70' name='L70'></a>  then
+<a id='L71' name='L71'></a>    AC_CHECK_MEMBERS([struct statvfs.f_namemax],,, [$statvfs_includes])
+<a id='L72' name='L72'></a>    AC_COMPILE_IFELSE(
+<a id='L73' name='L73'></a>      [AC_LANG_PROGRAM(
+<a id='L74' name='L74'></a>         [$statvfs_includes],
+<a id='L75' name='L75'></a>         [static statvfs s;
+<a id='L76' name='L76'></a>          return (s.s_fsid ^ 0) == 0;])],
+<a id='L77' name='L77'></a>      [AC_DEFINE([STRUCT_STATVFS_F_FSID_IS_INTEGER], [1],
+<a id='L78' name='L78'></a>         [Define to 1 if the f_fsid member of struct statvfs is an integer.])])
+<a id='L79' name='L79'></a>  else
+<a id='L80' name='L80'></a>    AC_CHECK_MEMBERS([struct statfs.f_namelen, struct statfs.f_type,
+<a id='L81' name='L81'></a>                     struct statfs.f_frsize],,, [$statfs_includes])
+<a id='L82' name='L82'></a>    if test $ac_cv_header_OS_h != yes; then
+<a id='L83' name='L83'></a>      AC_COMPILE_IFELSE(
+<a id='L84' name='L84'></a>        [AC_LANG_PROGRAM(
+<a id='L85' name='L85'></a>           [$statfs_includes],
+<a id='L86' name='L86'></a>           [static statfs s;
+<a id='L87' name='L87'></a>            return (s.s_fsid ^ 0) == 0;])],
+<a id='L88' name='L88'></a>        [AC_DEFINE([STRUCT_STATFS_F_FSID_IS_INTEGER], [1],
+<a id='L89' name='L89'></a>           [Define to 1 if the f_fsid member of struct statfs is an integer.])])
+<a id='L90' name='L90'></a>    fi
+<a id='L91' name='L91'></a>  fi
+<a id='L92' name='L92'></a>])
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a> 
+<a id='L95' name='L95'></a>dnl
+<a id='L96' name='L96'></a>dnl Filesystem information detection
+<a id='L97' name='L97'></a>dnl
+<a id='L98' name='L98'></a>dnl To get information about the disk, mount points, etc.
+<a id='L99' name='L99'></a>dnl
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>AC_DEFUN([mc_GET_FS_INFO], [
+<a id='L102' name='L102'></a>    AC_CHECK_HEADERS([fcntl.h utime.h])
+<a id='L103' name='L103'></a> 
+<a id='L104' name='L104'></a>    gl_MOUNTLIST
+<a id='L105' name='L105'></a>    if test $gl_cv_list_mounted_fs = yes; then
+<a id='L106' name='L106'></a>        gl_PREREQ_MOUNTLIST_EXTRA
+<a id='L107' name='L107'></a>        AC_DEFINE(HAVE_INFOMOUNT_LIST, 1,
+<a id='L108' name='L108'></a>                    [Define if the list of mounted filesystems can be determined])
+<a id='L109' name='L109'></a>    else
+<a id='L110' name='L110'></a>        AC_MSG_WARN([could not determine how to read list of mounted fs]);
+<a id='L111' name='L111'></a>    fi
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a>    gl_FSUSAGE
+<a id='L114' name='L114'></a>    if test $gl_cv_fs_space = yes; then
+<a id='L115' name='L115'></a>        gl_PREREQ_FSUSAGE_EXTRA
+<a id='L116' name='L116'></a>    fi
+<a id='L117' name='L117'></a>    gl_FSTYPENAME
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>    POSIX_FALLOCATE
+<a id='L120' name='L120'></a> 
+<a id='L121' name='L121'></a>    mc_cu_PREREQ_STAT_PROG
+<a id='L122' name='L122'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+122 m4.include/mc-get-fs-info.m4'  /> */</em>
+</body>
+</html>

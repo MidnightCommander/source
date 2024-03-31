@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/search/normal.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L50'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L103'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--search.html'>search</a>/normal.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--search.html'>search</a>/normal.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L50'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L103'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/search/normal.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L50' title='Defined at 50.'>mc_search__normal_translate_to_regex</a></li>
+<li><a href='#L85' title='Defined at 85.'>mc_search__cond_struct_new_init_normal</a></li>
+<li><a href='#L95' title='Defined at 95.'>mc_search__run_normal</a></li>
+<li><a href='#L103' title='Defined at 103.'>mc_search_normal_prepare_replace_str</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Search text engine.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   Plain search</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'></em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Copyright (C) 2009-2024</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'></em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Written by:</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Slava Zanko &lt;slavazanko@gmail.com&gt;, 2009.</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'></em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'></em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> "<a href='lib--search.h.html'>lib/search.h</a>"
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='../I/internal.h.html'>internal.h</a>"
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L50' name='L50'></a>  50 <a href='../S/lib--search--normal.c.html#L88' title='Referred from 88 in lib/search/normal.c.'>mc_search__normal_translate_to_regex</a> (<a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> * <a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L85'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L103'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+50 lib/search/normal.c'  /> */</em>
+<a id='L51' name='L51'></a>  51 <em class='brace'>{</em>
+<a id='L52' name='L52'></a>  52     <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> <a href='../Y/loop.html' title='Multiple used in 82 places.'>loop</a>;
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>for</strong> (<a href='../Y/loop.html' title='Multiple used in 82 places.'>loop</a> = 0; <a href='../Y/loop.html' title='Multiple used in 82 places.'>loop</a> &lt; <a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>; <a href='../Y/loop.html' title='Multiple used in 82 places.'>loop</a>++)
+<a id='L55' name='L55'></a>  55         <strong class='reserved'>switch</strong> (<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>[<a href='../Y/loop.html' title='Multiple used in 82 places.'>loop</a>])
+<a id='L56' name='L56'></a>  56         <em class='brace'>{</em>
+<a id='L57' name='L57'></a>  57         <strong class='reserved'>case</strong> '*':
+<a id='L58' name='L58'></a>  58         <strong class='reserved'>case</strong> '?':
+<a id='L59' name='L59'></a>  59         <strong class='reserved'>case</strong> ',':
+<a id='L60' name='L60'></a>  60         <strong class='reserved'>case</strong> '{':
+<a id='L61' name='L61'></a>  61         <strong class='reserved'>case</strong> '}':
+<a id='L62' name='L62'></a>  62         <strong class='reserved'>case</strong> '[':
+<a id='L63' name='L63'></a>  63         <strong class='reserved'>case</strong> ']':
+<a id='L64' name='L64'></a>  64         <strong class='reserved'>case</strong> '\\':
+<a id='L65' name='L65'></a>  65         <strong class='reserved'>case</strong> '+':
+<a id='L66' name='L66'></a>  66         <strong class='reserved'>case</strong> '.':
+<a id='L67' name='L67'></a>  67         <strong class='reserved'>case</strong> '$':
+<a id='L68' name='L68'></a>  68         <strong class='reserved'>case</strong> '(':
+<a id='L69' name='L69'></a>  69         <strong class='reserved'>case</strong> ')':
+<a id='L70' name='L70'></a>  70         <strong class='reserved'>case</strong> '^':
+<a id='L71' name='L71'></a>  71         <strong class='reserved'>case</strong> '-':
+<a id='L72' name='L72'></a>  72         <strong class='reserved'>case</strong> '|':
+<a id='L73' name='L73'></a>  73             g_string_insert_c (<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, <a href='../Y/loop.html' title='Multiple used in 82 places.'>loop</a>, '\\');
+<a id='L74' name='L74'></a>  74             <a href='../Y/loop.html' title='Multiple used in 82 places.'>loop</a>++;
+<a id='L75' name='L75'></a>  75         <strong class='reserved'>default</strong>:
+<a id='L76' name='L76'></a>  76             <strong class='reserved'>break</strong>;
+<a id='L77' name='L77'></a>  77         <em class='brace'>}</em>
+<a id='L78' name='L78'></a>  78 <em class='brace'>}</em>
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84 <strong class='reserved'>void</strong>
+<a id='L85' name='L85'></a>  85 <a href='../R/mc_search__cond_struct_new_init_normal.html' title='Multiple referred from 2 places.'>mc_search__cond_struct_new_init_normal</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/charset.html' title='Multiple used in 64 places.'>charset</a>, <a href='../S/lib--search.h.html#L144' title='Defined at 144 in lib/search.h.'>mc_search_t</a> * <a href='../Y/lc_mc_search.html' title='Multiple used in 191 places.'>lc_mc_search</a>,
+     <em class='comment'>/* <a href='#L50'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L95'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L50'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L103'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+85 lib/search/normal.c'  /> */</em>
+<a id='L86' name='L86'></a>  86                                         <a href='../S/lib--search--internal.h.html#L37' title='Defined at 37 in lib/search/internal.h.'>mc_search_cond_t</a> * <a href='../Y/mc_search_cond.html' title='Multiple used in 57 places.'>mc_search_cond</a>)
+<a id='L87' name='L87'></a>  87 <em class='brace'>{</em>
+<a id='L88' name='L88'></a>  88     <a href='../S/lib--search--normal.c.html#L50' title='Defined at 50 in lib/search/normal.c.'>mc_search__normal_translate_to_regex</a> (<a href='../Y/mc_search_cond.html' title='Multiple used in 57 places.'>mc_search_cond</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>);
+<a id='L89' name='L89'></a>  89     <a href='../S/lib--search--regex.c.html#L794' title='Defined at 794 in lib/search/regex.c.'>mc_search__cond_struct_new_init_regex</a> (<a href='../Y/charset.html' title='Multiple used in 64 places.'>charset</a>, <a href='../Y/lc_mc_search.html' title='Multiple used in 191 places.'>lc_mc_search</a>, <a href='../Y/mc_search_cond.html' title='Multiple used in 57 places.'>mc_search_cond</a>);
+<a id='L90' name='L90'></a>  90 <em class='brace'>}</em>
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L95' name='L95'></a>  95 <a href='../R/mc_search__run_normal.html' title='Multiple referred from 2 places.'>mc_search__run_normal</a> (<a href='../S/lib--search.h.html#L144' title='Defined at 144 in lib/search.h.'>mc_search_t</a> * <a href='../Y/lc_mc_search.html' title='Multiple used in 191 places.'>lc_mc_search</a>, <strong class='reserved'>const</strong> <strong class='reserved'>void</strong> *<a href='../Y/user_data.html' title='Multiple used in 73 places.'>user_data</a>,
+     <em class='comment'>/* <a href='#L85'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L103'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L50'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L103'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+95 lib/search/normal.c'  /> */</em>
+<a id='L96' name='L96'></a>  96                        <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> <a href='../S/src--filemanager--panel.c.html#L2874' title='Defined at 2874 in src/filemanager/panel.c.'>start_search</a>, <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> <a href='../Y/end_search.html' title='Multiple used in 20 places.'>end_search</a>, <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> * <a href='../Y/found_len.html' title='Multiple used in 43 places.'>found_len</a>)
+<a id='L97' name='L97'></a>  97 <em class='brace'>{</em>
+<a id='L98' name='L98'></a>  98     <strong class='reserved'>return</strong> <a href='../S/lib--search--regex.c.html#L911' title='Defined at 911 in lib/search/regex.c.'>mc_search__run_regex</a> (<a href='../Y/lc_mc_search.html' title='Multiple used in 191 places.'>lc_mc_search</a>, <a href='../Y/user_data.html' title='Multiple used in 73 places.'>user_data</a>, <a href='../S/src--filemanager--panel.c.html#L2874' title='Defined at 2874 in src/filemanager/panel.c.'>start_search</a>, <a href='../Y/end_search.html' title='Multiple used in 20 places.'>end_search</a>, <a href='../Y/found_len.html' title='Multiple used in 43 places.'>found_len</a>);
+<a id='L99' name='L99'></a>  99 <em class='brace'>}</em>
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L102' name='L102'></a> 102 <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *
+<a id='L103' name='L103'></a> 103 <a href='../R/mc_search_normal_prepare_replace_str.html' title='Multiple referred from 2 places.'>mc_search_normal_prepare_replace_str</a> (<a href='../S/lib--search.h.html#L144' title='Defined at 144 in lib/search.h.'>mc_search_t</a> * <a href='../Y/lc_mc_search.html' title='Multiple used in 191 places.'>lc_mc_search</a>, <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> * <a href='../Y/replace_str.html' title='Multiple used in 57 places.'>replace_str</a>)
+     <em class='comment'>/* <a href='#L95'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L50'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+103 lib/search/normal.c'  /> */</em>
+<a id='L104' name='L104'></a> 104 <em class='brace'>{</em>
+<a id='L105' name='L105'></a> 105     (<strong class='reserved'>void</strong>) <a href='../Y/lc_mc_search.html' title='Multiple used in 191 places.'>lc_mc_search</a>;
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107     <strong class='reserved'>return</strong> <a href='../S/lib--glibcompat.c.html#L214' title='Defined at 214 in lib/glibcompat.c.'>mc_g_string_dup</a> (<a href='../Y/replace_str.html' title='Multiple used in 57 places.'>replace_str</a>);
+<a id='L108' name='L108'></a> 108 <em class='brace'>}</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L50'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L103'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+108 lib/search/normal.c'  /> */</em>
+</body>
+</html>

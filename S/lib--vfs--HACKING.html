@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/vfs/HACKING</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--vfs.html'>vfs</a>/HACKING</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--vfs.html'>vfs</a>/HACKING</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/vfs/HACKING'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>Intended audience
+<a id='L2' name='L2'></a>=================
+<a id='L3' name='L3'></a> 
+<a id='L4' name='L4'></a>This document is intended for everybody who wants to understand VFS
+<a id='L5' name='L5'></a>code.  Knowledge of programming is a must.
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a>Preface
+<a id='L9' name='L9'></a>=======
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>While VFS should be considered an excellent idea, which came ahead of
+<a id='L12' name='L12'></a>its time, the implementation used in GNU Midnight Commander is now
+<a id='L13' name='L13'></a>showing its age.
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>The VFS code was left us without any decent documentation.  Most
+<a id='L16' name='L16'></a>functions don't have comments explaining what they do.  Most comments
+<a id='L17' name='L17'></a>describe quirks and implementation details, rather than the intended
+<a id='L18' name='L18'></a>functionality of the code.  This document is an attempt to reconstruct
+<a id='L19' name='L19'></a>understanding of the VFS code and help its future developers.
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>Being the part of GNU Midnight Commander most exposed to potential
+<a id='L22' name='L22'></a>security threats, the VFS code needs to be kept is a good shape. 
+<a id='L23' name='L23'></a>Understanding the code is the key to making and keeping it secure.
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>Basics of code organization
+<a id='L27' name='L27'></a>===========================
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>VFS code it to a certain extent object oriented.  The code dealing with
+<a id='L30' name='L30'></a>a certain type of data (e.g. tar archives) can be thought
+<a id='L31' name='L31'></a>of as a class in the terms of object oriented programming.  They may
+<a id='L32' name='L32'></a>reuse some code from their parent classes.  For instance, tar and cpio
+<a id='L33' name='L33'></a>archives have a common parent class direntry, which contains some common
+<a id='L34' name='L34'></a>code for archives.
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>Individual archives or connections can be considered as instances of
+<a id='L37' name='L37'></a>those classes.  They provide POSIX like interface to their structure,
+<a id='L38' name='L38'></a>but don't expose that structure directly to the common VFS layer.
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>Each VFS object has a directory tree associated with it.  The tree
+<a id='L41' name='L41'></a>consists of entries for files and directories.  In some VFS classes, the
+<a id='L42' name='L42'></a>entries have names and a are associated with nameless inodes, which
+<a id='L43' name='L43'></a>contain information such as size, timestamps and other data normally
+<a id='L44' name='L44'></a>contained in POSIX "struct stat".
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>File vfs.c serves as a multiplexor.  It exports functions similar to
+<a id='L47' name='L47'></a>POSIX but with "mc_" prepended to them.  For example, mc_open() will act
+<a id='L48' name='L48'></a>like open(), but will treat VFS names in a special way.
+<a id='L49' name='L49'></a> 
+<a id='L50' name='L50'></a>Common utility functions not intended to be used outside the VFS code
+<a id='L51' name='L51'></a>should go to utilvfs.c and possibly to other files.  Presently, there is
+<a id='L52' name='L52'></a>a lot of such code in vfs.c.
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>Hierarchy of classes
+<a id='L56' name='L56'></a>====================
+<a id='L57' name='L57'></a> 
+<a id='L58' name='L58'></a>vfs ---- direntry ---- cpio  } archives
+<a id='L59' name='L59'></a>   |            | ---- tar   }
+<a id='L60' name='L60'></a>   |            |
+<a id='L61' name='L61'></a>   |            | ---- fish  } remote systems
+<a id='L62' name='L62'></a>   |            | ---- ftpfs }
+<a id='L63' name='L63'></a>   |
+<a id='L64' name='L64'></a>   |---- extfs ---- extfs archives
+<a id='L65' name='L65'></a>   |---- localfs ---- sfs ---- sfs archives
+<a id='L66' name='L66'></a>   |---- undelfs
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a> 
+<a id='L69' name='L69'></a>Properties of classes
+<a id='L70' name='L70'></a>=====================
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>                   read only    inode-&gt;entry   local cache   full tree
+<a id='L73' name='L73'></a>                                mapping                      loaded
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a>cpio               yes*         yes*           no            yes
+<a id='L76' name='L76'></a>tar                yes*         yes*           no            yes
+<a id='L77' name='L77'></a>fish               no           yes            yes           no
+<a id='L78' name='L78'></a>ftpfs              no           yes            yes           no
+<a id='L79' name='L79'></a>extfs              no           no             yes           yes
+<a id='L80' name='L80'></a>localfs            no           no             N/A           N/A
+<a id='L81' name='L81'></a>sfs                no           yes            yes           N/A
+<a id='L82' name='L82'></a>undelfs            no           yes            no            yes
+<a id='L83' name='L83'></a> 
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>"*" means that this property should change during further development.
+<a id='L86' name='L86'></a>Mapping from inode to entry prevents implementing hard links.  It is
+<a id='L87' name='L87'></a>permissible for directories, which cannot be hardlinked.  Not loading
+<a id='L88' name='L88'></a>the full tree speeds up access to large archives and conserves memory.
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a> 
+<a id='L91' name='L91'></a>Stamping
+<a id='L92' name='L92'></a>========
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>Stamping is the VFS equivalent of garbage collection.  It's purpose is
+<a id='L95' name='L95'></a>to destroy unreferenced VFS objects, in other words close archives or
+<a id='L96' name='L96'></a>connections once they are unused for some time.  There is a tree of
+<a id='L97' name='L97'></a>items representing VFS objects.  The common layer doesn't know the
+<a id='L98' name='L98'></a>structure of the pointers, but it knows the class that should handle the
+<a id='L99' name='L99'></a>pointer.  Every item has a timestamp.  Once the timestamp becomes too
+<a id='L100' name='L100'></a>old, the object is freed.
+<a id='L101' name='L101'></a> 
+<a id='L102' name='L102'></a>There are ways to keep objects alive if they are used.  Also, objects
+<a id='L103' name='L103'></a>can have parent objects, which are freed together with there original
+<a id='L104' name='L104'></a>object if they are otherwise unreferenced.
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+104 lib/vfs/HACKING'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/editor/etags.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L67'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L414'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--editor.html'>editor</a>/etags.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--editor.html'>editor</a>/etags.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L67'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L414'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/editor/etags.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L67' title='Defined at 67.'>etags_hash_free</a></li>
+<li><a href='#L80' title='Defined at 80.'>parse_define</a></li>
+<li><a href='#L197' title='Defined at 197.'>etags_set_definition_hash</a></li>
+<li><a href='#L296' title='Defined at 296.'>editcmd_dialog_select_definition_add</a></li>
+<li><a href='#L316' title='Defined at 316.'>editcmd_dialog_select_definition_show</a></li>
+<li><a href='#L414' title='Defined at 414.'>edit_get_match_keyword_cmd</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Editor C-code navigation via tags.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   make TAGS file via command:</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   $ find . -type f -name "*.[ch]" | etags -l c --declarations -</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'></em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>   or, if etags utility not installed:</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   $ find . -type f -name "*.[ch]" | ctags --c-kinds=+p --fields=+iaS --extra=+q -e -L-</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'></em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Copyright (C) 2009-2024</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   Written by:</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   Ilia Maslakov &lt;il.smind@gmail.com&gt;, 2009</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   Slava Zanko &lt;slavazanko@gmail.com&gt;, 2009</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2010-2022</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'></em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'></em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'></em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'></em>
+<a id='L29' name='L29'></a>  29 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L30' name='L30'></a>  30 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'> */</em>
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;ctype.h&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;stdio.h&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;stdlib.h&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;string.h&gt;
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> "<a href='lib--fileloc.h.html'>lib/fileloc.h</a>"        <em class='comment'>/* TAGS_NAME */</em>
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>lib/tty/tty.h</a>"        <em class='comment'>/* LINES, COLS */</em>
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"
+<a id='L45' name='L45'></a>  45 
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#include</em> "<a href='src--editor--editwidget.h.html'>editwidget.h</a>"
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <em class='sharp'>#include</em> "<a href='src--editor--etags.h.html'>etags.h</a>"
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/def_max_width.html' title='Multiple used in 4 places.'>def_max_width</a>;
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L63' name='L63'></a>  63 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L64' name='L64'></a>  64 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L67' name='L67'></a>  67 <a href='../S/src--editor--etags.c.html#L276' title='Referred from 276 in src/editor/etags.c.'>etags_hash_free</a> (<a href='../Y/gpointer.html' title='Multiple used in 100 places.'>gpointer</a> <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L80'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L414'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+67 src/editor/etags.c'  /> */</em>
+<a id='L68' name='L68'></a>  68 <em class='brace'>{</em>
+<a id='L69' name='L69'></a>  69     <a href='../S/src--editor--etags.h.html#L16' title='Defined at 16 in src/editor/etags.h.'>etags_hash_t</a> *<a href='../Y/hash.html' title='Multiple used in 5 places.'>hash</a> = (<a href='../S/src--editor--etags.h.html#L16' title='Defined at 16 in src/editor/etags.h.'>etags_hash_t</a> *) <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>;
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/hash.html' title='Multiple used in 5 places.'>hash</a>-&gt;<a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a>);
+<a id='L72' name='L72'></a>  72     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/hash.html' title='Multiple used in 5 places.'>hash</a>-&gt;<a href='../Y/fullpath.html' title='Multiple used in 9 places.'>fullpath</a>);
+<a id='L73' name='L73'></a>  73     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/hash.html' title='Multiple used in 5 places.'>hash</a>-&gt;<a href='../Y/short_define.html' title='Multiple used in 5 places.'>short_define</a>);
+<a id='L74' name='L74'></a>  74     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/hash.html' title='Multiple used in 5 places.'>hash</a>);
+<a id='L75' name='L75'></a>  75 <em class='brace'>}</em>
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L80' name='L80'></a>  80 <a href='../S/src--editor--etags.c.html#L262' title='Referred from 262 in src/editor/etags.c.'>parse_define</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <strong class='reserved'>char</strong> **<a href='../Y/long_name.html' title='Multiple used in 3 places.'>long_name</a>, <strong class='reserved'>char</strong> **<a href='../Y/short_name.html' title='Multiple used in 3 places.'>short_name</a>, <strong class='reserved'>long</strong> *<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a>)
+     <em class='comment'>/* <a href='#L67'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L197'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L67'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L414'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+80 src/editor/etags.c'  /> */</em>
+<a id='L81' name='L81'></a>  81 <em class='brace'>{</em>
+<a id='L82' name='L82'></a>  82     <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>enum</strong>
+<a id='L84' name='L84'></a>  84     <em class='brace'>{</em>
+<a id='L85' name='L85'></a>  85         <a href='../R/in_longname.html' title='Multiple referred from 2 places.'>in_longname</a>,
+<a id='L86' name='L86'></a>  86         <a href='../R/in_shortname.html' title='Multiple referred from 3 places.'>in_shortname</a>,
+<a id='L87' name='L87'></a>  87         <a href='../S/src--editor--etags.c.html#L117' title='Referred from 117 in src/editor/etags.c.'>in_shortname_first_char</a>,
+<a id='L88' name='L88'></a>  88         <a href='../R/in_line.html' title='Multiple referred from 5 places.'>in_line</a>,
+<a id='L89' name='L89'></a>  89         <a href='../R/finish.html' title='Multiple referred from 20 places.'>finish</a>
+<a id='L90' name='L90'></a>  90     <em class='brace'>}</em> <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L85' title='Defined at 85 in src/editor/etags.c.'>in_longname</a>;
+<a id='L91' name='L91'></a>  91     <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/longdef.html' title='Multiple used in 5 places.'>longdef</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L94' name='L94'></a>  94     <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L95' name='L95'></a>  95     <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/linedef.html' title='Multiple used in 7 places.'>linedef</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>char</strong> <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> = *<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>;
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>while</strong> (!(<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == '\0' || <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == '\n'))
+<a id='L100' name='L100'></a> 100     <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101         <strong class='reserved'>switch</strong> (<a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a>)
+<a id='L102' name='L102'></a> 102         <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103         <strong class='reserved'>case</strong> <a href='../S/src--editor--etags.c.html#L85' title='Defined at 85 in src/editor/etags.c.'>in_longname</a>:
+<a id='L104' name='L104'></a> 104             <strong class='reserved'>if</strong> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == 0x01)
+<a id='L105' name='L105'></a> 105                 <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L88' title='Defined at 88 in src/editor/etags.c.'>in_line</a>;
+<a id='L106' name='L106'></a> 106             <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == 0x7F)
+<a id='L107' name='L107'></a> 107                 <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L86' title='Defined at 86 in src/editor/etags.c.'>in_shortname</a>;
+<a id='L108' name='L108'></a> 108             <strong class='reserved'>else</strong>
+<a id='L109' name='L109'></a> 109             <em class='brace'>{</em>
+<a id='L110' name='L110'></a> 110                 <strong class='reserved'>if</strong> (<a href='../Y/longdef.html' title='Multiple used in 5 places.'>longdef</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L111' name='L111'></a> 111                     <a href='../Y/longdef.html' title='Multiple used in 5 places.'>longdef</a> = <a href='../Y/g_string_sized_new.html' title='Multiple used in 59 places.'>g_string_sized_new</a> (32);
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113                 <a href='../Y/g_string_append_c.html' title='Multiple used in 114 places.'>g_string_append_c</a> (<a href='../Y/longdef.html' title='Multiple used in 5 places.'>longdef</a>, <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>);
+<a id='L114' name='L114'></a> 114             <em class='brace'>}</em>
+<a id='L115' name='L115'></a> 115             <strong class='reserved'>break</strong>;
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117         <strong class='reserved'>case</strong> <a href='../S/src--editor--etags.c.html#L87' title='Defined at 87 in src/editor/etags.c.'>in_shortname_first_char</a>:
+<a id='L118' name='L118'></a> 118             <strong class='reserved'>if</strong> (<a href='../Y/isdigit.html' title='Multiple used in 27 places.'>isdigit</a> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>))
+<a id='L119' name='L119'></a> 119             <em class='brace'>{</em>
+<a id='L120' name='L120'></a> 120                 <strong class='reserved'>if</strong> (<a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L121' name='L121'></a> 121                     <a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a> = <a href='../Y/g_string_sized_new.html' title='Multiple used in 59 places.'>g_string_sized_new</a> (32);
+<a id='L122' name='L122'></a> 122                 <strong class='reserved'>else</strong>
+<a id='L123' name='L123'></a> 123                     <a href='../Y/g_string_set_size.html' title='Multiple used in 38 places.'>g_string_set_size</a> (<a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a>, 0);
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125                 <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>--;
+<a id='L126' name='L126'></a> 126                 <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L88' title='Defined at 88 in src/editor/etags.c.'>in_line</a>;
+<a id='L127' name='L127'></a> 127             <em class='brace'>}</em>
+<a id='L128' name='L128'></a> 128             <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == 0x01)
+<a id='L129' name='L129'></a> 129                 <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L88' title='Defined at 88 in src/editor/etags.c.'>in_line</a>;
+<a id='L130' name='L130'></a> 130             <strong class='reserved'>else</strong>
+<a id='L131' name='L131'></a> 131             <em class='brace'>{</em>
+<a id='L132' name='L132'></a> 132                 <strong class='reserved'>if</strong> (<a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L133' name='L133'></a> 133                     <a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a> = <a href='../Y/g_string_sized_new.html' title='Multiple used in 59 places.'>g_string_sized_new</a> (32);
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135                 <a href='../Y/g_string_append_c.html' title='Multiple used in 114 places.'>g_string_append_c</a> (<a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a>, <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>);
+<a id='L136' name='L136'></a> 136                 <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L86' title='Defined at 86 in src/editor/etags.c.'>in_shortname</a>;
+<a id='L137' name='L137'></a> 137             <em class='brace'>}</em>
+<a id='L138' name='L138'></a> 138             <strong class='reserved'>break</strong>;
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140         <strong class='reserved'>case</strong> <a href='../S/src--editor--etags.c.html#L86' title='Defined at 86 in src/editor/etags.c.'>in_shortname</a>:
+<a id='L141' name='L141'></a> 141             <strong class='reserved'>if</strong> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == 0x01)
+<a id='L142' name='L142'></a> 142                 <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L88' title='Defined at 88 in src/editor/etags.c.'>in_line</a>;
+<a id='L143' name='L143'></a> 143             <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == '\n')
+<a id='L144' name='L144'></a> 144                 <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L89' title='Defined at 89 in src/editor/etags.c.'>finish</a>;
+<a id='L145' name='L145'></a> 145             <strong class='reserved'>else</strong>
+<a id='L146' name='L146'></a> 146             <em class='brace'>{</em>
+<a id='L147' name='L147'></a> 147                 <strong class='reserved'>if</strong> (<a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L148' name='L148'></a> 148                     <a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a> = <a href='../Y/g_string_sized_new.html' title='Multiple used in 59 places.'>g_string_sized_new</a> (32);
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150                 <a href='../Y/g_string_append_c.html' title='Multiple used in 114 places.'>g_string_append_c</a> (<a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a>, <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>);
+<a id='L151' name='L151'></a> 151             <em class='brace'>}</em>
+<a id='L152' name='L152'></a> 152             <strong class='reserved'>break</strong>;
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154         <strong class='reserved'>case</strong> <a href='../S/src--editor--etags.c.html#L88' title='Defined at 88 in src/editor/etags.c.'>in_line</a>:
+<a id='L155' name='L155'></a> 155             <strong class='reserved'>if</strong> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == ',' || <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> == '\n')
+<a id='L156' name='L156'></a> 156                 <a href='../Y/def_state.html' title='Multiple used in 10 places.'>def_state</a> = <a href='../S/src--editor--etags.c.html#L89' title='Defined at 89 in src/editor/etags.c.'>finish</a>;
+<a id='L157' name='L157'></a> 157             <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/isdigit.html' title='Multiple used in 27 places.'>isdigit</a> (<a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>))
+<a id='L158' name='L158'></a> 158             <em class='brace'>{</em>
+<a id='L159' name='L159'></a> 159                 <strong class='reserved'>if</strong> (<a href='../Y/linedef.html' title='Multiple used in 7 places.'>linedef</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L160' name='L160'></a> 160                     <a href='../Y/linedef.html' title='Multiple used in 7 places.'>linedef</a> = <a href='../Y/g_string_sized_new.html' title='Multiple used in 59 places.'>g_string_sized_new</a> (32);
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162                 <a href='../Y/g_string_append_c.html' title='Multiple used in 114 places.'>g_string_append_c</a> (<a href='../Y/linedef.html' title='Multiple used in 7 places.'>linedef</a>, <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>);
+<a id='L163' name='L163'></a> 163             <em class='brace'>}</em>
+<a id='L164' name='L164'></a> 164             <strong class='reserved'>break</strong>;
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166         <strong class='reserved'>case</strong> <a href='../S/src--editor--etags.c.html#L89' title='Defined at 89 in src/editor/etags.c.'>finish</a>:
+<a id='L167' name='L167'></a> 167             *<a href='../Y/long_name.html' title='Multiple used in 3 places.'>long_name</a> = <a href='../Y/longdef.html' title='Multiple used in 5 places.'>longdef</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> ? <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> : <a href='../Y/g_string_free.html' title='Multiple used in 182 places.'>g_string_free</a> (<a href='../Y/longdef.html' title='Multiple used in 5 places.'>longdef</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L168' name='L168'></a> 168             *<a href='../Y/short_name.html' title='Multiple used in 3 places.'>short_name</a> = <a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> ? <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> : <a href='../Y/g_string_free.html' title='Multiple used in 182 places.'>g_string_free</a> (<a href='../Y/shortdef.html' title='Multiple used in 11 places.'>shortdef</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170             <strong class='reserved'>if</strong> (<a href='../Y/linedef.html' title='Multiple used in 7 places.'>linedef</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L171' name='L171'></a> 171                 *<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a> = 0;
+<a id='L172' name='L172'></a> 172             <strong class='reserved'>else</strong>
+<a id='L173' name='L173'></a> 173             <em class='brace'>{</em>
+<a id='L174' name='L174'></a> 174                 *<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a> = <a href='../Y/atol.html' title='Multiple used in 13 places.'>atol</a> (<a href='../Y/linedef.html' title='Multiple used in 7 places.'>linedef</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>);
+<a id='L175' name='L175'></a> 175                 <a href='../Y/g_string_free.html' title='Multiple used in 182 places.'>g_string_free</a> (<a href='../Y/linedef.html' title='Multiple used in 7 places.'>linedef</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L176' name='L176'></a> 176             <em class='brace'>}</em>
+<a id='L177' name='L177'></a> 177             <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179         <strong class='reserved'>default</strong>:
+<a id='L180' name='L180'></a> 180             <strong class='reserved'>break</strong>;
+<a id='L181' name='L181'></a> 181         <em class='brace'>}</em>
+<a id='L182' name='L182'></a> 182 
+<a id='L183' name='L183'></a> 183         <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>++;
+<a id='L184' name='L184'></a> 184         <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a> = *<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>;
+<a id='L185' name='L185'></a> 185     <em class='brace'>}</em>
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187     *<a href='../Y/long_name.html' title='Multiple used in 3 places.'>long_name</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L188' name='L188'></a> 188     *<a href='../Y/short_name.html' title='Multiple used in 3 places.'>short_name</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L189' name='L189'></a> 189     *<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a> = 0;
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191     <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L192' name='L192'></a> 192 <em class='brace'>}</em>
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L195' name='L195'></a> 195 
+<a id='L196' name='L196'></a> 196 <strong class='reserved'>static</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *
+<a id='L197' name='L197'></a> 197 <a href='../S/src--editor--etags.c.html#L453' title='Referred from 453 in src/editor/etags.c.'>etags_set_definition_hash</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/start_path.html' title='Multiple used in 2 places.'>start_path</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/match_func.html' title='Multiple used in 3 places.'>match_func</a>)
+     <em class='comment'>/* <a href='#L80'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L296'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L67'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L414'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+197 src/editor/etags.c'  /> */</em>
+<a id='L198' name='L198'></a> 198 <em class='brace'>{</em>
+<a id='L199' name='L199'></a> 199     <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L200' name='L200'></a> 200     <strong class='reserved'>enum</strong>
+<a id='L201' name='L201'></a> 201     <em class='brace'>{</em>
+<a id='L202' name='L202'></a> 202         <a href='../R/start.html' title='Multiple referred from 233 places.'>start</a>,
+<a id='L203' name='L203'></a> 203         <a href='../R/in_filename.html' title='Multiple referred from 3 places.'>in_filename</a>,
+<a id='L204' name='L204'></a> 204         <a href='../R/in_define.html' title='Multiple referred from 2 places.'>in_define</a>
+<a id='L205' name='L205'></a> 205     <em class='brace'>}</em> <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a> = <a href='../S/src--editor--etags.c.html#L202' title='Defined at 202 in src/editor/etags.c.'>start</a>;
+<a id='L206' name='L206'></a> 206     <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L207' name='L207'></a> 207 
+<a id='L208' name='L208'></a> 208     <a href='../Y/FILE.html' title='Multiple used in 58 places.'>FILE</a> *<a href='../Y/f.html' title='Multiple used in 347 places.'>f</a>;
+<a id='L209' name='L209'></a> 209     <strong class='reserved'>char</strong> <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>[<a href='../S/lib--global.h.html#L107' title='Defined at 107 in lib/global.h.'>BUF_LARGE</a>];
+<a id='L210' name='L210'></a> 210     <strong class='reserved'>char</strong> *<a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L211' name='L211'></a> 211     <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L212' name='L212'></a> 212 
+<a id='L213' name='L213'></a> 213     <strong class='reserved'>if</strong> (<a href='../Y/match_func.html' title='Multiple used in 3 places.'>match_func</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> || <a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L214' name='L214'></a> 214         <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <em class='comment'>/* open file with positions */</em>
+<a id='L217' name='L217'></a> 217     <a href='../Y/f.html' title='Multiple used in 347 places.'>f</a> = <a href='../Y/fopen.html' title='Multiple used in 46 places.'>fopen</a> (<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a>, "r");
+<a id='L218' name='L218'></a> 218     <strong class='reserved'>if</strong> (<a href='../Y/f.html' title='Multiple used in 347 places.'>f</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L219' name='L219'></a> 219         <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221     <strong class='reserved'>while</strong> (<a href='../Y/fgets.html' title='Multiple used in 25 places.'>fgets</a> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>), <a href='../Y/f.html' title='Multiple used in 347 places.'>f</a>) != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L222' name='L222'></a> 222         <strong class='reserved'>switch</strong> (<a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>)
+<a id='L223' name='L223'></a> 223         <em class='brace'>{</em>
+<a id='L224' name='L224'></a> 224         <strong class='reserved'>case</strong> <a href='../S/src--editor--etags.c.html#L202' title='Defined at 202 in src/editor/etags.c.'>start</a>:
+<a id='L225' name='L225'></a> 225             <strong class='reserved'>if</strong> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>[0] == 0x0C)
+<a id='L226' name='L226'></a> 226                 <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a> = <a href='../S/src--editor--etags.c.html#L203' title='Defined at 203 in src/editor/etags.c.'>in_filename</a>;
+<a id='L227' name='L227'></a> 227             <strong class='reserved'>break</strong>;
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229         <strong class='reserved'>case</strong> <a href='../S/src--editor--etags.c.html#L203' title='Defined at 203 in src/editor/etags.c.'>in_filename</a>:
+<a id='L230' name='L230'></a> 230             <em class='brace'>{</em>
+<a id='L231' name='L231'></a> 231                 <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/pos.html' title='Multiple used in 320 places.'>pos</a>;
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233                 <a href='../Y/pos.html' title='Multiple used in 320 places.'>pos</a> = strcspn (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, ",");
+<a id='L234' name='L234'></a> 234                 <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a>);
+<a id='L235' name='L235'></a> 235                 <a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a> = <a href='../Y/g_strndup.html' title='Multiple used in 61 places.'>g_strndup</a> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/pos.html' title='Multiple used in 320 places.'>pos</a>);
+<a id='L236' name='L236'></a> 236                 <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a> = <a href='../S/src--editor--etags.c.html#L204' title='Defined at 204 in src/editor/etags.c.'>in_define</a>;
+<a id='L237' name='L237'></a> 237                 <strong class='reserved'>break</strong>;
+<a id='L238' name='L238'></a> 238             <em class='brace'>}</em>
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240         <strong class='reserved'>case</strong> <a href='../S/src--editor--etags.c.html#L204' title='Defined at 204 in src/editor/etags.c.'>in_define</a>:
+<a id='L241' name='L241'></a> 241             <strong class='reserved'>if</strong> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>[0] == 0x0C)
+<a id='L242' name='L242'></a> 242                 <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a> = <a href='../S/src--editor--etags.c.html#L203' title='Defined at 203 in src/editor/etags.c.'>in_filename</a>;
+<a id='L243' name='L243'></a> 243             <strong class='reserved'>else</strong>
+<a id='L244' name='L244'></a> 244             <em class='brace'>{</em>
+<a id='L245' name='L245'></a> 245                 <strong class='reserved'>char</strong> *<a href='../Y/chekedstr.html' title='Multiple used in 4 places.'>chekedstr</a>;
+<a id='L246' name='L246'></a> 246 
+<a id='L247' name='L247'></a> 247                 <em class='comment'>/* check if the filename matches the define pos */</em>
+<a id='L248' name='L248'></a> 248                 <a href='../Y/chekedstr.html' title='Multiple used in 4 places.'>chekedstr</a> = <a href='../Y/strstr.html' title='Multiple used in 35 places.'>strstr</a> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/match_func.html' title='Multiple used in 3 places.'>match_func</a>);
+<a id='L249' name='L249'></a> 249                 <strong class='reserved'>if</strong> (<a href='../Y/chekedstr.html' title='Multiple used in 4 places.'>chekedstr</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L250' name='L250'></a> 250                 <em class='brace'>{</em>
+<a id='L251' name='L251'></a> 251                     <strong class='reserved'>char</strong> *<a href='../Y/longname.html' title='Multiple used in 7 places.'>longname</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L252' name='L252'></a> 252                     <strong class='reserved'>char</strong> *<a href='../Y/shortname.html' title='Multiple used in 5 places.'>shortname</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L253' name='L253'></a> 253                     <a href='../S/src--editor--etags.h.html#L16' title='Defined at 16 in src/editor/etags.h.'>etags_hash_t</a> *<a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>;
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255                     <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a> = <a href='../Y/g_new.html' title='Multiple used in 60 places.'>g_new</a> (<a href='../S/src--editor--etags.h.html#L16' title='Defined at 16 in src/editor/etags.h.'>etags_hash_t</a>, 1);
+<a id='L256' name='L256'></a> 256 
+<a id='L257' name='L257'></a> 257                     <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/fullpath.html' title='Multiple used in 9 places.'>fullpath</a> = <a href='../S/lib--utilunix.c.html#L1279' title='Defined at 1279 in lib/utilunix.c.'>mc_build_filename</a> (<a href='../Y/start_path.html' title='Multiple used in 2 places.'>start_path</a>, <a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a>, (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L258' name='L258'></a> 258                     <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a> = <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (<a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a>);
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260                     <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a> = 0;
+<a id='L261' name='L261'></a> 261 
+<a id='L262' name='L262'></a> 262                     <a href='../S/src--editor--etags.c.html#L80' title='Defined at 80 in src/editor/etags.c.'>parse_define</a> (<a href='../Y/chekedstr.html' title='Multiple used in 4 places.'>chekedstr</a>, &amp;<a href='../Y/longname.html' title='Multiple used in 7 places.'>longname</a>, &amp;<a href='../Y/shortname.html' title='Multiple used in 5 places.'>shortname</a>, &amp;<a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a>);
+<a id='L263' name='L263'></a> 263 
+<a id='L264' name='L264'></a> 264                     <strong class='reserved'>if</strong> (<a href='../Y/shortname.html' title='Multiple used in 5 places.'>shortname</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; *<a href='../Y/shortname.html' title='Multiple used in 5 places.'>shortname</a> != '\0')
+<a id='L265' name='L265'></a> 265                     <em class='brace'>{</em>
+<a id='L266' name='L266'></a> 266                         <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/short_define.html' title='Multiple used in 5 places.'>short_define</a> = <a href='../Y/shortname.html' title='Multiple used in 5 places.'>shortname</a>;
+<a id='L267' name='L267'></a> 267                         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/longname.html' title='Multiple used in 7 places.'>longname</a>);
+<a id='L268' name='L268'></a> 268                     <em class='brace'>}</em>
+<a id='L269' name='L269'></a> 269                     <strong class='reserved'>else</strong>
+<a id='L270' name='L270'></a> 270                     <em class='brace'>{</em>
+<a id='L271' name='L271'></a> 271                         <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/short_define.html' title='Multiple used in 5 places.'>short_define</a> = <a href='../Y/longname.html' title='Multiple used in 7 places.'>longname</a>;
+<a id='L272' name='L272'></a> 272                         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/shortname.html' title='Multiple used in 5 places.'>shortname</a>);
+<a id='L273' name='L273'></a> 273                     <em class='brace'>}</em>
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275                     <strong class='reserved'>if</strong> (<a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L276' name='L276'></a> 276                         <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../S/src--editor--etags.c.html#L67' title='Defined at 67 in src/editor/etags.c.'>etags_hash_free</a>);
+<a id='L277' name='L277'></a> 277 
+<a id='L278' name='L278'></a> 278                     <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>, <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>);
+<a id='L279' name='L279'></a> 279                 <em class='brace'>}</em>
+<a id='L280' name='L280'></a> 280             <em class='brace'>}</em>
+<a id='L281' name='L281'></a> 281             <strong class='reserved'>break</strong>;
+<a id='L282' name='L282'></a> 282 
+<a id='L283' name='L283'></a> 283         <strong class='reserved'>default</strong>:
+<a id='L284' name='L284'></a> 284             <strong class='reserved'>break</strong>;
+<a id='L285' name='L285'></a> 285         <em class='brace'>}</em>
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a>);
+<a id='L288' name='L288'></a> 288     <a href='../Y/fclose.html' title='Multiple used in 44 places.'>fclose</a> (<a href='../Y/f.html' title='Multiple used in 347 places.'>f</a>);
+<a id='L289' name='L289'></a> 289 
+<a id='L290' name='L290'></a> 290     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L291' name='L291'></a> 291 <em class='brace'>}</em>
+<a id='L292' name='L292'></a> 292 
+<a id='L293' name='L293'></a> 293 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L294' name='L294'></a> 294 
+<a id='L295' name='L295'></a> 295 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L296' name='L296'></a> 296 <a href='../S/src--editor--etags.c.html#L352' title='Referred from 352 in src/editor/etags.c.'>editcmd_dialog_select_definition_add</a> (<a href='../Y/gpointer.html' title='Multiple used in 100 places.'>gpointer</a> <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>, <a href='../Y/gpointer.html' title='Multiple used in 100 places.'>gpointer</a> <a href='../Y/user_data.html' title='Multiple used in 73 places.'>user_data</a>)
+     <em class='comment'>/* <a href='#L197'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L316'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L67'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L414'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+296 src/editor/etags.c'  /> */</em>
+<a id='L297' name='L297'></a> 297 <em class='brace'>{</em>
+<a id='L298' name='L298'></a> 298     <a href='../S/src--editor--etags.h.html#L16' title='Defined at 16 in src/editor/etags.h.'>etags_hash_t</a> *<a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a> = (<a href='../S/src--editor--etags.h.html#L16' title='Defined at 16 in src/editor/etags.h.'>etags_hash_t</a> *) <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>;
+<a id='L299' name='L299'></a> 299     <a href='../D/WListbox.html' title='Multiple defined in 2 places.'>WListbox</a> *<a href='../Y/def_list.html' title='Multiple used in 7 places.'>def_list</a> = (<a href='../D/WListbox.html' title='Multiple defined in 2 places.'>WListbox</a> *) <a href='../Y/user_data.html' title='Multiple used in 73 places.'>user_data</a>;
+<a id='L300' name='L300'></a> 300     <strong class='reserved'>char</strong> *<a href='../Y/label_def.html' title='Multiple used in 5 places.'>label_def</a>;
+<a id='L301' name='L301'></a> 301     <strong class='reserved'>int</strong> <a href='../Y/def_width.html' title='Multiple used in 3 places.'>def_width</a>;
+<a id='L302' name='L302'></a> 302 
+<a id='L303' name='L303'></a> 303     <a href='../Y/label_def.html' title='Multiple used in 5 places.'>label_def</a> =
+<a id='L304' name='L304'></a> 304         <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> ("%s -&gt; %s:%ld", <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/short_define.html' title='Multiple used in 5 places.'>short_define</a>, <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/filename.html' title='Multiple used in 200 places.'>filename</a>,
+<a id='L305' name='L305'></a> 305                          <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a>);
+<a id='L306' name='L306'></a> 306     <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/def_list.html' title='Multiple used in 7 places.'>def_list</a>, <a href='../S/lib--widget--listbox.h.html#L25' title='Defined at 25 in lib/widget/listbox.h.'>LISTBOX_APPEND_AT_END</a>, 0, <a href='../Y/label_def.html' title='Multiple used in 5 places.'>label_def</a>, <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L307' name='L307'></a> 307     <a href='../Y/def_width.html' title='Multiple used in 3 places.'>def_width</a> = <a href='../S/lib--strutil--strutil.c.html#L655' title='Defined at 655 in lib/strutil/strutil.c.'>str_term_width1</a> (<a href='../Y/label_def.html' title='Multiple used in 5 places.'>label_def</a>);
+<a id='L308' name='L308'></a> 308     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/label_def.html' title='Multiple used in 5 places.'>label_def</a>);
+<a id='L309' name='L309'></a> 309     <a href='../Y/def_max_width.html' title='Multiple used in 4 places.'>def_max_width</a> = <a href='../Y/MAX.html' title='Multiple used in 120 places.'>MAX</a> (<a href='../Y/def_max_width.html' title='Multiple used in 4 places.'>def_max_width</a>, <a href='../Y/def_width.html' title='Multiple used in 3 places.'>def_width</a>);
+<a id='L310' name='L310'></a> 310 <em class='brace'>}</em>
+<a id='L311' name='L311'></a> 311 
+<a id='L312' name='L312'></a> 312 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L313' name='L313'></a> 313 <em class='comment'>/* let the user select where function definition */</em>
+<a id='L314' name='L314'></a> 314 
+<a id='L315' name='L315'></a> 315 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L316' name='L316'></a> 316 <a href='../S/src--editor--etags.c.html#L460' title='Referred from 460 in src/editor/etags.c.'>editcmd_dialog_select_definition_show</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> * <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, <strong class='reserved'>char</strong> *<a href='../Y/match_expr.html' title='Multiple used in 23 places.'>match_expr</a>, <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> * <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>)
+     <em class='comment'>/* <a href='#L296'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L414'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L67'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L414'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+316 src/editor/etags.c'  /> */</em>
+<a id='L317' name='L317'></a> 317 <em class='brace'>{</em>
+<a id='L318' name='L318'></a> 318     <strong class='reserved'>const</strong> <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> *<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a> = &amp;<a href='../S/lib--widget--widget-common.h.html#L16' title='Defined at 16 in lib/widget/widget-common.h.'>CONST_WIDGET</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>)-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>;
+<a id='L319' name='L319'></a> 319     <strong class='reserved'>int</strong> <a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a>, <a href='../Y/start_y.html' title='Multiple used in 26 places.'>start_y</a>, <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a>;
+<a id='L320' name='L320'></a> 320     <strong class='reserved'>char</strong> *<a href='../Y/curr.html' title='Multiple used in 49 places.'>curr</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L321' name='L321'></a> 321     <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *<a href='../Y/def_dlg.html' title='Multiple used in 6 places.'>def_dlg</a>;
+<a id='L322' name='L322'></a> 322     <a href='../D/WListbox.html' title='Multiple defined in 2 places.'>WListbox</a> *<a href='../Y/def_list.html' title='Multiple used in 7 places.'>def_list</a>;
+<a id='L323' name='L323'></a> 323     <strong class='reserved'>int</strong> <a href='../Y/def_dlg_h.html' title='Multiple used in 8 places.'>def_dlg_h</a>;              <em class='comment'>/* dialog height */</em>
+<a id='L324' name='L324'></a> 324     <strong class='reserved'>int</strong> <a href='../Y/def_dlg_w.html' title='Multiple used in 7 places.'>def_dlg_w</a>;              <em class='comment'>/* dialog width */</em>
+<a id='L325' name='L325'></a> 325 
+<a id='L326' name='L326'></a> 326     <em class='comment'>/* calculate the dialog metrics */</em>
+<a id='L327' name='L327'></a> 327     <a href='../Y/def_dlg_h.html' title='Multiple used in 8 places.'>def_dlg_h</a> = <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a> + 2;
+<a id='L328' name='L328'></a> 328     <a href='../Y/def_dlg_w.html' title='Multiple used in 7 places.'>def_dlg_w</a> = <a href='../S/lib--tty--tty-slang.h.html#L23' title='Defined at 23 in lib/tty/tty-slang.h.'>COLS</a> - 2;       <em class='comment'>/* will be clarified later */</em>
+<a id='L329' name='L329'></a> 329     <a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a> = <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> + <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/curs_col.html' title='Multiple used in 28 places.'>curs_col</a> + <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/start_col.html' title='Multiple used in 30 places.'>start_col</a> + <a href='../S/src--editor--edit-impl.h.html#L36' title='Defined at 36 in src/editor/edit-impl.h.'>EDIT_TEXT_HORIZONTAL_OFFSET</a> +
+<a id='L330' name='L330'></a> 330         (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/fullscreen.html' title='Multiple used in 28 places.'>fullscreen</a> ? 0 : 1) + <a href='../Y/edit_options.html' title='Multiple used in 169 places.'>edit_options</a>.<a href='../Y/line_state_width.html' title='Multiple used in 18 places.'>line_state_width</a>;
+<a id='L331' name='L331'></a> 331     <a href='../Y/start_y.html' title='Multiple used in 26 places.'>start_y</a> = <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> + <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/curs_row.html' title='Multiple used in 33 places.'>curs_row</a> + <a href='../S/src--editor--edit-impl.h.html#L37' title='Defined at 37 in src/editor/edit-impl.h.'>EDIT_TEXT_VERTICAL_OFFSET</a> + (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/fullscreen.html' title='Multiple used in 28 places.'>fullscreen</a> ? 0 : 1) + 1;
+<a id='L332' name='L332'></a> 332 
+<a id='L333' name='L333'></a> 333     <strong class='reserved'>if</strong> (<a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a> &lt; 0)
+<a id='L334' name='L334'></a> 334         <a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a> = 0;
+<a id='L335' name='L335'></a> 335     <strong class='reserved'>if</strong> (<a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a> &lt; <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> + 1)
+<a id='L336' name='L336'></a> 336         <a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a> = <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> + 1 + <a href='../Y/edit_options.html' title='Multiple used in 169 places.'>edit_options</a>.<a href='../Y/line_state_width.html' title='Multiple used in 18 places.'>line_state_width</a>;
+<a id='L337' name='L337'></a> 337 
+<a id='L338' name='L338'></a> 338     <strong class='reserved'>if</strong> (<a href='../Y/def_dlg_h.html' title='Multiple used in 8 places.'>def_dlg_h</a> &gt; <a href='../S/lib--tty--tty-slang.h.html#L24' title='Defined at 24 in lib/tty/tty-slang.h.'>LINES</a> - 2)
+<a id='L339' name='L339'></a> 339         <a href='../Y/def_dlg_h.html' title='Multiple used in 8 places.'>def_dlg_h</a> = <a href='../S/lib--tty--tty-slang.h.html#L24' title='Defined at 24 in lib/tty/tty-slang.h.'>LINES</a> - 2;
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341     <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a> = <a href='../Y/start_y.html' title='Multiple used in 26 places.'>start_y</a> + <a href='../Y/def_dlg_h.html' title='Multiple used in 8 places.'>def_dlg_h</a> - <a href='../S/lib--tty--tty-slang.h.html#L24' title='Defined at 24 in lib/tty/tty-slang.h.'>LINES</a>;
+<a id='L342' name='L342'></a> 342     <strong class='reserved'>if</strong> (<a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a> &gt; 0)
+<a id='L343' name='L343'></a> 343         <a href='../Y/start_y.html' title='Multiple used in 26 places.'>start_y</a> -= (<a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a> + 1);
+<a id='L344' name='L344'></a> 344 
+<a id='L345' name='L345'></a> 345     <a href='../Y/def_dlg.html' title='Multiple used in 6 places.'>def_dlg</a> = <a href='../S/lib--widget--dialog.c.html#L399' title='Defined at 399 in lib/widget/dialog.c.'>dlg_create</a> (<a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>, <a href='../Y/start_y.html' title='Multiple used in 26 places.'>start_y</a>, <a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a>, <a href='../Y/def_dlg_h.html' title='Multiple used in 8 places.'>def_dlg_h</a>, <a href='../Y/def_dlg_w.html' title='Multiple used in 7 places.'>def_dlg_w</a>, <a href='../S/lib--widget--widget-common.h.html#L110' title='Defined at 110 in lib/widget/widget-common.h.'>WPOS_KEEP_DEFAULT</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>,
+<a id='L346' name='L346'></a> 346                           <a href='../Y/dialog_colors.html' title='Multiple used in 35 places.'>dialog_colors</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, "[Definitions]", <a href='../Y/match_expr.html' title='Multiple used in 23 places.'>match_expr</a>);
+<a id='L347' name='L347'></a> 347     <a href='../Y/def_list.html' title='Multiple used in 7 places.'>def_list</a> = <a href='../S/lib--widget--listbox.c.html#L553' title='Defined at 553 in lib/widget/listbox.c.'>listbox_new</a> (1, 1, <a href='../Y/def_dlg_h.html' title='Multiple used in 8 places.'>def_dlg_h</a> - 2, <a href='../Y/def_dlg_w.html' title='Multiple used in 7 places.'>def_dlg_w</a> - 2, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L348' name='L348'></a> 348     <a href='../S/lib--widget--group.c.html#L764' title='Defined at 764 in lib/widget/group.c.'>group_add_widget_autopos</a> (<a href='../S/lib--widget--group.h.html#L16' title='Defined at 16 in lib/widget/group.h.'>GROUP</a> (<a href='../Y/def_dlg.html' title='Multiple used in 6 places.'>def_dlg</a>), <a href='../Y/def_list.html' title='Multiple used in 7 places.'>def_list</a>, <a href='../S/lib--widget--widget-common.h.html#L109' title='Defined at 109 in lib/widget/widget-common.h.'>WPOS_KEEP_ALL</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L349' name='L349'></a> 349 
+<a id='L350' name='L350'></a> 350     <em class='comment'>/* fill the listbox with the completions and get the maximum width */</em>
+<a id='L351' name='L351'></a> 351     <a href='../Y/def_max_width.html' title='Multiple used in 4 places.'>def_max_width</a> = 0;
+<a id='L352' name='L352'></a> 352     <a href='../Y/g_ptr_array_foreach.html' title='Multiple used in 2 places.'>g_ptr_array_foreach</a> (<a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>, <a href='../S/src--editor--etags.c.html#L296' title='Defined at 296 in src/editor/etags.c.'>editcmd_dialog_select_definition_add</a>, <a href='../Y/def_list.html' title='Multiple used in 7 places.'>def_list</a>);
+<a id='L353' name='L353'></a> 353 
+<a id='L354' name='L354'></a> 354     <em class='comment'>/* adjust dialog width */</em>
+<a id='L355' name='L355'></a> 355     <a href='../Y/def_dlg_w.html' title='Multiple used in 7 places.'>def_dlg_w</a> = <a href='../Y/def_max_width.html' title='Multiple used in 4 places.'>def_max_width</a> + 4;
+<a id='L356' name='L356'></a> 356     <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a> = <a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a> + <a href='../Y/def_dlg_w.html' title='Multiple used in 7 places.'>def_dlg_w</a> - <a href='../S/lib--tty--tty-slang.h.html#L23' title='Defined at 23 in lib/tty/tty-slang.h.'>COLS</a>;
+<a id='L357' name='L357'></a> 357     <strong class='reserved'>if</strong> (<a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a> &gt; 0)
+<a id='L358' name='L358'></a> 358         <a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a> -= <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a>;
+<a id='L359' name='L359'></a> 359 
+<a id='L360' name='L360'></a> 360     <a href='../S/lib--widget--widget-common.c.html#L434' title='Defined at 434 in lib/widget/widget-common.c.'>widget_set_size</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/def_dlg.html' title='Multiple used in 6 places.'>def_dlg</a>), <a href='../Y/start_y.html' title='Multiple used in 26 places.'>start_y</a>, <a href='../Y/start_x.html' title='Multiple used in 36 places.'>start_x</a>, <a href='../Y/def_dlg_h.html' title='Multiple used in 8 places.'>def_dlg_h</a>, <a href='../Y/def_dlg_w.html' title='Multiple used in 7 places.'>def_dlg_w</a>);
+<a id='L361' name='L361'></a> 361 
+<a id='L362' name='L362'></a> 362     <em class='comment'>/* pop up the dialog and apply the chosen completion */</em>
+<a id='L363' name='L363'></a> 363     <strong class='reserved'>if</strong> (<a href='../S/lib--widget--dialog.c.html#L570' title='Defined at 570 in lib/widget/dialog.c.'>dlg_run</a> (<a href='../Y/def_dlg.html' title='Multiple used in 6 places.'>def_dlg</a>) == <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>)
+<a id='L364' name='L364'></a> 364     <em class='brace'>{</em>
+<a id='L365' name='L365'></a> 365         <a href='../S/src--editor--etags.h.html#L16' title='Defined at 16 in src/editor/etags.h.'>etags_hash_t</a> *<a href='../Y/curr_def.html' title='Multiple used in 4 places.'>curr_def</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L366' name='L366'></a> 366         <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/do_moveto.html' title='Multiple used in 4 places.'>do_moveto</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L367' name='L367'></a> 367 
+<a id='L368' name='L368'></a> 368         <a href='../S/lib--widget--listbox.c.html#L700' title='Defined at 700 in lib/widget/listbox.c.'>listbox_get_current</a> (<a href='../Y/def_list.html' title='Multiple used in 7 places.'>def_list</a>, &amp;<a href='../Y/curr.html' title='Multiple used in 49 places.'>curr</a>, (<strong class='reserved'>void</strong> **) &amp;<a href='../Y/curr_def.html' title='Multiple used in 4 places.'>curr_def</a>);
+<a id='L369' name='L369'></a> 369 
+<a id='L370' name='L370'></a> 370         <strong class='reserved'>if</strong> (!<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/modified.html' title='Multiple used in 38 places.'>modified</a>)
+<a id='L371' name='L371'></a> 371             <a href='../Y/do_moveto.html' title='Multiple used in 4 places.'>do_moveto</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L372' name='L372'></a> 372         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (!<a href='../S/src--editor--edit-impl.h.html#L78' title='Defined at 78 in src/editor/edit-impl.h.'>edit_query_dialog2</a>
+<a id='L373' name='L373'></a> 373                  (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Warning"),
+<a id='L374' name='L374'></a> 374                   <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Current text was modified without a file save.\n"
+<a id='L375' name='L375'></a> 375                     "Continue discards these changes."), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("C&amp;ontinue"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Cancel")))
+<a id='L376' name='L376'></a> 376         <em class='brace'>{</em>
+<a id='L377' name='L377'></a> 377             <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/force.html' title='Multiple used in 131 places.'>force</a> |= <a href='../S/src--editor--edit-impl.h.html#L34' title='Defined at 34 in src/editor/edit-impl.h.'>REDRAW_COMPLETELY</a>;
+<a id='L378' name='L378'></a> 378             <a href='../Y/do_moveto.html' title='Multiple used in 4 places.'>do_moveto</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L379' name='L379'></a> 379         <em class='brace'>}</em>
+<a id='L380' name='L380'></a> 380 
+<a id='L381' name='L381'></a> 381         <strong class='reserved'>if</strong> (<a href='../Y/curr.html' title='Multiple used in 49 places.'>curr</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; <a href='../Y/do_moveto.html' title='Multiple used in 4 places.'>do_moveto</a> &amp;&amp; <a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a> + 1 &lt; <a href='../S/src--editor--edit-impl.h.html#L69' title='Defined at 69 in src/editor/edit-impl.h.'>MAX_HISTORY_MOVETO</a>)
+<a id='L382' name='L382'></a> 382         <em class='brace'>{</em>
+<a id='L383' name='L383'></a> 383             <a href='../S/lib--vfs--path.c.html#L974' title='Defined at 974 in lib/vfs/path.c.'>vfs_path_free</a> (<a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L384' name='L384'></a> 384 
+<a id='L385' name='L385'></a> 385             <em class='comment'>/* Is file path absolute? Prepend with dir_vpath if necessary */</em>
+<a id='L386' name='L386'></a> 386             <strong class='reserved'>if</strong> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a>-&gt;<a href='../Y/relative.html' title='Multiple used in 13 places.'>relative</a>
+<a id='L387' name='L387'></a> 387                 &amp;&amp; <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/dir_vpath.html' title='Multiple used in 8 places.'>dir_vpath</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L388' name='L388'></a> 388                 <a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a> =
+<a id='L389' name='L389'></a> 389                     <a href='../S/lib--vfs--path.c.html#L1323' title='Defined at 1323 in lib/vfs/path.c.'>vfs_path_append_vpath_new</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/dir_vpath.html' title='Multiple used in 8 places.'>dir_vpath</a>, <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L390' name='L390'></a> 390             <strong class='reserved'>else</strong>
+<a id='L391' name='L391'></a> 391                 <a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a> =
+<a id='L392' name='L392'></a> 392                     <a href='../S/lib--vfs--path.c.html#L940' title='Defined at 940 in lib/vfs/path.c.'>vfs_path_clone</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a>);
+<a id='L393' name='L393'></a> 393 
+<a id='L394' name='L394'></a> 394             <a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a> = <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/start_line.html' title='Multiple used in 64 places.'>start_line</a> + <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/curs_row.html' title='Multiple used in 33 places.'>curs_row</a> + 1;
+<a id='L395' name='L395'></a> 395             <a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>++;
+<a id='L396' name='L396'></a> 396             <a href='../S/lib--vfs--path.c.html#L974' title='Defined at 974 in lib/vfs/path.c.'>vfs_path_free</a> (<a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L397' name='L397'></a> 397             <a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a> =
+<a id='L398' name='L398'></a> 398                 <a href='../S/lib--vfs--path.c.html#L774' title='Defined at 774 in lib/vfs/path.c.'>vfs_path_from_str</a> ((<strong class='reserved'>char</strong> *) <a href='../Y/curr_def.html' title='Multiple used in 4 places.'>curr_def</a>-&gt;<a href='../Y/fullpath.html' title='Multiple used in 9 places.'>fullpath</a>);
+<a id='L399' name='L399'></a> 399             <a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a> = <a href='../Y/curr_def.html' title='Multiple used in 4 places.'>curr_def</a>-&gt;<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a>;
+<a id='L400' name='L400'></a> 400             <a href='../S/src--editor--edit.c.html#L2276' title='Defined at 2276 in src/editor/edit.c.'>edit_reload_line</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, <a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/filename_vpath.html' title='Multiple used in 257 places.'>filename_vpath</a>,
+<a id='L401' name='L401'></a> 401                               <a href='../Y/edit_history_moveto.html' title='Multiple used in 21 places.'>edit_history_moveto</a>[<a href='../Y/edit_stack_iterator.html' title='Multiple used in 30 places.'>edit_stack_iterator</a>].<a href='../Y/line.html' title='Multiple used in 335 places.'>line</a>);
+<a id='L402' name='L402'></a> 402         <em class='brace'>}</em>
+<a id='L403' name='L403'></a> 403     <em class='brace'>}</em>
+<a id='L404' name='L404'></a> 404 
+<a id='L405' name='L405'></a> 405     <em class='comment'>/* destroy dialog before return */</em>
+<a id='L406' name='L406'></a> 406     <a href='../S/lib--widget--widget-common.h.html#L394' title='Defined at 394 in lib/widget/widget-common.h.'>widget_destroy</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/def_dlg.html' title='Multiple used in 6 places.'>def_dlg</a>));
+<a id='L407' name='L407'></a> 407 <em class='brace'>}</em>
+<a id='L408' name='L408'></a> 408 
+<a id='L409' name='L409'></a> 409 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L410' name='L410'></a> 410 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L411' name='L411'></a> 411 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L412' name='L412'></a> 412 
+<a id='L413' name='L413'></a> 413 <strong class='reserved'>void</strong>
+<a id='L414' name='L414'></a> 414 <a href='../R/edit_get_match_keyword_cmd.html' title='Multiple referred from 2 places.'>edit_get_match_keyword_cmd</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> * <a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>)
+     <em class='comment'>/* <a href='#L316'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L67'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+414 src/editor/etags.c'  /> */</em>
+<a id='L415' name='L415'></a> 415 <em class='brace'>{</em>
+<a id='L416' name='L416'></a> 416     <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a> = 0;
+<a id='L417' name='L417'></a> 417     <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L418' name='L418'></a> 418     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--editor--format.c.html#L301' title='Defined at 301 in src/editor/format.c.'>word_start</a> = 0;
+<a id='L419' name='L419'></a> 419     <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/match_expr.html' title='Multiple used in 23 places.'>match_expr</a>;
+<a id='L420' name='L420'></a> 420     <strong class='reserved'>char</strong> *<a href='../Y/path.html' title='Multiple used in 426 places.'>path</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L421' name='L421'></a> 421     <strong class='reserved'>char</strong> *<a href='../Y/ptr.html' title='Multiple used in 44 places.'>ptr</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L422' name='L422'></a> 422     <strong class='reserved'>char</strong> *<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L423' name='L423'></a> 423     <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L424' name='L424'></a> 424 
+<a id='L425' name='L425'></a> 425     <em class='comment'>/* search start of word to be completed */</em>
+<a id='L426' name='L426'></a> 426     <strong class='reserved'>if</strong> (!<a href='../S/src--editor--editbuffer.c.html#L443' title='Defined at 443 in src/editor/editbuffer.c.'>edit_buffer_find_word_start</a> (&amp;<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>, &amp;<a href='../S/src--editor--format.c.html#L301' title='Defined at 301 in src/editor/format.c.'>word_start</a>, &amp;<a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>))
+<a id='L427' name='L427'></a> 427         <strong class='reserved'>return</strong>;
+<a id='L428' name='L428'></a> 428 
+<a id='L429' name='L429'></a> 429     <em class='comment'>/* prepare match expression */</em>
+<a id='L430' name='L430'></a> 430     <a href='../Y/match_expr.html' title='Multiple used in 23 places.'>match_expr</a> = <a href='../Y/g_string_sized_new.html' title='Multiple used in 59 places.'>g_string_sized_new</a> (<a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>);
+<a id='L431' name='L431'></a> 431     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L432' name='L432'></a> 432         <a href='../Y/g_string_append_c.html' title='Multiple used in 114 places.'>g_string_append_c</a> (<a href='../Y/match_expr.html' title='Multiple used in 23 places.'>match_expr</a>, <a href='../S/src--editor--editbuffer.c.html#L187' title='Defined at 187 in src/editor/editbuffer.c.'>edit_buffer_get_byte</a> (&amp;<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>, <a href='../S/src--editor--format.c.html#L301' title='Defined at 301 in src/editor/format.c.'>word_start</a> + <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>));
+<a id='L433' name='L433'></a> 433 
+<a id='L434' name='L434'></a> 434     <a href='../Y/ptr.html' title='Multiple used in 44 places.'>ptr</a> = <a href='../S/tests--lib--vfs--vfs_setup_cwd.c.html#L40' title='Defined at 40 in tests/lib/vfs/vfs_setup_cwd.c.'>g_get_current_dir</a> ();
+<a id='L435' name='L435'></a> 435     <a href='../Y/path.html' title='Multiple used in 426 places.'>path</a> = <a href='../Y/g_strconcat.html' title='Multiple used in 69 places.'>g_strconcat</a> (<a href='../Y/ptr.html' title='Multiple used in 44 places.'>ptr</a>, <a href='../S/lib--global.h.html#L122' title='Defined at 122 in lib/global.h.'>PATH_SEP_STR</a>, (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L436' name='L436'></a> 436     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/ptr.html' title='Multiple used in 44 places.'>ptr</a>);
+<a id='L437' name='L437'></a> 437 
+<a id='L438' name='L438'></a> 438     <em class='comment'>/* Recursive search file 'TAGS' in parent dirs */</em>
+<a id='L439' name='L439'></a> 439     <strong class='reserved'>do</strong>
+<a id='L440' name='L440'></a> 440     <em class='brace'>{</em>
+<a id='L441' name='L441'></a> 441         <a href='../Y/ptr.html' title='Multiple used in 44 places.'>ptr</a> = <a href='../Y/g_path_get_dirname.html' title='Multiple used in 6 places.'>g_path_get_dirname</a> (<a href='../Y/path.html' title='Multiple used in 426 places.'>path</a>);
+<a id='L442' name='L442'></a> 442         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/path.html' title='Multiple used in 426 places.'>path</a>);
+<a id='L443' name='L443'></a> 443         <a href='../Y/path.html' title='Multiple used in 426 places.'>path</a> = <a href='../Y/ptr.html' title='Multiple used in 44 places.'>ptr</a>;
+<a id='L444' name='L444'></a> 444         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a>);
+<a id='L445' name='L445'></a> 445         <a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a> = <a href='../S/lib--utilunix.c.html#L1279' title='Defined at 1279 in lib/utilunix.c.'>mc_build_filename</a> (<a href='../Y/path.html' title='Multiple used in 426 places.'>path</a>, <a href='../S/lib--fileloc.h.html#L22' title='Defined at 22 in lib/fileloc.h.'>TAGS_NAME</a>, (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L446' name='L446'></a> 446         <strong class='reserved'>if</strong> (<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> &amp;&amp; <a href='../Y/exist_file.html' title='Multiple used in 40 places.'>exist_file</a> (<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a>))
+<a id='L447' name='L447'></a> 447             <strong class='reserved'>break</strong>;
+<a id='L448' name='L448'></a> 448     <em class='brace'>}</em>
+<a id='L449' name='L449'></a> 449     <strong class='reserved'>while</strong> (<a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/path.html' title='Multiple used in 426 places.'>path</a>, <a href='../S/lib--global.h.html#L122' title='Defined at 122 in lib/global.h.'>PATH_SEP_STR</a>) != 0);
+<a id='L450' name='L450'></a> 450 
+<a id='L451' name='L451'></a> 451     <strong class='reserved'>if</strong> (<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L452' name='L452'></a> 452     <em class='brace'>{</em>
+<a id='L453' name='L453'></a> 453         <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a> = <a href='../S/src--editor--etags.c.html#L197' title='Defined at 197 in src/editor/etags.c.'>etags_set_definition_hash</a> (<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a>, <a href='../Y/path.html' title='Multiple used in 426 places.'>path</a>, <a href='../Y/match_expr.html' title='Multiple used in 23 places.'>match_expr</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>);
+<a id='L454' name='L454'></a> 454         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/tagfile.html' title='Multiple used in 10 places.'>tagfile</a>);
+<a id='L455' name='L455'></a> 455     <em class='brace'>}</em>
+<a id='L456' name='L456'></a> 456     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/path.html' title='Multiple used in 426 places.'>path</a>);
+<a id='L457' name='L457'></a> 457 
+<a id='L458' name='L458'></a> 458     <strong class='reserved'>if</strong> (<a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L459' name='L459'></a> 459     <em class='brace'>{</em>
+<a id='L460' name='L460'></a> 460         <a href='../S/src--editor--etags.c.html#L316' title='Defined at 316 in src/editor/etags.c.'>editcmd_dialog_select_definition_show</a> (<a href='../Y/edit.html' title='Multiple used in 2243 places.'>edit</a>, <a href='../Y/match_expr.html' title='Multiple used in 23 places.'>match_expr</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, <a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>);
+<a id='L461' name='L461'></a> 461 
+<a id='L462' name='L462'></a> 462         <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/def_hash.html' title='Multiple used in 21 places.'>def_hash</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L463' name='L463'></a> 463     <em class='brace'>}</em>
+<a id='L464' name='L464'></a> 464 
+<a id='L465' name='L465'></a> 465     <a href='../Y/g_string_free.html' title='Multiple used in 182 places.'>g_string_free</a> (<a href='../Y/match_expr.html' title='Multiple used in 23 places.'>match_expr</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L466' name='L466'></a> 466 <em class='brace'>}</em>
+<a id='L467' name='L467'></a> 467 
+<a id='L468' name='L468'></a> 468 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L67'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L414'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+468 src/editor/etags.c'  /> */</em>
+</body>
+</html>

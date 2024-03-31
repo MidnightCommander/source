@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>build-glib2.sh</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span>build-glib2.sh</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/build-glib2.sh</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 build-glib2.sh'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a># Download and build glib 2.x statically with all dependencies and then
+<a id='L4' name='L4'></a># compile GNU Midnight Commander against it.
+<a id='L5' name='L5'></a># Copyright (C) 2003 Pavel Roskin
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a>#  This program is free software: you can redistribute it and/or modify
+<a id='L8' name='L8'></a>#  it under the terms of the GNU General Public License as published by
+<a id='L9' name='L9'></a>#  the Free Software Foundation, either version 3 of the License, or
+<a id='L10' name='L10'></a>#  (at your option) any later version.
+<a id='L11' name='L11'></a>#
+<a id='L12' name='L12'></a>#  This program is distributed in the hope that it will be useful,
+<a id='L13' name='L13'></a>#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+<a id='L14' name='L14'></a>#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<a id='L15' name='L15'></a>#  GNU General Public License for more details.
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a>#  You should have received a copy of the GNU General Public License
+<a id='L18' name='L18'></a>#  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<a id='L19' name='L19'></a>#
+<a id='L20' name='L20'></a># This script is incomplete!  It doesn't download libiconv.  This is OK
+<a id='L21' name='L21'></a># for glibc-based systems, but probably not for others.  This limitation
+<a id='L22' name='L22'></a># is known.  Please don't report it.
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a>: ${MC_TOPDIR=`pwd`}
+<a id='L26' name='L26'></a>: ${WORK_TOPDIR=$MC_TOPDIR/build_glib2}
+<a id='L27' name='L27'></a>: ${TMP_INSTDIR=$WORK_TOPDIR/tmp-inst}
+<a id='L28' name='L28'></a>: ${GLIB_VERSION=2.30.0}
+<a id='L29' name='L29'></a>: ${PKGC_VERSION=0.23}
+<a id='L30' name='L30'></a>: ${GETTEXT_VERSION=0.17}
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>GLIB_DIR="glib-$GLIB_VERSION"
+<a id='L33' name='L33'></a>GLIB_TARBALL="glib-$GLIB_VERSION.tar.bz2"
+<a id='L34' name='L34'></a>GLIB_URL="https://download.gnome.org/sources/glib/2.30/$GLIB_TARBALL"
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>PKGC_DIR="pkg-config-$PKGC_VERSION"
+<a id='L37' name='L37'></a>PKGC_TARBALL="pkg-config-$PKGC_VERSION.tar.gz"
+<a id='L38' name='L38'></a>PKGC_URL="http://pkgconfig.freedesktop.org/releases/$PKGC_TARBALL"
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>GETTEXT_DIR="gettext-$GETTEXT_VERSION/gettext-runtime"
+<a id='L41' name='L41'></a>GETTEXT_TARBALL="gettext-$GETTEXT_VERSION.tar.gz"
+<a id='L42' name='L42'></a>GETTEXT_URL="ftp://ftp.gnu.org/gnu/gettext/$GETTEXT_TARBALL"
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>get_file() {
+<a id='L45' name='L45'></a>  curl --remote-name "$1" || \
+<a id='L46' name='L46'></a>  wget --passive-ftp "$1" || \
+<a id='L47' name='L47'></a>  wget "$1" || \
+<a id='L48' name='L48'></a>  ftp "$1" &lt;/dev/null || \
+<a id='L49' name='L49'></a>  exit 1
+<a id='L50' name='L50'></a>}
+<a id='L51' name='L51'></a>if test ! -d $WORK_TOPDIR; then
+<a id='L52' name='L52'></a>    mkdir -p $WORK_TOPDIR
+<a id='L53' name='L53'></a>fi
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>if test -f $MC_TOPDIR/src/dir.c; then : ; else
+<a id='L56' name='L56'></a>  echo "Not in the top-level directory of GNU Midnight Commander." 2&gt;&amp;1
+<a id='L57' name='L57'></a>  exit 1
+<a id='L58' name='L58'></a>fi
+<a id='L59' name='L59'></a> 
+<a id='L60' name='L60'></a>if test -f $MC_TOPDIR/configure; then : ; else
+<a id='L61' name='L61'></a>  $MC_TOPDIR/autogen.sh --help &gt;/dev/null || exit 1
+<a id='L62' name='L62'></a>fi
+<a id='L63' name='L63'></a> 
+<a id='L64' name='L64'></a>rm -rf "$TMP_INSTDIR"
+<a id='L65' name='L65'></a>PATH="$TMP_INSTDIR/bin:$PATH"
+<a id='L66' name='L66'></a>export PATH
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a># Compile gettext
+<a id='L69' name='L69'></a>cd "$WORK_TOPDIR"
+<a id='L70' name='L70'></a>if gzip -vt "$GETTEXT_TARBALL"; then : ; else
+<a id='L71' name='L71'></a>  get_file "$GETTEXT_URL"
+<a id='L72' name='L72'></a>fi
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>rm -rf "$GETTEXT_DIR"
+<a id='L75' name='L75'></a>gzip -cd "$GETTEXT_TARBALL" | tar xf -
+<a id='L76' name='L76'></a>cd "$GETTEXT_DIR"
+<a id='L77' name='L77'></a>if test -f src/gettext.c; then : ; else
+<a id='L78' name='L78'></a>  echo "gettext source is incomplete" 2&gt;&amp;1
+<a id='L79' name='L79'></a>  exit 1
+<a id='L80' name='L80'></a>fi
+<a id='L81' name='L81'></a> 
+<a id='L82' name='L82'></a>./configure --disable-shared --disable-nls --prefix="$TMP_INSTDIR" || exit 1
+<a id='L83' name='L83'></a>make all || exit 1
+<a id='L84' name='L84'></a>make install || exit 1
+<a id='L85' name='L85'></a> 
+<a id='L86' name='L86'></a># Compile pkgconfig
+<a id='L87' name='L87'></a>cd "$WORK_TOPDIR"
+<a id='L88' name='L88'></a>if gzip -vt "$PKGC_TARBALL"; then : ; else
+<a id='L89' name='L89'></a>  get_file "$PKGC_URL"
+<a id='L90' name='L90'></a>fi
+<a id='L91' name='L91'></a> 
+<a id='L92' name='L92'></a>rm -rf "$PKGC_DIR"
+<a id='L93' name='L93'></a>gzip -cd "$PKGC_TARBALL" | tar xf -
+<a id='L94' name='L94'></a>cd "$PKGC_DIR"
+<a id='L95' name='L95'></a>if test -f pkg.c; then : ; else
+<a id='L96' name='L96'></a>  echo "pkgconfig source is incomplete" 2&gt;&amp;1
+<a id='L97' name='L97'></a>  exit 1
+<a id='L98' name='L98'></a>fi
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>./configure --disable-shared --prefix="$TMP_INSTDIR" || exit 1
+<a id='L101' name='L101'></a>make all || exit 1
+<a id='L102' name='L102'></a>make install || exit 1
+<a id='L103' name='L103'></a> 
+<a id='L104' name='L104'></a># Compile glib
+<a id='L105' name='L105'></a>cd "$WORK_TOPDIR"
+<a id='L106' name='L106'></a>if gzip -vt "$GLIB_TARBALL"; then : ; else
+<a id='L107' name='L107'></a>  get_file "$GLIB_URL" || exit 1
+<a id='L108' name='L108'></a>fi
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>rm -rf "$GLIB_DIR"
+<a id='L111' name='L111'></a>gzip -cd "$GLIB_TARBALL" | tar xf -
+<a id='L112' name='L112'></a>cd "$GLIB_DIR"
+<a id='L113' name='L113'></a>if test -f glib/glist.c; then : ; else
+<a id='L114' name='L114'></a>  echo "glib source is incomplete" 2&gt;&amp;1
+<a id='L115' name='L115'></a>  exit 1
+<a id='L116' name='L116'></a>fi
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a>./configure --disable-shared --prefix="$TMP_INSTDIR" \
+<a id='L119' name='L119'></a>            PKG_CONFIG="$TMP_INSTDIR/bin/pkg-config" \
+<a id='L120' name='L120'></a>            CPPFLAGS="-I$TMP_INSTDIR/include" \
+<a id='L121' name='L121'></a>            LDFLAGS="-L$TMP_INSTDIR/lib" || exit 1
+<a id='L122' name='L122'></a>make all || exit 1
+<a id='L123' name='L123'></a>make install || exit 1
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>cd "$MC_TOPDIR"
+<a id='L126' name='L126'></a>./configure PKG_CONFIG="$TMP_INSTDIR/bin/pkg-config" $@ || exit 1
+<a id='L127' name='L127'></a>make clean || exit 1
+<a id='L128' name='L128'></a>make || exit 1
+<a id='L129' name='L129'></a> 
+<a id='L130' name='L130'></a>echo "GNU Midnight Commander has been successfully compiled"
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+130 build-glib2.sh'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/event/event-ru.txt</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--event.html'>event</a>/event-ru.txt</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--event.html'>event</a>/event-ru.txt</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/event/event-ru.txt'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>= СОБЫТИЯ =
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>В mc используется система событий, основанная на технологии быстрых бинарных деревьев.
+<a id='L4' name='L4'></a> 
+<a id='L5' name='L5'></a>== Вступление ==
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a>Система событий, в первую очередь, призвана отвязать на уровне исходных текстов источник события и обработчик.
+<a id='L8' name='L8'></a>Например, в модуле VFS используется функция вывода сообщений, которая определена в исходных текстах (не в lib).
+<a id='L9' name='L9'></a>В lib определение этой функции будет затруднительным (потому что функция делает множество вызовов на другие
+<a id='L10' name='L10'></a>функции из src). В данном случае можно представить эту функцию как обработчик события, а сам процесс вывода
+<a id='L11' name='L11'></a>сообщения от VFS на экран как непосредственно событие. В начале запуска mc функцию вывода сообщений необходимо
+<a id='L12' name='L12'></a>зарегистрировать как обработчик события; в последствии при необходимости выдачи сообщений нужно просто вызвать
+<a id='L13' name='L13'></a>событие, абсолютно не волнуясь, привязан ли обработчик к событию, а также какая именно функция сейчас является
+<a id='L14' name='L14'></a>обработчиком события (вероятна ситуация, при которой позже загрузился плагин и переопределил этот обработчик
+<a id='L15' name='L15'></a>событий на себя).
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a>=== Использование ===
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>Не везде и не всегда применимы события. Самое трудное порой бывает решить, это должна быть простая функция или это
+<a id='L20' name='L20'></a>должно быть событие. Наиболее правильным будет заменить все функции (или части switch(){case:}), используемые при
+<a id='L21' name='L21'></a>обработке кейбиндингов. Все кейбиндинги описаны в lib/keybind.h
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a>Вторым аргументом при выборе решения (обработчик события или функция) должна стать мысль, что функцию в обработчик
+<a id='L24' name='L24'></a>события "превратить" легко; обратный процесс (обработчик в функцию) будет значительно сложнее - хотя бы потому,
+<a id='L25' name='L25'></a>что на одном событии может "висеть" множество обработчиков, и каждый может зависеть от работы предыдущего.
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>Третьим аргументом при выборе в пользу обработчиков событий могут стать плагины (когда появятся). В данном случае
+<a id='L28' name='L28'></a>события - это способ дать плагинам доступ к внутренним ресурсам приложения, не "пуская" эти плагины в низкоуровневое
+<a id='L29' name='L29'></a>API. Всё, что нужно будет знать "плагинам" - какое событие с какой структурой надо вызвать и как именно вызвать
+<a id='L30' name='L30'></a>(#include "lib/event.h").
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>== Структура ==
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>В общем виде подсистему событий можно представить так:
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>   ------------------------------------            }
+<a id='L38' name='L38'></a>   |Группа1       Группа2  ...  ГруппаN|            }   Группы событий (GTree)
+<a id='L39' name='L39'></a>   -------------------------------------           }
+<a id='L40' name='L40'></a>       |             |             |
+<a id='L41' name='L41'></a>      /|\           /|\           /|\
+<a id='L42' name='L42'></a>     / | \         / | ...       ... событиеN      }
+<a id='L43' name='L43'></a>    /  |  \       /  ...                            }
+<a id='L44' name='L44'></a>   /   |   \      ...                                } События, разбитые на группы
+<a id='L45' name='L45'></a>   |   |    событие3                                 } (GTree для каждой группы)
+<a id='L46' name='L46'></a>   |   событие2                                     }
+<a id='L47' name='L47'></a>   событие1                                        }
+<a id='L48' name='L48'></a>   | | |  |
+<a id='L49' name='L49'></a>   f1f2...fN                                       } список обработчиков события (GPtrArray на каждое событие)
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>Такая схема позволяет группировать события и выполнять более одного обработчика на одно событие.
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a>== Требования к обработчикам событий ==
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a>Любой каллбэк должен быть вида:
+<a id='L57' name='L57'></a> 
+<a id='L58' name='L58'></a>gboolean mc_event_callback_func_t (const gchar *event_group, const gchar *event_name, gpointer init_data, gpointer event_data);
+<a id='L59' name='L59'></a>где:
+<a id='L60' name='L60'></a> event_group:
+<a id='L61' name='L61'></a>    название группы, в которой было инициировано событие
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a> event_name:
+<a id='L64' name='L64'></a>    название события. Вместе с названием группы событий позволяют точно идентифицировать событие.
+<a id='L65' name='L65'></a>    Эти параметры могут быть полезны в случае если обработчик события привязан сразу к нескольким событиям
+<a id='L66' name='L66'></a>    и необходимо различать различные события (например, в функции логгирования)
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a> init_data:
+<a id='L69' name='L69'></a>    Произвольные данные, предоставляемые обработчикам события. Эти данные указываются при добавлении обработчика
+<a id='L70' name='L70'></a>    к событию (инициализационные данные).
+<a id='L71' name='L71'></a> event_data:
+<a id='L72' name='L72'></a>    Данные, предоставляемые обработчику событий в момент возникновения события.
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>Каллбэк должен вернуть TRUE, чтобы разрешить исполниться всем последующим за ним каллбэкам в данном событии; либо
+<a id='L75' name='L75'></a>FALSE если необходимо немедленно прекратить дальнейшую обработку события (оставшиеся каллбэки не вызываются).
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a>Если для одного и того же события будет привязано множество каллбэков, то порядок из исполнения будет следующим:
+<a id='L78' name='L78'></a>"Последним добавился - первым выполнился". Это позволяет в последствии переопределять стандартные обработчики событий
+<a id='L79' name='L79'></a>(например, в плагинах).
+<a id='L80' name='L80'></a> 
+<a id='L81' name='L81'></a>=== Передача параметров в обработчики событий. Возврат результатов ===
+<a id='L82' name='L82'></a> 
+<a id='L83' name='L83'></a>Из-за унификации обработчиков событий стало невозможным передать определённое количество параметров и
+<a id='L84' name='L84'></a>получить результат выполнения. Если передачу одного параметра (или приём одного результата от обработчика события)
+<a id='L85' name='L85'></a>можно произвести простым приведением типа на одну переменную при вызове событий, то при передаче нескольких параметров
+<a id='L86' name='L86'></a>(или при получении нескольких результатов) такой метод неприменим.
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a>Для решения этой проблемы можно передавать ранее определённые структуры по универсальному указателю event_data.
+<a id='L89' name='L89'></a>Все структуры, используемые в обработчиках событий, должны быть определены в файле lib/event-types.h.
+<a id='L90' name='L90'></a> 
+<a id='L91' name='L91'></a>У данного метода (передача параметров указателем на структуру) есть как достоинства, так и недостатки.
+<a id='L92' name='L92'></a> 
+<a id='L93' name='L93'></a>Достоинства:
+<a id='L94' name='L94'></a> * произвольное количество параметров и их типов;
+<a id='L95' name='L95'></a> * произвольное количество возвращаемых значений и их типов.
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a>Недостатки:
+<a id='L98' name='L98'></a> * вероятность ошибки: вызов события с неправильной структурой. В данном случае обработчик приведёт указатель к той
+<a id='L99' name='L99'></a>   структуре, на которую он рассчитан. При этом возможны весёлые глюки с отладкой (особенно если нет сразу segfault);
+<a id='L100' name='L100'></a> * необходимость иметь ранее определённые структуры для того, чтобы и обработчик события, и инициатор события могли бы
+<a id='L101' name='L101'></a>   без проблем "общаться" между собой.
+<a id='L102' name='L102'></a> 
+<a id='L103' name='L103'></a>== Примеры использования ==
+<a id='L104' name='L104'></a> 
+<a id='L105' name='L105'></a>=== Логгирование ===
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>Рассмотрим пример временного каллбэка, который просто логгирует порядок вызова определённых событий (например,
+<a id='L108' name='L108'></a>для выявления зацикливаний).
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>Сам каллбэк:
+<a id='L111' name='L111'></a> 
+<a id='L112' name='L112'></a>gboolean mc_temp_event_logger (const gchar *event_group, const gchar *event_name, gpointer init_data, gpointer data)
+<a id='L113' name='L113'></a>{
+<a id='L114' name='L114'></a>    (void) init_data;
+<a id='L115' name='L115'></a>    (void) data;
+<a id='L116' name='L116'></a> 
+<a id='L117' name='L117'></a>    mc_log("Event: %s:%s",event_group,event_name);
+<a id='L118' name='L118'></a>    return TRUE;
+<a id='L119' name='L119'></a>}
+<a id='L120' name='L120'></a> 
+<a id='L121' name='L121'></a>Добавляем его в src/event_init.c в виде записей к инициализационной структуре
+<a id='L122' name='L122'></a>перед строчкой "{NULL, NULL, NULL, NULL}":
+<a id='L123' name='L123'></a> 
+<a id='L124' name='L124'></a>{MCEVENT_GROUP_CORE, "clipboard_file_to_ext_clip", mc_temp_event_logger, NULL},
+<a id='L125' name='L125'></a>{MCEVENT_GROUP_CORE, "clipboard_file_from_ext_clip", mc_temp_event_logger, NULL},
+<a id='L126' name='L126'></a>{MCEVENT_GROUP_CORE, "clipboard_text_to_file", mc_temp_event_logger, NULL},
+<a id='L127' name='L127'></a>{MCEVENT_GROUP_CORE, "clipboard_text_from_file", mc_temp_event_logger, NULL},
+<a id='L128' name='L128'></a>...(тут любые другие события, которые необходимо мониторить)...
+<a id='L129' name='L129'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+129 lib/event/event-ru.txt'  /> */</em>
+</body>
+</html>

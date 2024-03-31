@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/ulha.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/ulha.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/ulha.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/ulha.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>#
+<a id='L4' name='L4'></a># LHa Virtual filesystem executive v0.1
+<a id='L5' name='L5'></a># Copyright (C) 1996, 1997 Joseph M. Hinkle
+<a id='L6' name='L6'></a># May be distributed under the terms of the GNU Public License
+<a id='L7' name='L7'></a># &lt;jhinkle@rockisland.com&gt;
+<a id='L8' name='L8'></a>#
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a># Code for mc_lha_fs_run() suggested by:
+<a id='L11' name='L11'></a># Jan 97        Zdenek Kabelac &lt;kabi@informatics.muni.cz&gt;
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a># Tested with mc 3.5.18 and gawk 3.0.0 on Linux 2.0.0
+<a id='L14' name='L14'></a># Tested with lha v1.01 and lharc v1.02
+<a id='L15' name='L15'></a># Information and sources for other forms of lha/lzh appreciated
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a># Nota bene:
+<a id='L18' name='L18'></a># There are several compression utilities which produce *.lha files.
+<a id='L19' name='L19'></a># LHArc and LHa in exist several versions, and their listing output varies.
+<a id='L20' name='L20'></a># Another variable is the architecture on which the compressed file was made.
+<a id='L21' name='L21'></a># This program attempts to sort out the variables known to me, but it is likely
+<a id='L22' name='L22'></a># to display an empty panel if it encounters a mystery. 
+<a id='L23' name='L23'></a># In that case it will be useful to execute this file from the command line:
+<a id='L24' name='L24'></a># ./lha list Mystery.lha
+<a id='L25' name='L25'></a># to examine the output directly on the console.  The output string must be
+<a id='L26' name='L26'></a># precisely in the format described in the README in this directory.
+<a id='L27' name='L27'></a># Caveat emptor.
+<a id='L28' name='L28'></a># Learn Latin.
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a># Define your awk
+<a id='L31' name='L31'></a>AWK=@AWK@
+<a id='L32' name='L32'></a> 
+<a id='L33' name='L33'></a># Define which archiver you are using with appropriate options
+<a id='L34' name='L34'></a>LHA_LIST="lha lq"
+<a id='L35' name='L35'></a>LHA_GET="lha pq"
+<a id='L36' name='L36'></a>LHA_PUT="lha aq"
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a># The 'list' command executive
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>mc_lha_fs_list()
+<a id='L41' name='L41'></a>{
+<a id='L42' name='L42'></a>   # List the contents of the archive and sort it out    
+<a id='L43' name='L43'></a>   $LHA_LIST "$1" | $AWK -v uid=`id -nu` -v gid=`id -ng` '
+<a id='L44' name='L44'></a>      # Strip a leading '/' if present in a filepath
+<a id='L45' name='L45'></a>      $(NF) ~ /^\// { $(NF) = substr($NF,2) }
+<a id='L46' name='L46'></a>      # Print the line this way if there is no permission string
+<a id='L47' name='L47'></a>      $1 ~ /^\[.*\]/ {
+<a id='L48' name='L48'></a>         # Invent a generic permission
+<a id='L49' name='L49'></a>         $1 = ($NF ~ /\/$/) ? "drwxr-xr-x":"-rwxr--r--";
+<a id='L50' name='L50'></a>         # Print it
+<a id='L51' name='L51'></a>         printf "%s 1 %-8s %-8s %-8d %s %s %s %s\n",
+<a id='L52' name='L52'></a>                 $1, uid, gid, $2, $4, $5, $6, $7;
+<a id='L53' name='L53'></a>         # Get the next line of the list
+<a id='L54' name='L54'></a>         next;
+<a id='L55' name='L55'></a>      }
+<a id='L56' name='L56'></a>      # Do it this way for a defined permission
+<a id='L57' name='L57'></a>      $1 !~ /^\[.*\]/ {
+<a id='L58' name='L58'></a>         # If the permissions and UID run together
+<a id='L59' name='L59'></a>         if ($1 ~ /\//) {
+<a id='L60' name='L60'></a>            $8 = $7;
+<a id='L61' name='L61'></a>            $7 = $6;
+<a id='L62' name='L62'></a>            $6 = $5;
+<a id='L63' name='L63'></a>            $5 = $4;
+<a id='L64' name='L64'></a>            $3 = $2;
+<a id='L65' name='L65'></a>            $2 = substr($1,10);
+<a id='L66' name='L66'></a>            $1 = substr($1,1,9);
+<a id='L67' name='L67'></a>         }
+<a id='L68' name='L68'></a>         # If the permission string is missing a type
+<a id='L69' name='L69'></a>         if (length($1) == 9) {
+<a id='L70' name='L70'></a>            if ($NF ~ /\/$/)
+<a id='L71' name='L71'></a>               $1 = ("d" $1);
+<a id='L72' name='L72'></a>            else
+<a id='L73' name='L73'></a>               $1 = ("-" $1);
+<a id='L74' name='L74'></a>         }
+<a id='L75' name='L75'></a>         # UID:GID might not be the same as on your system so print numbers
+<a id='L76' name='L76'></a>         # Well, that is the intent.  At the moment mc is translating them.
+<a id='L77' name='L77'></a>         split($2, id, "/");
+<a id='L78' name='L78'></a>         printf "%s 1 %-8d %-8d %-8d %s %s %s %s\n",
+<a id='L79' name='L79'></a>                 $1, id[1], id[2], $3, $5, $6, $7, $8;
+<a id='L80' name='L80'></a>         # Get the next line of the list
+<a id='L81' name='L81'></a>         next;
+<a id='L82' name='L82'></a>      }
+<a id='L83' name='L83'></a> 
+<a id='L84' name='L84'></a>   ' 
+<a id='L85' name='L85'></a>}
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a># The 'copyout' command executive to copy displayed files to a destination
+<a id='L88' name='L88'></a> 
+<a id='L89' name='L89'></a>mc_lha_fs_copyout()
+<a id='L90' name='L90'></a>{
+<a id='L91' name='L91'></a>   $LHA_GET "$1" "$2" &gt; "$3"
+<a id='L92' name='L92'></a>}
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a># The 'copyin' command executive to add something to the archive
+<a id='L95' name='L95'></a> 
+<a id='L96' name='L96'></a>mc_lha_fs_copyin ()
+<a id='L97' name='L97'></a>{
+<a id='L98' name='L98'></a>   NAME2=`basename "$2"`; DIR2=${2%$NAME2}
+<a id='L99' name='L99'></a>   NAME3=`basename "$3"`; DIR3=${3%$NAME3}
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>   cd "${DIR3}"
+<a id='L102' name='L102'></a> 
+<a id='L103' name='L103'></a>   ONE2=${2%%/*}
+<a id='L104' name='L104'></a>   [ -n "${ONE2}" ] || exit 1
+<a id='L105' name='L105'></a>   [ -e "${ONE2}" ] &amp;&amp; exit 1
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>   [ -e "${DIR2}" ] || mkdir -p "${DIR2}"
+<a id='L108' name='L108'></a>   ln "$3" "$2"       || exit 1
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>   $LHA_PUT "$1" "$2"
+<a id='L111' name='L111'></a>   rm -r "${ONE2}"
+<a id='L112' name='L112'></a>}
+<a id='L113' name='L113'></a> 
+<a id='L114' name='L114'></a># The 'run' command executive to run a command from within an archive
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>mc_lha_fs_run()
+<a id='L117' name='L117'></a>{
+<a id='L118' name='L118'></a>   TMPDIR=`mktemp -d "${MC_TMPDIR:-/tmp}/mctmpdir-ulha.XXXXXX"` || exit 1
+<a id='L119' name='L119'></a>   trap "rm -rf \"$TMPDIR\"; exit 0" 1 2 3 4 15
+<a id='L120' name='L120'></a>   TMPCMD=$TMPDIR/run
+<a id='L121' name='L121'></a>   $LHA_GET "$1" "$2" &gt; $TMPCMD  
+<a id='L122' name='L122'></a>   chmod a+x "$TMPCMD"
+<a id='L123' name='L123'></a>   "$TMPCMD"
+<a id='L124' name='L124'></a>   rm -rf "$TMPDIR"
+<a id='L125' name='L125'></a>}
+<a id='L126' name='L126'></a> 
+<a id='L127' name='L127'></a> 
+<a id='L128' name='L128'></a># The main routine
+<a id='L129' name='L129'></a>umask 077
+<a id='L130' name='L130'></a> 
+<a id='L131' name='L131'></a>cmd="$1"
+<a id='L132' name='L132'></a>shift
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a>case "$cmd" in
+<a id='L135' name='L135'></a>   list)    mc_lha_fs_list    "$@" ;;
+<a id='L136' name='L136'></a>   copyout) mc_lha_fs_copyout "$@" ;;
+<a id='L137' name='L137'></a>   copyin)  mc_lha_fs_copyin  "$@" ;;
+<a id='L138' name='L138'></a>   run)     mc_lha_fs_run     "$@" ;;
+<a id='L139' name='L139'></a>   *)       exit 1 ;;
+<a id='L140' name='L140'></a>esac
+<a id='L141' name='L141'></a> 
+<a id='L142' name='L142'></a>exit 0
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+142 src/vfs/extfs/helpers/ulha.in'  /> */</em>
+</body>
+</html>

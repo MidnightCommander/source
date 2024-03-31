@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/rpms+.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/rpms+.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/rpms+.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/rpms+.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Written by Balazs Nagy (julian7@kva.hu) 1998
+<a id='L4' name='L4'></a># locale bugfix by Michal Svec (rebel@penguin.cz) 2000
+<a id='L5' name='L5'></a># (C) 1998 The Free Software Foundation.
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a># override any locale for dates
+<a id='L10' name='L10'></a>delete $ENV{"LC_ALL"};
+<a id='L11' name='L11'></a>$ENV{"LC_TIME"}="C";
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>#print $ENV{"LC_ALL"};
+<a id='L14' name='L14'></a>#exit 0;
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>sub gd
+<a id='L17' name='L17'></a>{
+<a id='L18' name='L18'></a>    my ($dt) = @_;
+<a id='L19' name='L19'></a>    $dt =~ tr/ //s;
+<a id='L20' name='L20'></a>    $dt =~ s/^\w+ (\w+) (\d+) (\d+:\d+):\d+ .+\n?$/$1 $2 $3/;
+<a id='L21' name='L21'></a>    return $dt;
+<a id='L22' name='L22'></a>}
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>$DATE=gd(`date`);
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>sub list
+<a id='L27' name='L27'></a>{
+<a id='L28' name='L28'></a>    my (@rpms, %files, $i, $fn, $dn, $sz, $bt);
+<a id='L29' name='L29'></a>#    @rpms = `rpm -qa --qf "\%{NAME}-\%{VERSION}-\%{RELEASE}:\%{GROUP}:\%{SIZE}:\%{BUILDTIME:date}\n"`;
+<a id='L30' name='L30'></a>    @rpms = `rpm -qa --qf "\%{NAME}-\%{VERSION}:\%{GROUP}:\%{SIZE}:\%{BUILDTIME:date}\n"`;
+<a id='L31' name='L31'></a>    print @trpms;
+<a id='L32' name='L32'></a>    %files = ();
+<a id='L33' name='L33'></a>    %sizes = ();
+<a id='L34' name='L34'></a>    %dates = ();
+<a id='L35' name='L35'></a>    for $i (@rpms) {
+<a id='L36' name='L36'></a>        if ($i =~ /^([^:]+):([^:]+):([^:]+):(.+)$/) {
+<a id='L37' name='L37'></a>            ($fn, $dn, $sz, $bt) = ($1, $2, $3, $4);
+<a id='L38' name='L38'></a>            $dn =~ s/ /_/g;
+<a id='L39' name='L39'></a>            if (defined $files{$dn}) {
+<a id='L40' name='L40'></a>                push(@{$files{$dn}}, $fn);
+<a id='L41' name='L41'></a>            } else {
+<a id='L42' name='L42'></a>                @{$files{$dn}} = ($fn);
+<a id='L43' name='L43'></a>            }
+<a id='L44' name='L44'></a>            $sizes{$fn} = $sz;
+<a id='L45' name='L45'></a>            $dates{$fn} = gd($bt);
+<a id='L46' name='L46'></a>        }
+<a id='L47' name='L47'></a>    }
+<a id='L48' name='L48'></a>    for $i (sort keys %files) {
+<a id='L49' name='L49'></a>        print "dr-xr-xr-x 1 root root 0 $DATE $i/\n";
+<a id='L50' name='L50'></a>        for $fn (sort @{$files{$i}}) {
+<a id='L51' name='L51'></a>            print "-r--r--r-- 1 root root $sizes{$fn} $dates{$fn} $i/$fn.trpm\n";
+<a id='L52' name='L52'></a>        }
+<a id='L53' name='L53'></a>    }
+<a id='L54' name='L54'></a>}
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a>#open O, "&gt;&gt;/tmp/tt";
+<a id='L57' name='L57'></a>#print O "RPMS: ";
+<a id='L58' name='L58'></a>#for $i (@ARGV) {
+<a id='L59' name='L59'></a>#    print O "$i ";
+<a id='L60' name='L60'></a>#}
+<a id='L61' name='L61'></a>#print O "\n";
+<a id='L62' name='L62'></a>#close O;
+<a id='L63' name='L63'></a> 
+<a id='L64' name='L64'></a>if ($ARGV[0] eq "list") { list(); exit(0); }
+<a id='L65' name='L65'></a>elsif ($ARGV[0] eq "copyout") { open O, "&gt;$ARGV[3]"; print O $ARGV[2], "\n"; close O; exit(0); }
+<a id='L66' name='L66'></a>exit(1);
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+66 src/vfs/extfs/helpers/rpms+.in'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/s3+.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/s3+.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/s3+.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/s3+.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PYTHON@
+<a id='L2' name='L2'></a># -*- coding: utf-8 -*-
+<a id='L3' name='L3'></a> 
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a>#  Midnight Commander compatible EXTFS for accessing Amazon Web Services S3.
+<a id='L6' name='L6'></a>#  Written by Jakob Kemi &lt;jakob.kemi@gmail.com&gt; 2009
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a>#  This program is free software: you can redistribute it and/or modify
+<a id='L9' name='L9'></a>#  it under the terms of the GNU General Public License as published by
+<a id='L10' name='L10'></a>#  the Free Software Foundation, either version 3 of the License, or
+<a id='L11' name='L11'></a>#  (at your option) any later version.
+<a id='L12' name='L12'></a>#
+<a id='L13' name='L13'></a>#  This program is distributed in the hope that it will be useful,
+<a id='L14' name='L14'></a>#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+<a id='L15' name='L15'></a>#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<a id='L16' name='L16'></a>#  GNU General Public License for more details.
+<a id='L17' name='L17'></a>#
+<a id='L18' name='L18'></a>#  You should have received a copy of the GNU General Public License
+<a id='L19' name='L19'></a>#  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<a id='L20' name='L20'></a>#
+<a id='L21' name='L21'></a>#
+<a id='L22' name='L22'></a># Notes:
+<a id='L23' name='L23'></a>#  This EXTFS exposes buckets as directories and keys as files
+<a id='L24' name='L24'></a>#  Due to EXTFS limitations all buckets &amp; keys have to be read initially which might
+<a id='L25' name='L25'></a>#  take quite some time.
+<a id='L26' name='L26'></a>#  Tested on Debian with Python 2.4-2.6 and boto 1.4c and 1.6b
+<a id='L27' name='L27'></a>#    (Python 2.6 might need -W ignore::DeprecationWarning due to boto using
+<a id='L28' name='L28'></a>#    deprecated module Popen2)
+<a id='L29' name='L29'></a>#
+<a id='L30' name='L30'></a>#
+<a id='L31' name='L31'></a># Installation:
+<a id='L32' name='L32'></a>#  Make sure that boto &lt;http://code.google.com/p/boto&gt; (python-boto in Debian) is installed.
+<a id='L33' name='L33'></a>#  Preferably pytz (package python-tz in Debian) should be installed as well.
+<a id='L34' name='L34'></a>#
+<a id='L35' name='L35'></a>#  Save as executable file /usr/libexec/mc/extfs/s3 (or wherever your mc expects to find extfs modules)
+<a id='L36' name='L36'></a>#
+<a id='L37' name='L37'></a># Settings: (should be set via environment)
+<a id='L38' name='L38'></a>#  Required:
+<a id='L39' name='L39'></a>#    AWS_ACCESS_KEY_ID         : Amazon AWS access key (required)
+<a id='L40' name='L40'></a>#    AWS_SECRET_ACCESS_KEY     : Amazon AWS secret access key (required)
+<a id='L41' name='L41'></a>#  Optional:
+<a id='L42' name='L42'></a>#    MCVFS_EXTFS_S3_LOCATION   : where to create new buckets: "EU" - default, "USWest", "APNortheast" etc.
+<a id='L43' name='L43'></a>#    MCVFS_EXTFS_S3_DEBUGFILE  : write debug info to this file (no info by default)
+<a id='L44' name='L44'></a>#    MCVFS_EXTFS_S3_DEBUGLEVEL : debug messages level ("WARNING" - default, "DEBUG" - verbose)
+<a id='L45' name='L45'></a>#
+<a id='L46' name='L46'></a>#
+<a id='L47' name='L47'></a># Usage:
+<a id='L48' name='L48'></a>#  Open dialog "Quick cd" (&lt;alt-c&gt;) and type: s3:// &lt;enter&gt; (or simply type `cd s3://' in shell line)
+<a id='L49' name='L49'></a>#
+<a id='L50' name='L50'></a>#
+<a id='L51' name='L51'></a># History:
+<a id='L52' name='L52'></a>#
+<a id='L53' name='L53'></a>#  2015-07-22 Dmitry Koterov &lt;dmitry.koterov@gmail.com&gt;
+<a id='L54' name='L54'></a>#   - Support for non-ASCII characters in filenames (system encoding detection).
+<a id='L55' name='L55'></a>#
+<a id='L56' name='L56'></a>#  2015-05-21 Dmitry Koterov &lt;dmitry.koterov@gmail.com&gt;
+<a id='L57' name='L57'></a>#   - Resolve "Please use AWS4-HMAC-SHA256" error: enforce the new V4 authentication method.
+<a id='L58' name='L58'></a>#     It is required in many (if not all) locations nowadays.
+<a id='L59' name='L59'></a>#   - Now s3+ works with buckets in different regions: locations are auto-detected.
+<a id='L60' name='L60'></a>#   - Debug level specification support (MCVFS_EXTFS_S3_DEBUGLEVEL).
+<a id='L61' name='L61'></a>#
+<a id='L62' name='L62'></a>#  2009-02-07 Jakob Kemi &lt;jakob.kemi@gmail.com&gt;
+<a id='L63' name='L63'></a>#   - Updated instructions.
+<a id='L64' name='L64'></a>#   - Improved error reporting.
+<a id='L65' name='L65'></a>#
+<a id='L66' name='L66'></a>#  2009-02-06 Jakob Kemi &lt;jakob.kemi@gmail.com&gt;
+<a id='L67' name='L67'></a>#   - Threaded list command.
+<a id='L68' name='L68'></a>#   - Handle rm of empty "subdirectories" (as seen in mc).
+<a id='L69' name='L69'></a>#   - List most recent datetime and total size of keys as directory properties.
+<a id='L70' name='L70'></a>#   - List modification time in local time.
+<a id='L71' name='L71'></a>#
+<a id='L72' name='L72'></a>#  2009-02-05 Jakob Kemi &lt;jakob.kemi@gmail.com&gt;
+<a id='L73' name='L73'></a>#   - Initial version.
+<a id='L74' name='L74'></a>#
+<a id='L75' name='L75'></a> 
+<a id='L76' name='L76'></a>import sys
+<a id='L77' name='L77'></a>import os
+<a id='L78' name='L78'></a>import time
+<a id='L79' name='L79'></a>import re
+<a id='L80' name='L80'></a>import datetime
+<a id='L81' name='L81'></a> 
+<a id='L82' name='L82'></a> 
+<a id='L83' name='L83'></a>import boto
+<a id='L84' name='L84'></a>from boto.s3.connection import S3Connection
+<a id='L85' name='L85'></a>from boto.exception import BotoServerError
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a># Get settings from environment
+<a id='L89' name='L89'></a>USER=os.getenv('USER','0')
+<a id='L90' name='L90'></a>AWS_ACCESS_KEY_ID=os.getenv('AWS_ACCESS_KEY_ID')
+<a id='L91' name='L91'></a>AWS_SECRET_ACCESS_KEY=os.getenv('AWS_SECRET_ACCESS_KEY')
+<a id='L92' name='L92'></a>S3LOCATION=os.getenv('MCVFS_EXTFS_S3_LOCATION', 'EU')
+<a id='L93' name='L93'></a>DEBUGFILE=os.getenv('MCVFS_EXTFS_S3_DEBUGFILE')
+<a id='L94' name='L94'></a>DEBUGLEVEL=os.getenv('MCVFS_EXTFS_S3_DEBUGLEVEL', 'WARNING')
+<a id='L95' name='L95'></a> 
+<a id='L96' name='L96'></a>if not AWS_ACCESS_KEY_ID or not AWS_SECRET_ACCESS_KEY:
+<a id='L97' name='L97'></a>        sys.stderr.write('Missing AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY environment variables.\n')
+<a id='L98' name='L98'></a>        sys.exit(1)
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a># Setup logging
+<a id='L101' name='L101'></a>if DEBUGFILE:
+<a id='L102' name='L102'></a>        import logging
+<a id='L103' name='L103'></a>        logging.basicConfig(
+<a id='L104' name='L104'></a>                filename=DEBUGFILE,
+<a id='L105' name='L105'></a>                level=logging.DEBUG,
+<a id='L106' name='L106'></a>                format='%(asctime)s %(levelname)s %(message)s')
+<a id='L107' name='L107'></a>        logging.getLogger('boto').setLevel(getattr(logging, DEBUGLEVEL))
+<a id='L108' name='L108'></a>else:
+<a id='L109' name='L109'></a>        class Void(object):
+<a id='L110' name='L110'></a>                def __getattr__(self, attr):
+<a id='L111' name='L111'></a>                        return self
+<a id='L112' name='L112'></a>                def __call__(self, *args, **kw):
+<a id='L113' name='L113'></a>                        return self
+<a id='L114' name='L114'></a>        logging = Void()
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>logger = logging.getLogger('s3extfs')
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>def __fix_io_encoding(last_resort_default='UTF-8'):
+<a id='L120' name='L120'></a>    """
+<a id='L121' name='L121'></a>    The following code is needed to work with non-ASCII characters in filenames.
+<a id='L122' name='L122'></a>    We're trying hard to detect the system encoding.
+<a id='L123' name='L123'></a>    """
+<a id='L124' name='L124'></a>    import codecs
+<a id='L125' name='L125'></a>    import locale
+<a id='L126' name='L126'></a>    for var in ('stdin', 'stdout', 'stderr'):
+<a id='L127' name='L127'></a>        if getattr(sys, var).encoding is None:
+<a id='L128' name='L128'></a>            enc = None
+<a id='L129' name='L129'></a>            if enc is None:
+<a id='L130' name='L130'></a>                try:
+<a id='L131' name='L131'></a>                    enc = locale.getpreferredencoding()
+<a id='L132' name='L132'></a>                except:
+<a id='L133' name='L133'></a>                    pass
+<a id='L134' name='L134'></a>            if enc is None:
+<a id='L135' name='L135'></a>                try:
+<a id='L136' name='L136'></a>                    enc = sys.getfilesystemencoding()
+<a id='L137' name='L137'></a>                except:
+<a id='L138' name='L138'></a>                    pass
+<a id='L139' name='L139'></a>            if enc is None:
+<a id='L140' name='L140'></a>                try:
+<a id='L141' name='L141'></a>                    enc = sys.stdout.encoding
+<a id='L142' name='L142'></a>                except:
+<a id='L143' name='L143'></a>                    pass
+<a id='L144' name='L144'></a>            if enc is None:
+<a id='L145' name='L145'></a>                enc = last_resort_default
+<a id='L146' name='L146'></a>            setattr(sys, var, codecs.getwriter(enc)(getattr(sys, var), 'strict'))
+<a id='L147' name='L147'></a>__fix_io_encoding()
+<a id='L148' name='L148'></a> 
+<a id='L149' name='L149'></a> 
+<a id='L150' name='L150'></a>def threadmap(fun, iterable, maxthreads=16):
+<a id='L151' name='L151'></a>        """
+<a id='L152' name='L152'></a>        Quick and dirty threaded version of builtin method map.
+<a id='L153' name='L153'></a>        Propagates exception safely.
+<a id='L154' name='L154'></a>        """
+<a id='L155' name='L155'></a>        from threading import Thread
+<a id='L156' name='L156'></a>        import queue
+<a id='L157' name='L157'></a> 
+<a id='L158' name='L158'></a>        items = list(iterable)
+<a id='L159' name='L159'></a>        nitems = len(items)
+<a id='L160' name='L160'></a>        if nitems &lt; 2:
+<a id='L161' name='L161'></a>                return list(map(fun, items))
+<a id='L162' name='L162'></a> 
+<a id='L163' name='L163'></a>        # Create and fill input queue
+<a id='L164' name='L164'></a>        input = queue.Queue()
+<a id='L165' name='L165'></a>        output = queue.Queue()
+<a id='L166' name='L166'></a> 
+<a id='L167' name='L167'></a>        for i,item in enumerate(items):
+<a id='L168' name='L168'></a>                input.put( (i,item) )
+<a id='L169' name='L169'></a> 
+<a id='L170' name='L170'></a>        class WorkThread(Thread):
+<a id='L171' name='L171'></a>                """
+<a id='L172' name='L172'></a>                Takes one item from input queue (thread terminates when input queue is empty),
+<a id='L173' name='L173'></a>                performs fun, puts result in output queue
+<a id='L174' name='L174'></a>                """
+<a id='L175' name='L175'></a>                def run(self):
+<a id='L176' name='L176'></a>                        while True:
+<a id='L177' name='L177'></a>                                try:
+<a id='L178' name='L178'></a>                                        (i,item) = input.get_nowait()
+<a id='L179' name='L179'></a>                                        try:
+<a id='L180' name='L180'></a>                                                result = fun(item)
+<a id='L181' name='L181'></a>                                                output.put( (i,result) )
+<a id='L182' name='L182'></a>                                        except:
+<a id='L183' name='L183'></a>                                                output.put( (None,sys.exc_info()) )
+<a id='L184' name='L184'></a>                                except queue.Empty:
+<a id='L185' name='L185'></a>                                        return
+<a id='L186' name='L186'></a> 
+<a id='L187' name='L187'></a>        # Start threads
+<a id='L188' name='L188'></a>        for i in range( min(len(items), maxthreads) ):
+<a id='L189' name='L189'></a>                t = WorkThread()
+<a id='L190' name='L190'></a>                t.setDaemon(True)
+<a id='L191' name='L191'></a>                t.start()
+<a id='L192' name='L192'></a> 
+<a id='L193' name='L193'></a>        # Wait for all threads to finish &amp; collate results
+<a id='L194' name='L194'></a>        ret = []
+<a id='L195' name='L195'></a>        for i in range(nitems):
+<a id='L196' name='L196'></a>                try:
+<a id='L197' name='L197'></a>                        i,res = output.get()
+<a id='L198' name='L198'></a>                        if i == None:
+<a id='L199' name='L199'></a>                                raise res[0](res[1]).with_traceback(res[2])
+<a id='L200' name='L200'></a>                except queue.Empty:
+<a id='L201' name='L201'></a>                        break
+<a id='L202' name='L202'></a>                ret.append(res)
+<a id='L203' name='L203'></a> 
+<a id='L204' name='L204'></a>        return ret
+<a id='L205' name='L205'></a> 
+<a id='L206' name='L206'></a>logger.debug('started')
+<a id='L207' name='L207'></a> 
+<a id='L208' name='L208'></a>if S3LOCATION.upper() == "EU":
+<a id='L209' name='L209'></a>    S3LOCATION = "eu-central-1"
+<a id='L210' name='L210'></a>if S3LOCATION.upper() == "US":
+<a id='L211' name='L211'></a>    S3LOCATION = "us-east-1"
+<a id='L212' name='L212'></a>for att in dir(boto.s3.connection.Location):
+<a id='L213' name='L213'></a>        v = getattr(boto.s3.connection.Location, att)
+<a id='L214' name='L214'></a>        if type(v) is str and att.lower() == S3LOCATION.lower():
+<a id='L215' name='L215'></a>                S3LOCATION = v
+<a id='L216' name='L216'></a>                break
+<a id='L217' name='L217'></a>logger.debug('Using location %s for new buckets', S3LOCATION)
+<a id='L218' name='L218'></a> 
+<a id='L219' name='L219'></a> 
+<a id='L220' name='L220'></a>def get_connection(location):
+<a id='L221' name='L221'></a>        """
+<a id='L222' name='L222'></a>        Creates a connection to the specified region.
+<a id='L223' name='L223'></a>        """
+<a id='L224' name='L224'></a>        os.environ['S3_USE_SIGV4'] = 'True' # only V4 method is supported in all locations.
+<a id='L225' name='L225'></a>        return boto.s3.connect_to_region(
+<a id='L226' name='L226'></a>                location,
+<a id='L227' name='L227'></a>                aws_access_key_id=AWS_ACCESS_KEY_ID,
+<a id='L228' name='L228'></a>                aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+<a id='L229' name='L229'></a>        )
+<a id='L230' name='L230'></a> 
+<a id='L231' name='L231'></a> 
+<a id='L232' name='L232'></a># Global S3 default connection.
+<a id='L233' name='L233'></a>s3 = get_connection('us-east-1')
+<a id='L234' name='L234'></a> 
+<a id='L235' name='L235'></a> 
+<a id='L236' name='L236'></a>def get_bucket(name):
+<a id='L237' name='L237'></a>        """
+<a id='L238' name='L238'></a>        Returns a bucket by its name, no matter what region is it in.
+<a id='L239' name='L239'></a>        """
+<a id='L240' name='L240'></a>        try:
+<a id='L241' name='L241'></a>                b = s3.get_bucket(name, validate=False)
+<a id='L242' name='L242'></a>                b.get_location() # just to raise an exception on error
+<a id='L243' name='L243'></a>                return b
+<a id='L244' name='L244'></a>        except boto.exception.S3ResponseError as e:
+<a id='L245' name='L245'></a>                # Seems this is the only proper way to switch to the bucket's region.
+<a id='L246' name='L246'></a>                # Requesting of the default region for "?location" does not work unfortunately.
+<a id='L247' name='L247'></a>                m = re.search(r'&lt;Region&gt;(.*?)&lt;/Region&gt;', e.body)
+<a id='L248' name='L248'></a>                if m:
+<a id='L249' name='L249'></a>                        return get_connection(m.group(1)).get_bucket(name)
+<a id='L250' name='L250'></a>                raise
+<a id='L251' name='L251'></a> 
+<a id='L252' name='L252'></a> 
+<a id='L253' name='L253'></a>logger.debug('argv: ' + str(sys.argv))
+<a id='L254' name='L254'></a>try:
+<a id='L255' name='L255'></a>        cmd = sys.argv[1]
+<a id='L256' name='L256'></a>        args = sys.argv[2:]
+<a id='L257' name='L257'></a>except:
+<a id='L258' name='L258'></a>        sys.stderr.write('This program should be called from within MC\n')
+<a id='L259' name='L259'></a>        sys.exit(1)
+<a id='L260' name='L260'></a> 
+<a id='L261' name='L261'></a> 
+<a id='L262' name='L262'></a>def handleServerError(msg):
+<a id='L263' name='L263'></a>        e = sys.exc_info()
+<a id='L264' name='L264'></a>        msg += ', reason: ' + e[1].reason
+<a id='L265' name='L265'></a>        logger.error(msg, exc_info=e)
+<a id='L266' name='L266'></a>        sys.stderr.write(msg+'\n')
+<a id='L267' name='L267'></a>        sys.exit(1)
+<a id='L268' name='L268'></a> 
+<a id='L269' name='L269'></a>#
+<a id='L270' name='L270'></a># Lists all S3 contents
+<a id='L271' name='L271'></a>#
+<a id='L272' name='L272'></a>if cmd == 'list':
+<a id='L273' name='L273'></a>        if len(args) &gt; 0:
+<a id='L274' name='L274'></a>                path = args[0]
+<a id='L275' name='L275'></a>        else:
+<a id='L276' name='L276'></a>                path = ''
+<a id='L277' name='L277'></a> 
+<a id='L278' name='L278'></a>        logger.info('list')
+<a id='L279' name='L279'></a> 
+<a id='L280' name='L280'></a>        rs = s3.get_all_buckets()
+<a id='L281' name='L281'></a> 
+<a id='L282' name='L282'></a>        # Import python timezones (pytz)
+<a id='L283' name='L283'></a>        try:
+<a id='L284' name='L284'></a>                import pytz
+<a id='L285' name='L285'></a>        except:
+<a id='L286' name='L286'></a>                logger.warning('Missing pytz module, timestamps will be off')
+<a id='L287' name='L287'></a>                # A fallback UTC tz stub
+<a id='L288' name='L288'></a>                class pytzutc(datetime.tzinfo):
+<a id='L289' name='L289'></a>                        def __init__(self):
+<a id='L290' name='L290'></a>                                datetime.tzinfo.__init__(self)
+<a id='L291' name='L291'></a>                                self.utc = self
+<a id='L292' name='L292'></a>                                self.zone = 'UTC'
+<a id='L293' name='L293'></a>                        def utcoffset(self, dt):
+<a id='L294' name='L294'></a>                                return datetime.timedelta(0)
+<a id='L295' name='L295'></a>                        def tzname(self, dt):
+<a id='L296' name='L296'></a>                                return "UTC"
+<a id='L297' name='L297'></a>                        def dst(self, dt):
+<a id='L298' name='L298'></a>                                return datetime.timedelta(0)
+<a id='L299' name='L299'></a>                pytz = pytzutc()
+<a id='L300' name='L300'></a> 
+<a id='L301' name='L301'></a> 
+<a id='L302' name='L302'></a>        # Find timezone
+<a id='L303' name='L303'></a>        # (yes, timeZONE as in _geographic zone_ not EST/CEST or whatever crap we get from time.tzname)
+<a id='L304' name='L304'></a>        # http://regebro.wordpress.com/2008/05/10/python-and-time-zones-part-2-the-beast-returns/
+<a id='L305' name='L305'></a>        def getGuessedTimezone():
+<a id='L306' name='L306'></a>                # 1. check TZ env. var
+<a id='L307' name='L307'></a>                try:
+<a id='L308' name='L308'></a>                        tz = os.getenv('TZ', '')
+<a id='L309' name='L309'></a>                        return pytz.timezone(tz)
+<a id='L310' name='L310'></a>                except:
+<a id='L311' name='L311'></a>                        pass
+<a id='L312' name='L312'></a>                # 2. check if /etc/timezone exists (Debian at least)
+<a id='L313' name='L313'></a>                try:
+<a id='L314' name='L314'></a>                        if os.path.isfile('/etc/timezone'):
+<a id='L315' name='L315'></a>                                tz = open('/etc/timezone', 'r').readline().strip()
+<a id='L316' name='L316'></a>                                return pytz.timezone(tz)
+<a id='L317' name='L317'></a>                except:
+<a id='L318' name='L318'></a>                        pass
+<a id='L319' name='L319'></a>                # 3. check if /etc/localtime is a _link_ to something useful
+<a id='L320' name='L320'></a>                try:
+<a id='L321' name='L321'></a>                        if os.path.islink('/etc/localtime'):
+<a id='L322' name='L322'></a>                                link = os.readlink('/etc/localtime')
+<a id='L323' name='L323'></a>                                tz = '/'.join(link.split(os.path.sep)[-2:])
+<a id='L324' name='L324'></a>                                return pytz.timezone(tz)
+<a id='L325' name='L325'></a>                except:
+<a id='L326' name='L326'></a>                        pass
+<a id='L327' name='L327'></a>                # 4. use time.tzname which will probably be wrong by an hour 50% of the time.
+<a id='L328' name='L328'></a>                try:
+<a id='L329' name='L329'></a>                        return pytz.timezone(time.tzname[0])
+<a id='L330' name='L330'></a>                except:
+<a id='L331' name='L331'></a>                        pass
+<a id='L332' name='L332'></a>                # 5. use plain UTC ...
+<a id='L333' name='L333'></a>                return pytz.utc
+<a id='L334' name='L334'></a> 
+<a id='L335' name='L335'></a>        tz=getGuessedTimezone()
+<a id='L336' name='L336'></a>        logger.debug('Using timezone: ' + tz.zone)
+<a id='L337' name='L337'></a> 
+<a id='L338' name='L338'></a>        # AWS time is on format: 2009-01-07T16:43:39.000Z
+<a id='L339' name='L339'></a>        # we "want" MM-DD-YYYY hh:mm (in localtime)
+<a id='L340' name='L340'></a>        expr = re.compile(r'^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.\d{3}Z$')
+<a id='L341' name='L341'></a>        def convDate(awsdatetime):
+<a id='L342' name='L342'></a>                m = expr.match(awsdatetime)
+<a id='L343' name='L343'></a>                ye,mo,da,ho,mi,se = list(map(int,m.groups()))
+<a id='L344' name='L344'></a> 
+<a id='L345' name='L345'></a>                dt = datetime.datetime(ye,mo,da,ho,mi,se, tzinfo=pytz.utc)
+<a id='L346' name='L346'></a>                return dt.astimezone(tz).strftime('%m-%d-%Y %H:%M')
+<a id='L347' name='L347'></a> 
+<a id='L348' name='L348'></a> 
+<a id='L349' name='L349'></a>        def bucketList(b):
+<a id='L350' name='L350'></a>                b = get_bucket(b.name)  # get the bucket at its own region
+<a id='L351' name='L351'></a>                totsz = 0
+<a id='L352' name='L352'></a>                mostrecent = '1970-01-01T00:00:00.000Z'
+<a id='L353' name='L353'></a>                ret = []
+<a id='L354' name='L354'></a>                for k in b.list():
+<a id='L355' name='L355'></a>                        if k.name.endswith('/'):
+<a id='L356' name='L356'></a>                                # Sometimes someone create S3 keys which are ended with "/".
+<a id='L357' name='L357'></a>                                # Extfs cannot work with them as with files, and such keys may
+<a id='L358' name='L358'></a>                                # hide same-name directories, so we skip them.
+<a id='L359' name='L359'></a>                                continue
+<a id='L360' name='L360'></a>                        mostrecent = max(mostrecent, k.last_modified)
+<a id='L361' name='L361'></a>                        datetime = convDate(k.last_modified)
+<a id='L362' name='L362'></a>                        ret.append('%10s %3d %-8s %-8s %d %s %s\n' % (
+<a id='L363' name='L363'></a>                                '-rw-r--r--', 1, USER, USER, k.size, datetime, b.name+'/'+k.name)
+<a id='L364' name='L364'></a>                        )
+<a id='L365' name='L365'></a>                        totsz += k.size
+<a id='L366' name='L366'></a> 
+<a id='L367' name='L367'></a>                datetime=convDate(mostrecent)
+<a id='L368' name='L368'></a>                sys.stdout.write('%10s %3d %-8s %-8s %d %s %s\n' % (
+<a id='L369' name='L369'></a>                        'drwxr-xr-x', 1, USER, USER, totsz, datetime, b.name)
+<a id='L370' name='L370'></a>                )
+<a id='L371' name='L371'></a>                for line in ret:
+<a id='L372' name='L372'></a>                        sys.stdout.write(line)
+<a id='L373' name='L373'></a> 
+<a id='L374' name='L374'></a>        threadmap(bucketList, rs)
+<a id='L375' name='L375'></a> 
+<a id='L376' name='L376'></a>#
+<a id='L377' name='L377'></a># Fetch file from S3
+<a id='L378' name='L378'></a>#
+<a id='L379' name='L379'></a>elif cmd == 'copyout':
+<a id='L380' name='L380'></a>        archivename = args[0]
+<a id='L381' name='L381'></a>        storedfilename = args[1]
+<a id='L382' name='L382'></a>        extractto = args[2]
+<a id='L383' name='L383'></a> 
+<a id='L384' name='L384'></a>        bucket,key = storedfilename.split('/', 1)
+<a id='L385' name='L385'></a>        logger.info('copyout bucket: %s, key: %s'%(bucket, key))
+<a id='L386' name='L386'></a> 
+<a id='L387' name='L387'></a>        try:
+<a id='L388' name='L388'></a>                b = get_bucket(bucket)
+<a id='L389' name='L389'></a>                k = b.get_key(key)
+<a id='L390' name='L390'></a> 
+<a id='L391' name='L391'></a>                out = open(extractto, 'w')
+<a id='L392' name='L392'></a> 
+<a id='L393' name='L393'></a>                k.open(mode='r')
+<a id='L394' name='L394'></a>                for buf in k:
+<a id='L395' name='L395'></a>                        out.write(buf)
+<a id='L396' name='L396'></a>                k.close()
+<a id='L397' name='L397'></a>                out.close()
+<a id='L398' name='L398'></a>        except BotoServerError:
+<a id='L399' name='L399'></a>                handleServerError('Unable to fetch key "%s"'%(key))
+<a id='L400' name='L400'></a> 
+<a id='L401' name='L401'></a>#
+<a id='L402' name='L402'></a># Upload file to S3
+<a id='L403' name='L403'></a>#
+<a id='L404' name='L404'></a>elif cmd == 'copyin':
+<a id='L405' name='L405'></a>        archivename = args[0]
+<a id='L406' name='L406'></a>        storedfilename = args[1]
+<a id='L407' name='L407'></a>        sourcefile = args[2]
+<a id='L408' name='L408'></a> 
+<a id='L409' name='L409'></a>        bucket,key = storedfilename.split('/', 1)
+<a id='L410' name='L410'></a>        logger.info('copyin bucket: %s, key: %s'%(bucket, key))
+<a id='L411' name='L411'></a> 
+<a id='L412' name='L412'></a>        try:
+<a id='L413' name='L413'></a>                b = get_bucket(bucket)
+<a id='L414' name='L414'></a>                k = b.new_key(key)
+<a id='L415' name='L415'></a>                k.set_contents_from_file(fp=open(sourcefile,'r'))
+<a id='L416' name='L416'></a>        except BotoServerError:
+<a id='L417' name='L417'></a>                handleServerError('Unable to upload key "%s"' % (key))
+<a id='L418' name='L418'></a> 
+<a id='L419' name='L419'></a>#
+<a id='L420' name='L420'></a># Remove file from S3
+<a id='L421' name='L421'></a>#
+<a id='L422' name='L422'></a>elif cmd == 'rm':
+<a id='L423' name='L423'></a>        archivename = args[0]
+<a id='L424' name='L424'></a>        storedfilename = args[1]
+<a id='L425' name='L425'></a> 
+<a id='L426' name='L426'></a>        bucket,key = storedfilename.split('/', 1)
+<a id='L427' name='L427'></a>        logger.info('rm bucket: %s, key: %s'%(bucket, key))
+<a id='L428' name='L428'></a> 
+<a id='L429' name='L429'></a>        try:
+<a id='L430' name='L430'></a>                b = get_bucket(bucket)
+<a id='L431' name='L431'></a>                b.delete_key(key)
+<a id='L432' name='L432'></a>        except BotoServerError:
+<a id='L433' name='L433'></a>                handleServerError('Unable to remove key "%s"' % (key))
+<a id='L434' name='L434'></a> 
+<a id='L435' name='L435'></a>#
+<a id='L436' name='L436'></a># Create directory
+<a id='L437' name='L437'></a>#
+<a id='L438' name='L438'></a>elif cmd == 'mkdir':
+<a id='L439' name='L439'></a>        archivename = args[0]
+<a id='L440' name='L440'></a>        dirname = args[1]
+<a id='L441' name='L441'></a> 
+<a id='L442' name='L442'></a>        logger.info('mkdir dir: %s' %(dirname))
+<a id='L443' name='L443'></a>        if '/' in dirname:
+<a id='L444' name='L444'></a>                logger.warning('skipping mkdir')
+<a id='L445' name='L445'></a>                pass
+<a id='L446' name='L446'></a>        else:
+<a id='L447' name='L447'></a>                bucket = dirname
+<a id='L448' name='L448'></a>                try:
+<a id='L449' name='L449'></a>                        get_connection(S3LOCATION).create_bucket(bucket, location=S3LOCATION)
+<a id='L450' name='L450'></a>                except BotoServerError:
+<a id='L451' name='L451'></a>                        handleServerError('Unable to create bucket "%s"' % (bucket))
+<a id='L452' name='L452'></a> 
+<a id='L453' name='L453'></a>#
+<a id='L454' name='L454'></a># Remove directory
+<a id='L455' name='L455'></a>#
+<a id='L456' name='L456'></a>elif cmd == 'rmdir':
+<a id='L457' name='L457'></a>        archivename = args[0]
+<a id='L458' name='L458'></a>        dirname = args[1]
+<a id='L459' name='L459'></a> 
+<a id='L460' name='L460'></a>        logger.info('rmdir dir: %s' %(dirname))
+<a id='L461' name='L461'></a>        if '/' in dirname:
+<a id='L462' name='L462'></a>                logger.warning('skipping rmdir')
+<a id='L463' name='L463'></a>                pass
+<a id='L464' name='L464'></a>        else:
+<a id='L465' name='L465'></a>                bucket = dirname
+<a id='L466' name='L466'></a>                try:
+<a id='L467' name='L467'></a>                        b = get_bucket(bucket)
+<a id='L468' name='L468'></a>                        b.connection.delete_bucket(b)
+<a id='L469' name='L469'></a>                except BotoServerError:
+<a id='L470' name='L470'></a>                        handleServerError('Unable to delete bucket "%s"' % (bucket))
+<a id='L471' name='L471'></a> 
+<a id='L472' name='L472'></a>#
+<a id='L473' name='L473'></a># Run from S3
+<a id='L474' name='L474'></a>#
+<a id='L475' name='L475'></a>elif cmd == 'run':
+<a id='L476' name='L476'></a>        archivename = args[0]
+<a id='L477' name='L477'></a>        storedfilename = args[1]
+<a id='L478' name='L478'></a>        arguments = args[2:]
+<a id='L479' name='L479'></a> 
+<a id='L480' name='L480'></a>        bucket,key = storedfilename.split('/', 1)
+<a id='L481' name='L481'></a>        logger.info('run bucket: %s, key: %s'%(bucket, key))
+<a id='L482' name='L482'></a> 
+<a id='L483' name='L483'></a>        os.execv(storedfilename, arguments)
+<a id='L484' name='L484'></a>else:
+<a id='L485' name='L485'></a>        logger.error('unhandled, bye')
+<a id='L486' name='L486'></a>        sys.exit(1)
+<a id='L487' name='L487'></a> 
+<a id='L488' name='L488'></a>logger.debug('command handled')
+<a id='L489' name='L489'></a>sys.exit(0)
+<a id='L490' name='L490'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+490 src/vfs/extfs/helpers/s3+.in'  /> */</em>
+</body>
+</html>

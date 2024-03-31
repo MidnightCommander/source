@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/uar.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uar.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uar.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/uar.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#!/bin/sh
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Written by    Alex Kuchma &lt;ask@bcs.zp.ua&gt;
+<a id='L4' name='L4'></a>#               Alex Tkachenko &lt;alex@bcs.zp.ua&gt;
+<a id='L5' name='L5'></a># Updated by    Vitezslav Samel &lt;xsamel00@dcse.fee.vutbr.cz&gt;
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a># (C) 1997, 1998 The Free Software Foundation.
+<a id='L8' name='L8'></a>#
+<a id='L9' name='L9'></a>#
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>XAR=ar
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>mcarfs_list ()
+<a id='L14' name='L14'></a>{
+<a id='L15' name='L15'></a>    # If $temp_replace string is part of the filename that part might get lost
+<a id='L16' name='L16'></a>    temp_replace='Unique Separator String'
+<a id='L17' name='L17'></a>    thisyear="`date +%Y`"
+<a id='L18' name='L18'></a>    $XAR tv "$1" | sed 's,^,-,;s, , 1 ,;s,/, ,' |
+<a id='L19' name='L19'></a>        sed -e "s/\( [0-2][0-9]\:[0-5][0-9]\)\( $thisyear \)\(.*\)/\1$temp_replace\3/" |
+<a id='L20' name='L20'></a>        sed -e "s/\( [0-2][0-9]\:[0-5][0-9] \)\([12][0-9][0-9][0-9] \)\(.*\)/ \2\3/" |
+<a id='L21' name='L21'></a>        sed -e "s/$temp_replace/ /"
+<a id='L22' name='L22'></a>}
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>mcarfs_copyout ()
+<a id='L25' name='L25'></a>{
+<a id='L26' name='L26'></a>    $XAR p "$1" "$2" &gt; "$3"
+<a id='L27' name='L27'></a>}
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>mcarfs_copyin ()
+<a id='L30' name='L30'></a>{
+<a id='L31' name='L31'></a>    TMPDIR=`mktemp -d "${MC_TMPDIR:-/tmp}/mctmpdir-uar.XXXXXX"` || exit 1
+<a id='L32' name='L32'></a>    name=`basename "$2"`
+<a id='L33' name='L33'></a>    (cd "$TMPDIR" &amp;&amp; cp -fp "$3" "$name" &amp;&amp; $XAR r "$1" "$name")
+<a id='L34' name='L34'></a>    rm -rf "$TMPDIR"
+<a id='L35' name='L35'></a>}
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>mcarfs_rm ()
+<a id='L38' name='L38'></a>{
+<a id='L39' name='L39'></a>    $XAR d "$1" "$2"
+<a id='L40' name='L40'></a>}
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a># override any locale for dates
+<a id='L43' name='L43'></a>LC_ALL=C
+<a id='L44' name='L44'></a>export LC_ALL
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>umask 077
+<a id='L47' name='L47'></a>case "$1" in
+<a id='L48' name='L48'></a>  list) mcarfs_list "$2" ;;
+<a id='L49' name='L49'></a>  copyout) shift; mcarfs_copyout "$@" ;;
+<a id='L50' name='L50'></a>  copyin) shift; mcarfs_copyin "$@" ;;
+<a id='L51' name='L51'></a>  rm) shift; mcarfs_rm "$@" ;;
+<a id='L52' name='L52'></a>  mkdir|rmdir)
+<a id='L53' name='L53'></a>    echo "mcarfs: ar archives cannot contain directories." 1&gt;&amp;2
+<a id='L54' name='L54'></a>    exit 1;;
+<a id='L55' name='L55'></a>  *)
+<a id='L56' name='L56'></a>    echo "mcarfs: unknown command: \"$1\"." 1&gt;&amp;2
+<a id='L57' name='L57'></a>    exit 1;;
+<a id='L58' name='L58'></a>esac
+<a id='L59' name='L59'></a> 
+<a id='L60' name='L60'></a>exit 0
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+60 src/vfs/extfs/helpers/uar.in'  /> */</em>
+</body>
+</html>

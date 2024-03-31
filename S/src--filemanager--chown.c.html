@@ -1,0 +1,608 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/filemanager/chown.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L120'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L397'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--filemanager.html'>filemanager</a>/chown.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--filemanager.html'>filemanager</a>/chown.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/filemanager/chown.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L120' title='Defined at 120.'>chown_init</a></li>
+<li><a href='#L151' title='Defined at 151.'>chown_refresh</a></li>
+<li><a href='#L173' title='Defined at 173.'>chown_bg_callback</a></li>
+<li><a href='#L190' title='Defined at 190.'>chown_dlg_create</a></li>
+<li><a href='#L278' title='Defined at 278.'>chown_done</a></li>
+<li><a href='#L288' title='Defined at 288.'>next_file</a></li>
+<li><a href='#L299' title='Defined at 299.'>try_chown</a></li>
+<li><a href='#L345' title='Defined at 345.'>do_chown</a></li>
+<li><a href='#L359' title='Defined at 359.'>apply_chowns</a></li>
+<li><a href='#L397' title='Defined at 397.'>chown_cmd</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Chown command -- for the Midnight Commander</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 1994-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'></em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'></em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'></em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'> */</em>
+<a id='L22' name='L22'></a>  22 
+<a id='L23' name='L23'></a>  23 <em class='comment'>/** \file chown.c</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> *  \brief Source: chown command</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;errno.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;stdio.h&gt;
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;string.h&gt;
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;pwd.h&gt;
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> &lt;grp.h&gt;
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;sys/types.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;sys/stat.h&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;unistd.h&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>lib/tty/tty.h</a>"
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> "<a href='lib--skin.h.html'>lib/skin.h</a>"
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> "<a href='lib--vfs--vfs.h.html'>lib/vfs/vfs.h</a>"
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#include</em> "<a href='src--setup.h.html'>src/setup.h</a>"          <em class='comment'>/* panels_options */</em>
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <em class='sharp'>#include</em> "<a href='src--filemanager--cmd.h.html'>cmd.h</a>"                <em class='comment'>/* chown_cmd() */</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='sharp'>#define</em> <a href='../R/GH.html' title='Multiple referred from 6 places.'>GH</a> 12
+<a id='L56' name='L56'></a>  56 <em class='sharp'>#define</em> <a href='../R/GW.html' title='Multiple referred from 12 places.'>GW</a> 21
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <em class='sharp'>#define</em> <a href='../R/BUTTONS.html' title='Multiple referred from 18 places.'>BUTTONS</a> 5
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <em class='sharp'>#define</em> <a href='../R/B_SETALL.html' title='Multiple referred from 10 places.'>B_SETALL</a>        <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>
+<a id='L61' name='L61'></a>  61 <em class='sharp'>#define</em> <a href='../R/B_SETUSR.html' title='Multiple referred from 2 places.'>B_SETUSR</a>        (<a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a> + 1)
+<a id='L62' name='L62'></a>  62 <em class='sharp'>#define</em> <a href='../R/B_SETGRP.html' title='Multiple referred from 2 places.'>B_SETGRP</a>        (<a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a> + 2)
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 <em class='sharp'>#define</em> <a href='../R/LABELS.html' title='Multiple referred from 5 places.'>LABELS</a> 5
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <em class='sharp'>#define</em> <a href='../R/chown_label.html' title='Multiple referred from 9 places.'>chown_label</a>(<a href='../Y/n.html' title='Multiple used in 252 places.'>n</a>,<a href='../Y/txt.html' title='Multiple used in 18 places.'>txt</a>) <a href='../S/lib--widget--label.c.html#L157' title='Defined at 157 in lib/widget/label.c.'>label_set_text</a> (<a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a> [<a href='../Y/n.html' title='Multiple used in 252 places.'>n</a>].<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>, <a href='../Y/txt.html' title='Multiple used in 18 places.'>txt</a>)
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong>
+<a id='L75' name='L75'></a>  75 <em class='brace'>{</em>
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>int</strong> <a href='../Y/ret_cmd.html' title='Multiple used in 28 places.'>ret_cmd</a>;
+<a id='L77' name='L77'></a>  77     <a href='../S/lib--widget--button.h.html#L27' title='Defined at 27 in lib/widget/button.h.'>button_flags_t</a> <a href='../Y/flags.html' title='Multiple used in 411 places.'>flags</a>;
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>int</strong> <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>;
+<a id='L79' name='L79'></a>  79     <strong class='reserved'>int</strong> <a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>;
+<a id='L80' name='L80'></a>  80     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>;
+<a id='L81' name='L81'></a>  81 <em class='brace'>}</em> <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../D/BUTTONS.html' title='Multiple defined in 4 places.'>BUTTONS</a>] =
+<a id='L82' name='L82'></a>  82 <em class='brace'>{</em>
+<a id='L83' name='L83'></a>  83     <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L84' name='L84'></a>  84     <em class='brace'>{</em> <a href='../D/B_SETALL.html' title='Multiple defined in 4 places.'>B_SETALL</a>,  <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, 5, 0, <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Set &amp;all")    <em class='brace'>}</em>,
+<a id='L85' name='L85'></a>  85     <em class='brace'>{</em> <a href='../S/src--filemanager--chown.c.html#L62' title='Defined at 62 in src/filemanager/chown.c.'>B_SETGRP</a>,  <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, 5, 0, <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Set &amp;groups") <em class='brace'>}</em>,
+<a id='L86' name='L86'></a>  86     <em class='brace'>{</em> <a href='../S/src--filemanager--chown.c.html#L61' title='Defined at 61 in src/filemanager/chown.c.'>B_SETUSR</a>,  <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, 5, 0, <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("Set &amp;users")  <em class='brace'>}</em>,
+<a id='L87' name='L87'></a>  87     <em class='brace'>{</em> <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>,  <a href='../S/lib--widget--button.h.html#L26' title='Defined at 26 in lib/widget/button.h.'>DEFPUSH_BUTTON</a>, 3, 0, <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("&amp;Set")        <em class='brace'>}</em>,
+<a id='L88' name='L88'></a>  88     <em class='brace'>{</em> <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>,  <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, 3, 0, <a href='../D/N_.html' title='Multiple defined in 3 places.'>N_</a>("&amp;Cancel")     <em class='brace'>}</em>
+<a id='L89' name='L89'></a>  89     <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L90' name='L90'></a>  90 <em class='brace'>}</em>;
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 <em class='comment'>/* summary length of three buttons */</em>
+<a id='L93' name='L93'></a>  93 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/blen.html' title='Multiple used in 37 places.'>blen</a> = 0;
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95 <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong>
+<a id='L96' name='L96'></a>  96 <em class='brace'>{</em>
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>int</strong> <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>;
+<a id='L98' name='L98'></a>  98     <a href='../S/lib--widget--label.h.html#L23' title='Defined at 23 in lib/widget/label.h.'>WLabel</a> *<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>;
+<a id='L99' name='L99'></a>  99 <em class='brace'>}</em> <a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a>[<a href='../D/LABELS.html' title='Multiple defined in 2 places.'>LABELS</a>] =
+<a id='L100' name='L100'></a> 100 <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101     <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L102' name='L102'></a> 102     <em class='brace'>{</em>  4, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> <em class='brace'>}</em>,
+<a id='L103' name='L103'></a> 103     <em class='brace'>{</em>  6, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> <em class='brace'>}</em>,
+<a id='L104' name='L104'></a> 104     <em class='brace'>{</em>  8, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> <em class='brace'>}</em>,
+<a id='L105' name='L105'></a> 105     <em class='brace'>{</em> 10, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> <em class='brace'>}</em>,
+<a id='L106' name='L106'></a> 106     <em class='brace'>{</em> 12, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> <em class='brace'>}</em>
+<a id='L107' name='L107'></a> 107     <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L108' name='L108'></a> 108 <em class='brace'>}</em>;
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/current_file.html' title='Multiple used in 45 places.'>current_file</a>;
+<a id='L111' name='L111'></a> 111 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/ignore_all.html' title='Multiple used in 20 places.'>ignore_all</a>;
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113 <strong class='reserved'>static</strong> <a href='../D/WListbox.html' title='Multiple defined in 2 places.'>WListbox</a> *<a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>, *<a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a>;
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L120' name='L120'></a> 120 <a href='../S/src--filemanager--chown.c.html#L402' title='Referred from 402 in src/filemanager/chown.c.'>chown_init</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L151'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+120 src/filemanager/chown.c'  /> */</em>
+<a id='L121' name='L121'></a> 121 <em class='brace'>{</em>
+<a id='L122' name='L122'></a> 122     <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/i18n.html' title='Multiple used in 15 places.'>i18n</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L123' name='L123'></a> 123     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L124' name='L124'></a> 124 
+<a id='L125' name='L125'></a> 125     <strong class='reserved'>if</strong> (<a href='../Y/i18n.html' title='Multiple used in 15 places.'>i18n</a>)
+<a id='L126' name='L126'></a> 126         <strong class='reserved'>return</strong>;
+<a id='L127' name='L127'></a> 127 
+<a id='L128' name='L128'></a> 128     <a href='../Y/i18n.html' title='Multiple used in 15 places.'>i18n</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_NLS.html' title='Multiple used in 30 places.'>ENABLE_NLS</a>
+<a id='L131' name='L131'></a> 131     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../D/BUTTONS.html' title='Multiple defined in 4 places.'>BUTTONS</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L132' name='L132'></a> 132         <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a> = <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>(<a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>);
+<a id='L133' name='L133'></a> 133 <em class='sharp'>#endif</em> <em class='comment'>/* ENABLE_NLS */</em>
+<a id='L134' name='L134'></a> 134 
+<a id='L135' name='L135'></a> 135     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../D/BUTTONS.html' title='Multiple defined in 4 places.'>BUTTONS</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L136' name='L136'></a> 136     <em class='brace'>{</em>
+<a id='L137' name='L137'></a> 137         <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a> = <a href='../S/lib--strutil--strutil.c.html#L655' title='Defined at 655 in lib/strutil/strutil.c.'>str_term_width1</a> (<a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>) + 3;     <em class='comment'>/* [], spaces and w/o &amp; */</em>
+<a id='L138' name='L138'></a> 138         <strong class='reserved'>if</strong> (<a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/flags.html' title='Multiple used in 411 places.'>flags</a> == <a href='../S/lib--widget--button.h.html#L26' title='Defined at 26 in lib/widget/button.h.'>DEFPUSH_BUTTON</a>)
+<a id='L139' name='L139'></a> 139             <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a> += 2;      <em class='comment'>/* &lt;&gt; */</em>
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141         <strong class='reserved'>if</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../D/BUTTONS.html' title='Multiple defined in 4 places.'>BUTTONS</a> - 2)
+<a id='L142' name='L142'></a> 142             <a href='../Y/blen.html' title='Multiple used in 37 places.'>blen</a> += <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>;
+<a id='L143' name='L143'></a> 143     <em class='brace'>}</em>
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145     <a href='../Y/blen.html' title='Multiple used in 37 places.'>blen</a> += 2;
+<a id='L146' name='L146'></a> 146 <em class='brace'>}</em>
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L151' name='L151'></a> 151 <a href='../S/src--filemanager--chown.c.html#L179' title='Referred from 179 in src/filemanager/chown.c.'>chown_refresh</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/h.html' title='Multiple used in 492 places.'>h</a>)
+     <em class='comment'>/* <a href='#L120'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L173'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+151 src/filemanager/chown.c'  /> */</em>
+<a id='L152' name='L152'></a> 152 <em class='brace'>{</em>
+<a id='L153' name='L153'></a> 153     <strong class='reserved'>int</strong> <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> = 3;
+<a id='L154' name='L154'></a> 154     <strong class='reserved'>int</strong> <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> = 7 + <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> * 2;
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156     <a href='../D/tty_setcolor.html' title='Multiple defined in 2 places.'>tty_setcolor</a> (<a href='../S/lib--skin.h.html#L28' title='Defined at 28 in lib/skin.h.'>COLOR_NORMAL</a>);
+<a id='L157' name='L157'></a> 157 
+<a id='L158' name='L158'></a> 158     <a href='../S/lib--widget--widget-common.h.html#L18' title='Defined at 18 in lib/widget/widget-common.h.'>widget_gotoyx</a> (<a href='../Y/h.html' title='Multiple used in 492 places.'>h</a>, <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> + 0, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>);
+<a id='L159' name='L159'></a> 159     <a href='../D/tty_print_string.html' title='Multiple defined in 2 places.'>tty_print_string</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Name"));
+<a id='L160' name='L160'></a> 160     <a href='../S/lib--widget--widget-common.h.html#L18' title='Defined at 18 in lib/widget/widget-common.h.'>widget_gotoyx</a> (<a href='../Y/h.html' title='Multiple used in 492 places.'>h</a>, <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> + 2, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>);
+<a id='L161' name='L161'></a> 161     <a href='../D/tty_print_string.html' title='Multiple defined in 2 places.'>tty_print_string</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Owner name"));
+<a id='L162' name='L162'></a> 162     <a href='../S/lib--widget--widget-common.h.html#L18' title='Defined at 18 in lib/widget/widget-common.h.'>widget_gotoyx</a> (<a href='../Y/h.html' title='Multiple used in 492 places.'>h</a>, <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> + 4, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>);
+<a id='L163' name='L163'></a> 163     <a href='../D/tty_print_string.html' title='Multiple defined in 2 places.'>tty_print_string</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Group name"));
+<a id='L164' name='L164'></a> 164     <a href='../S/lib--widget--widget-common.h.html#L18' title='Defined at 18 in lib/widget/widget-common.h.'>widget_gotoyx</a> (<a href='../Y/h.html' title='Multiple used in 492 places.'>h</a>, <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> + 6, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>);
+<a id='L165' name='L165'></a> 165     <a href='../D/tty_print_string.html' title='Multiple defined in 2 places.'>tty_print_string</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Size"));
+<a id='L166' name='L166'></a> 166     <a href='../S/lib--widget--widget-common.h.html#L18' title='Defined at 18 in lib/widget/widget-common.h.'>widget_gotoyx</a> (<a href='../Y/h.html' title='Multiple used in 492 places.'>h</a>, <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> + 8, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>);
+<a id='L167' name='L167'></a> 167     <a href='../D/tty_print_string.html' title='Multiple defined in 2 places.'>tty_print_string</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Permission"));
+<a id='L168' name='L168'></a> 168 <em class='brace'>}</em>
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172 <strong class='reserved'>static</strong> <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a>
+<a id='L173' name='L173'></a> 173 <a href='../S/src--filemanager--chown.c.html#L210' title='Referred from 210 in src/filemanager/chown.c.'>chown_bg_callback</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../S/lib--widget--widget-common.h.html#L52' title='Defined at 52 in lib/widget/widget-common.h.'>widget_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <strong class='reserved'>int</strong> <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>, <strong class='reserved'>void</strong> *<a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>)
+     <em class='comment'>/* <a href='#L151'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L190'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+173 src/filemanager/chown.c'  /> */</em>
+<a id='L174' name='L174'></a> 174 <em class='brace'>{</em>
+<a id='L175' name='L175'></a> 175     <strong class='reserved'>switch</strong> (<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>)
+<a id='L176' name='L176'></a> 176     <em class='brace'>{</em>
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>case</strong> <a href='../S/lib--widget--widget-common.h.html#L37' title='Defined at 37 in lib/widget/widget-common.h.'>MSG_DRAW</a>:
+<a id='L178' name='L178'></a> 178         <a href='../S/lib--widget--frame.c.html#L120' title='Defined at 120 in lib/widget/frame.c.'>frame_callback</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../S/lib--widget--widget-common.h.html#L37' title='Defined at 37 in lib/widget/widget-common.h.'>MSG_DRAW</a>, 0, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L179' name='L179'></a> 179         <a href='../S/src--filemanager--chown.c.html#L151' title='Defined at 151 in src/filemanager/chown.c.'>chown_refresh</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/owner.html' title='Multiple used in 148 places.'>owner</a>));
+<a id='L180' name='L180'></a> 180         <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L64' title='Defined at 64 in lib/widget/widget-common.h.'>MSG_HANDLED</a>;
+<a id='L181' name='L181'></a> 181 
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>default</strong>:
+<a id='L183' name='L183'></a> 183         <strong class='reserved'>return</strong> <a href='../S/lib--widget--frame.c.html#L120' title='Defined at 120 in lib/widget/frame.c.'>frame_callback</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>);
+<a id='L184' name='L184'></a> 184     <em class='brace'>}</em>
+<a id='L185' name='L185'></a> 185 <em class='brace'>}</em>
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189 <strong class='reserved'>static</strong> <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *
+<a id='L190' name='L190'></a> 190 <a href='../S/src--filemanager--chown.c.html#L436' title='Referred from 436 in src/filemanager/chown.c.'>chown_dlg_create</a> (<a href='../S/src--filemanager--panel.h.html#L145' title='Defined at 145 in src/filemanager/panel.h.'>WPanel</a> * <a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>)
+     <em class='comment'>/* <a href='#L173'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L278'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+190 src/filemanager/chown.c'  /> */</em>
+<a id='L191' name='L191'></a> 191 <em class='brace'>{</em>
+<a id='L192' name='L192'></a> 192     <strong class='reserved'>int</strong> <a href='../Y/single_set.html' title='Multiple used in 17 places.'>single_set</a>;
+<a id='L193' name='L193'></a> 193     <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *<a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>;
+<a id='L194' name='L194'></a> 194     <a href='../D/WGroup.html' title='Multiple defined in 2 places.'>WGroup</a> *<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>;
+<a id='L195' name='L195'></a> 195     <strong class='reserved'>int</strong> <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>, <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>;
+<a id='L196' name='L196'></a> 196     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>, <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>;
+<a id='L197' name='L197'></a> 197     <strong class='reserved'>struct</strong> <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a> *<a href='../Y/l_pass.html' title='Multiple used in 3 places.'>l_pass</a>;
+<a id='L198' name='L198'></a> 198     <strong class='reserved'>struct</strong> <a href='../Y/group.html' title='Multiple used in 144 places.'>group</a> *<a href='../Y/l_grp.html' title='Multiple used in 3 places.'>l_grp</a>;
+<a id='L199' name='L199'></a> 199 
+<a id='L200' name='L200'></a> 200     <a href='../Y/single_set.html' title='Multiple used in 17 places.'>single_set</a> = (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>-&gt;<a href='../Y/marked.html' title='Multiple used in 92 places.'>marked</a> &lt; 2) ? 3 : 0;
+<a id='L201' name='L201'></a> 201     <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> = <a href='../S/src--filemanager--chown.c.html#L55' title='Defined at 55 in src/filemanager/chown.c.'>GH</a> + 4 + (<a href='../Y/single_set.html' title='Multiple used in 17 places.'>single_set</a> != 0 ? 2 : 4);
+<a id='L202' name='L202'></a> 202     <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> = <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> * 3 + 2 + 6;
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204     <a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a> =
+<a id='L205' name='L205'></a> 205         <a href='../S/lib--widget--dialog.c.html#L399' title='Defined at 399 in lib/widget/dialog.c.'>dlg_create</a> (<a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>, 0, 0, <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>, <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>, <a href='../S/lib--widget--widget-common.h.html#L101' title='Defined at 101 in lib/widget/widget-common.h.'>WPOS_CENTER</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/dialog_colors.html' title='Multiple used in 35 places.'>dialog_colors</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>,
+<a id='L206' name='L206'></a> 206                     "[Chown]", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Chown command"));
+<a id='L207' name='L207'></a> 207     <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a> = <a href='../S/lib--widget--group.h.html#L16' title='Defined at 16 in lib/widget/group.h.'>GROUP</a> (<a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>);
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209     <em class='comment'>/* draw background */</em>
+<a id='L210' name='L210'></a> 210     <a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>-&gt;<a href='../Y/bg.html' title='Multiple used in 45 places.'>bg</a>-&gt;<a href='../Y/callback.html' title='Multiple used in 80 places.'>callback</a> = <a href='../S/src--filemanager--chown.c.html#L173' title='Defined at 173 in src/filemanager/chown.c.'>chown_bg_callback</a>;
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--groupbox.c.html#L100' title='Defined at 100 in lib/widget/groupbox.c.'>groupbox_new</a> (2, 3, <a href='../S/src--filemanager--chown.c.html#L55' title='Defined at 55 in src/filemanager/chown.c.'>GH</a>, <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("User name")));
+<a id='L213' name='L213'></a> 213     <a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a> = <a href='../S/lib--widget--listbox.c.html#L553' title='Defined at 553 in lib/widget/listbox.c.'>listbox_new</a> (3, 4, <a href='../S/src--filemanager--chown.c.html#L55' title='Defined at 55 in src/filemanager/chown.c.'>GH</a> - 2, <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> - 2, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L214' name='L214'></a> 214     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>);
+<a id='L215' name='L215'></a> 215     <em class='comment'>/* add field for unknown names (numbers) */</em>
+<a id='L216' name='L216'></a> 216     <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>, <a href='../S/lib--widget--listbox.h.html#L25' title='Defined at 25 in lib/widget/listbox.h.'>LISTBOX_APPEND_AT_END</a>, 0, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&lt;Unknown user&gt;"), <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L217' name='L217'></a> 217     <em class='comment'>/* get and put user names in the listbox */</em>
+<a id='L218' name='L218'></a> 218     <a href='../Y/setpwent.html' title='Multiple used in 3 places.'>setpwent</a> ();
+<a id='L219' name='L219'></a> 219     <strong class='reserved'>while</strong> ((<a href='../Y/l_pass.html' title='Multiple used in 3 places.'>l_pass</a> = <a href='../Y/getpwent.html' title='Multiple used in 3 places.'>getpwent</a> ()) != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L220' name='L220'></a> 220         <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>, <a href='../S/lib--widget--listbox.h.html#L28' title='Defined at 28 in lib/widget/listbox.h.'>LISTBOX_APPEND_SORTED</a>, 0, <a href='../Y/l_pass.html' title='Multiple used in 3 places.'>l_pass</a>-&gt;<a href='../Y/pw_name.html' title='Multiple used in 11 places.'>pw_name</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L221' name='L221'></a> 221     <a href='../Y/endpwent.html' title='Multiple used in 3 places.'>endpwent</a> ();
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--groupbox.c.html#L100' title='Defined at 100 in lib/widget/groupbox.c.'>groupbox_new</a> (2, 4 + <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a>, <a href='../S/src--filemanager--chown.c.html#L55' title='Defined at 55 in src/filemanager/chown.c.'>GH</a>, <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Group name")));
+<a id='L224' name='L224'></a> 224     <a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a> = <a href='../S/lib--widget--listbox.c.html#L553' title='Defined at 553 in lib/widget/listbox.c.'>listbox_new</a> (3, 5 + <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a>, <a href='../S/src--filemanager--chown.c.html#L55' title='Defined at 55 in src/filemanager/chown.c.'>GH</a> - 2, <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> - 2, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L225' name='L225'></a> 225     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a>);
+<a id='L226' name='L226'></a> 226     <em class='comment'>/* add field for unknown names (numbers) */</em>
+<a id='L227' name='L227'></a> 227     <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a>, <a href='../S/lib--widget--listbox.h.html#L25' title='Defined at 25 in lib/widget/listbox.h.'>LISTBOX_APPEND_AT_END</a>, 0, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&lt;Unknown group&gt;"), <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L228' name='L228'></a> 228     <em class='comment'>/* get and put group names in the listbox */</em>
+<a id='L229' name='L229'></a> 229     <a href='../Y/setgrent.html' title='Multiple used in 2 places.'>setgrent</a> ();
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>while</strong> ((<a href='../Y/l_grp.html' title='Multiple used in 3 places.'>l_grp</a> = <a href='../Y/getgrent.html' title='Multiple used in 2 places.'>getgrent</a> ()) != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L231' name='L231'></a> 231         <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a>, <a href='../S/lib--widget--listbox.h.html#L28' title='Defined at 28 in lib/widget/listbox.h.'>LISTBOX_APPEND_SORTED</a>, 0, <a href='../Y/l_grp.html' title='Multiple used in 3 places.'>l_grp</a>-&gt;<a href='../Y/gr_name.html' title='Multiple used in 5 places.'>gr_name</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L232' name='L232'></a> 232     <a href='../Y/endgrent.html' title='Multiple used in 2 places.'>endgrent</a> ();
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--groupbox.c.html#L100' title='Defined at 100 in lib/widget/groupbox.c.'>groupbox_new</a> (2, 5 + <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> * 2, <a href='../S/src--filemanager--chown.c.html#L55' title='Defined at 55 in src/filemanager/chown.c.'>GH</a>, <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("File")));
+<a id='L235' name='L235'></a> 235     <em class='comment'>/* add widgets for the file information */</em>
+<a id='L236' name='L236'></a> 236     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../D/LABELS.html' title='Multiple defined in 2 places.'>LABELS</a>; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L237' name='L237'></a> 237     <em class='brace'>{</em>
+<a id='L238' name='L238'></a> 238         <a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a> = <a href='../S/lib--widget--label.c.html#L134' title='Defined at 134 in lib/widget/label.c.'>label_new</a> (<a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, 7 + <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> * 2, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L239' name='L239'></a> 239         <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/l.html' title='Multiple used in 408 places.'>l</a>);
+<a id='L240' name='L240'></a> 240     <em class='brace'>}</em>
+<a id='L241' name='L241'></a> 241 
+<a id='L242' name='L242'></a> 242     <strong class='reserved'>if</strong> (<a href='../Y/single_set.html' title='Multiple used in 17 places.'>single_set</a> == 0)
+<a id='L243' name='L243'></a> 243     <em class='brace'>{</em>
+<a id='L244' name='L244'></a> 244         <strong class='reserved'>int</strong> <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>;
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246         <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--hline.c.html#L147' title='Defined at 147 in lib/widget/hline.c.'>hline_new</a> (<a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> - <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[0].<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> - 1, -1, -1));
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248         <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> = <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> - <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[0].<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>;
+<a id='L249' name='L249'></a> 249         <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> = (<a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> - <a href='../Y/blen.html' title='Multiple used in 37 places.'>blen</a>) / 2;
+<a id='L250' name='L250'></a> 250 
+<a id='L251' name='L251'></a> 251         <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../D/BUTTONS.html' title='Multiple defined in 4 places.'>BUTTONS</a> - 2; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L252' name='L252'></a> 252         <em class='brace'>{</em>
+<a id='L253' name='L253'></a> 253             <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>, <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/ret_cmd.html' title='Multiple used in 28 places.'>ret_cmd</a>, <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/flags.html' title='Multiple used in 411 places.'>flags</a>,
+<a id='L254' name='L254'></a> 254                                              <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>));
+<a id='L255' name='L255'></a> 255             <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> += <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a> + 1;
+<a id='L256' name='L256'></a> 256         <em class='brace'>}</em>
+<a id='L257' name='L257'></a> 257     <em class='brace'>}</em>
+<a id='L258' name='L258'></a> 258 
+<a id='L259' name='L259'></a> 259     <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = <a href='../D/BUTTONS.html' title='Multiple defined in 4 places.'>BUTTONS</a> - 2;
+<a id='L260' name='L260'></a> 260     <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> = <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a> - <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>;
+<a id='L261' name='L261'></a> 261     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--hline.c.html#L147' title='Defined at 147 in lib/widget/hline.c.'>hline_new</a> (<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> - 1, -1, -1));
+<a id='L262' name='L262'></a> 262     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>)-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>.<a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> / 2 - <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>,
+<a id='L263' name='L263'></a> 263                                      <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/ret_cmd.html' title='Multiple used in 28 places.'>ret_cmd</a>, <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/flags.html' title='Multiple used in 411 places.'>flags</a>, <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>,
+<a id='L264' name='L264'></a> 264                                      <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>));
+<a id='L265' name='L265'></a> 265     <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++;
+<a id='L266' name='L266'></a> 266     <a href='../S/lib--widget--group.h.html#L80' title='Defined at 80 in lib/widget/group.h.'>group_add_widget</a> (<a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>, <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>)-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>.<a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a> / 2 + 1, <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/ret_cmd.html' title='Multiple used in 28 places.'>ret_cmd</a>,
+<a id='L267' name='L267'></a> 267                                      <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/flags.html' title='Multiple used in 411 places.'>flags</a>, <a href='../Y/chown_but.html' title='Multiple used in 16 places.'>chown_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>));
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269     <em class='comment'>/* select first listbox */</em>
+<a id='L270' name='L270'></a> 270     <a href='../S/lib--widget--widget-common.c.html#L625' title='Defined at 625 in lib/widget/widget-common.c.'>widget_select</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>));
+<a id='L271' name='L271'></a> 271 
+<a id='L272' name='L272'></a> 272     <strong class='reserved'>return</strong> <a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>;
+<a id='L273' name='L273'></a> 273 <em class='brace'>}</em>
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L276' name='L276'></a> 276 
+<a id='L277' name='L277'></a> 277 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L278' name='L278'></a> 278 <a href='../S/src--filemanager--chown.c.html#L549' title='Referred from 549 in src/filemanager/chown.c.'>chown_done</a> (<a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a>)
+     <em class='comment'>/* <a href='#L190'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L288'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+278 src/filemanager/chown.c'  /> */</em>
+<a id='L279' name='L279'></a> 279 <em class='brace'>{</em>
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>if</strong> (<a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a>)
+<a id='L281' name='L281'></a> 281         <a href='../S/src--filemanager--panel.c.html#L5053' title='Defined at 5053 in src/filemanager/panel.c.'>update_panels</a> (<a href='../S/src--filemanager--panel.h.html#L47' title='Defined at 47 in src/filemanager/panel.h.'>UP_OPTIMIZE</a>, <a href='../S/src--filemanager--panel.h.html#L27' title='Defined at 27 in src/filemanager/panel.h.'>UP_KEEPSEL</a>);
+<a id='L282' name='L282'></a> 282     <a href='../S/lib--widget--dialog-switch.c.html#L357' title='Defined at 357 in lib/widget/dialog-switch.c.'>repaint_screen</a> ();
+<a id='L283' name='L283'></a> 283 <em class='brace'>}</em>
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *
+<a id='L288' name='L288'></a> 288 <a href='../R/next_file.html' title='Multiple referred from 8 places.'>next_file</a> (<strong class='reserved'>const</strong> <a href='../S/src--filemanager--panel.h.html#L145' title='Defined at 145 in src/filemanager/panel.h.'>WPanel</a> * <a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>)
+     <em class='comment'>/* <a href='#L278'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L299'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+288 src/filemanager/chown.c'  /> */</em>
+<a id='L289' name='L289'></a> 289 <em class='brace'>{</em>
+<a id='L290' name='L290'></a> 290     <strong class='reserved'>while</strong> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>-&gt;<a href='../Y/dir.html' title='Multiple used in 420 places.'>dir</a>.<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>[<a href='../Y/current_file.html' title='Multiple used in 45 places.'>current_file</a>].<a href='../Y/f.html' title='Multiple used in 347 places.'>f</a>.<a href='../Y/marked.html' title='Multiple used in 92 places.'>marked</a> == 0)
+<a id='L291' name='L291'></a> 291         <a href='../Y/current_file.html' title='Multiple used in 45 places.'>current_file</a>++;
+<a id='L292' name='L292'></a> 292 
+<a id='L293' name='L293'></a> 293     <strong class='reserved'>return</strong> <a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>-&gt;<a href='../Y/dir.html' title='Multiple used in 420 places.'>dir</a>.<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>[<a href='../Y/current_file.html' title='Multiple used in 45 places.'>current_file</a>].<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>;
+<a id='L294' name='L294'></a> 294 <em class='brace'>}</em>
+<a id='L295' name='L295'></a> 295 
+<a id='L296' name='L296'></a> 296 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L297' name='L297'></a> 297 
+<a id='L298' name='L298'></a> 298 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L299' name='L299'></a> 299 <a href='../R/try_chown.html' title='Multiple referred from 2 places.'>try_chown</a> (<strong class='reserved'>const</strong> <a href='../S/lib--vfs--path.h.html#L31' title='Defined at 31 in lib/vfs/path.h.'>vfs_path_t</a> * <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>, <a href='../Y/uid_t.html' title='Multiple used in 35 places.'>uid_t</a> <a href='../Y/u.html' title='Multiple used in 202 places.'>u</a>, <a href='../Y/gid_t.html' title='Multiple used in 35 places.'>gid_t</a> <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>)
+     <em class='comment'>/* <a href='#L288'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L345'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+299 src/filemanager/chown.c'  /> */</em>
+<a id='L300' name='L300'></a> 300 <em class='brace'>{</em>
+<a id='L301' name='L301'></a> 301     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L302' name='L302'></a> 302 
+<a id='L303' name='L303'></a> 303     <strong class='reserved'>while</strong> (<a href='../Y/mc_chown.html' title='Multiple used in 9 places.'>mc_chown</a> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>, <a href='../Y/u.html' title='Multiple used in 202 places.'>u</a>, <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>) == -1 &amp;&amp; !<a href='../Y/ignore_all.html' title='Multiple used in 20 places.'>ignore_all</a>)
+<a id='L304' name='L304'></a> 304     <em class='brace'>{</em>
+<a id='L305' name='L305'></a> 305         <strong class='reserved'>int</strong> <a href='../Y/my_errno.html' title='Multiple used in 28 places.'>my_errno</a> = <a href='../Y/errno.html' title='Multiple used in 236 places.'>errno</a>;
+<a id='L306' name='L306'></a> 306         <strong class='reserved'>int</strong> <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>;
+<a id='L307' name='L307'></a> 307         <strong class='reserved'>char</strong> *<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>;
+<a id='L308' name='L308'></a> 308 
+<a id='L309' name='L309'></a> 309         <strong class='reserved'>if</strong> (<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L310' name='L310'></a> 310             <a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a> = <a href='../S/lib--util.c.html#L658' title='Defined at 658 in lib/util.c.'>x_basename</a> (<a href='../S/lib--vfs--path.h.html#L142' title='Defined at 142 in lib/vfs/path.h.'>vfs_path_as_str</a> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>));
+<a id='L311' name='L311'></a> 311         <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Cannot chown \"%s\"\n%s"), <a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>, <a href='../S/lib--util.c.html#L692' title='Defined at 692 in lib/util.c.'>unix_error_string</a> (<a href='../Y/my_errno.html' title='Multiple used in 28 places.'>my_errno</a>));
+<a id='L312' name='L312'></a> 312         <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a> =
+<a id='L313' name='L313'></a> 313             <a href='../S/lib--widget--wtools.c.html#L280' title='Defined at 280 in lib/widget/wtools.c.'>query_dialog</a> (<a href='../S/lib--widget--wtools.h.html#L14' title='Defined at 14 in lib/widget/wtools.h.'>MSG_ERROR</a>, <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../S/lib--widget--wtools.h.html#L31' title='Defined at 31 in lib/widget/wtools.h.'>D_ERROR</a>, 4, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Ignore"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Ignore &amp;all"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Retry"),
+<a id='L314' name='L314'></a> 314                           <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Cancel"));
+<a id='L315' name='L315'></a> 315         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>);
+<a id='L316' name='L316'></a> 316 
+<a id='L317' name='L317'></a> 317         <strong class='reserved'>switch</strong> (<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>)
+<a id='L318' name='L318'></a> 318         <em class='brace'>{</em>
+<a id='L319' name='L319'></a> 319         <strong class='reserved'>case</strong> 0:
+<a id='L320' name='L320'></a> 320             <em class='comment'>/* try next file */</em>
+<a id='L321' name='L321'></a> 321             <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L322' name='L322'></a> 322 
+<a id='L323' name='L323'></a> 323         <strong class='reserved'>case</strong> 1:
+<a id='L324' name='L324'></a> 324             <a href='../Y/ignore_all.html' title='Multiple used in 20 places.'>ignore_all</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L325' name='L325'></a> 325             <em class='comment'>/* try next file */</em>
+<a id='L326' name='L326'></a> 326             <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L327' name='L327'></a> 327 
+<a id='L328' name='L328'></a> 328         <strong class='reserved'>case</strong> 2:
+<a id='L329' name='L329'></a> 329             <em class='comment'>/* retry this file */</em>
+<a id='L330' name='L330'></a> 330             <strong class='reserved'>break</strong>;
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332         <strong class='reserved'>case</strong> 3:
+<a id='L333' name='L333'></a> 333         <strong class='reserved'>default</strong>:
+<a id='L334' name='L334'></a> 334             <em class='comment'>/* stop remain files processing */</em>
+<a id='L335' name='L335'></a> 335             <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L336' name='L336'></a> 336         <em class='brace'>}</em>
+<a id='L337' name='L337'></a> 337     <em class='brace'>}</em>
+<a id='L338' name='L338'></a> 338 
+<a id='L339' name='L339'></a> 339     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L340' name='L340'></a> 340 <em class='brace'>}</em>
+<a id='L341' name='L341'></a> 341 
+<a id='L342' name='L342'></a> 342 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L343' name='L343'></a> 343 
+<a id='L344' name='L344'></a> 344 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L345' name='L345'></a> 345 <a href='../R/do_chown.html' title='Multiple referred from 2 places.'>do_chown</a> (<a href='../S/src--filemanager--panel.h.html#L145' title='Defined at 145 in src/filemanager/panel.h.'>WPanel</a> * <a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <strong class='reserved'>const</strong> <a href='../S/lib--vfs--path.h.html#L31' title='Defined at 31 in lib/vfs/path.h.'>vfs_path_t</a> * <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>, <a href='../Y/uid_t.html' title='Multiple used in 35 places.'>uid_t</a> <a href='../Y/u.html' title='Multiple used in 202 places.'>u</a>, <a href='../Y/gid_t.html' title='Multiple used in 35 places.'>gid_t</a> <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>)
+     <em class='comment'>/* <a href='#L299'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L359'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+345 src/filemanager/chown.c'  /> */</em>
+<a id='L346' name='L346'></a> 346 <em class='brace'>{</em>
+<a id='L347' name='L347'></a> 347     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L348' name='L348'></a> 348 
+<a id='L349' name='L349'></a> 349     <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../S/src--filemanager--chown.c.html#L299' title='Defined at 299 in src/filemanager/chown.c.'>try_chown</a> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>, <a href='../Y/u.html' title='Multiple used in 202 places.'>u</a>, <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>);
+<a id='L350' name='L350'></a> 350 
+<a id='L351' name='L351'></a> 351     <a href='../S/src--filemanager--panel.c.html#L4803' title='Defined at 4803 in src/filemanager/panel.c.'>do_file_mark</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../Y/current_file.html' title='Multiple used in 45 places.'>current_file</a>, 0);
+<a id='L352' name='L352'></a> 352 
+<a id='L353' name='L353'></a> 353     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L354' name='L354'></a> 354 <em class='brace'>}</em>
+<a id='L355' name='L355'></a> 355 
+<a id='L356' name='L356'></a> 356 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L357' name='L357'></a> 357 
+<a id='L358' name='L358'></a> 358 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L359' name='L359'></a> 359 <a href='../R/apply_chowns.html' title='Multiple referred from 3 places.'>apply_chowns</a> (<a href='../S/src--filemanager--panel.h.html#L145' title='Defined at 145 in src/filemanager/panel.h.'>WPanel</a> * <a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../S/lib--vfs--path.h.html#L31' title='Defined at 31 in lib/vfs/path.h.'>vfs_path_t</a> * <a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/uid_t.html' title='Multiple used in 35 places.'>uid_t</a> <a href='../Y/u.html' title='Multiple used in 202 places.'>u</a>, <a href='../Y/gid_t.html' title='Multiple used in 35 places.'>gid_t</a> <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>)
+     <em class='comment'>/* <a href='#L345'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L397'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+359 src/filemanager/chown.c'  /> */</em>
+<a id='L360' name='L360'></a> 360 <em class='brace'>{</em>
+<a id='L361' name='L361'></a> 361     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a>;
+<a id='L362' name='L362'></a> 362 
+<a id='L363' name='L363'></a> 363     <strong class='reserved'>if</strong> (!<a href='../S/src--filemanager--chown.c.html#L345' title='Defined at 345 in src/filemanager/chown.c.'>do_chown</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/u.html' title='Multiple used in 202 places.'>u</a>, <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>))
+<a id='L364' name='L364'></a> 364         <strong class='reserved'>return</strong>;
+<a id='L365' name='L365'></a> 365 
+<a id='L366' name='L366'></a> 366     <strong class='reserved'>do</strong>
+<a id='L367' name='L367'></a> 367     <em class='brace'>{</em>
+<a id='L368' name='L368'></a> 368         <strong class='reserved'>const</strong> <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>;
+<a id='L369' name='L369'></a> 369         <strong class='reserved'>struct</strong> <a href='../Y/stat.html' title='Multiple used in 284 places.'>stat</a> <a href='../Y/sf.html' title='Multiple used in 16 places.'>sf</a>;
+<a id='L370' name='L370'></a> 370 
+<a id='L371' name='L371'></a> 371         <a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a> = <a href='../D/next_file.html' title='Multiple defined in 4 places.'>next_file</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>);
+<a id='L372' name='L372'></a> 372         <a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a> = <a href='../S/lib--vfs--path.c.html#L774' title='Defined at 774 in lib/vfs/path.c.'>vfs_path_from_str</a> (<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>);
+<a id='L373' name='L373'></a> 373         <a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a> = (<a href='../D/mc_stat.html' title='Multiple defined in 2 places.'>mc_stat</a> (<a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, &amp;<a href='../Y/sf.html' title='Multiple used in 16 places.'>sf</a>) == 0);
+<a id='L374' name='L374'></a> 374 
+<a id='L375' name='L375'></a> 375         <strong class='reserved'>if</strong> (!<a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a>)
+<a id='L376' name='L376'></a> 376         <em class='brace'>{</em>
+<a id='L377' name='L377'></a> 377             <em class='comment'>/* if current file was deleted outside mc -- try next file */</em>
+<a id='L378' name='L378'></a> 378             <em class='comment'>/* decrease panel-&gt;marked */</em>
+<a id='L379' name='L379'></a> 379             <a href='../S/src--filemanager--panel.c.html#L4803' title='Defined at 4803 in src/filemanager/panel.c.'>do_file_mark</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../Y/current_file.html' title='Multiple used in 45 places.'>current_file</a>, 0);
+<a id='L380' name='L380'></a> 380 
+<a id='L381' name='L381'></a> 381             <em class='comment'>/* try next file */</em>
+<a id='L382' name='L382'></a> 382             <a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L383' name='L383'></a> 383         <em class='brace'>}</em>
+<a id='L384' name='L384'></a> 384         <strong class='reserved'>else</strong>
+<a id='L385' name='L385'></a> 385             <a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a> = <a href='../S/src--filemanager--chown.c.html#L345' title='Defined at 345 in src/filemanager/chown.c.'>do_chown</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/u.html' title='Multiple used in 202 places.'>u</a>, <a href='../Y/g.html' title='Multiple used in 533 places.'>g</a>);
+<a id='L386' name='L386'></a> 386 
+<a id='L387' name='L387'></a> 387         <a href='../S/lib--vfs--path.c.html#L974' title='Defined at 974 in lib/vfs/path.c.'>vfs_path_free</a> (<a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L388' name='L388'></a> 388     <em class='brace'>}</em>
+<a id='L389' name='L389'></a> 389     <strong class='reserved'>while</strong> (<a href='../Y/ok.html' title='Multiple used in 184 places.'>ok</a> &amp;&amp; <a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>-&gt;<a href='../Y/marked.html' title='Multiple used in 92 places.'>marked</a> != 0);
+<a id='L390' name='L390'></a> 390 <em class='brace'>}</em>
+<a id='L391' name='L391'></a> 391 
+<a id='L392' name='L392'></a> 392 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L393' name='L393'></a> 393 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L394' name='L394'></a> 394 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L395' name='L395'></a> 395 
+<a id='L396' name='L396'></a> 396 <strong class='reserved'>void</strong>
+<a id='L397' name='L397'></a> 397 <a href='../R/chown_cmd.html' title='Multiple referred from 2 places.'>chown_cmd</a> (<a href='../S/src--filemanager--panel.h.html#L145' title='Defined at 145 in src/filemanager/panel.h.'>WPanel</a> * <a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>)
+     <em class='comment'>/* <a href='#L359'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+397 src/filemanager/chown.c'  /> */</em>
+<a id='L398' name='L398'></a> 398 <em class='brace'>{</em>
+<a id='L399' name='L399'></a> 399     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a>;
+<a id='L400' name='L400'></a> 400     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a>;
+<a id='L401' name='L401'></a> 401 
+<a id='L402' name='L402'></a> 402     <a href='../S/src--filemanager--chown.c.html#L120' title='Defined at 120 in src/filemanager/chown.c.'>chown_init</a> ();
+<a id='L403' name='L403'></a> 403 
+<a id='L404' name='L404'></a> 404     <a href='../Y/current_file.html' title='Multiple used in 45 places.'>current_file</a> = 0;
+<a id='L405' name='L405'></a> 405     <a href='../Y/ignore_all.html' title='Multiple used in 20 places.'>ignore_all</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L406' name='L406'></a> 406 
+<a id='L407' name='L407'></a> 407     <strong class='reserved'>do</strong>
+<a id='L408' name='L408'></a> 408     <em class='brace'>{</em>                           <em class='comment'>/* do while any files remaining */</em>
+<a id='L409' name='L409'></a> 409         <a href='../S/lib--vfs--path.h.html#L31' title='Defined at 31 in lib/vfs/path.h.'>vfs_path_t</a> *<a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>;
+<a id='L410' name='L410'></a> 410         <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *<a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>;
+<a id='L411' name='L411'></a> 411         <strong class='reserved'>struct</strong> <a href='../Y/stat.html' title='Multiple used in 284 places.'>stat</a> <a href='../Y/sf_stat.html' title='Multiple used in 30 places.'>sf_stat</a>;
+<a id='L412' name='L412'></a> 412         <strong class='reserved'>const</strong> <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>;
+<a id='L413' name='L413'></a> 413         <strong class='reserved'>int</strong> <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>;
+<a id='L414' name='L414'></a> 414         <strong class='reserved'>char</strong> <a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>[<a href='../S/lib--global.h.html#L110' title='Defined at 110 in lib/global.h.'>BUF_TINY</a>];
+<a id='L415' name='L415'></a> 415         <a href='../Y/uid_t.html' title='Multiple used in 35 places.'>uid_t</a> <a href='../Y/new_user.html' title='Multiple used in 12 places.'>new_user</a> = (<a href='../Y/uid_t.html' title='Multiple used in 35 places.'>uid_t</a>) (-1);
+<a id='L416' name='L416'></a> 416         <a href='../Y/gid_t.html' title='Multiple used in 35 places.'>gid_t</a> <a href='../Y/new_group.html' title='Multiple used in 8 places.'>new_group</a> = (<a href='../Y/gid_t.html' title='Multiple used in 35 places.'>gid_t</a>) (-1);
+<a id='L417' name='L417'></a> 417 
+<a id='L418' name='L418'></a> 418         <a href='../S/lib--widget--dialog-switch.c.html#L327' title='Defined at 327 in lib/widget/dialog-switch.c.'>do_refresh</a> ();
+<a id='L419' name='L419'></a> 419 
+<a id='L420' name='L420'></a> 420         <a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L421' name='L421'></a> 421         <a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L422' name='L422'></a> 422 
+<a id='L423' name='L423'></a> 423         <strong class='reserved'>if</strong> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>-&gt;<a href='../Y/marked.html' title='Multiple used in 92 places.'>marked</a> != 0)
+<a id='L424' name='L424'></a> 424             <a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a> = <a href='../D/next_file.html' title='Multiple defined in 4 places.'>next_file</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>);  <em class='comment'>/* next marked file */</em>
+<a id='L425' name='L425'></a> 425         <strong class='reserved'>else</strong>
+<a id='L426' name='L426'></a> 426             <a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a> = <a href='../S/src--filemanager--panel.h.html#L278' title='Defined at 278 in src/filemanager/panel.h.'>panel_current_entry</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>)-&gt;<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>; <em class='comment'>/* single file */</em>
+<a id='L427' name='L427'></a> 427 
+<a id='L428' name='L428'></a> 428         <a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a> = <a href='../S/lib--vfs--path.c.html#L774' title='Defined at 774 in lib/vfs/path.c.'>vfs_path_from_str</a> (<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>);
+<a id='L429' name='L429'></a> 429 
+<a id='L430' name='L430'></a> 430         <strong class='reserved'>if</strong> (<a href='../D/mc_stat.html' title='Multiple defined in 2 places.'>mc_stat</a> (<a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, &amp;<a href='../Y/sf_stat.html' title='Multiple used in 30 places.'>sf_stat</a>) != 0)
+<a id='L431' name='L431'></a> 431         <em class='brace'>{</em>
+<a id='L432' name='L432'></a> 432             <a href='../S/lib--vfs--path.c.html#L974' title='Defined at 974 in lib/vfs/path.c.'>vfs_path_free</a> (<a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L433' name='L433'></a> 433             <strong class='reserved'>break</strong>;
+<a id='L434' name='L434'></a> 434         <em class='brace'>}</em>
+<a id='L435' name='L435'></a> 435 
+<a id='L436' name='L436'></a> 436         <a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a> = <a href='../S/src--filemanager--chown.c.html#L190' title='Defined at 190 in src/filemanager/chown.c.'>chown_dlg_create</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>);
+<a id='L437' name='L437'></a> 437 
+<a id='L438' name='L438'></a> 438         <em class='comment'>/* select in listboxes */</em>
+<a id='L439' name='L439'></a> 439         <a href='../S/lib--widget--listbox.c.html#L653' title='Defined at 653 in lib/widget/listbox.c.'>listbox_set_current</a> (<a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>, <a href='../S/lib--widget--listbox.c.html#L582' title='Defined at 582 in lib/widget/listbox.c.'>listbox_search_text</a> (<a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>, <a href='../S/lib--utilunix.c.html#L279' title='Defined at 279 in lib/utilunix.c.'>get_owner</a> (<a href='../Y/sf_stat.html' title='Multiple used in 30 places.'>sf_stat</a>.<a href='../Y/st_uid.html' title='Multiple used in 50 places.'>st_uid</a>)));
+<a id='L440' name='L440'></a> 440         <a href='../S/lib--widget--listbox.c.html#L653' title='Defined at 653 in lib/widget/listbox.c.'>listbox_set_current</a> (<a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a>, <a href='../S/lib--widget--listbox.c.html#L582' title='Defined at 582 in lib/widget/listbox.c.'>listbox_search_text</a> (<a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a>, <a href='../S/lib--utilunix.c.html#L307' title='Defined at 307 in lib/utilunix.c.'>get_group</a> (<a href='../Y/sf_stat.html' title='Multiple used in 30 places.'>sf_stat</a>.<a href='../Y/st_gid.html' title='Multiple used in 42 places.'>st_gid</a>)));
+<a id='L441' name='L441'></a> 441 
+<a id='L442' name='L442'></a> 442         <a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a> (0, <a href='../S/lib--strutil--strutil.c.html#L791' title='Defined at 791 in lib/strutil/strutil.c.'>str_trunc</a> (<a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> - 4));
+<a id='L443' name='L443'></a> 443         <a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a> (1, <a href='../S/lib--strutil--strutil.c.html#L791' title='Defined at 791 in lib/strutil/strutil.c.'>str_trunc</a> (<a href='../S/lib--utilunix.c.html#L279' title='Defined at 279 in lib/utilunix.c.'>get_owner</a> (<a href='../Y/sf_stat.html' title='Multiple used in 30 places.'>sf_stat</a>.<a href='../Y/st_uid.html' title='Multiple used in 50 places.'>st_uid</a>), <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> - 4));
+<a id='L444' name='L444'></a> 444         <a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a> (2, <a href='../S/lib--strutil--strutil.c.html#L791' title='Defined at 791 in lib/strutil/strutil.c.'>str_trunc</a> (<a href='../S/lib--utilunix.c.html#L307' title='Defined at 307 in lib/utilunix.c.'>get_group</a> (<a href='../Y/sf_stat.html' title='Multiple used in 30 places.'>sf_stat</a>.<a href='../Y/st_gid.html' title='Multiple used in 42 places.'>st_gid</a>), <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> - 4));
+<a id='L445' name='L445'></a> 445         <a href='../S/lib--util.c.html#L423' title='Defined at 423 in lib/util.c.'>size_trunc_len</a> (<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>, <a href='../S/src--filemanager--chown.c.html#L56' title='Defined at 56 in src/filemanager/chown.c.'>GW</a> - 4, <a href='../Y/sf_stat.html' title='Multiple used in 30 places.'>sf_stat</a>.<a href='../Y/st_size.html' title='Multiple used in 119 places.'>st_size</a>, 0, <a href='../Y/panels_options.html' title='Multiple used in 103 places.'>panels_options</a>.<a href='../Y/kilobyte_si.html' title='Multiple used in 19 places.'>kilobyte_si</a>);
+<a id='L446' name='L446'></a> 446         <a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a> (3, <a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>);
+<a id='L447' name='L447'></a> 447         <a href='../S/src--filemanager--chown.c.html#L66' title='Defined at 66 in src/filemanager/chown.c.'>chown_label</a> (4, <a href='../S/lib--util.c.html#L530' title='Defined at 530 in lib/util.c.'>string_perm</a> (<a href='../Y/sf_stat.html' title='Multiple used in 30 places.'>sf_stat</a>.<a href='../Y/st_mode.html' title='Multiple used in 242 places.'>st_mode</a>));
+<a id='L448' name='L448'></a> 448 
+<a id='L449' name='L449'></a> 449         <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a> = <a href='../S/lib--widget--dialog.c.html#L570' title='Defined at 570 in lib/widget/dialog.c.'>dlg_run</a> (<a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>);
+<a id='L450' name='L450'></a> 450 
+<a id='L451' name='L451'></a> 451         <strong class='reserved'>switch</strong> (<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>)
+<a id='L452' name='L452'></a> 452         <em class='brace'>{</em>
+<a id='L453' name='L453'></a> 453         <strong class='reserved'>case</strong> <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>:
+<a id='L454' name='L454'></a> 454             <a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L455' name='L455'></a> 455             <strong class='reserved'>break</strong>;
+<a id='L456' name='L456'></a> 456 
+<a id='L457' name='L457'></a> 457         <strong class='reserved'>case</strong> <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>:
+<a id='L458' name='L458'></a> 458         <strong class='reserved'>case</strong> <a href='../D/B_SETALL.html' title='Multiple defined in 4 places.'>B_SETALL</a>:
+<a id='L459' name='L459'></a> 459             <em class='brace'>{</em>
+<a id='L460' name='L460'></a> 460                 <strong class='reserved'>struct</strong> <a href='../Y/group.html' title='Multiple used in 144 places.'>group</a> *<a href='../Y/grp.html' title='Multiple used in 36 places.'>grp</a>;
+<a id='L461' name='L461'></a> 461                 <strong class='reserved'>struct</strong> <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a> *<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>;
+<a id='L462' name='L462'></a> 462                 <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>;
+<a id='L463' name='L463'></a> 463 
+<a id='L464' name='L464'></a> 464                 <a href='../S/lib--widget--listbox.c.html#L700' title='Defined at 700 in lib/widget/listbox.c.'>listbox_get_current</a> (<a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a>, &amp;<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L465' name='L465'></a> 465                 <a href='../Y/grp.html' title='Multiple used in 36 places.'>grp</a> = <a href='../Y/getgrnam.html' title='Multiple used in 5 places.'>getgrnam</a> (<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>);
+<a id='L466' name='L466'></a> 466                 <strong class='reserved'>if</strong> (<a href='../Y/grp.html' title='Multiple used in 36 places.'>grp</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L467' name='L467'></a> 467                     <a href='../Y/new_group.html' title='Multiple used in 8 places.'>new_group</a> = <a href='../Y/grp.html' title='Multiple used in 36 places.'>grp</a>-&gt;<a href='../Y/gr_gid.html' title='Multiple used in 4 places.'>gr_gid</a>;
+<a id='L468' name='L468'></a> 468                 <a href='../S/lib--widget--listbox.c.html#L700' title='Defined at 700 in lib/widget/listbox.c.'>listbox_get_current</a> (<a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>, &amp;<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L469' name='L469'></a> 469                 <a href='../Y/user.html' title='Multiple used in 85 places.'>user</a> = <a href='../Y/getpwnam.html' title='Multiple used in 6 places.'>getpwnam</a> (<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>);
+<a id='L470' name='L470'></a> 470                 <strong class='reserved'>if</strong> (<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L471' name='L471'></a> 471                     <a href='../Y/new_user.html' title='Multiple used in 12 places.'>new_user</a> = <a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>-&gt;<a href='../Y/pw_uid.html' title='Multiple used in 4 places.'>pw_uid</a>;
+<a id='L472' name='L472'></a> 472                 <strong class='reserved'>if</strong> (<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a> == <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>)
+<a id='L473' name='L473'></a> 473                 <em class='brace'>{</em>
+<a id='L474' name='L474'></a> 474                     <strong class='reserved'>if</strong> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>-&gt;<a href='../Y/marked.html' title='Multiple used in 92 places.'>marked</a> &lt;= 1)
+<a id='L475' name='L475'></a> 475                     <em class='brace'>{</em>
+<a id='L476' name='L476'></a> 476                         <em class='comment'>/* single or last file */</em>
+<a id='L477' name='L477'></a> 477                         <strong class='reserved'>if</strong> (<a href='../Y/mc_chown.html' title='Multiple used in 9 places.'>mc_chown</a> (<a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/new_user.html' title='Multiple used in 12 places.'>new_user</a>, <a href='../Y/new_group.html' title='Multiple used in 8 places.'>new_group</a>) == -1)
+<a id='L478' name='L478'></a> 478                             <a href='../D/message.html' title='Multiple defined in 5 places.'>message</a> (<a href='../S/lib--widget--wtools.h.html#L31' title='Defined at 31 in lib/widget/wtools.h.'>D_ERROR</a>, <a href='../S/lib--widget--wtools.h.html#L14' title='Defined at 14 in lib/widget/wtools.h.'>MSG_ERROR</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Cannot chown \"%s\"\n%s"),
+<a id='L479' name='L479'></a> 479                                      <a href='../Y/fname.html' title='Multiple used in 304 places.'>fname</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, <a href='../S/lib--util.c.html#L692' title='Defined at 692 in lib/util.c.'>unix_error_string</a> (<a href='../Y/errno.html' title='Multiple used in 236 places.'>errno</a>));
+<a id='L480' name='L480'></a> 480                         <a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L481' name='L481'></a> 481                     <em class='brace'>}</em>
+<a id='L482' name='L482'></a> 482                     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (!<a href='../S/src--filemanager--chown.c.html#L299' title='Defined at 299 in src/filemanager/chown.c.'>try_chown</a> (<a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/new_user.html' title='Multiple used in 12 places.'>new_user</a>, <a href='../Y/new_group.html' title='Multiple used in 8 places.'>new_group</a>))
+<a id='L483' name='L483'></a> 483                     <em class='brace'>{</em>
+<a id='L484' name='L484'></a> 484                         <em class='comment'>/* stop multiple files processing */</em>
+<a id='L485' name='L485'></a> 485                         <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a> = <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>;
+<a id='L486' name='L486'></a> 486                         <a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L487' name='L487'></a> 487                     <em class='brace'>}</em>
+<a id='L488' name='L488'></a> 488                 <em class='brace'>}</em>
+<a id='L489' name='L489'></a> 489                 <strong class='reserved'>else</strong>
+<a id='L490' name='L490'></a> 490                 <em class='brace'>{</em>
+<a id='L491' name='L491'></a> 491                     <a href='../S/src--filemanager--chown.c.html#L359' title='Defined at 359 in src/filemanager/chown.c.'>apply_chowns</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/new_user.html' title='Multiple used in 12 places.'>new_user</a>, <a href='../Y/new_group.html' title='Multiple used in 8 places.'>new_group</a>);
+<a id='L492' name='L492'></a> 492                     <a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L493' name='L493'></a> 493                 <em class='brace'>}</em>
+<a id='L494' name='L494'></a> 494 
+<a id='L495' name='L495'></a> 495                 <a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L496' name='L496'></a> 496                 <strong class='reserved'>break</strong>;
+<a id='L497' name='L497'></a> 497             <em class='brace'>}</em>
+<a id='L498' name='L498'></a> 498 
+<a id='L499' name='L499'></a> 499         <strong class='reserved'>case</strong> <a href='../S/src--filemanager--chown.c.html#L61' title='Defined at 61 in src/filemanager/chown.c.'>B_SETUSR</a>:
+<a id='L500' name='L500'></a> 500             <em class='brace'>{</em>
+<a id='L501' name='L501'></a> 501                 <strong class='reserved'>struct</strong> <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a> *<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>;
+<a id='L502' name='L502'></a> 502                 <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>;
+<a id='L503' name='L503'></a> 503 
+<a id='L504' name='L504'></a> 504                 <a href='../S/lib--widget--listbox.c.html#L700' title='Defined at 700 in lib/widget/listbox.c.'>listbox_get_current</a> (<a href='../Y/l_user.html' title='Multiple used in 9 places.'>l_user</a>, &amp;<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L505' name='L505'></a> 505                 <a href='../Y/user.html' title='Multiple used in 85 places.'>user</a> = <a href='../Y/getpwnam.html' title='Multiple used in 6 places.'>getpwnam</a> (<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>);
+<a id='L506' name='L506'></a> 506                 <strong class='reserved'>if</strong> (<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L507' name='L507'></a> 507                 <em class='brace'>{</em>
+<a id='L508' name='L508'></a> 508                     <a href='../Y/new_user.html' title='Multiple used in 12 places.'>new_user</a> = <a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>-&gt;<a href='../Y/pw_uid.html' title='Multiple used in 4 places.'>pw_uid</a>;
+<a id='L509' name='L509'></a> 509                     <a href='../S/src--filemanager--chown.c.html#L359' title='Defined at 359 in src/filemanager/chown.c.'>apply_chowns</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/new_user.html' title='Multiple used in 12 places.'>new_user</a>, <a href='../Y/new_group.html' title='Multiple used in 8 places.'>new_group</a>);
+<a id='L510' name='L510'></a> 510                     <a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L511' name='L511'></a> 511                     <a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L512' name='L512'></a> 512                 <em class='brace'>}</em>
+<a id='L513' name='L513'></a> 513                 <strong class='reserved'>break</strong>;
+<a id='L514' name='L514'></a> 514             <em class='brace'>}</em>
+<a id='L515' name='L515'></a> 515 
+<a id='L516' name='L516'></a> 516         <strong class='reserved'>case</strong> <a href='../S/src--filemanager--chown.c.html#L62' title='Defined at 62 in src/filemanager/chown.c.'>B_SETGRP</a>:
+<a id='L517' name='L517'></a> 517             <em class='brace'>{</em>
+<a id='L518' name='L518'></a> 518                 <strong class='reserved'>struct</strong> <a href='../Y/group.html' title='Multiple used in 144 places.'>group</a> *<a href='../Y/grp.html' title='Multiple used in 36 places.'>grp</a>;
+<a id='L519' name='L519'></a> 519                 <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>;
+<a id='L520' name='L520'></a> 520 
+<a id='L521' name='L521'></a> 521                 <a href='../S/lib--widget--listbox.c.html#L700' title='Defined at 700 in lib/widget/listbox.c.'>listbox_get_current</a> (<a href='../Y/l_group.html' title='Multiple used in 8 places.'>l_group</a>, &amp;<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L522' name='L522'></a> 522                 <a href='../Y/grp.html' title='Multiple used in 36 places.'>grp</a> = <a href='../Y/getgrnam.html' title='Multiple used in 5 places.'>getgrnam</a> (<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>);
+<a id='L523' name='L523'></a> 523                 <strong class='reserved'>if</strong> (<a href='../Y/grp.html' title='Multiple used in 36 places.'>grp</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L524' name='L524'></a> 524                 <em class='brace'>{</em>
+<a id='L525' name='L525'></a> 525                     <a href='../Y/new_group.html' title='Multiple used in 8 places.'>new_group</a> = <a href='../Y/grp.html' title='Multiple used in 36 places.'>grp</a>-&gt;<a href='../Y/gr_gid.html' title='Multiple used in 4 places.'>gr_gid</a>;
+<a id='L526' name='L526'></a> 526                     <a href='../S/src--filemanager--chown.c.html#L359' title='Defined at 359 in src/filemanager/chown.c.'>apply_chowns</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/new_user.html' title='Multiple used in 12 places.'>new_user</a>, <a href='../Y/new_group.html' title='Multiple used in 8 places.'>new_group</a>);
+<a id='L527' name='L527'></a> 527                     <a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L528' name='L528'></a> 528                     <a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L529' name='L529'></a> 529                 <em class='brace'>}</em>
+<a id='L530' name='L530'></a> 530                 <strong class='reserved'>break</strong>;
+<a id='L531' name='L531'></a> 531             <em class='brace'>}</em>
+<a id='L532' name='L532'></a> 532 
+<a id='L533' name='L533'></a> 533         <strong class='reserved'>default</strong>:
+<a id='L534' name='L534'></a> 534             <strong class='reserved'>break</strong>;
+<a id='L535' name='L535'></a> 535         <em class='brace'>}</em>
+<a id='L536' name='L536'></a> 536 
+<a id='L537' name='L537'></a> 537         <strong class='reserved'>if</strong> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>-&gt;<a href='../Y/marked.html' title='Multiple used in 92 places.'>marked</a> != 0 &amp;&amp; <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a> != <a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>)
+<a id='L538' name='L538'></a> 538         <em class='brace'>{</em>
+<a id='L539' name='L539'></a> 539             <a href='../S/src--filemanager--panel.c.html#L4803' title='Defined at 4803 in src/filemanager/panel.c.'>do_file_mark</a> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>, <a href='../Y/current_file.html' title='Multiple used in 45 places.'>current_file</a>, 0);
+<a id='L540' name='L540'></a> 540             <a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L541' name='L541'></a> 541         <em class='brace'>}</em>
+<a id='L542' name='L542'></a> 542 
+<a id='L543' name='L543'></a> 543         <a href='../S/lib--vfs--path.c.html#L974' title='Defined at 974 in lib/vfs/path.c.'>vfs_path_free</a> (<a href='../Y/vpath.html' title='Multiple used in 953 places.'>vpath</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L544' name='L544'></a> 544 
+<a id='L545' name='L545'></a> 545         <a href='../S/lib--widget--widget-common.h.html#L394' title='Defined at 394 in lib/widget/widget-common.h.'>widget_destroy</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/ch_dlg.html' title='Multiple used in 47 places.'>ch_dlg</a>));
+<a id='L546' name='L546'></a> 546     <em class='brace'>}</em>
+<a id='L547' name='L547'></a> 547     <strong class='reserved'>while</strong> (<a href='../Y/panel.html' title='Multiple used in 1269 places.'>panel</a>-&gt;<a href='../Y/marked.html' title='Multiple used in 92 places.'>marked</a> != 0 &amp;&amp; !<a href='../Y/end_chown.html' title='Multiple used in 16 places.'>end_chown</a>);
+<a id='L548' name='L548'></a> 548 
+<a id='L549' name='L549'></a> 549     <a href='../S/src--filemanager--chown.c.html#L278' title='Defined at 278 in src/filemanager/chown.c.'>chown_done</a> (<a href='../Y/need_update.html' title='Multiple used in 37 places.'>need_update</a>);
+<a id='L550' name='L550'></a> 550 <em class='brace'>}</em>
+<a id='L551' name='L551'></a> 551 
+<a id='L552' name='L552'></a> 552 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L120'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L397'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+552 src/filemanager/chown.c'  /> */</em>
+</body>
+</html>

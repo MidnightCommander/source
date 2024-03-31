@@ -1,0 +1,530 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/widget/widget-common.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L248'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L455'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--widget.html'>widget</a>/widget-common.h</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--widget.html'>widget</a>/widget-common.h</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/widget/widget-common.h'  /> */</em>
+<hr />
+<h2 class='header'><a href='lib--widget.h.html#L19' title='Included from 19 in lib/widget.h.'>INCLUDED FROM</a></h2>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L248' title='Defined at 248.'>send_message</a></li>
+<li><a href='#L270' title='Defined at 270.'>widget_get_options</a></li>
+<li><a href='#L286' title='Defined at 286.'>widget_get_state</a></li>
+<li><a href='#L300' title='Defined at 300.'>widget_make_global</a></li>
+<li><a href='#L314' title='Defined at 314.'>widget_make_local</a></li>
+<li><a href='#L331' title='Defined at 331.'>widget_find</a></li>
+<li><a href='#L348' title='Defined at 348.'>widget_find_by_type</a></li>
+<li><a href='#L364' title='Defined at 364.'>widget_find_by_id</a></li>
+<li><a href='#L381' title='Defined at 381.'>widget_set_state</a></li>
+<li><a href='#L394' title='Defined at 394.'>widget_destroy</a></li>
+<li><a href='#L408' title='Defined at 408.'>widget_get_colors</a></li>
+<li><a href='#L423' title='Defined at 423.'>widget_update_cursor</a></li>
+<li><a href='#L431' title='Defined at 431.'>widget_show</a></li>
+<li><a href='#L439' title='Defined at 439.'>widget_hide</a></li>
+<li><a href='#L455' title='Defined at 455.'>widget_overlapped</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 
+<a id='L2' name='L2'></a>   2 <em class='comment'>/** \file widget-common.h</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> *  \brief Header: shared stuff of widgets</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'> */</em>
+<a id='L5' name='L5'></a>   5 
+<a id='L6' name='L6'></a>   6 <em class='sharp'>#ifndef</em> <a href='../S/lib--widget--widget-common.h.html#L7' title='Defined at 7 in lib/widget/widget-common.h.'>MC__WIDGET_COMMON_H</a>
+<a id='L7' name='L7'></a>   7 <em class='sharp'>#define</em> <a href='../S/lib--widget--widget-common.h.html#L6' title='Referred from 6 in lib/widget/widget-common.h.'>MC__WIDGET_COMMON_H</a>
+<a id='L8' name='L8'></a>   8 
+<a id='L9' name='L9'></a>   9 <em class='sharp'>#include</em> "<a href='lib--keybind.h.html'>lib/keybind.h</a>"        <em class='comment'>/* global_keymap_t */</em>
+<a id='L10' name='L10'></a>  10 <em class='sharp'>#include</em> "<a href='../I/mouse.h.html'>lib/tty/mouse.h</a>"
+<a id='L11' name='L11'></a>  11 <em class='sharp'>#include</em> "<a href='../I/mouse.h.html'>lib/widget/mouse.h</a>"   <em class='comment'>/* mouse_msg_t, mouse_event_t */</em>
+<a id='L12' name='L12'></a>  12 
+<a id='L13' name='L13'></a>  13 <em class='comment'>/*** typedefs(not structures) and defined constants **********************************************/</em>
+<a id='L14' name='L14'></a>  14 
+<a id='L15' name='L15'></a>  15 <em class='sharp'>#define</em> <a href='../R/WIDGET.html' title='Multiple referred from 542 places.'>WIDGET</a>(<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>) ((<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *)(<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>))
+<a id='L16' name='L16'></a>  16 <em class='sharp'>#define</em> <a href='../R/CONST_WIDGET.html' title='Multiple referred from 65 places.'>CONST_WIDGET</a>(<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>) ((<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *)(<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>))
+<a id='L17' name='L17'></a>  17 
+<a id='L18' name='L18'></a>  18 <em class='sharp'>#define</em> <a href='../R/widget_gotoyx.html' title='Multiple referred from 132 places.'>widget_gotoyx</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, _y, _x) <a href='../D/tty_gotoyx.html' title='Multiple defined in 2 places.'>tty_gotoyx</a> (<a href='../S/lib--widget--widget-common.h.html#L16' title='Defined at 16 in lib/widget/widget-common.h.'>CONST_WIDGET</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>.<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> + (_y), <a href='../S/lib--widget--widget-common.h.html#L16' title='Defined at 16 in lib/widget/widget-common.h.'>CONST_WIDGET</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>.<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> + (_x))
+<a id='L19' name='L19'></a>  19 <em class='comment'>/* Sets/clear the specified flag in the options field */</em>
+<a id='L20' name='L20'></a>  20 <em class='sharp'>#define</em> <a href='../R/widget_want_cursor.html' title='Multiple referred from 2 places.'>widget_want_cursor</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>,<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>) <a href='../S/lib--widget--widget-common.c.html#L384' title='Defined at 384 in lib/widget/widget-common.c.'>widget_set_options</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L72' title='Defined at 72 in lib/widget/widget-common.h.'>WOP_WANT_CURSOR</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>)
+<a id='L21' name='L21'></a>  21 <em class='sharp'>#define</em> <a href='../R/widget_want_hotkey.html' title='Multiple referred from 3 places.'>widget_want_hotkey</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>,<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>) <a href='../S/lib--widget--widget-common.c.html#L384' title='Defined at 384 in lib/widget/widget-common.c.'>widget_set_options</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L71' title='Defined at 71 in lib/widget/widget-common.h.'>WOP_WANT_HOTKEY</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>)
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#define</em> <a href='../R/widget_want_tab.html' title='Multiple referred from 6 places.'>widget_want_tab</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>,<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>) <a href='../S/lib--widget--widget-common.c.html#L384' title='Defined at 384 in lib/widget/widget-common.c.'>widget_set_options</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L73' title='Defined at 73 in lib/widget/widget-common.h.'>WOP_WANT_TAB</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>)
+<a id='L23' name='L23'></a>  23 <em class='sharp'>#define</em> <a href='../R/widget_idle.html' title='Multiple referred from 9 places.'>widget_idle</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>,<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>) <a href='../S/lib--widget--widget-common.h.html#L381' title='Defined at 381 in lib/widget/widget-common.h.'>widget_set_state</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L85' title='Defined at 85 in lib/widget/widget-common.h.'>WST_IDLE</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>)
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#define</em> <a href='../R/widget_disable.html' title='Multiple referred from 23 places.'>widget_disable</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>,<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>) <a href='../S/lib--widget--widget-common.h.html#L381' title='Defined at 381 in lib/widget/widget-common.h.'>widget_set_state</a>(<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L84' title='Defined at 84 in lib/widget/widget-common.h.'>WST_DISABLED</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>)
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='comment'>/*** enums ***************************************************************************************/</em>
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='comment'>/* Widget messages */</em>
+<a id='L29' name='L29'></a>  29 <strong class='reserved'>typedef</strong> <strong class='reserved'>enum</strong>
+<a id='L30' name='L30'></a>  30 <em class='brace'>{</em>
+<a id='L31' name='L31'></a>  31     <a href='../R/MSG_INIT.html' title='Multiple referred from 32 places.'>MSG_INIT</a> = 0,               <em class='comment'>/* Initialize widget */</em>
+<a id='L32' name='L32'></a>  32     <a href='../R/MSG_FOCUS.html' title='Multiple referred from 8 places.'>MSG_FOCUS</a>,                  <em class='comment'>/* Draw widget in focused state or widget has got focus */</em>
+<a id='L33' name='L33'></a>  33     <a href='../R/MSG_UNFOCUS.html' title='Multiple referred from 5 places.'>MSG_UNFOCUS</a>,                <em class='comment'>/* Draw widget in unfocused state or widget has been unfocused */</em>
+<a id='L34' name='L34'></a>  34     <a href='../R/MSG_CHANGED_FOCUS.html' title='Multiple referred from 3 places.'>MSG_CHANGED_FOCUS</a>,          <em class='comment'>/* Notification to owner about focus state change */</em>
+<a id='L35' name='L35'></a>  35     <a href='../R/MSG_ENABLE.html' title='Multiple referred from 3 places.'>MSG_ENABLE</a>,                 <em class='comment'>/* Change state to enabled */</em>
+<a id='L36' name='L36'></a>  36     <a href='../R/MSG_DISABLE.html' title='Multiple referred from 4 places.'>MSG_DISABLE</a>,                <em class='comment'>/* Change state to disabled */</em>
+<a id='L37' name='L37'></a>  37     <a href='../R/MSG_DRAW.html' title='Multiple referred from 39 places.'>MSG_DRAW</a>,                   <em class='comment'>/* Draw widget on screen */</em>
+<a id='L38' name='L38'></a>  38     <a href='../R/MSG_KEY.html' title='Multiple referred from 38 places.'>MSG_KEY</a>,                    <em class='comment'>/* Sent to widgets on key press */</em>
+<a id='L39' name='L39'></a>  39     <a href='../R/MSG_HOTKEY.html' title='Multiple referred from 10 places.'>MSG_HOTKEY</a>,                 <em class='comment'>/* Sent to widget to catch preprocess key */</em>
+<a id='L40' name='L40'></a>  40     <a href='../R/MSG_HOTKEY_HANDLED.html' title='Multiple referred from 2 places.'>MSG_HOTKEY_HANDLED</a>,         <em class='comment'>/* A widget has got the hotkey */</em>
+<a id='L41' name='L41'></a>  41     <a href='../R/MSG_UNHANDLED_KEY.html' title='Multiple referred from 4 places.'>MSG_UNHANDLED_KEY</a>,          <em class='comment'>/* Key that no widget handled */</em>
+<a id='L42' name='L42'></a>  42     <a href='../R/MSG_POST_KEY.html' title='Multiple referred from 10 places.'>MSG_POST_KEY</a>,               <em class='comment'>/* The key has been handled */</em>
+<a id='L43' name='L43'></a>  43     <a href='../R/MSG_ACTION.html' title='Multiple referred from 37 places.'>MSG_ACTION</a>,                 <em class='comment'>/* Send to widget to handle command */</em>
+<a id='L44' name='L44'></a>  44     <a href='../R/MSG_NOTIFY.html' title='Multiple referred from 15 places.'>MSG_NOTIFY</a>,                 <em class='comment'>/* Typically sent to dialog to inform it of state-change</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'>                                 * of listboxes, check- and radiobuttons. */</em>
+<a id='L46' name='L46'></a>  46     <a href='../R/MSG_CURSOR.html' title='Multiple referred from 11 places.'>MSG_CURSOR</a>,                 <em class='comment'>/* Sent to widget to position the cursor */</em>
+<a id='L47' name='L47'></a>  47     <a href='../R/MSG_IDLE.html' title='Multiple referred from 8 places.'>MSG_IDLE</a>,                   <em class='comment'>/* The idle state is active */</em>
+<a id='L48' name='L48'></a>  48     <a href='../R/MSG_RESIZE.html' title='Multiple referred from 38 places.'>MSG_RESIZE</a>,                 <em class='comment'>/* Screen size has changed */</em>
+<a id='L49' name='L49'></a>  49     <a href='../R/MSG_VALIDATE.html' title='Multiple referred from 6 places.'>MSG_VALIDATE</a>,               <em class='comment'>/* Dialog is to be closed */</em>
+<a id='L50' name='L50'></a>  50     <a href='../S/lib--widget--dialog.c.html#L555' title='Referred from 555 in lib/widget/dialog.c.'>MSG_END</a>,                    <em class='comment'>/* Shut down dialog */</em>
+<a id='L51' name='L51'></a>  51     <a href='../R/MSG_DESTROY.html' title='Multiple referred from 32 places.'>MSG_DESTROY</a>                 <em class='comment'>/* Sent to widget at destruction time */</em>
+<a id='L52' name='L52'></a>  52 <em class='brace'>}</em> <a href='../R/widget_msg_t.html' title='Multiple referred from 76 places.'>widget_msg_t</a>;
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <em class='comment'>/* Widgets are expected to answer to the following messages:</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'>   MSG_FOCUS:   MSG_HANDLED if the accept the focus, MSG_NOT_HANDLED if they do not.</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'>   MSG_UNFOCUS: MSG_HANDLED if they accept to release the focus, MSG_NOT_HANDLED if they don't.</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'>   MSG_KEY:     MSG_HANDLED if they actually used the key, MSG_NOT_HANDLED if not.</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'>   MSG_HOTKEY:  MSG_HANDLED if they actually used the key, MSG_NOT_HANDLED if not.</em>
+<a id='L59' name='L59'></a>  59 <em class='comment'> */</em>
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61 <strong class='reserved'>typedef</strong> <strong class='reserved'>enum</strong>
+<a id='L62' name='L62'></a>  62 <em class='brace'>{</em>
+<a id='L63' name='L63'></a>  63     <a href='../R/MSG_NOT_HANDLED.html' title='Multiple referred from 113 places.'>MSG_NOT_HANDLED</a> = 0,
+<a id='L64' name='L64'></a>  64     <a href='../R/MSG_HANDLED.html' title='Multiple referred from 233 places.'>MSG_HANDLED</a> = 1
+<a id='L65' name='L65'></a>  65 <em class='brace'>}</em> <a href='../R/cb_ret_t.html' title='Multiple referred from 160 places.'>cb_ret_t</a>;
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <em class='comment'>/* Widget options */</em>
+<a id='L68' name='L68'></a>  68 <strong class='reserved'>typedef</strong> <strong class='reserved'>enum</strong>
+<a id='L69' name='L69'></a>  69 <em class='brace'>{</em>
+<a id='L70' name='L70'></a>  70     <a href='../R/WOP_DEFAULT.html' title='Multiple referred from 17 places.'>WOP_DEFAULT</a> = (0 &lt;&lt; 0),
+<a id='L71' name='L71'></a>  71     <a href='../R/WOP_WANT_HOTKEY.html' title='Multiple referred from 8 places.'>WOP_WANT_HOTKEY</a> = (1 &lt;&lt; 0),
+<a id='L72' name='L72'></a>  72     <a href='../R/WOP_WANT_CURSOR.html' title='Multiple referred from 9 places.'>WOP_WANT_CURSOR</a> = (1 &lt;&lt; 1),
+<a id='L73' name='L73'></a>  73     <a href='../R/WOP_WANT_TAB.html' title='Multiple referred from 2 places.'>WOP_WANT_TAB</a> = (1 &lt;&lt; 2),    <em class='comment'>/* Should the tab key be sent to the dialog? */</em>
+<a id='L74' name='L74'></a>  74     <a href='../R/WOP_IS_INPUT.html' title='Multiple referred from 2 places.'>WOP_IS_INPUT</a> = (1 &lt;&lt; 3),
+<a id='L75' name='L75'></a>  75     <a href='../R/WOP_SELECTABLE.html' title='Multiple referred from 19 places.'>WOP_SELECTABLE</a> = (1 &lt;&lt; 4),
+<a id='L76' name='L76'></a>  76     <a href='../R/WOP_TOP_SELECT.html' title='Multiple referred from 7 places.'>WOP_TOP_SELECT</a> = (1 &lt;&lt; 5)
+<a id='L77' name='L77'></a>  77 <em class='brace'>}</em> <a href='../R/widget_options_t.html' title='Multiple referred from 6 places.'>widget_options_t</a>;
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 <em class='comment'>/* Widget state */</em>
+<a id='L80' name='L80'></a>  80 <strong class='reserved'>typedef</strong> <strong class='reserved'>enum</strong>
+<a id='L81' name='L81'></a>  81 <em class='brace'>{</em>
+<a id='L82' name='L82'></a>  82     WST_DEFAULT = (0 &lt;&lt; 0),
+<a id='L83' name='L83'></a>  83     <a href='../R/WST_VISIBLE.html' title='Multiple referred from 13 places.'>WST_VISIBLE</a> = (1 &lt;&lt; 0),     <em class='comment'>/* Widget is visible */</em>
+<a id='L84' name='L84'></a>  84     <a href='../R/WST_DISABLED.html' title='Multiple referred from 23 places.'>WST_DISABLED</a> = (1 &lt;&lt; 1),    <em class='comment'>/* Widget cannot be selected */</em>
+<a id='L85' name='L85'></a>  85     <a href='../R/WST_IDLE.html' title='Multiple referred from 3 places.'>WST_IDLE</a> = (1 &lt;&lt; 2),
+<a id='L86' name='L86'></a>  86     <a href='../R/WST_MODAL.html' title='Multiple referred from 12 places.'>WST_MODAL</a> = (1 &lt;&lt; 3),       <em class='comment'>/* Widget (dialog) is modal */</em>
+<a id='L87' name='L87'></a>  87     <a href='../R/WST_FOCUSED.html' title='Multiple referred from 33 places.'>WST_FOCUSED</a> = (1 &lt;&lt; 4),
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89     <a href='../R/WST_CONSTRUCT.html' title='Multiple referred from 7 places.'>WST_CONSTRUCT</a> = (1 &lt;&lt; 15),  <em class='comment'>/* Widget has been constructed but not run yet */</em>
+<a id='L90' name='L90'></a>  90     <a href='../R/WST_ACTIVE.html' title='Multiple referred from 30 places.'>WST_ACTIVE</a> = (1 &lt;&lt; 16),     <em class='comment'>/* Dialog is visible and active */</em>
+<a id='L91' name='L91'></a>  91     <a href='../R/WST_SUSPENDED.html' title='Multiple referred from 10 places.'>WST_SUSPENDED</a> = (1 &lt;&lt; 17),  <em class='comment'>/* Dialog is suspended */</em>
+<a id='L92' name='L92'></a>  92     <a href='../R/WST_CLOSED.html' title='Multiple referred from 12 places.'>WST_CLOSED</a> = (1 &lt;&lt; 18)      <em class='comment'>/* Dialog is closed */</em>
+<a id='L93' name='L93'></a>  93 <em class='brace'>}</em> <a href='../R/widget_state_t.html' title='Multiple referred from 11 places.'>widget_state_t</a>;
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95 <em class='comment'>/* Flags for widget repositioning on dialog resize */</em>
+<a id='L96' name='L96'></a>  96 <strong class='reserved'>typedef</strong> <strong class='reserved'>enum</strong>
+<a id='L97' name='L97'></a>  97 <em class='brace'>{</em>
+<a id='L98' name='L98'></a>  98     <a href='../R/WPOS_FULLSCREEN.html' title='Multiple referred from 8 places.'>WPOS_FULLSCREEN</a> = (1 &lt;&lt; 0), <em class='comment'>/* widget occupies the whole screen */</em>
+<a id='L99' name='L99'></a>  99     <a href='../R/WPOS_CENTER_HORZ.html' title='Multiple referred from 17 places.'>WPOS_CENTER_HORZ</a> = (1 &lt;&lt; 1),        <em class='comment'>/* center widget in horizontal */</em>
+<a id='L100' name='L100'></a> 100     <a href='../R/WPOS_CENTER_VERT.html' title='Multiple referred from 4 places.'>WPOS_CENTER_VERT</a> = (1 &lt;&lt; 2),        <em class='comment'>/* center widget in vertical */</em>
+<a id='L101' name='L101'></a> 101     <a href='../R/WPOS_CENTER.html' title='Multiple referred from 24 places.'>WPOS_CENTER</a> = <a href='../S/lib--widget--widget-common.h.html#L99' title='Defined at 99 in lib/widget/widget-common.h.'>WPOS_CENTER_HORZ</a> | <a href='../S/lib--widget--widget-common.h.html#L100' title='Defined at 100 in lib/widget/widget-common.h.'>WPOS_CENTER_VERT</a>,  <em class='comment'>/* center widget */</em>
+<a id='L102' name='L102'></a> 102     <a href='../R/WPOS_TRYUP.html' title='Multiple referred from 6 places.'>WPOS_TRYUP</a> = (1 &lt;&lt; 3),      <em class='comment'>/* try to move two lines up the widget */</em>
+<a id='L103' name='L103'></a> 103     <a href='../R/WPOS_KEEP_LEFT.html' title='Multiple referred from 16 places.'>WPOS_KEEP_LEFT</a> = (1 &lt;&lt; 4),  <em class='comment'>/* keep widget distance to left border of dialog */</em>
+<a id='L104' name='L104'></a> 104     <a href='../R/WPOS_KEEP_RIGHT.html' title='Multiple referred from 6 places.'>WPOS_KEEP_RIGHT</a> = (1 &lt;&lt; 5), <em class='comment'>/* keep widget distance to right border of dialog */</em>
+<a id='L105' name='L105'></a> 105     <a href='../R/WPOS_KEEP_TOP.html' title='Multiple referred from 22 places.'>WPOS_KEEP_TOP</a> = (1 &lt;&lt; 6),   <em class='comment'>/* keep widget distance to top border of dialog */</em>
+<a id='L106' name='L106'></a> 106     <a href='../R/WPOS_KEEP_BOTTOM.html' title='Multiple referred from 26 places.'>WPOS_KEEP_BOTTOM</a> = (1 &lt;&lt; 7),        <em class='comment'>/* keep widget distance to bottom border of dialog */</em>
+<a id='L107' name='L107'></a> 107     <a href='../R/WPOS_KEEP_HORZ.html' title='Multiple referred from 7 places.'>WPOS_KEEP_HORZ</a> = <a href='../S/lib--widget--widget-common.h.html#L103' title='Defined at 103 in lib/widget/widget-common.h.'>WPOS_KEEP_LEFT</a> | <a href='../S/lib--widget--widget-common.h.html#L104' title='Defined at 104 in lib/widget/widget-common.h.'>WPOS_KEEP_RIGHT</a>,
+<a id='L108' name='L108'></a> 108     <a href='../S/lib--widget--widget-common.h.html#L109' title='Referred from 109 in lib/widget/widget-common.h.'>WPOS_KEEP_VERT</a> = <a href='../S/lib--widget--widget-common.h.html#L105' title='Defined at 105 in lib/widget/widget-common.h.'>WPOS_KEEP_TOP</a> | <a href='../S/lib--widget--widget-common.h.html#L106' title='Defined at 106 in lib/widget/widget-common.h.'>WPOS_KEEP_BOTTOM</a>,
+<a id='L109' name='L109'></a> 109     <a href='../R/WPOS_KEEP_ALL.html' title='Multiple referred from 16 places.'>WPOS_KEEP_ALL</a> = <a href='../S/lib--widget--widget-common.h.html#L107' title='Defined at 107 in lib/widget/widget-common.h.'>WPOS_KEEP_HORZ</a> | <a href='../S/lib--widget--widget-common.h.html#L108' title='Defined at 108 in lib/widget/widget-common.h.'>WPOS_KEEP_VERT</a>,
+<a id='L110' name='L110'></a> 110     <a href='../R/WPOS_KEEP_DEFAULT.html' title='Multiple referred from 43 places.'>WPOS_KEEP_DEFAULT</a> = <a href='../S/lib--widget--widget-common.h.html#L103' title='Defined at 103 in lib/widget/widget-common.h.'>WPOS_KEEP_LEFT</a> | <a href='../S/lib--widget--widget-common.h.html#L105' title='Defined at 105 in lib/widget/widget-common.h.'>WPOS_KEEP_TOP</a>
+<a id='L111' name='L111'></a> 111 <em class='brace'>}</em> <a href='../R/widget_pos_flags_t.html' title='Multiple referred from 12 places.'>widget_pos_flags_t</a>;
+<a id='L112' name='L112'></a> 112 <em class='comment'>/* NOTES:</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'> * If WPOS_FULLSCREEN is set then all other position flags are ignored.</em>
+<a id='L114' name='L114'></a> 114 <em class='comment'> * If WPOS_CENTER_HORZ flag is used, other horizontal flags (WPOS_KEEP_LEFT, WPOS_KEEP_RIGHT,</em>
+<a id='L115' name='L115'></a> 115 <em class='comment'> * and WPOS_KEEP_HORZ) are ignored.</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'> * If WPOS_CENTER_VERT flag is used, other horizontal flags (WPOS_KEEP_TOP, WPOS_KEEP_BOTTOM,</em>
+<a id='L117' name='L117'></a> 117 <em class='comment'> * and WPOS_KEEP_VERT) are ignored.</em>
+<a id='L118' name='L118'></a> 118 <em class='comment'> */</em>
+<a id='L119' name='L119'></a> 119 
+<a id='L120' name='L120'></a> 120 <em class='comment'>/*** structures declarations (and typedefs of structures)*****************************************/</em>
+<a id='L121' name='L121'></a> 121 
+<a id='L122' name='L122'></a> 122 <em class='comment'>/* Widget callback */</em>
+<a id='L123' name='L123'></a> 123 <strong class='reserved'>typedef</strong> <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a> (*<a href='../Y/widget_cb_fn.html' title='Multiple used in 16 places.'>widget_cb_fn</a>) (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/widget.html' title='Multiple used in 160 places.'>widget</a>, <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../S/lib--widget--widget-common.h.html#L52' title='Defined at 52 in lib/widget/widget-common.h.'>widget_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <strong class='reserved'>int</strong> <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>,
+<a id='L124' name='L124'></a> 124                                   <strong class='reserved'>void</strong> *<a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>);
+<a id='L125' name='L125'></a> 125 <em class='comment'>/* Widget mouse callback */</em>
+<a id='L126' name='L126'></a> 126 <strong class='reserved'>typedef</strong> <strong class='reserved'>void</strong> (*<a href='../Y/widget_mouse_cb_fn.html' title='Multiple used in 9 places.'>widget_mouse_cb_fn</a>) (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--mouse.h.html#L33' title='Defined at 33 in lib/widget/mouse.h.'>mouse_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../S/lib--widget--mouse.h.html#L52' title='Defined at 52 in lib/widget/mouse.h.'>mouse_event_t</a> * <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>);
+<a id='L127' name='L127'></a> 127 <em class='comment'>/* translate mouse event and process it */</em>
+<a id='L128' name='L128'></a> 128 <strong class='reserved'>typedef</strong> <strong class='reserved'>int</strong> (*<a href='../Y/widget_mouse_handle_fn.html' title='Multiple used in 2 places.'>widget_mouse_handle_fn</a>) (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../D/Gpm_Event.html' title='Multiple defined in 2 places.'>Gpm_Event</a> * <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>);
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130 <em class='comment'>/* Every Widget must have this as its first element */</em>
+<a id='L131' name='L131'></a> 131 <strong class='reserved'>struct</strong> <a href='../R/Widget.html' title='Multiple referred from 436 places.'>Widget</a>
+<a id='L132' name='L132'></a> 132 <em class='brace'>{</em>
+<a id='L133' name='L133'></a> 133     <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> <a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>;                 <em class='comment'>/* position and size */</em>
+<a id='L134' name='L134'></a> 134     <em class='comment'>/* ATTENTION! For groups, don't change @rect members directly to avoid</em>
+<a id='L135' name='L135'></a> 135 <em class='comment'>       incorrect reposion and resize of group members.  */</em>
+<a id='L136' name='L136'></a> 136     <a href='../S/lib--widget--widget-common.h.html#L111' title='Defined at 111 in lib/widget/widget-common.h.'>widget_pos_flags_t</a> <a href='../Y/pos_flags.html' title='Multiple used in 75 places.'>pos_flags</a>;       <em class='comment'>/* repositioning flags */</em>
+<a id='L137' name='L137'></a> 137     <a href='../S/lib--widget--widget-common.h.html#L77' title='Defined at 77 in lib/widget/widget-common.h.'>widget_options_t</a> <a href='../Y/options.html' title='Multiple used in 118 places.'>options</a>;
+<a id='L138' name='L138'></a> 138     <a href='../S/lib--widget--widget-common.h.html#L93' title='Defined at 93 in lib/widget/widget-common.h.'>widget_state_t</a> <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>;
+<a id='L139' name='L139'></a> 139     <strong class='reserved'>unsigned</strong> <strong class='reserved'>long</strong> <a href='../Y/id.html' title='Multiple used in 157 places.'>id</a>;           <em class='comment'>/* uniq widget ID */</em>
+<a id='L140' name='L140'></a> 140     <a href='../Y/widget_cb_fn.html' title='Multiple used in 16 places.'>widget_cb_fn</a> <a href='../Y/callback.html' title='Multiple used in 80 places.'>callback</a>;
+<a id='L141' name='L141'></a> 141     <a href='../Y/widget_mouse_cb_fn.html' title='Multiple used in 9 places.'>widget_mouse_cb_fn</a> <a href='../Y/mouse_callback.html' title='Multiple used in 18 places.'>mouse_callback</a>;
+<a id='L142' name='L142'></a> 142     <a href='../D/WGroup.html' title='Multiple defined in 2 places.'>WGroup</a> *<a href='../Y/owner.html' title='Multiple used in 148 places.'>owner</a>;
+<a id='L143' name='L143'></a> 143 
+<a id='L144' name='L144'></a> 144     <em class='comment'>/* Key-related fields */</em>
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>const</strong> <a href='../D/global_keymap_t.html' title='Multiple defined in 2 places.'>global_keymap_t</a> *<a href='../Y/keymap.html' title='Multiple used in 125 places.'>keymap</a>;      <em class='comment'>/* main keymap */</em>
+<a id='L146' name='L146'></a> 146     <strong class='reserved'>const</strong> <a href='../D/global_keymap_t.html' title='Multiple defined in 2 places.'>global_keymap_t</a> *<a href='../Y/ext_keymap.html' title='Multiple used in 6 places.'>ext_keymap</a>;  <em class='comment'>/* extended keymap */</em>
+<a id='L147' name='L147'></a> 147     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/ext_mode.html' title='Multiple used in 13 places.'>ext_mode</a>;          <em class='comment'>/* use keymap or ext_keymap */</em>
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149     <em class='comment'>/* Mouse-related fields. */</em>
+<a id='L150' name='L150'></a> 150     <a href='../Y/widget_mouse_handle_fn.html' title='Multiple used in 2 places.'>widget_mouse_handle_fn</a> <a href='../Y/mouse_handler.html' title='Multiple used in 7 places.'>mouse_handler</a>;
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>struct</strong>
+<a id='L152' name='L152'></a> 152     <em class='brace'>{</em>
+<a id='L153' name='L153'></a> 153         <em class='comment'>/* Public members: */</em>
+<a id='L154' name='L154'></a> 154         <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/forced_capture.html' title='Multiple used in 7 places.'>forced_capture</a>;        <em class='comment'>/* Overrides the 'capture' member. Set explicitly by the programmer. */</em>
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156         <em class='comment'>/* Implementation details: */</em>
+<a id='L157' name='L157'></a> 157         <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/capture.html' title='Multiple used in 8 places.'>capture</a>;       <em class='comment'>/* Whether the widget "owns" the mouse. */</em>
+<a id='L158' name='L158'></a> 158         <a href='../S/lib--widget--mouse.h.html#L33' title='Defined at 33 in lib/widget/mouse.h.'>mouse_msg_t</a> <a href='../Y/last_msg.html' title='Multiple used in 4 places.'>last_msg</a>;   <em class='comment'>/* The previous event type processed. */</em>
+<a id='L159' name='L159'></a> 159         <strong class='reserved'>int</strong> <a href='../Y/last_buttons_down.html' title='Multiple used in 4 places.'>last_buttons_down</a>;
+<a id='L160' name='L160'></a> 160     <em class='brace'>}</em> <a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>;
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162     <strong class='reserved'>void</strong> (*<a href='../Y/make_global.html' title='Multiple used in 6 places.'>make_global</a>) (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> * <a href='../Y/delta.html' title='Multiple used in 22 places.'>delta</a>);
+<a id='L163' name='L163'></a> 163     <strong class='reserved'>void</strong> (*<a href='../Y/make_local.html' title='Multiple used in 6 places.'>make_local</a>) (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> * <a href='../Y/delta.html' title='Multiple used in 22 places.'>delta</a>);
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165     <a href='../Y/GList.html' title='Multiple used in 180 places.'>GList</a> *(*<a href='../Y/find.html' title='Multiple used in 4 places.'>find</a>) (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/what.html' title='Multiple used in 19 places.'>what</a>);
+<a id='L166' name='L166'></a> 166     <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *(*<a href='../Y/find_by_type.html' title='Multiple used in 4 places.'>find_by_type</a>) (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/widget_cb_fn.html' title='Multiple used in 16 places.'>widget_cb_fn</a> <a href='../Y/cb.html' title='Multiple used in 138 places.'>cb</a>);
+<a id='L167' name='L167'></a> 167     <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *(*<a href='../Y/find_by_id.html' title='Multiple used in 4 places.'>find_by_id</a>) (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>unsigned</strong> <strong class='reserved'>long</strong> <a href='../Y/id.html' title='Multiple used in 157 places.'>id</a>);
+<a id='L168' name='L168'></a> 168 
+<a id='L169' name='L169'></a> 169     <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L170' name='L170'></a> 170     <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a> (*<a href='../Y/set_state.html' title='Multiple used in 4 places.'>set_state</a>) (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L93' title='Defined at 93 in lib/widget/widget-common.h.'>widget_state_t</a> <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/enable.html' title='Multiple used in 22 places.'>enable</a>);
+<a id='L171' name='L171'></a> 171     <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L172' name='L172'></a> 172     <strong class='reserved'>void</strong> (*<a href='../Y/destroy.html' title='Multiple used in 12 places.'>destroy</a>) (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174     <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> *(*<a href='../Y/get_colors.html' title='Multiple used in 5 places.'>get_colors</a>) (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L175' name='L175'></a> 175 <em class='brace'>}</em>;
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177 <em class='comment'>/* structure for label (caption) with hotkey, if original text does not contain</em>
+<a id='L178' name='L178'></a> 178 <em class='comment'> * hotkey, only start is valid and is equal to original text</em>
+<a id='L179' name='L179'></a> 179 <em class='comment'> * hotkey is defined as char*, but mc support only singlebyte hotkey</em>
+<a id='L180' name='L180'></a> 180 <em class='comment'> */</em>
+<a id='L181' name='L181'></a> 181 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong> <a href='../R/hotkey_t.html' title='Multiple referred from 23 places.'>hotkey_t</a>
+<a id='L182' name='L182'></a> 182 <em class='brace'>{</em>
+<a id='L183' name='L183'></a> 183     <strong class='reserved'>char</strong> *<a href='../S/src--editor--etags.c.html#L202' title='Defined at 202 in src/editor/etags.c.'>start</a>;                <em class='comment'>/* never NULL */</em>
+<a id='L184' name='L184'></a> 184     <strong class='reserved'>char</strong> *<a href='../Y/hotkey.html' title='Multiple used in 109 places.'>hotkey</a>;               <em class='comment'>/* can be NULL */</em>
+<a id='L185' name='L185'></a> 185     <strong class='reserved'>char</strong> *<a href='../Y/end.html' title='Multiple used in 154 places.'>end</a>;                  <em class='comment'>/* can be NULL */</em>
+<a id='L186' name='L186'></a> 186 <em class='brace'>}</em> <a href='../R/hotkey_t.html' title='Multiple referred from 23 places.'>hotkey_t</a>;
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188 <em class='comment'>/*** global variables defined in .c file *********************************************************/</em>
+<a id='L189' name='L189'></a> 189 
+<a id='L190' name='L190'></a> 190 <em class='comment'>/*** declarations of public functions ************************************************************/</em>
+<a id='L191' name='L191'></a> 191 
+<a id='L192' name='L192'></a> 192 <em class='comment'>/* create hotkey from text */</em>
+<a id='L193' name='L193'></a> 193 <a href='../D/hotkey_t.html' title='Multiple defined in 2 places.'>hotkey_t</a> <a href='../S/lib--widget--widget-common.c.html#L195' title='Defined at 195 in lib/widget/widget-common.c.'>hotkey_new</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>);
+<a id='L194' name='L194'></a> 194 <em class='comment'>/* release hotkey, free all mebers of hotkey_t */</em>
+<a id='L195' name='L195'></a> 195 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L230' title='Defined at 230 in lib/widget/widget-common.c.'>hotkey_free</a> (<strong class='reserved'>const</strong> <a href='../D/hotkey_t.html' title='Multiple defined in 2 places.'>hotkey_t</a> <a href='../Y/hotkey.html' title='Multiple used in 109 places.'>hotkey</a>);
+<a id='L196' name='L196'></a> 196 <em class='comment'>/* return width on terminal of hotkey */</em>
+<a id='L197' name='L197'></a> 197 <strong class='reserved'>int</strong> <a href='../S/lib--widget--widget-common.c.html#L240' title='Defined at 240 in lib/widget/widget-common.c.'>hotkey_width</a> (<strong class='reserved'>const</strong> <a href='../D/hotkey_t.html' title='Multiple defined in 2 places.'>hotkey_t</a> <a href='../Y/hotkey.html' title='Multiple used in 109 places.'>hotkey</a>);
+<a id='L198' name='L198'></a> 198 <em class='comment'>/* compare two hotkeys */</em>
+<a id='L199' name='L199'></a> 199 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/lib--widget--widget-common.c.html#L253' title='Defined at 253 in lib/widget/widget-common.c.'>hotkey_equal</a> (<strong class='reserved'>const</strong> <a href='../D/hotkey_t.html' title='Multiple defined in 2 places.'>hotkey_t</a> <a href='../Y/hotkey1.html' title='Multiple used in 7 places.'>hotkey1</a>, <strong class='reserved'>const</strong> <a href='../D/hotkey_t.html' title='Multiple defined in 2 places.'>hotkey_t</a> <a href='../Y/hotkey2.html' title='Multiple used in 7 places.'>hotkey2</a>);
+<a id='L200' name='L200'></a> 200 <em class='comment'>/* draw hotkey of widget */</em>
+<a id='L201' name='L201'></a> 201 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L265' title='Defined at 265 in lib/widget/widget-common.c.'>hotkey_draw</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/hotkey_t.html' title='Multiple defined in 2 places.'>hotkey_t</a> <a href='../Y/hotkey.html' title='Multiple used in 109 places.'>hotkey</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/focused.html' title='Multiple used in 23 places.'>focused</a>);
+<a id='L202' name='L202'></a> 202 <em class='comment'>/* get text of hotkey */</em>
+<a id='L203' name='L203'></a> 203 <strong class='reserved'>char</strong> *<a href='../S/lib--widget--widget-common.c.html#L289' title='Defined at 289 in lib/widget/widget-common.c.'>hotkey_get_text</a> (<strong class='reserved'>const</strong> <a href='../D/hotkey_t.html' title='Multiple defined in 2 places.'>hotkey_t</a> <a href='../Y/hotkey.html' title='Multiple used in 109 places.'>hotkey</a>);
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205 <em class='comment'>/* widget initialization */</em>
+<a id='L206' name='L206'></a> 206 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L310' title='Defined at 310 in lib/widget/widget-common.c.'>widget_init</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> * <a href='../Y/r.html' title='Multiple used in 754 places.'>r</a>, <a href='../Y/widget_cb_fn.html' title='Multiple used in 16 places.'>widget_cb_fn</a> <a href='../Y/callback.html' title='Multiple used in 80 places.'>callback</a>,
+<a id='L207' name='L207'></a> 207                   <a href='../Y/widget_mouse_cb_fn.html' title='Multiple used in 9 places.'>widget_mouse_cb_fn</a> <a href='../Y/mouse_callback.html' title='Multiple used in 18 places.'>mouse_callback</a>);
+<a id='L208' name='L208'></a> 208 <em class='comment'>/* Default callback for widgets */</em>
+<a id='L209' name='L209'></a> 209 <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a> <a href='../S/lib--widget--widget-common.c.html#L348' title='Defined at 348 in lib/widget/widget-common.c.'>widget_default_callback</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../S/lib--widget--widget-common.h.html#L52' title='Defined at 52 in lib/widget/widget-common.h.'>widget_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <strong class='reserved'>int</strong> <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>,
+<a id='L210' name='L210'></a> 210                                   <strong class='reserved'>void</strong> *<a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>);
+<a id='L211' name='L211'></a> 211 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L384' title='Defined at 384 in lib/widget/widget-common.c.'>widget_set_options</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L77' title='Defined at 77 in lib/widget/widget-common.h.'>widget_options_t</a> <a href='../Y/options.html' title='Multiple used in 118 places.'>options</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/enable.html' title='Multiple used in 22 places.'>enable</a>);
+<a id='L212' name='L212'></a> 212 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L395' title='Defined at 395 in lib/widget/widget-common.c.'>widget_adjust_position</a> (<a href='../S/lib--widget--widget-common.h.html#L111' title='Defined at 111 in lib/widget/widget-common.h.'>widget_pos_flags_t</a> <a href='../Y/pos_flags.html' title='Multiple used in 75 places.'>pos_flags</a>, <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> * <a href='../Y/r.html' title='Multiple used in 754 places.'>r</a>);
+<a id='L213' name='L213'></a> 213 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L434' title='Defined at 434 in lib/widget/widget-common.c.'>widget_set_size</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>int</strong> <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <strong class='reserved'>int</strong> <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>, <strong class='reserved'>int</strong> <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>, <strong class='reserved'>int</strong> <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>);
+<a id='L214' name='L214'></a> 214 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L451' title='Defined at 451 in lib/widget/widget-common.c.'>widget_set_size_rect</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> * <a href='../Y/r.html' title='Multiple used in 754 places.'>r</a>);
+<a id='L215' name='L215'></a> 215 <em class='comment'>/* select color for widget in dependence of state */</em>
+<a id='L216' name='L216'></a> 216 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L460' title='Defined at 460 in lib/widget/widget-common.c.'>widget_selectcolor</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/focused.html' title='Multiple used in 23 places.'>focused</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/hotkey.html' title='Multiple used in 109 places.'>hotkey</a>);
+<a id='L217' name='L217'></a> 217 <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a> <a href='../S/lib--widget--widget-common.c.html#L529' title='Defined at 529 in lib/widget/widget-common.c.'>widget_draw</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L218' name='L218'></a> 218 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L480' title='Defined at 480 in lib/widget/widget-common.c.'>widget_erase</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L219' name='L219'></a> 219 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L489' title='Defined at 489 in lib/widget/widget-common.c.'>widget_set_visibility</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/make_visible.html' title='Multiple used in 4 places.'>make_visible</a>);
+<a id='L220' name='L220'></a> 220 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/lib--widget--widget-common.c.html#L506' title='Defined at 506 in lib/widget/widget-common.c.'>widget_is_active</a> (<strong class='reserved'>const</strong> <strong class='reserved'>void</strong> *<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L221' name='L221'></a> 221 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L553' title='Defined at 553 in lib/widget/widget-common.c.'>widget_replace</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/old.html' title='Multiple used in 26 places.'>old</a>, <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/new.html' title='Multiple used in 67 places.'>new</a>);
+<a id='L222' name='L222'></a> 222 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/lib--widget--widget-common.c.html#L608' title='Defined at 608 in lib/widget/widget-common.c.'>widget_is_focusable</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L223' name='L223'></a> 223 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L625' title='Defined at 625 in lib/widget/widget-common.c.'>widget_select</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L224' name='L224'></a> 224 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L653' title='Defined at 653 in lib/widget/widget-common.c.'>widget_set_bottom</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226 <strong class='reserved'>long</strong> <a href='../S/lib--widget--widget-common.c.html#L668' title='Defined at 668 in lib/widget/widget-common.c.'>widget_lookup_key</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>int</strong> <a href='../Y/key.html' title='Multiple used in 199 places.'>key</a>);
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L690' title='Defined at 690 in lib/widget/widget-common.c.'>widget_default_make_global</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> * <a href='../Y/delta.html' title='Multiple used in 22 places.'>delta</a>);
+<a id='L229' name='L229'></a> 229 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L709' title='Defined at 709 in lib/widget/widget-common.c.'>widget_default_make_local</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> * <a href='../Y/delta.html' title='Multiple used in 22 places.'>delta</a>);
+<a id='L230' name='L230'></a> 230 
+<a id='L231' name='L231'></a> 231 <a href='../Y/GList.html' title='Multiple used in 180 places.'>GList</a> *<a href='../S/lib--widget--widget-common.c.html#L728' title='Defined at 728 in lib/widget/widget-common.c.'>widget_default_find</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/what.html' title='Multiple used in 19 places.'>what</a>);
+<a id='L232' name='L232'></a> 232 <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *<a href='../S/lib--widget--widget-common.c.html#L746' title='Defined at 746 in lib/widget/widget-common.c.'>widget_default_find_by_type</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/widget_cb_fn.html' title='Multiple used in 16 places.'>widget_cb_fn</a> <a href='../Y/cb.html' title='Multiple used in 138 places.'>cb</a>);
+<a id='L233' name='L233'></a> 233 <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *<a href='../S/lib--widget--widget-common.c.html#L762' title='Defined at 762 in lib/widget/widget-common.c.'>widget_default_find_by_id</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>unsigned</strong> <strong class='reserved'>long</strong> <a href='../Y/id.html' title='Multiple used in 157 places.'>id</a>);
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235 <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a> <a href='../S/lib--widget--widget-common.c.html#L780' title='Defined at 780 in lib/widget/widget-common.c.'>widget_default_set_state</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L93' title='Defined at 93 in lib/widget/widget-common.h.'>widget_state_t</a> <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/enable.html' title='Multiple used in 22 places.'>enable</a>);
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237 <strong class='reserved'>void</strong> <a href='../S/lib--widget--widget-common.c.html#L870' title='Defined at 870 in lib/widget/widget-common.c.'>widget_default_destroy</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239 <em class='comment'>/* get mouse pointer location within widget */</em>
+<a id='L240' name='L240'></a> 240 <a href='../D/Gpm_Event.html' title='Multiple defined in 2 places.'>Gpm_Event</a> <a href='../S/lib--widget--widget-common.c.html#L880' title='Defined at 880 in lib/widget/widget-common.c.'>mouse_get_local</a> (<strong class='reserved'>const</strong> <a href='../D/Gpm_Event.html' title='Multiple defined in 2 places.'>Gpm_Event</a> * <a href='../Y/global.html' title='Multiple used in 6 places.'>global</a>, <strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L241' name='L241'></a> 241 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/lib--widget--widget-common.c.html#L897' title='Defined at 897 in lib/widget/widget-common.c.'>mouse_global_in_widget</a> (<strong class='reserved'>const</strong> <a href='../D/Gpm_Event.html' title='Multiple defined in 2 places.'>Gpm_Event</a> * <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>, <strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L244' name='L244'></a> 244 <em class='comment'>/*** inline functions ****************************************************************************/</em>
+<a id='L245' name='L245'></a> 245 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L246' name='L246'></a> 246 
+<a id='L247' name='L247'></a> 247 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a>
+<a id='L248' name='L248'></a> 248 <a href='../R/send_message.html' title='Multiple referred from 74 places.'>send_message</a> (<strong class='reserved'>void</strong> *<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>void</strong> *<a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../S/lib--widget--widget-common.h.html#L52' title='Defined at 52 in lib/widget/widget-common.h.'>widget_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <strong class='reserved'>int</strong> <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>, <strong class='reserved'>void</strong> *<a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L270'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+248 lib/widget/widget-common.h'  /> */</em>
+<a id='L249' name='L249'></a> 249 <em class='brace'>{</em>
+<a id='L250' name='L250'></a> 250     <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../S/lib--widget--widget-common.h.html#L63' title='Defined at 63 in lib/widget/widget-common.h.'>MSG_NOT_HANDLED</a>;
+<a id='L251' name='L251'></a> 251 
+<a id='L252' name='L252'></a> 252 <em class='sharp'>#if</em> 1
+<a id='L253' name='L253'></a> 253     <strong class='reserved'>if</strong> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)              <em class='comment'>/* This must be always true, but... */</em>
+<a id='L254' name='L254'></a> 254 <em class='sharp'>#endif</em>
+<a id='L255' name='L255'></a> 255         <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)-&gt;<a href='../Y/callback.html' title='Multiple used in 80 places.'>callback</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>), <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>), <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>);
+<a id='L256' name='L256'></a> 256 
+<a id='L257' name='L257'></a> 257     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L258' name='L258'></a> 258 <em class='brace'>}</em>
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L261' name='L261'></a> 261 <em class='comment'>/**</em>
+<a id='L262' name='L262'></a> 262 <em class='comment'>  * Check whether one or several option flags are set or not.</em>
+<a id='L263' name='L263'></a> 263 <em class='comment'>  * @param w widget</em>
+<a id='L264' name='L264'></a> 264 <em class='comment'>  * @param options widget option flags</em>
+<a id='L265' name='L265'></a> 265 <em class='comment'>  *</em>
+<a id='L266' name='L266'></a> 266 <em class='comment'>  * @return TRUE if all requested option flags are set, FALSE otherwise.</em>
+<a id='L267' name='L267'></a> 267 <em class='comment'>  */</em>
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L270' name='L270'></a> 270 <a href='../R/widget_get_options.html' title='Multiple referred from 9 places.'>widget_get_options</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L77' title='Defined at 77 in lib/widget/widget-common.h.'>widget_options_t</a> <a href='../Y/options.html' title='Multiple used in 118 places.'>options</a>)
+     <em class='comment'>/* <a href='#L248'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L286'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+270 lib/widget/widget-common.h'  /> */</em>
+<a id='L271' name='L271'></a> 271 <em class='brace'>{</em>
+<a id='L272' name='L272'></a> 272     <strong class='reserved'>return</strong> ((<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/options.html' title='Multiple used in 118 places.'>options</a> &amp; <a href='../Y/options.html' title='Multiple used in 118 places.'>options</a>) == <a href='../Y/options.html' title='Multiple used in 118 places.'>options</a>);
+<a id='L273' name='L273'></a> 273 <em class='brace'>}</em>
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L276' name='L276'></a> 276 
+<a id='L277' name='L277'></a> 277 <em class='comment'>/**</em>
+<a id='L278' name='L278'></a> 278 <em class='comment'>  * Check whether one or several state flags are set or not.</em>
+<a id='L279' name='L279'></a> 279 <em class='comment'>  * @param w widget</em>
+<a id='L280' name='L280'></a> 280 <em class='comment'>  * @param state widget state flags</em>
+<a id='L281' name='L281'></a> 281 <em class='comment'>  *</em>
+<a id='L282' name='L282'></a> 282 <em class='comment'>  * @return TRUE if all requested state flags are set, FALSE otherwise.</em>
+<a id='L283' name='L283'></a> 283 <em class='comment'>  */</em>
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L286' name='L286'></a> 286 <a href='../R/widget_get_state.html' title='Multiple referred from 76 places.'>widget_get_state</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L93' title='Defined at 93 in lib/widget/widget-common.h.'>widget_state_t</a> <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>)
+     <em class='comment'>/* <a href='#L270'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L300'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+286 lib/widget/widget-common.h'  /> */</em>
+<a id='L287' name='L287'></a> 287 <em class='brace'>{</em>
+<a id='L288' name='L288'></a> 288     <strong class='reserved'>return</strong> ((<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/state.html' title='Multiple used in 273 places.'>state</a> &amp; <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>) == <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>);
+<a id='L289' name='L289'></a> 289 <em class='brace'>}</em>
+<a id='L290' name='L290'></a> 290 
+<a id='L291' name='L291'></a> 291 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L292' name='L292'></a> 292 
+<a id='L293' name='L293'></a> 293 <em class='comment'>/**</em>
+<a id='L294' name='L294'></a> 294 <em class='comment'>  * Convert widget coordinates from local (relative to owner) to global (relative to screen).</em>
+<a id='L295' name='L295'></a> 295 <em class='comment'>  *</em>
+<a id='L296' name='L296'></a> 296 <em class='comment'>  * @param w widget</em>
+<a id='L297' name='L297'></a> 297 <em class='comment'>  */</em>
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <strong class='reserved'>void</strong>
+<a id='L300' name='L300'></a> 300 <a href='../S/lib--widget--group.c.html#L781' title='Referred from 781 in lib/widget/group.c.'>widget_make_global</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)
+     <em class='comment'>/* <a href='#L286'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L314'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+300 lib/widget/widget-common.h'  /> */</em>
+<a id='L301' name='L301'></a> 301 <em class='brace'>{</em>
+<a id='L302' name='L302'></a> 302     <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/make_global.html' title='Multiple used in 6 places.'>make_global</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L303' name='L303'></a> 303 <em class='brace'>}</em>
+<a id='L304' name='L304'></a> 304 
+<a id='L305' name='L305'></a> 305 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L306' name='L306'></a> 306 
+<a id='L307' name='L307'></a> 307 <em class='comment'>/**</em>
+<a id='L308' name='L308'></a> 308 <em class='comment'>  * Convert widget coordinates from global (relative to screen) to local (relative to owner).</em>
+<a id='L309' name='L309'></a> 309 <em class='comment'>  *</em>
+<a id='L310' name='L310'></a> 310 <em class='comment'>  * @param w widget</em>
+<a id='L311' name='L311'></a> 311 <em class='comment'>  */</em>
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <strong class='reserved'>void</strong>
+<a id='L314' name='L314'></a> 314 <a href='../S/lib--widget--group.c.html#L851' title='Referred from 851 in lib/widget/group.c.'>widget_make_local</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)
+     <em class='comment'>/* <a href='#L300'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L331'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+314 lib/widget/widget-common.h'  /> */</em>
+<a id='L315' name='L315'></a> 315 <em class='brace'>{</em>
+<a id='L316' name='L316'></a> 316     <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/make_local.html' title='Multiple used in 6 places.'>make_local</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L317' name='L317'></a> 317 <em class='brace'>}</em>
+<a id='L318' name='L318'></a> 318 
+<a id='L319' name='L319'></a> 319 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L320' name='L320'></a> 320 
+<a id='L321' name='L321'></a> 321 <em class='comment'>/**</em>
+<a id='L322' name='L322'></a> 322 <em class='comment'> * Find widget.</em>
+<a id='L323' name='L323'></a> 323 <em class='comment'> *</em>
+<a id='L324' name='L324'></a> 324 <em class='comment'> * @param w widget</em>
+<a id='L325' name='L325'></a> 325 <em class='comment'> * @param what widget to find</em>
+<a id='L326' name='L326'></a> 326 <em class='comment'> *</em>
+<a id='L327' name='L327'></a> 327 <em class='comment'> * @return result of @w-&gt;find()</em>
+<a id='L328' name='L328'></a> 328 <em class='comment'> */</em>
+<a id='L329' name='L329'></a> 329 
+<a id='L330' name='L330'></a> 330 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/GList.html' title='Multiple used in 180 places.'>GList</a> *
+<a id='L331' name='L331'></a> 331 <a href='../R/widget_find.html' title='Multiple referred from 6 places.'>widget_find</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/what.html' title='Multiple used in 19 places.'>what</a>)
+     <em class='comment'>/* <a href='#L314'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L348'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+331 lib/widget/widget-common.h'  /> */</em>
+<a id='L332' name='L332'></a> 332 <em class='brace'>{</em>
+<a id='L333' name='L333'></a> 333     <strong class='reserved'>return</strong> <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/find.html' title='Multiple used in 4 places.'>find</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/what.html' title='Multiple used in 19 places.'>what</a>);
+<a id='L334' name='L334'></a> 334 <em class='brace'>}</em>
+<a id='L335' name='L335'></a> 335 
+<a id='L336' name='L336'></a> 336 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L337' name='L337'></a> 337 
+<a id='L338' name='L338'></a> 338 <em class='comment'>/**</em>
+<a id='L339' name='L339'></a> 339 <em class='comment'> * Find widget by widget type using widget callback.</em>
+<a id='L340' name='L340'></a> 340 <em class='comment'> *</em>
+<a id='L341' name='L341'></a> 341 <em class='comment'> * @param w widget</em>
+<a id='L342' name='L342'></a> 342 <em class='comment'> * @param cb widget callback</em>
+<a id='L343' name='L343'></a> 343 <em class='comment'> *</em>
+<a id='L344' name='L344'></a> 344 <em class='comment'> * @return result of @w-&gt;find_by_type()</em>
+<a id='L345' name='L345'></a> 345 <em class='comment'> */</em>
+<a id='L346' name='L346'></a> 346 
+<a id='L347' name='L347'></a> 347 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *
+<a id='L348' name='L348'></a> 348 <a href='../R/widget_find_by_type.html' title='Multiple referred from 9 places.'>widget_find_by_type</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/widget_cb_fn.html' title='Multiple used in 16 places.'>widget_cb_fn</a> <a href='../Y/cb.html' title='Multiple used in 138 places.'>cb</a>)
+     <em class='comment'>/* <a href='#L331'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L364'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+348 lib/widget/widget-common.h'  /> */</em>
+<a id='L349' name='L349'></a> 349 <em class='brace'>{</em>
+<a id='L350' name='L350'></a> 350     <strong class='reserved'>return</strong> <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/find_by_type.html' title='Multiple used in 4 places.'>find_by_type</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/cb.html' title='Multiple used in 138 places.'>cb</a>);
+<a id='L351' name='L351'></a> 351 <em class='brace'>}</em>
+<a id='L352' name='L352'></a> 352 
+<a id='L353' name='L353'></a> 353 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L354' name='L354'></a> 354 <em class='comment'>/**</em>
+<a id='L355' name='L355'></a> 355 <em class='comment'> * Find widget by widget ID.</em>
+<a id='L356' name='L356'></a> 356 <em class='comment'> *</em>
+<a id='L357' name='L357'></a> 357 <em class='comment'> * @param w widget</em>
+<a id='L358' name='L358'></a> 358 <em class='comment'> * @param id widget ID</em>
+<a id='L359' name='L359'></a> 359 <em class='comment'> *</em>
+<a id='L360' name='L360'></a> 360 <em class='comment'> * @return result of @w-&gt;find_by_id()</em>
+<a id='L361' name='L361'></a> 361 <em class='comment'> */</em>
+<a id='L362' name='L362'></a> 362 
+<a id='L363' name='L363'></a> 363 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *
+<a id='L364' name='L364'></a> 364 <a href='../R/widget_find_by_id.html' title='Multiple referred from 22 places.'>widget_find_by_id</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <strong class='reserved'>unsigned</strong> <strong class='reserved'>long</strong> <a href='../Y/id.html' title='Multiple used in 157 places.'>id</a>)
+     <em class='comment'>/* <a href='#L348'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L381'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+364 lib/widget/widget-common.h'  /> */</em>
+<a id='L365' name='L365'></a> 365 <em class='brace'>{</em>
+<a id='L366' name='L366'></a> 366     <strong class='reserved'>return</strong> <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/find_by_id.html' title='Multiple used in 4 places.'>find_by_id</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/id.html' title='Multiple used in 157 places.'>id</a>);
+<a id='L367' name='L367'></a> 367 <em class='brace'>}</em>
+<a id='L368' name='L368'></a> 368 
+<a id='L369' name='L369'></a> 369 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L370' name='L370'></a> 370 <em class='comment'>/**</em>
+<a id='L371' name='L371'></a> 371 <em class='comment'> * Modify state of widget.</em>
+<a id='L372' name='L372'></a> 372 <em class='comment'> *</em>
+<a id='L373' name='L373'></a> 373 <em class='comment'> * @param w      widget</em>
+<a id='L374' name='L374'></a> 374 <em class='comment'> * @param state  widget state flag to modify</em>
+<a id='L375' name='L375'></a> 375 <em class='comment'> * @param enable specifies whether to turn the flag on (TRUE) or off (FALSE).</em>
+<a id='L376' name='L376'></a> 376 <em class='comment'> *               Only one flag per call can be modified.</em>
+<a id='L377' name='L377'></a> 377 <em class='comment'> * @return       MSG_HANDLED if set was handled successfully, MSG_NOT_HANDLED otherwise.</em>
+<a id='L378' name='L378'></a> 378 <em class='comment'> */</em>
+<a id='L379' name='L379'></a> 379 
+<a id='L380' name='L380'></a> 380 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a>
+<a id='L381' name='L381'></a> 381 <a href='../R/widget_set_state.html' title='Multiple referred from 30 places.'>widget_set_state</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L93' title='Defined at 93 in lib/widget/widget-common.h.'>widget_state_t</a> <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/enable.html' title='Multiple used in 22 places.'>enable</a>)
+     <em class='comment'>/* <a href='#L364'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L394'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+381 lib/widget/widget-common.h'  /> */</em>
+<a id='L382' name='L382'></a> 382 <em class='brace'>{</em>
+<a id='L383' name='L383'></a> 383     <strong class='reserved'>return</strong> <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/set_state.html' title='Multiple used in 4 places.'>set_state</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/state.html' title='Multiple used in 273 places.'>state</a>, <a href='../Y/enable.html' title='Multiple used in 22 places.'>enable</a>);
+<a id='L384' name='L384'></a> 384 <em class='brace'>}</em>
+<a id='L385' name='L385'></a> 385 
+<a id='L386' name='L386'></a> 386 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L387' name='L387'></a> 387 <em class='comment'>/**</em>
+<a id='L388' name='L388'></a> 388 <em class='comment'> * Destroy widget.</em>
+<a id='L389' name='L389'></a> 389 <em class='comment'> *</em>
+<a id='L390' name='L390'></a> 390 <em class='comment'> * @param w widget</em>
+<a id='L391' name='L391'></a> 391 <em class='comment'> */</em>
+<a id='L392' name='L392'></a> 392 
+<a id='L393' name='L393'></a> 393 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <strong class='reserved'>void</strong>
+<a id='L394' name='L394'></a> 394 <a href='../R/widget_destroy.html' title='Multiple referred from 47 places.'>widget_destroy</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)
+     <em class='comment'>/* <a href='#L381'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L408'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+394 lib/widget/widget-common.h'  /> */</em>
+<a id='L395' name='L395'></a> 395 <em class='brace'>{</em>
+<a id='L396' name='L396'></a> 396     <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/destroy.html' title='Multiple used in 12 places.'>destroy</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L397' name='L397'></a> 397 <em class='brace'>}</em>
+<a id='L398' name='L398'></a> 398 
+<a id='L399' name='L399'></a> 399 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L400' name='L400'></a> 400 
+<a id='L401' name='L401'></a> 401 <em class='comment'>/**</em>
+<a id='L402' name='L402'></a> 402 <em class='comment'> * Get color colors of widget.</em>
+<a id='L403' name='L403'></a> 403 <em class='comment'> *</em>
+<a id='L404' name='L404'></a> 404 <em class='comment'> * @param w widget</em>
+<a id='L405' name='L405'></a> 405 <em class='comment'> * @return  color colors</em>
+<a id='L406' name='L406'></a> 406 <em class='comment'> */</em>
+<a id='L407' name='L407'></a> 407 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> *
+<a id='L408' name='L408'></a> 408 <a href='../R/widget_get_colors.html' title='Multiple referred from 12 places.'>widget_get_colors</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)
+     <em class='comment'>/* <a href='#L394'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L423'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+408 lib/widget/widget-common.h'  /> */</em>
+<a id='L409' name='L409'></a> 409 <em class='brace'>{</em>
+<a id='L410' name='L410'></a> 410     <strong class='reserved'>return</strong> <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/get_colors.html' title='Multiple used in 5 places.'>get_colors</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L411' name='L411'></a> 411 <em class='brace'>}</em>
+<a id='L412' name='L412'></a> 412 
+<a id='L413' name='L413'></a> 413 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L414' name='L414'></a> 414 <em class='comment'>/**</em>
+<a id='L415' name='L415'></a> 415 <em class='comment'> * Update cursor position in the specified widget.</em>
+<a id='L416' name='L416'></a> 416 <em class='comment'> *</em>
+<a id='L417' name='L417'></a> 417 <em class='comment'> * @param w widget</em>
+<a id='L418' name='L418'></a> 418 <em class='comment'> *</em>
+<a id='L419' name='L419'></a> 419 <em class='comment'> * @return TRUE if cursor was updated successfully, FALSE otherwise</em>
+<a id='L420' name='L420'></a> 420 <em class='comment'> */</em>
+<a id='L421' name='L421'></a> 421 
+<a id='L422' name='L422'></a> 422 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L423' name='L423'></a> 423 <a href='../R/widget_update_cursor.html' title='Multiple referred from 5 places.'>widget_update_cursor</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)
+     <em class='comment'>/* <a href='#L408'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L431'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+423 lib/widget/widget-common.h'  /> */</em>
+<a id='L424' name='L424'></a> 424 <em class='brace'>{</em>
+<a id='L425' name='L425'></a> 425     <strong class='reserved'>return</strong> (<a href='../S/lib--widget--widget-common.h.html#L248' title='Defined at 248 in lib/widget/widget-common.h.'>send_message</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../S/lib--widget--widget-common.h.html#L46' title='Defined at 46 in lib/widget/widget-common.h.'>MSG_CURSOR</a>, 0, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>) == <a href='../S/lib--widget--widget-common.h.html#L64' title='Defined at 64 in lib/widget/widget-common.h.'>MSG_HANDLED</a>);
+<a id='L426' name='L426'></a> 426 <em class='brace'>}</em>
+<a id='L427' name='L427'></a> 427 
+<a id='L428' name='L428'></a> 428 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L429' name='L429'></a> 429 
+<a id='L430' name='L430'></a> 430 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <strong class='reserved'>void</strong>
+<a id='L431' name='L431'></a> 431 <a href='../R/widget_show.html' title='Multiple referred from 3 places.'>widget_show</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)
+     <em class='comment'>/* <a href='#L423'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L439'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+431 lib/widget/widget-common.h'  /> */</em>
+<a id='L432' name='L432'></a> 432 <em class='brace'>{</em>
+<a id='L433' name='L433'></a> 433     <a href='../S/lib--widget--widget-common.c.html#L489' title='Defined at 489 in lib/widget/widget-common.c.'>widget_set_visibility</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L434' name='L434'></a> 434 <em class='brace'>}</em>
+<a id='L435' name='L435'></a> 435 
+<a id='L436' name='L436'></a> 436 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L437' name='L437'></a> 437 
+<a id='L438' name='L438'></a> 438 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <strong class='reserved'>void</strong>
+<a id='L439' name='L439'></a> 439 <a href='../R/widget_hide.html' title='Multiple referred from 3 places.'>widget_hide</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)
+     <em class='comment'>/* <a href='#L431'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L455'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+439 lib/widget/widget-common.h'  /> */</em>
+<a id='L440' name='L440'></a> 440 <em class='brace'>{</em>
+<a id='L441' name='L441'></a> 441     <a href='../S/lib--widget--widget-common.c.html#L489' title='Defined at 489 in lib/widget/widget-common.c.'>widget_set_visibility</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L442' name='L442'></a> 442 <em class='brace'>}</em>
+<a id='L443' name='L443'></a> 443 
+<a id='L444' name='L444'></a> 444 
+<a id='L445' name='L445'></a> 445 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L446' name='L446'></a> 446 <em class='comment'>/**</em>
+<a id='L447' name='L447'></a> 447 <em class='comment'>  * Check whether two widgets are overlapped or not.</em>
+<a id='L448' name='L448'></a> 448 <em class='comment'>  * @param a 1st widget</em>
+<a id='L449' name='L449'></a> 449 <em class='comment'>  * @param b 2nd widget</em>
+<a id='L450' name='L450'></a> 450 <em class='comment'>  *</em>
+<a id='L451' name='L451'></a> 451 <em class='comment'>  * @return TRUE if widgets are overlapped, FALSE otherwise.</em>
+<a id='L452' name='L452'></a> 452 <em class='comment'>  */</em>
+<a id='L453' name='L453'></a> 453 
+<a id='L454' name='L454'></a> 454 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L455' name='L455'></a> 455 <a href='../S/src--filemanager--info.c.html#L323' title='Referred from 323 in src/filemanager/info.c.'>widget_overlapped</a> (<strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>, <strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>)
+     <em class='comment'>/* <a href='#L439'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+455 lib/widget/widget-common.h'  /> */</em>
+<a id='L456' name='L456'></a> 456 <em class='brace'>{</em>
+<a id='L457' name='L457'></a> 457     <strong class='reserved'>return</strong> <a href='../S/lib--widget--rect.c.html#L231' title='Defined at 231 in lib/widget/rect.c.'>rects_are_overlapped</a> (&amp;<a href='../Y/a.html' title='Multiple used in 336 places.'>a</a>-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>, &amp;<a href='../Y/b.html' title='Multiple used in 503 places.'>b</a>-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>);
+<a id='L458' name='L458'></a> 458 <em class='brace'>}</em>
+<a id='L459' name='L459'></a> 459 
+<a id='L460' name='L460'></a> 460 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L461' name='L461'></a> 461 
+<a id='L462' name='L462'></a> 462 <em class='sharp'>#endif</em> <em class='comment'>/* MC__WIDGET_COMMON_H */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L248'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L455'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+462 lib/widget/widget-common.h'  /> */</em>
+</body>
+</html>

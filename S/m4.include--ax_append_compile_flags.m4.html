@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/ax_append_compile_flags.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/ax_append_compile_flags.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/ax_append_compile_flags.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/ax_append_compile_flags.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># ============================================================================
+<a id='L2' name='L2'></a>#  https://www.gnu.org/software/autoconf-archive/ax_append_compile_flags.html
+<a id='L3' name='L3'></a># ============================================================================
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a># SYNOPSIS
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a>#   AX_APPEND_COMPILE_FLAGS([FLAG1 FLAG2 ...], [FLAGS-VARIABLE], [EXTRA-FLAGS], [INPUT])
+<a id='L8' name='L8'></a>#
+<a id='L9' name='L9'></a># DESCRIPTION
+<a id='L10' name='L10'></a>#
+<a id='L11' name='L11'></a>#   For every FLAG1, FLAG2 it is checked whether the compiler works with the
+<a id='L12' name='L12'></a>#   flag.  If it does, the flag is added FLAGS-VARIABLE
+<a id='L13' name='L13'></a>#
+<a id='L14' name='L14'></a>#   If FLAGS-VARIABLE is not specified, the current language's flags (e.g.
+<a id='L15' name='L15'></a>#   CFLAGS) is used.  During the check the flag is always added to the
+<a id='L16' name='L16'></a>#   current language's flags.
+<a id='L17' name='L17'></a>#
+<a id='L18' name='L18'></a>#   If EXTRA-FLAGS is defined, it is added to the current language's default
+<a id='L19' name='L19'></a>#   flags (e.g. CFLAGS) when the check is done.  The check is thus made with
+<a id='L20' name='L20'></a>#   the flags: "CFLAGS EXTRA-FLAGS FLAG".  This can for example be used to
+<a id='L21' name='L21'></a>#   force the compiler to issue an error when a bad flag is given.
+<a id='L22' name='L22'></a>#
+<a id='L23' name='L23'></a>#   INPUT gives an alternative input source to AC_COMPILE_IFELSE.
+<a id='L24' name='L24'></a>#
+<a id='L25' name='L25'></a>#   NOTE: This macro depends on the AX_APPEND_FLAG and
+<a id='L26' name='L26'></a>#   AX_CHECK_COMPILE_FLAG. Please keep this macro in sync with
+<a id='L27' name='L27'></a>#   AX_APPEND_LINK_FLAGS.
+<a id='L28' name='L28'></a>#
+<a id='L29' name='L29'></a># LICENSE
+<a id='L30' name='L30'></a>#
+<a id='L31' name='L31'></a>#   Copyright (c) 2011 Maarten Bosmans &lt;mkbosmans@gmail.com&gt;
+<a id='L32' name='L32'></a>#
+<a id='L33' name='L33'></a>#   Copying and distribution of this file, with or without modification, are
+<a id='L34' name='L34'></a>#   permitted in any medium without royalty provided the copyright notice
+<a id='L35' name='L35'></a>#   and this notice are preserved.  This file is offered as-is, without any
+<a id='L36' name='L36'></a>#   warranty.
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a>#serial 7
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>AC_DEFUN([AX_APPEND_COMPILE_FLAGS],
+<a id='L41' name='L41'></a>[AX_REQUIRE_DEFINED([AX_CHECK_COMPILE_FLAG])
+<a id='L42' name='L42'></a>AX_REQUIRE_DEFINED([AX_APPEND_FLAG])
+<a id='L43' name='L43'></a>for flag in $1; do
+<a id='L44' name='L44'></a>  AX_CHECK_COMPILE_FLAG([$flag], [AX_APPEND_FLAG([$flag], [$2])], [], [$3], [$4])
+<a id='L45' name='L45'></a>done
+<a id='L46' name='L46'></a>])dnl AX_APPEND_COMPILE_FLAGS
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+46 m4.include/ax_append_compile_flags.m4'  /> */</em>
+</body>
+</html>

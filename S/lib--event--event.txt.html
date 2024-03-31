@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/event/event.txt</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--event.html'>event</a>/event.txt</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--event.html'>event</a>/event.txt</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/event/event.txt'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>= EVENTS =
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>The subsystem of events used in mc is based on fast binary trees engine.
+<a id='L4' name='L4'></a> 
+<a id='L5' name='L5'></a> 
+<a id='L6' name='L6'></a>== Introduction ==
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a>Subsystem of events is primarily designed to detach event source and event
+<a id='L9' name='L9'></a>handler in source code level. For example, VFS module uses function to show
+<a id='L10' name='L10'></a>messages, which is defined in the source code (not in the lib). In the lib,
+<a id='L11' name='L11'></a>definition of this function will be difficult (because the function does
+<a id='L12' name='L12'></a>a lot of calls of other functions from src). In this case, the transform
+<a id='L13' name='L13'></a>of this function to event handler is needed, and the display messages process
+<a id='L14' name='L14'></a>can be used as an event. Function as event handler should be registered
+<a id='L15' name='L15'></a>at early stage of mc start. Later just call the event, absolutely without
+<a id='L16' name='L16'></a>worrying whether the handler is tied to the event, and which function
+<a id='L17' name='L17'></a>is an event handler now (in some situation, plugin will load and reassign
+<a id='L18' name='L18'></a>this event handler to itself).
+<a id='L19' name='L19'></a> 
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>=== Usage ===
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a>Events are applicable in any case. Sometimes it is hard to decide whether
+<a id='L24' name='L24'></a>it should be a common function or it should be an event handler. The replacement
+<a id='L25' name='L25'></a>of all functions used in keybindings process to event handler is good choice
+<a id='L26' name='L26'></a>(or parts of the 'switch () {case:}' in keybindings handlers). All keybindings
+<a id='L27' name='L27'></a>are described in lib/keybind.h.
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>The second argument to choose the solution (event handler or function) should be
+<a id='L30' name='L30'></a>thought whether that transformation of function to the event handler is easy,
+<a id='L31' name='L31'></a>the inverse process (handler to function) would be more difficult because
+<a id='L32' name='L32'></a>one event can have multiple handlers and each handler may depend to another.
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>A third argument in the choice in favor of the event handlers can be a plug-ins
+<a id='L35' name='L35'></a>(in future). In this case events is a way to give access to internal application
+<a id='L36' name='L36'></a>resources without providing a low-level API. All plug-ins need is to know what and how
+<a id='L37' name='L37'></a>call the event with proper structure type (#include "lib/event.h").
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a>== Structure ==
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>In general, the subsystem of events can be represented as following:
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>   ------------------------------------            }
+<a id='L45' name='L45'></a>   |Group1        Group2   ...   GroupN|            }   Event groups (GTree)
+<a id='L46' name='L46'></a>   -------------------------------------           }
+<a id='L47' name='L47'></a>       |             |             |
+<a id='L48' name='L48'></a>      /|\           /|\           /|\
+<a id='L49' name='L49'></a>     / | \         / | ...       ... eventN        }
+<a id='L50' name='L50'></a>    /  |  \       /  ...                            }
+<a id='L51' name='L51'></a>   /   |   \      ...                                } Events by groups
+<a id='L52' name='L52'></a>   |   |    event3                                   } (GTree for any group)
+<a id='L53' name='L53'></a>   |   event2                                       }
+<a id='L54' name='L54'></a>   event1                                          }
+<a id='L55' name='L55'></a>   | | |  |
+<a id='L56' name='L56'></a>   f1f2...fN                                       } list of event handlers (GPtrArray for any event)
+<a id='L57' name='L57'></a> 
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>This scheme allows to group events, and perform several handlers for one event.
+<a id='L60' name='L60'></a> 
+<a id='L61' name='L61'></a> 
+<a id='L62' name='L62'></a>== Requirements for event handlers ==
+<a id='L63' name='L63'></a> 
+<a id='L64' name='L64'></a>The following function prototype is event handler:
+<a id='L65' name='L65'></a> 
+<a id='L66' name='L66'></a>gboolean mc_event_callback_func_t (
+<a id='L67' name='L67'></a>    const gchar *event_group,
+<a id='L68' name='L68'></a>    const gchar *event_name,
+<a id='L69' name='L69'></a>    gpointer init_data,
+<a id='L70' name='L70'></a>    gpointer event_data
+<a id='L71' name='L71'></a>);
+<a id='L72' name='L72'></a> 
+<a id='L73' name='L73'></a>where:
+<a id='L74' name='L74'></a> event_group:
+<a id='L75' name='L75'></a>    name of the group, where event was initiated
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a> event_name:
+<a id='L78' name='L78'></a>    event name. event_name and event_group uniquely identify an event.
+<a id='L79' name='L79'></a>    These parameters can be useful if event handler is tied to several events
+<a id='L80' name='L80'></a>    and the distinguish between different events (for example, function of logging)
+<a id='L81' name='L81'></a>    is required.
+<a id='L82' name='L82'></a> 
+<a id='L83' name='L83'></a> init_data:
+<a id='L84' name='L84'></a>    Arbitrary data, provided to the event handler.
+<a id='L85' name='L85'></a>    This data is provided by adding a handler to the event (the initialization data).
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a> event_data:
+<a id='L88' name='L88'></a>    Data provided to the handler when the event occurred.
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>Handler should return TRUE to allow running all other handlers tied to this event;
+<a id='L91' name='L91'></a>or FALSE if it is necessary to stop further processing of event (the remaining
+<a id='L92' name='L92'></a>handlers are not called).
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>If one event will have multiple handlers, the order of execution is "Last added - first
+<a id='L95' name='L95'></a>executed". This allows to override the standard event handlers (eg, in plug-ins).
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>=== Passing parameters to event handlers. Returning rezults ==
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>Due to the unification of the event handlers, there is no possibility to pass
+<a id='L101' name='L101'></a>a certain number of parameters and get the results of execution. Pass of a single
+<a id='L102' name='L102'></a>parameter (or get one result of an event handler) can be made as simple type casting
+<a id='L103' name='L103'></a>for one variable when event is called. But this way isn't applicable if pass
+<a id='L104' name='L104'></a>of several parameters (or get multiple return values) is required.
+<a id='L105' name='L105'></a> 
+<a id='L106' name='L106'></a>To solve this problem, you can pass the previously defined structure as universal
+<a id='L107' name='L107'></a>pointer event_data. All structures used in the event handlers should be defined
+<a id='L108' name='L108'></a>in the lib/event-types.h.
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>This way (the pass parameters as pointer to structure) has advantages and disadvantages.
+<a id='L111' name='L111'></a> 
+<a id='L112' name='L112'></a>Advantages:
+<a id='L113' name='L113'></a> * any number of parameters and their types;
+<a id='L114' name='L114'></a> * any number of return values and their types.
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>Disadvantages:
+<a id='L117' name='L117'></a> * probability of error: call the event with the wrong structure. In this case,
+<a id='L118' name='L118'></a>   the handler will cast pointer to the structure on which it was designed.
+<a id='L119' name='L119'></a>   At this point funny bugs and very long debugging process (especially if segfault
+<a id='L120' name='L120'></a>   doesn't occur immediately) are possible;
+<a id='L121' name='L121'></a> * in order for an event handler and the initiator of the event to "communicate"
+<a id='L122' name='L122'></a>   with each other, previously defined structures is needed.
+<a id='L123' name='L123'></a> 
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>== Examples ==
+<a id='L126' name='L126'></a> 
+<a id='L127' name='L127'></a>=== Logging ===
+<a id='L128' name='L128'></a> 
+<a id='L129' name='L129'></a>Consider the example of a temporary handler which simply logged the order
+<a id='L130' name='L130'></a>of certain events (for example, to detect infinite loop).
+<a id='L131' name='L131'></a> 
+<a id='L132' name='L132'></a>Here event handler:
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a>gboolean
+<a id='L135' name='L135'></a>mc_temp_event_logger (const gchar *event_group, const gchar *event_name,
+<a id='L136' name='L136'></a>                      gpointer init_data, gpointer data)
+<a id='L137' name='L137'></a>{
+<a id='L138' name='L138'></a>    (void) init_data;
+<a id='L139' name='L139'></a>    (void) data;
+<a id='L140' name='L140'></a> 
+<a id='L141' name='L141'></a>    mc_log("Event: %s:%s",event_group,event_name);
+<a id='L142' name='L142'></a>    return TRUE;
+<a id='L143' name='L143'></a>}
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a>Add the following lines into src/event_init.c before "{NULL, NULL, NULL, NULL}" line
+<a id='L146' name='L146'></a>as one record to the initialization structure.
+<a id='L147' name='L147'></a> 
+<a id='L148' name='L148'></a>{MCEVENT_GROUP_CORE, "clipboard_file_to_ext_clip", mc_temp_event_logger, NULL},
+<a id='L149' name='L149'></a>{MCEVENT_GROUP_CORE, "clipboard_file_from_ext_clip", mc_temp_event_logger, NULL},
+<a id='L150' name='L150'></a>{MCEVENT_GROUP_CORE, "clipboard_text_to_file", mc_temp_event_logger, NULL},
+<a id='L151' name='L151'></a>{MCEVENT_GROUP_CORE, "clipboard_text_from_file", mc_temp_event_logger, NULL},
+<a id='L152' name='L152'></a> 
+<a id='L153' name='L153'></a>...(there any other events which you want to monitor)...
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+153 lib/event/event.txt'  /> */</em>
+</body>
+</html>

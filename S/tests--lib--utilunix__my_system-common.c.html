@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tests/lib/utilunix__my_system-common.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L45'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L315'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/tests.html'>tests</a>/<a href='../files/tests--lib.html'>lib</a>/utilunix__my_system-common.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/tests.html'>tests</a>/<a href='../files/tests--lib.html'>lib</a>/utilunix__my_system-common.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L45' title='Defined at 45.'>sigemptyset</a></li>
+<li><a href='#L64' title='Defined at 64.'>sigaction</a></li>
+<li><a href='#L101' title='Defined at 101.'>sigaction__init</a></li>
+<li><a href='#L109' title='Defined at 109.'>sigaction__deinit</a></li>
+<li><a href='#L132' title='Defined at 132.'>signal</a></li>
+<li><a href='#L156' title='Defined at 156.'>signal__init</a></li>
+<li><a href='#L163' title='Defined at 163.'>signal__deinit</a></li>
+<li><a href='#L179' title='Defined at 179.'>fork</a></li>
+<li><a href='#L190' title='Defined at 190.'>my_exit</a></li>
+<li><a href='#L206' title='Defined at 206.'>execvp</a></li>
+<li><a href='#L218' title='Defined at 218.'>execvp__init</a></li>
+<li><a href='#L224' title='Defined at 224.'>execvp__deinit</a></li>
+<li><a href='#L302' title='Defined at 302.'>setup</a></li>
+<li><a href='#L315' title='Defined at 315.'>teardown</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   lib - common code for testing lib/utilinux:my_system() function</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2013-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Slava Zanko &lt;slavazanko@gmail.com&gt;, 2013</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'></em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'></em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#include</em> &lt;signal.h&gt;
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;unistd.h&gt;
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> "<a href='lib--vfs--vfs.h.html'>lib/vfs/vfs.h</a>"
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='comment'>/* sighandler_t is GNU extension */</em>
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#ifndef</em> HAVE_SIGHANDLER_T
+<a id='L33' name='L33'></a>  33 <strong class='reserved'>typedef</strong> <strong class='reserved'>void</strong> (*<a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a>) (<strong class='reserved'>int</strong>);
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#endif</em>
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='comment'>/* @CapturedValue */</em>
+<a id='L39' name='L39'></a>  39 <strong class='reserved'>static</strong> <a href='../Y/sigset_t.html' title='Multiple used in 3 places.'>sigset_t</a> *<a href='../Y/sigemptyset_set__captured.html' title='Multiple used in 2 places.'>sigemptyset_set__captured</a>;
+<a id='L40' name='L40'></a>  40 <em class='comment'>/* @ThenReturnValue */</em>
+<a id='L41' name='L41'></a>  41 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/sigemptyset__return_value.html' title='Multiple used in 2 places.'>sigemptyset__return_value</a> = 0;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='comment'>/* @Mock */</em>
+<a id='L44' name='L44'></a>  44 <strong class='reserved'>int</strong>
+<a id='L45' name='L45'></a>  45 <a href='../R/sigemptyset.html' title='Multiple referred from 8 places.'>sigemptyset</a> (<a href='../Y/sigset_t.html' title='Multiple used in 3 places.'>sigset_t</a> * <a href='../Y/set.html' title='Multiple used in 28 places.'>set</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L64'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+45 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L46' name='L46'></a>  46 <em class='brace'>{</em>
+<a id='L47' name='L47'></a>  47     <a href='../Y/sigemptyset_set__captured.html' title='Multiple used in 2 places.'>sigemptyset_set__captured</a> = <a href='../Y/set.html' title='Multiple used in 28 places.'>set</a>;
+<a id='L48' name='L48'></a>  48     <strong class='reserved'>return</strong> <a href='../Y/sigemptyset__return_value.html' title='Multiple used in 2 places.'>sigemptyset__return_value</a>;
+<a id='L49' name='L49'></a>  49 <em class='brace'>}</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <em class='comment'>/* @CapturedValue */</em>
+<a id='L54' name='L54'></a>  54 <strong class='reserved'>static</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L55' name='L55'></a>  55 <em class='comment'>/* @CapturedValue */</em>
+<a id='L56' name='L56'></a>  56 <strong class='reserved'>static</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L57' name='L57'></a>  57 <em class='comment'>/* @CapturedValue */</em>
+<a id='L58' name='L58'></a>  58 <strong class='reserved'>static</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L59' name='L59'></a>  59 <em class='comment'>/* @ThenReturnValue */</em>
+<a id='L60' name='L60'></a>  60 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/sigaction__return_value.html' title='Multiple used in 2 places.'>sigaction__return_value</a> = 0;
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <em class='comment'>/* @Mock */</em>
+<a id='L63' name='L63'></a>  63 <strong class='reserved'>int</strong>
+<a id='L64' name='L64'></a>  64 <a href='../R/sigaction.html' title='Multiple referred from 38 places.'>sigaction</a> (<strong class='reserved'>int</strong> <a href='../Y/signum.html' title='Multiple used in 4 places.'>signum</a>, <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *<a href='../Y/act.html' title='Multiple used in 66 places.'>act</a>, <strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *<a href='../Y/oldact.html' title='Multiple used in 3 places.'>oldact</a>)
+     <em class='comment'>/* <a href='#L45'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L101'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+64 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L65' name='L65'></a>  65 <em class='brace'>{</em>
+<a id='L66' name='L66'></a>  66     <strong class='reserved'>int</strong> *<a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a>;
+<a id='L67' name='L67'></a>  67     <strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *<a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a>;
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69     <em class='comment'>/* store signum */</em>
+<a id='L70' name='L70'></a>  70     <a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a> = <a href='../Y/g_new.html' title='Multiple used in 60 places.'>g_new</a> (<strong class='reserved'>int</strong>, 1);
+<a id='L71' name='L71'></a>  71     <a href='../Y/memcpy.html' title='Multiple used in 23 places.'>memcpy</a> (<a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a>, &amp;<a href='../Y/signum.html' title='Multiple used in 4 places.'>signum</a>, <strong class='reserved'>sizeof</strong> (*<a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a>));
+<a id='L72' name='L72'></a>  72     <strong class='reserved'>if</strong> (<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L73' name='L73'></a>  73         <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>, <a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a>);
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     <em class='comment'>/* store act */</em>
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>if</strong> (<a href='../Y/act.html' title='Multiple used in 66 places.'>act</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L77' name='L77'></a>  77     <em class='brace'>{</em>
+<a id='L78' name='L78'></a>  78         <a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a> = <a href='../Y/g_new.html' title='Multiple used in 60 places.'>g_new</a> (<strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a>, 1);
+<a id='L79' name='L79'></a>  79         <a href='../Y/memcpy.html' title='Multiple used in 23 places.'>memcpy</a> (<a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a>, <a href='../Y/act.html' title='Multiple used in 66 places.'>act</a>, <strong class='reserved'>sizeof</strong> (*<a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a>));
+<a id='L80' name='L80'></a>  80     <em class='brace'>}</em>
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>else</strong>
+<a id='L82' name='L82'></a>  82         <a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>if</strong> (<a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L84' name='L84'></a>  84         <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a>, <a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a>);
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86     <em class='comment'>/* store oldact */</em>
+<a id='L87' name='L87'></a>  87     <strong class='reserved'>if</strong> (<a href='../Y/oldact.html' title='Multiple used in 3 places.'>oldact</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L88' name='L88'></a>  88     <em class='brace'>{</em>
+<a id='L89' name='L89'></a>  89         <a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a> = <a href='../Y/g_new.html' title='Multiple used in 60 places.'>g_new</a> (<strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a>, 1);
+<a id='L90' name='L90'></a>  90         <a href='../Y/memcpy.html' title='Multiple used in 23 places.'>memcpy</a> (<a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a>, <a href='../Y/oldact.html' title='Multiple used in 3 places.'>oldact</a>, <strong class='reserved'>sizeof</strong> (*<a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a>));
+<a id='L91' name='L91'></a>  91     <em class='brace'>}</em>
+<a id='L92' name='L92'></a>  92     <strong class='reserved'>else</strong>
+<a id='L93' name='L93'></a>  93         <a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L94' name='L94'></a>  94     <strong class='reserved'>if</strong> (<a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L95' name='L95'></a>  95         <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a>, <a href='../Y/tmp_act.html' title='Multiple used in 13 places.'>tmp_act</a>);
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>return</strong> <a href='../Y/sigaction__return_value.html' title='Multiple used in 2 places.'>sigaction__return_value</a>;
+<a id='L98' name='L98'></a>  98 <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L101' name='L101'></a> 101 <a href='../S/tests--lib--utilunix__my_system-common.c.html#L306' title='Referred from 306 in tests/lib/utilunix__my_system-common.c.'>sigaction__init</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L64'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L109'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+101 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L102' name='L102'></a> 102 <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103     <a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a>);
+<a id='L104' name='L104'></a> 104     <a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a>);
+<a id='L105' name='L105'></a> 105     <a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a>);
+<a id='L106' name='L106'></a> 106 <em class='brace'>}</em>
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L109' name='L109'></a> 109 <a href='../S/tests--lib--utilunix__my_system-common.c.html#L319' title='Referred from 319 in tests/lib/utilunix__my_system-common.c.'>sigaction__deinit</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L101'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L132'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+109 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L110' name='L110'></a> 110 <em class='brace'>{</em>
+<a id='L111' name='L111'></a> 111     <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L112' name='L112'></a> 112     <a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114     <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L115' name='L115'></a> 115     <a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117     <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L118' name='L118'></a> 118     <a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L119' name='L119'></a> 119 <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123 <em class='comment'>/* @CapturedValue */</em>
+<a id='L124' name='L124'></a> 124 <strong class='reserved'>static</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a>;
+<a id='L125' name='L125'></a> 125 <em class='comment'>/* @CapturedValue */</em>
+<a id='L126' name='L126'></a> 126 <strong class='reserved'>static</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/signal_handler__captured.html' title='Multiple used in 6 places.'>signal_handler__captured</a>;
+<a id='L127' name='L127'></a> 127 <em class='comment'>/* @ThenReturnValue */</em>
+<a id='L128' name='L128'></a> 128 <strong class='reserved'>static</strong> <a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a> <a href='../Y/signal__return_value.html' title='Multiple used in 3 places.'>signal__return_value</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130 <em class='comment'>/* @Mock */</em>
+<a id='L131' name='L131'></a> 131 <a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a>
+<a id='L132' name='L132'></a> 132 <a href='../R/signal.html' title='Multiple referred from 5 places.'>signal</a> (<strong class='reserved'>int</strong> <a href='../Y/signum.html' title='Multiple used in 4 places.'>signum</a>, <a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a> <a href='../Y/handler.html' title='Multiple used in 28 places.'>handler</a>)
+     <em class='comment'>/* <a href='#L109'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L156'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+132 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L133' name='L133'></a> 133 <em class='brace'>{</em>
+<a id='L134' name='L134'></a> 134     <strong class='reserved'>int</strong> *<a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a>;
+<a id='L135' name='L135'></a> 135     <a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a> *<a href='../Y/tmp_handler.html' title='Multiple used in 7 places.'>tmp_handler</a>;
+<a id='L136' name='L136'></a> 136 
+<a id='L137' name='L137'></a> 137     <em class='comment'>/* store signum */</em>
+<a id='L138' name='L138'></a> 138     <a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a> = <a href='../Y/g_new.html' title='Multiple used in 60 places.'>g_new</a> (<strong class='reserved'>int</strong>, 1);
+<a id='L139' name='L139'></a> 139     <a href='../Y/memcpy.html' title='Multiple used in 23 places.'>memcpy</a> (<a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a>, &amp;<a href='../Y/signum.html' title='Multiple used in 4 places.'>signum</a>, <strong class='reserved'>sizeof</strong> (*<a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a>));
+<a id='L140' name='L140'></a> 140     <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a>, <a href='../Y/tmp_signum.html' title='Multiple used in 8 places.'>tmp_signum</a>);
+<a id='L141' name='L141'></a> 141 
+<a id='L142' name='L142'></a> 142     <em class='comment'>/* store handler */</em>
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>if</strong> (<a href='../Y/handler.html' title='Multiple used in 28 places.'>handler</a> != <a href='../Y/SIG_DFL.html' title='Multiple used in 8 places.'>SIG_DFL</a>)
+<a id='L144' name='L144'></a> 144     <em class='brace'>{</em>
+<a id='L145' name='L145'></a> 145         <a href='../Y/tmp_handler.html' title='Multiple used in 7 places.'>tmp_handler</a> = <a href='../Y/g_new.html' title='Multiple used in 60 places.'>g_new</a> (<a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a>, 1);
+<a id='L146' name='L146'></a> 146         <a href='../Y/memcpy.html' title='Multiple used in 23 places.'>memcpy</a> (<a href='../Y/tmp_handler.html' title='Multiple used in 7 places.'>tmp_handler</a>, <a href='../Y/handler.html' title='Multiple used in 28 places.'>handler</a>, <strong class='reserved'>sizeof</strong> (*<a href='../Y/tmp_handler.html' title='Multiple used in 7 places.'>tmp_handler</a>));
+<a id='L147' name='L147'></a> 147     <em class='brace'>}</em>
+<a id='L148' name='L148'></a> 148     <strong class='reserved'>else</strong>
+<a id='L149' name='L149'></a> 149         <a href='../Y/tmp_handler.html' title='Multiple used in 7 places.'>tmp_handler</a> = (<strong class='reserved'>void</strong> *) <a href='../Y/SIG_DFL.html' title='Multiple used in 8 places.'>SIG_DFL</a>;
+<a id='L150' name='L150'></a> 150     <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/signal_handler__captured.html' title='Multiple used in 6 places.'>signal_handler__captured</a>, <a href='../Y/tmp_handler.html' title='Multiple used in 7 places.'>tmp_handler</a>);
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152     <strong class='reserved'>return</strong> <a href='../Y/signal__return_value.html' title='Multiple used in 3 places.'>signal__return_value</a>;
+<a id='L153' name='L153'></a> 153 <em class='brace'>}</em>
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L156' name='L156'></a> 156 <a href='../S/tests--lib--utilunix__my_system-common.c.html#L307' title='Referred from 307 in tests/lib/utilunix__my_system-common.c.'>signal__init</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L132'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L163'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+156 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L157' name='L157'></a> 157 <em class='brace'>{</em>
+<a id='L158' name='L158'></a> 158     <a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a>);
+<a id='L159' name='L159'></a> 159     <a href='../Y/signal_handler__captured.html' title='Multiple used in 6 places.'>signal_handler__captured</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a>);
+<a id='L160' name='L160'></a> 160 <em class='brace'>}</em>
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L163' name='L163'></a> 163 <a href='../S/tests--lib--utilunix__my_system-common.c.html#L318' title='Referred from 318 in tests/lib/utilunix__my_system-common.c.'>signal__deinit</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L156'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L179'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+163 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L164' name='L164'></a> 164 <em class='brace'>{</em>
+<a id='L165' name='L165'></a> 165     <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L166' name='L166'></a> 166     <a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/signal_handler__captured.html' title='Multiple used in 6 places.'>signal_handler__captured</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L169' name='L169'></a> 169     <a href='../Y/signal_handler__captured.html' title='Multiple used in 6 places.'>signal_handler__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L170' name='L170'></a> 170 <em class='brace'>}</em>
+<a id='L171' name='L171'></a> 171 
+<a id='L172' name='L172'></a> 172 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L173' name='L173'></a> 173 
+<a id='L174' name='L174'></a> 174 <em class='comment'>/* @ThenReturnValue */</em>
+<a id='L175' name='L175'></a> 175 <strong class='reserved'>static</strong> <a href='../Y/pid_t.html' title='Multiple used in 22 places.'>pid_t</a> <a href='../Y/fork__return_value.html' title='Multiple used in 5 places.'>fork__return_value</a>;
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177 <em class='comment'>/* @Mock */</em>
+<a id='L178' name='L178'></a> 178 <a href='../Y/pid_t.html' title='Multiple used in 22 places.'>pid_t</a>
+<a id='L179' name='L179'></a> 179 <a href='../R/fork.html' title='Multiple referred from 5 places.'>fork</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L163'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L190'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+179 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L180' name='L180'></a> 180 <em class='brace'>{</em>
+<a id='L181' name='L181'></a> 181     <strong class='reserved'>return</strong> <a href='../Y/fork__return_value.html' title='Multiple used in 5 places.'>fork__return_value</a>;
+<a id='L182' name='L182'></a> 182 <em class='brace'>}</em>
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L185' name='L185'></a> 185 <em class='comment'>/* @CapturedValue */</em>
+<a id='L186' name='L186'></a> 186 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/my_exit__status__captured.html' title='Multiple used in 4 places.'>my_exit__status__captured</a>;
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188 <em class='comment'>/* @Mock */</em>
+<a id='L189' name='L189'></a> 189 <strong class='reserved'>void</strong>
+<a id='L190' name='L190'></a> 190 <a href='../R/my_exit.html' title='Multiple referred from 8 places.'>my_exit</a> (<strong class='reserved'>int</strong> <a href='../Y/status.html' title='Multiple used in 182 places.'>status</a>)
+     <em class='comment'>/* <a href='#L179'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L206'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+190 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L191' name='L191'></a> 191 <em class='brace'>{</em>
+<a id='L192' name='L192'></a> 192     <a href='../Y/my_exit__status__captured.html' title='Multiple used in 4 places.'>my_exit__status__captured</a> = <a href='../Y/status.html' title='Multiple used in 182 places.'>status</a>;
+<a id='L193' name='L193'></a> 193 <em class='brace'>}</em>
+<a id='L194' name='L194'></a> 194 
+<a id='L195' name='L195'></a> 195 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197 <em class='comment'>/* @CapturedValue */</em>
+<a id='L198' name='L198'></a> 198 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *<a href='../Y/execvp__file__captured.html' title='Multiple used in 5 places.'>execvp__file__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L199' name='L199'></a> 199 <em class='comment'>/* @CapturedValue */</em>
+<a id='L200' name='L200'></a> 200 <strong class='reserved'>static</strong> <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/execvp__args__captured.html' title='Multiple used in 12 places.'>execvp__args__captured</a>;
+<a id='L201' name='L201'></a> 201 <em class='comment'>/* @ThenReturnValue */</em>
+<a id='L202' name='L202'></a> 202 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong> <a href='../Y/execvp__return_value.html' title='Multiple used in 2 places.'>execvp__return_value</a> = 0;
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204 <em class='comment'>/* @Mock */</em>
+<a id='L205' name='L205'></a> 205 <strong class='reserved'>int</strong>
+<a id='L206' name='L206'></a> 206 <a href='../R/execvp.html' title='Multiple referred from 2 places.'>execvp</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/file.html' title='Multiple used in 373 places.'>file</a>, <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/argv.html' title='Multiple used in 74 places.'>argv</a>[])
+     <em class='comment'>/* <a href='#L190'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L218'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+206 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L207' name='L207'></a> 207 <em class='brace'>{</em>
+<a id='L208' name='L208'></a> 208     <strong class='reserved'>char</strong> **<a href='../Y/one_arg.html' title='Multiple used in 6 places.'>one_arg</a>;
+<a id='L209' name='L209'></a> 209     <a href='../Y/execvp__file__captured.html' title='Multiple used in 5 places.'>execvp__file__captured</a> = <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (<a href='../Y/file.html' title='Multiple used in 373 places.'>file</a>);
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <strong class='reserved'>for</strong> (<a href='../Y/one_arg.html' title='Multiple used in 6 places.'>one_arg</a> = (<strong class='reserved'>char</strong> **) <a href='../Y/argv.html' title='Multiple used in 74 places.'>argv</a>; *<a href='../Y/one_arg.html' title='Multiple used in 6 places.'>one_arg</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>; <a href='../Y/one_arg.html' title='Multiple used in 6 places.'>one_arg</a>++)
+<a id='L212' name='L212'></a> 212         <a href='../Y/g_ptr_array_add.html' title='Multiple used in 52 places.'>g_ptr_array_add</a> (<a href='../Y/execvp__args__captured.html' title='Multiple used in 12 places.'>execvp__args__captured</a>, <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (*<a href='../Y/one_arg.html' title='Multiple used in 6 places.'>one_arg</a>));
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214     <strong class='reserved'>return</strong> <a href='../Y/execvp__return_value.html' title='Multiple used in 2 places.'>execvp__return_value</a>;
+<a id='L215' name='L215'></a> 215 <em class='brace'>}</em>
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L218' name='L218'></a> 218 <a href='../S/tests--lib--utilunix__my_system-common.c.html#L308' title='Referred from 308 in tests/lib/utilunix__my_system-common.c.'>execvp__init</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L206'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L224'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+218 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L219' name='L219'></a> 219 <em class='brace'>{</em>
+<a id='L220' name='L220'></a> 220     <a href='../Y/execvp__args__captured.html' title='Multiple used in 12 places.'>execvp__args__captured</a> = <a href='../Y/g_ptr_array_new_with_free_func.html' title='Multiple used in 24 places.'>g_ptr_array_new_with_free_func</a> (<a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a>);
+<a id='L221' name='L221'></a> 221 <em class='brace'>}</em>
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L224' name='L224'></a> 224 <a href='../S/tests--lib--utilunix__my_system-common.c.html#L317' title='Referred from 317 in tests/lib/utilunix__my_system-common.c.'>execvp__deinit</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L218'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L302'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+224 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L225' name='L225'></a> 225 <em class='brace'>{</em>
+<a id='L226' name='L226'></a> 226     <a href='../Y/g_ptr_array_free.html' title='Multiple used in 35 places.'>g_ptr_array_free</a> (<a href='../Y/execvp__args__captured.html' title='Multiple used in 12 places.'>execvp__args__captured</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L227' name='L227'></a> 227     <a href='../Y/execvp__args__captured.html' title='Multiple used in 12 places.'>execvp__args__captured</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L228' name='L228'></a> 228     <a href='../S/lib--util.h.html#L25' title='Defined at 25 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/execvp__file__captured.html' title='Multiple used in 5 places.'>execvp__file__captured</a>);
+<a id='L229' name='L229'></a> 229 <em class='brace'>}</em>
+<a id='L230' name='L230'></a> 230 
+<a id='L231' name='L231'></a> 231 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233 <em class='sharp'>#define</em> <a href='../R/VERIFY_SIGACTION__ACT_IGNORED.html' title='Multiple referred from 2 places.'>VERIFY_SIGACTION__ACT_IGNORED</a>(<a href='../Y/_pntr.html' title='Multiple used in 2 places.'>_pntr</a>) <em class='brace'>{</em> \
+<a id='L234' name='L234'></a> 234     <strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *<a href='../Y/_act.html' title='Multiple used in 7 places.'>_act</a> = (<strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *) <a href='../Y/_pntr.html' title='Multiple used in 2 places.'>_pntr</a>; \
+<a id='L235' name='L235'></a> 235     <a href='../S/tests--mctest.h.html#L20' title='Defined at 20 in tests/mctest.h.'>mctest_assert_ptr_eq</a> (<a href='../Y/_act.html' title='Multiple used in 7 places.'>_act</a>-&gt;<a href='../Y/sa_handler.html' title='Multiple used in 8 places.'>sa_handler</a>, <a href='../Y/SIG_IGN.html' title='Multiple used in 3 places.'>SIG_IGN</a>); \
+<a id='L236' name='L236'></a> 236     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (<a href='../Y/_act.html' title='Multiple used in 7 places.'>_act</a>-&gt;<a href='../Y/sa_flags.html' title='Multiple used in 4 places.'>sa_flags</a>, 0); \
+<a id='L237' name='L237'></a> 237 <em class='brace'>}</em>
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239 <em class='sharp'>#define</em> <a href='../R/VERIFY_SIGACTION__IS_RESTORED.html' title='Multiple referred from 3 places.'>VERIFY_SIGACTION__IS_RESTORED</a>(<a href='../Y/oldact_idx.html' title='Multiple used in 3 places.'>oldact_idx</a>, <a href='../Y/act_idx.html' title='Multiple used in 3 places.'>act_idx</a>) <em class='brace'>{</em> \
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *<a href='../Y/_oldact.html' title='Multiple used in 2 places.'>_oldact</a> = (<strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a>, <a href='../Y/oldact_idx.html' title='Multiple used in 3 places.'>oldact_idx</a>); \
+<a id='L241' name='L241'></a> 241     <strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *<a href='../Y/_act.html' title='Multiple used in 7 places.'>_act</a> = (<strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a>, <a href='../Y/act_idx.html' title='Multiple used in 3 places.'>act_idx</a>); \
+<a id='L242' name='L242'></a> 242     <a href='../Y/ck_assert_msg.html' title='Multiple used in 34 places.'>ck_assert_msg</a> (<a href='../Y/memcmp.html' title='Multiple used in 7 places.'>memcmp</a>(<a href='../Y/_oldact.html' title='Multiple used in 2 places.'>_oldact</a>, <a href='../Y/_act.html' title='Multiple used in 7 places.'>_act</a>, <strong class='reserved'>sizeof</strong>(<strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a>)) == 0, \
+<a id='L243' name='L243'></a> 243         "sigaction(): oldact[%d] should be equals to act[%d]", <a href='../Y/oldact_idx.html' title='Multiple used in 3 places.'>oldact_idx</a>, <a href='../Y/act_idx.html' title='Multiple used in 3 places.'>act_idx</a>); \
+<a id='L244' name='L244'></a> 244 <em class='brace'>}</em>
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246 <em class='comment'>/* @Verify */</em>
+<a id='L247' name='L247'></a> 247 <em class='sharp'>#define</em> <a href='../R/VERIFY_SIGACTION_CALLS.html' title='Multiple referred from 3 places.'>VERIFY_SIGACTION_CALLS</a>() <em class='brace'>{</em> \
+<a id='L248' name='L248'></a> 248     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>, 6); \
+<a id='L249' name='L249'></a> 249 \
+<a id='L250' name='L250'></a> 250     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>, 0)), <a href='../Y/SIGINT.html' title='Multiple used in 9 places.'>SIGINT</a>); \
+<a id='L251' name='L251'></a> 251     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>, 1)), <a href='../Y/SIGQUIT.html' title='Multiple used in 6 places.'>SIGQUIT</a>); \
+<a id='L252' name='L252'></a> 252     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>, 2)), <a href='../Y/SIGTSTP.html' title='Multiple used in 12 places.'>SIGTSTP</a>); \
+<a id='L253' name='L253'></a> 253     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>, 3)), <a href='../Y/SIGINT.html' title='Multiple used in 9 places.'>SIGINT</a>); \
+<a id='L254' name='L254'></a> 254     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>, 4)), <a href='../Y/SIGQUIT.html' title='Multiple used in 6 places.'>SIGQUIT</a>); \
+<a id='L255' name='L255'></a> 255     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_signum__captured.html' title='Multiple used in 13 places.'>sigaction_signum__captured</a>, 5)), <a href='../Y/SIGTSTP.html' title='Multiple used in 12 places.'>SIGTSTP</a>); \
+<a id='L256' name='L256'></a> 256 \
+<a id='L257' name='L257'></a> 257     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L233' title='Defined at 233 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGACTION__ACT_IGNORED</a>(<a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a>, 0)); \
+<a id='L258' name='L258'></a> 258     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L233' title='Defined at 233 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGACTION__ACT_IGNORED</a>(<a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a>, 1)); \
+<a id='L259' name='L259'></a> 259     <em class='brace'>{</em> \
+<a id='L260' name='L260'></a> 260         <strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> *<a href='../Y/_act.html' title='Multiple used in 7 places.'>_act</a>  = <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_act__captured.html' title='Multiple used in 10 places.'>sigaction_act__captured</a>, 2); \
+<a id='L261' name='L261'></a> 261         <a href='../Y/ck_assert_msg.html' title='Multiple used in 34 places.'>ck_assert_msg</a> (<a href='../Y/memcmp.html' title='Multiple used in 7 places.'>memcmp</a> (<a href='../Y/_act.html' title='Multiple used in 7 places.'>_act</a>, &amp;<a href='../Y/startup_handler.html' title='Multiple used in 6 places.'>startup_handler</a>, <strong class='reserved'>sizeof</strong>(<strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a>)) == 0, \
+<a id='L262' name='L262'></a> 262             "The 'act' in third call to sigaction() should be equals to startup_handler"); \
+<a id='L263' name='L263'></a> 263     <em class='brace'>}</em> \
+<a id='L264' name='L264'></a> 264 \
+<a id='L265' name='L265'></a> 265     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L239' title='Defined at 239 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGACTION__IS_RESTORED</a> (0, 3); \
+<a id='L266' name='L266'></a> 266     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L239' title='Defined at 239 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGACTION__IS_RESTORED</a> (1, 4); \
+<a id='L267' name='L267'></a> 267     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L239' title='Defined at 239 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGACTION__IS_RESTORED</a> (2, 5); \
+<a id='L268' name='L268'></a> 268 \
+<a id='L269' name='L269'></a> 269     <a href='../Y/ck_assert_msg.html' title='Multiple used in 34 places.'>ck_assert_msg</a> (<a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a>, 3) == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, \
+<a id='L270' name='L270'></a> 270         "oldact in fourth call to sigaction() should be NULL"); \
+<a id='L271' name='L271'></a> 271     <a href='../Y/ck_assert_msg.html' title='Multiple used in 34 places.'>ck_assert_msg</a> (<a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a>, 4) == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, \
+<a id='L272' name='L272'></a> 272         "oldact in fifth call to sigaction() should be NULL"); \
+<a id='L273' name='L273'></a> 273     <a href='../Y/ck_assert_msg.html' title='Multiple used in 34 places.'>ck_assert_msg</a> (<a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/sigaction_oldact__captured.html' title='Multiple used in 10 places.'>sigaction_oldact__captured</a>, 5) == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, \
+<a id='L274' name='L274'></a> 274         "oldact in sixth call to sigaction() should be NULL"); \
+<a id='L275' name='L275'></a> 275 <em class='brace'>}</em>
+<a id='L276' name='L276'></a> 276 
+<a id='L277' name='L277'></a> 277 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279 <em class='sharp'>#define</em> <a href='../R/VERIFY_SIGNAL_HANDLER_IS_SIG_DFL.html' title='Multiple referred from 4 places.'>VERIFY_SIGNAL_HANDLER_IS_SIG_DFL</a>(<a href='../Y/_idx.html' title='Multiple used in 2 places.'>_idx</a>) <em class='brace'>{</em> \
+<a id='L280' name='L280'></a> 280     <a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a> *<a href='../Y/tmp_handler.html' title='Multiple used in 7 places.'>tmp_handler</a> = (<a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/signal_handler__captured.html' title='Multiple used in 6 places.'>signal_handler__captured</a>, <a href='../Y/_idx.html' title='Multiple used in 2 places.'>_idx</a>);\
+<a id='L281' name='L281'></a> 281     <a href='../S/tests--mctest.h.html#L20' title='Defined at 20 in tests/mctest.h.'>mctest_assert_ptr_eq</a> (<a href='../Y/tmp_handler.html' title='Multiple used in 7 places.'>tmp_handler</a>, (<a href='../Y/sighandler_t.html' title='Multiple used in 8 places.'>sighandler_t</a> *) <a href='../Y/SIG_DFL.html' title='Multiple used in 8 places.'>SIG_DFL</a>); \
+<a id='L282' name='L282'></a> 282 <em class='brace'>}</em>
+<a id='L283' name='L283'></a> 283 
+<a id='L284' name='L284'></a> 284 <em class='comment'>/* @Verify */</em>
+<a id='L285' name='L285'></a> 285 <em class='sharp'>#define</em> <a href='../R/VERIFY_SIGNAL_CALLS.html' title='Multiple referred from 2 places.'>VERIFY_SIGNAL_CALLS</a>() <em class='brace'>{</em> \
+<a id='L286' name='L286'></a> 286     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (<a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>, 4); \
+<a id='L287' name='L287'></a> 287     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a>, 0)), <a href='../Y/SIGINT.html' title='Multiple used in 9 places.'>SIGINT</a>); \
+<a id='L288' name='L288'></a> 288     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a>, 1)), <a href='../Y/SIGQUIT.html' title='Multiple used in 6 places.'>SIGQUIT</a>); \
+<a id='L289' name='L289'></a> 289     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a>, 2)), <a href='../Y/SIGTSTP.html' title='Multiple used in 12 places.'>SIGTSTP</a>); \
+<a id='L290' name='L290'></a> 290     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 98 places.'>ck_assert_int_eq</a> (*((<strong class='reserved'>int</strong> *) <a href='../Y/g_ptr_array_index.html' title='Multiple used in 110 places.'>g_ptr_array_index</a>(<a href='../Y/signal_signum__captured.html' title='Multiple used in 11 places.'>signal_signum__captured</a>, 3)), <a href='../Y/SIGCHLD.html' title='Multiple used in 6 places.'>SIGCHLD</a>); \
+<a id='L291' name='L291'></a> 291     \
+<a id='L292' name='L292'></a> 292     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L279' title='Defined at 279 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGNAL_HANDLER_IS_SIG_DFL</a> (0); \
+<a id='L293' name='L293'></a> 293     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L279' title='Defined at 279 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGNAL_HANDLER_IS_SIG_DFL</a> (1); \
+<a id='L294' name='L294'></a> 294     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L279' title='Defined at 279 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGNAL_HANDLER_IS_SIG_DFL</a> (2); \
+<a id='L295' name='L295'></a> 295     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L279' title='Defined at 279 in tests/lib/utilunix__my_system-common.c.'>VERIFY_SIGNAL_HANDLER_IS_SIG_DFL</a> (3); \
+<a id='L296' name='L296'></a> 296 <em class='brace'>}</em>
+<a id='L297' name='L297'></a> 297 
+<a id='L298' name='L298'></a> 298 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L299' name='L299'></a> 299 
+<a id='L300' name='L300'></a> 300 <em class='comment'>/* @Before */</em>
+<a id='L301' name='L301'></a> 301 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L302' name='L302'></a> 302 <a href='../R/setup.html' title='Multiple referred from 44 places.'>setup</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L224'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L315'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+302 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L303' name='L303'></a> 303 <em class='brace'>{</em>
+<a id='L304' name='L304'></a> 304     <a href='../Y/signal__return_value.html' title='Multiple used in 3 places.'>signal__return_value</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L305' name='L305'></a> 305 
+<a id='L306' name='L306'></a> 306     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L101' title='Defined at 101 in tests/lib/utilunix__my_system-common.c.'>sigaction__init</a> ();
+<a id='L307' name='L307'></a> 307     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L156' title='Defined at 156 in tests/lib/utilunix__my_system-common.c.'>signal__init</a> ();
+<a id='L308' name='L308'></a> 308     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L218' title='Defined at 218 in tests/lib/utilunix__my_system-common.c.'>execvp__init</a> ();
+<a id='L309' name='L309'></a> 309 <em class='brace'>}</em>
+<a id='L310' name='L310'></a> 310 
+<a id='L311' name='L311'></a> 311 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313 <em class='comment'>/* @After */</em>
+<a id='L314' name='L314'></a> 314 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L315' name='L315'></a> 315 <a href='../R/teardown.html' title='Multiple referred from 43 places.'>teardown</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L302'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+315 tests/lib/utilunix__my_system-common.c'  /> */</em>
+<a id='L316' name='L316'></a> 316 <em class='brace'>{</em>
+<a id='L317' name='L317'></a> 317     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L224' title='Defined at 224 in tests/lib/utilunix__my_system-common.c.'>execvp__deinit</a> ();
+<a id='L318' name='L318'></a> 318     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L163' title='Defined at 163 in tests/lib/utilunix__my_system-common.c.'>signal__deinit</a> ();
+<a id='L319' name='L319'></a> 319     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L109' title='Defined at 109 in tests/lib/utilunix__my_system-common.c.'>sigaction__deinit</a> ();
+<a id='L320' name='L320'></a> 320 <em class='brace'>}</em>
+<a id='L321' name='L321'></a> 321 
+<a id='L322' name='L322'></a> 322 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L45'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L315'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+322 tests/lib/utilunix__my_system-common.c'  /> */</em>
+</body>
+</html>

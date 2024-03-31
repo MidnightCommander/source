@@ -1,0 +1,289 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>doc/TODO</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/doc.html'>doc</a>/TODO</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/doc.html'>doc</a>/TODO</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 doc/TODO'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>mc manual: Add Environment Variables section
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>Clean up #include's in all files.
+<a id='L4' name='L4'></a> 
+<a id='L5' name='L5'></a>Remove all instances of type casts on function pointers. Run the
+<a id='L6' name='L6'></a>following command to get a list of function pointer types.
+<a id='L7' name='L7'></a>    grep -r 'typedef.*(\*' . \
+<a id='L8' name='L8'></a>    | sed -n 's/.*(\*\([[:alnum:]_]*\)).*/(\1)/p' \
+<a id='L9' name='L9'></a>    | sort -u \
+<a id='L10' name='L10'></a>    &gt; fn-types.txt
+<a id='L11' name='L11'></a>Then use fgrep to find illegal uses of these types.
+<a id='L12' name='L12'></a>    fgrep -r "`cat fn-types.txt`" .
+<a id='L13' name='L13'></a>Fix these uses by writing small wrapper functions.
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>When saving a file is not possible, mcedit should ask the user what to
+<a id='L16' name='L16'></a>do:
+<a id='L17' name='L17'></a>- su(1) to another user and try again
+<a id='L18' name='L18'></a>- sudo
+<a id='L19' name='L19'></a>- change permissions of the file or the containg directory
+<a id='L20' name='L20'></a>- other smart things
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a>Due to problems in the VFS, files are not written back after being edited
+<a id='L23' name='L23'></a>over VFS with an external editor.
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a>Allow pathnames starting with spaces in vfs/extfs.
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>Broken pipe warning when viewing large *.tar.gz files.  Warnings should
+<a id='L28' name='L28'></a>be shown before the viewer is started if possible.
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>Cannot spell check unsaved files in the editor.
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>Dynamic loading for libgpm, libext2fs.
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>Check if the archive was changed for extfs, tar and cpio.  Free the data
+<a id='L35' name='L35'></a>associated with the old archive.
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>Ctrl-q Ctrl-m in input dialog should enter \r, not a newline.
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a>Allow entering archives in VFS by Ctrl-PgDown with non-empty command
+<a id='L40' name='L40'></a>line.  Right now, there is no convenient way to enter an archive when
+<a id='L41' name='L41'></a>the command line is not empty.
+<a id='L42' name='L42'></a> 
+<a id='L43' name='L43'></a>Allow switching between histories of two panels.  It's convenient to
+<a id='L44' name='L44'></a>change to a directory from the history of the other panel.
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>Allow calling the directory hotlist from Copy, Move and Find File
+<a id='L47' name='L47'></a>dialogs.  Recent directories are the obvious candidates for copying and
+<a id='L48' name='L48'></a>looking for files.
+<a id='L49' name='L49'></a> 
+<a id='L50' name='L50'></a>Allow modifiers for keys in mc.lib, like "shift-up".  Right now,
+<a id='L51' name='L51'></a>modifiers can be read from the terminal (if supported), but not from the
+<a id='L52' name='L52'></a>config file.  This change would make it possible to use modifiers even
+<a id='L53' name='L53'></a>if they can only be identified by the escape sequences.
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>When saving config files, write to a copy, then replace the file.  This
+<a id='L56' name='L56'></a>would avoid the problem of partly written config files.  Consider using
+<a id='L57' name='L57'></a>locking of the config files.
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>Totals should only be omitted for single files.
+<a id='L60' name='L60'></a> 
+<a id='L61' name='L61'></a>Recheck all mouse handlers, make sure that they check button number.  We
+<a id='L62' name='L62'></a>don't want mouse scrolling to be interpreted as mouse click.
+<a id='L63' name='L63'></a> 
+<a id='L64' name='L64'></a>Smooth mouse scrolling on panels.  Scrolling one page per step is too
+<a id='L65' name='L65'></a>fast.
+<a id='L66' name='L66'></a> 
+<a id='L67' name='L67'></a>Don't read prompt from the subshell, because it's unreliable.  Interpret
+<a id='L68' name='L68'></a>environment variable MC_PS1 (or PS1) in the same way as bash.
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a>Support an environment variable (also like PS1 in bash) for setting the
+<a id='L71' name='L71'></a>window title.
+<a id='L72' name='L72'></a> 
+<a id='L73' name='L73'></a>Better date parser - don't allow seconds and year in ftp listings on the
+<a id='L74' name='L74'></a>same line.
+<a id='L75' name='L75'></a> 
+<a id='L76' name='L76'></a>Report errors in shell operations and recover from them.
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>Allow colors to be defined in the mc.lib file.  Make it possible to
+<a id='L79' name='L79'></a>avoid using a super-long line to redefine all colors.
+<a id='L80' name='L80'></a> 
+<a id='L81' name='L81'></a>Filters in the editor should operate on the open file - don't close and
+<a id='L82' name='L82'></a>reopen the file.  They don't work on VFS now.  For example, a gzipped
+<a id='L83' name='L83'></a>files on FTP cannot be edited.
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>ftp and shell with home != '/' - readjust directory to the home.
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a>Make "Find File" dialog more responsive.  Keep state in a structure and
+<a id='L88' name='L88'></a>preserve it when the search is suspended.
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>Use KDGKBENT ioctl on Linux console to find the mapping for shifted
+<a id='L91' name='L91'></a>functional keys.  Two mappings are widely used (Shift-F1 = F11 and
+<a id='L92' name='L92'></a>Shift-F1 = F13).  mc should adjust the keys to the mapping.
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>Make the internal editor reentrant.
+<a id='L95' name='L95'></a> 
+<a id='L96' name='L96'></a>Consistent support for mc.lib.
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>Consistent support for terminal-specific settings.
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>New syntax for mc.ext - path check, desktop environment check.  Detach X
+<a id='L101' name='L101'></a>programs into a separate process group.  Allow forcing the full path on
+<a id='L102' name='L102'></a>local files.
+<a id='L103' name='L103'></a> 
+<a id='L104' name='L104'></a>Click on an image doesn't always work on remote vfs - local copy may
+<a id='L105' name='L105'></a>be deleted before the application has time to load it.
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>Allow running executables from remote VFS.  Possibly warn the user.
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a>Add print dialog in the internal editor.
+<a id='L110' name='L110'></a> 
+<a id='L111' name='L111'></a>Implement logging, not just for VFS.
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a>Eliminate all pipes in subshell.c, run pwd after kill.  Add support for
+<a id='L114' name='L114'></a>more shells (e.g. ksh).
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>Internal terminal - no more console saving.
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a>Implement a really Advanced Chown/Chmod.
+<a id='L119' name='L119'></a> 
+<a id='L120' name='L120'></a>fxp support in VFS.
+<a id='L121' name='L121'></a> 
+<a id='L122' name='L122'></a>New listing mode keyword "time": mtime or the time (atime, ctime) used
+<a id='L123' name='L123'></a>to sort files.
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>Provide "patch" and "diff" editors. The patch editor will automatically
+<a id='L126' name='L126'></a>adjust the line numbers of the following chunks when lines are deleted
+<a id='L127' name='L127'></a>or inserted at the beginning of the file.
+<a id='L128' name='L128'></a> 
+<a id='L129' name='L129'></a>Provide context menus for files. Possible actions include: [compile],
+<a id='L130' name='L130'></a>[CVS commit], [CVS diff -up], [pack], [unpack], [grep].
+<a id='L131' name='L131'></a> 
+<a id='L132' name='L132'></a>More standard Widgets: WTreeView, WDirectoryList, WGroupBox, WTextArea,
+<a id='L133' name='L133'></a>WOpenDialog, WSaveDialog, WPrintDialog, WKeyBar.
+<a id='L134' name='L134'></a> 
+<a id='L135' name='L135'></a>========================================================================
+<a id='L136' name='L136'></a>Everything below this point is the old TODO list.  It doesn't reflect
+<a id='L137' name='L137'></a>the current priorities of the developers, but may contain interesting
+<a id='L138' name='L138'></a>ideas still waiting for their implementation.
+<a id='L139' name='L139'></a>========================================================================
+<a id='L140' name='L140'></a> 
+<a id='L141' name='L141'></a> 
+<a id='L142' name='L142'></a>* Bugs
+<a id='L143' name='L143'></a> 
+<a id='L144' name='L144'></a>  - "Files" message flickers a lot when copying files.
+<a id='L145' name='L145'></a> 
+<a id='L146' name='L146'></a>  - Make the extfs handle re-reads.
+<a id='L147' name='L147'></a> 
+<a id='L148' name='L148'></a>  - Check that all the help contexts exist on the help file.
+<a id='L149' name='L149'></a> 
+<a id='L150' name='L150'></a>  - Make the buttonbar for the tree box work.
+<a id='L151' name='L151'></a> 
+<a id='L152' name='L152'></a>  - In the incremental search mode, when backspacing, select the
+<a id='L153' name='L153'></a>    correct file, do not stop in current file.
+<a id='L154' name='L154'></a> 
+<a id='L155' name='L155'></a>  - In learn keys, warn the user if he is trying to
+<a id='L156' name='L156'></a>    i) define a same sequence as an already defined (if the keycode differs)
+<a id='L157' name='L157'></a>    ii) define a sequence, which is a prefix of other longer and already
+<a id='L158' name='L158'></a>        defined sequence
+<a id='L159' name='L159'></a> 
+<a id='L160' name='L160'></a>* Documentation
+<a id='L161' name='L161'></a> 
+<a id='L162' name='L162'></a>  - Convert the source mc.1 to mc.sgml and create automagically from it
+<a id='L163' name='L163'></a>    mc.1, mc.html, mc.hlp, mc.info, mc.tex, mc.txt etc.
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a>* Extensions
+<a id='L166' name='L166'></a> 
+<a id='L167' name='L167'></a>   - Hotlist should allow people to edit the entry (like we do in the external
+<a id='L168' name='L168'></a>     panelize thing).
+<a id='L169' name='L169'></a> 
+<a id='L170' name='L170'></a>   - Change ext.c to allow the %{..} to recursively expand any other %thingies.
+<a id='L171' name='L171'></a> 
+<a id='L172' name='L172'></a>   - Write a general grow_string routine.  This code is used in the internal
+<a id='L173' name='L173'></a>     viewer and would also be used in the profile.c code.
+<a id='L174' name='L174'></a> 
+<a id='L175' name='L175'></a>   -  A command to set the line length to a fixed value for viewing
+<a id='L176' name='L176'></a>      fixed length binary files. LIST does this with Ctrl-B and then
+<a id='L177' name='L177'></a>      prompts for a "record" length.
+<a id='L178' name='L178'></a> 
+<a id='L179' name='L179'></a>   - Viewer: Mark all found matches, and when 'n' is pressed go to the
+<a id='L180' name='L180'></a>     next page, not the next match on the same screen (when there is
+<a id='L181' name='L181'></a>     more than one).
+<a id='L182' name='L182'></a> 
+<a id='L183' name='L183'></a>  - In ftpfs_open, extfs_open, if we set local_filename to tmpnam, use
+<a id='L184' name='L184'></a>    a mechanism to set local_filename to another place on the local
+<a id='L185' name='L185'></a>    diskspace (this would be useful for copying, so that we would save
+<a id='L186' name='L186'></a>    some tmp space). This would require special care in file.c afterwards.
+<a id='L187' name='L187'></a> 
+<a id='L188' name='L188'></a>  - In Listing mode... give at least three user-definable formats
+<a id='L189' name='L189'></a>    (using Janne's Listing mode editor) and assign hot-keys to both
+<a id='L190' name='L190'></a>    standard and user defined (what about c-x f [fbl123] ?).
+<a id='L191' name='L191'></a> 
+<a id='L192' name='L192'></a>  - Shift-Home, Shift-End for the input line: home and end.
+<a id='L193' name='L193'></a> 
+<a id='L194' name='L194'></a>  - Make a mechanism to lock all the mouse events and send them to
+<a id='L195' name='L195'></a>    the locking widget until unlocking is done.
+<a id='L196' name='L196'></a> 
+<a id='L197' name='L197'></a>  - Allow the program to execute a command even when we are on a vfs, maybe
+<a id='L198' name='L198'></a>    a special box, or make subshell code ignore the change directory
+<a id='L199' name='L199'></a>    request. Perhaps each vfs should store a local path attached to it,
+<a id='L200' name='L200'></a>    like in tarfs, extfs it would be the directory which contains the
+<a id='L201' name='L201'></a>    topmost tararchive, in ftpfs it would be the directory which we entered
+<a id='L202' name='L202'></a>    to ftp from.
+<a id='L203' name='L203'></a> 
+<a id='L204' name='L204'></a>  - auto_hint_lines: a variable that would choose to use hint mode when
+<a id='L205' name='L205'></a>    at least auto_hint_lines are visible.
+<a id='L206' name='L206'></a> 
+<a id='L207' name='L207'></a>  - Listbox: Mouse handler for the scrollbar: this will be hard with
+<a id='L208' name='L208'></a>    the current approach (since the listbox scrollbar is drawn *outside*
+<a id='L209' name='L209'></a>    the listbox control area).
+<a id='L210' name='L210'></a> 
+<a id='L211' name='L211'></a>  - In file.c, we shouldn't need to get a full path name in order to
+<a id='L212' name='L212'></a>    work, we should instead canon the file name inside the tar.c (the
+<a id='L213' name='L213'></a>    only fs that relies on this), tar.c should know about the cwd (i
+<a id='L214' name='L214'></a>    think).
+<a id='L215' name='L215'></a> 
+<a id='L216' name='L216'></a>  - Panelize the selected files.
+<a id='L217' name='L217'></a> 
+<a id='L218' name='L218'></a>  - Recursive delete should (perhaps as an option) delete files just after
+<a id='L219' name='L219'></a>    they have been copied and not to delay deleting until everything was
+<a id='L220' name='L220'></a>    moved.
+<a id='L221' name='L221'></a> 
+<a id='L222' name='L222'></a>  - When copying a tree (or moving or deleting), as an option act primarily
+<a id='L223' name='L223'></a>    on the regular files and at the end on directories recursively, so that
+<a id='L224' name='L224'></a>    we get complete high parts of the tree if something fails (useful for
+<a id='L225' name='L225'></a>    ftpfs).
+<a id='L226' name='L226'></a> 
+<a id='L227' name='L227'></a>  - Put into a new and bigger Options/Configuration dialog all the options
+<a id='L228' name='L228'></a>    we have now to set using .mc/ini manually.
+<a id='L229' name='L229'></a> 
+<a id='L230' name='L230'></a>  - When after deleting there are no files in a panelized panel, restore
+<a id='L231' name='L231'></a>    it automagically to the real directory content.
+<a id='L232' name='L232'></a> 
+<a id='L233' name='L233'></a>  - Files/Symlink and Link should be able to do multiple links (if the
+<a id='L234' name='L234'></a>    target is a directory).
+<a id='L235' name='L235'></a> 
+<a id='L236' name='L236'></a>  - Directory sizes should work in background using try_channels.
+<a id='L237' name='L237'></a> 
+<a id='L238' name='L238'></a>  - Support of non-UNIX ls in ftpfs. Perhaps using an ascii configuration
+<a id='L239' name='L239'></a>    file similar to moxftp.
+<a id='L240' name='L240'></a> 
+<a id='L241' name='L241'></a>  - Add an option that will let listboxes do incremental searches.
+<a id='L242' name='L242'></a> 
+<a id='L243' name='L243'></a>* Optimizations and cleanup
+<a id='L244' name='L244'></a> 
+<a id='L245' name='L245'></a>  - When verbose is off, remove all the clutter on the screen about
+<a id='L246' name='L246'></a>    the files being copied.
+<a id='L247' name='L247'></a> 
+<a id='L248' name='L248'></a>  - The viewer is calling view_update in many places, I call
+<a id='L249' name='L249'></a>    view_update after handling a key, should all the other
+<a id='L250' name='L250'></a>    view_updates be removed?
+<a id='L251' name='L251'></a> 
+<a id='L252' name='L252'></a>  - If the viewer is too slow, some caching could be done.
+<a id='L253' name='L253'></a>    width and cols are currently computed each time they are needed.
+<a id='L254' name='L254'></a> 
+<a id='L255' name='L255'></a> ++ In the user menu, don't use the entries array, we can now grow
+<a id='L256' name='L256'></a>    dynamically.  I should take a look at this one day, it's easy to
+<a id='L257' name='L257'></a>    fix.
+<a id='L258' name='L258'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+258 doc/TODO'  /> */</em>
+</body>
+</html>

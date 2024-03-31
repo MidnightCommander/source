@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>doc/HACKING</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/doc.html'>doc</a>/HACKING</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/doc.html'>doc</a>/HACKING</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 doc/HACKING'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>This document
+<a id='L2' name='L2'></a>=============
+<a id='L3' name='L3'></a> 
+<a id='L4' name='L4'></a>This document is a guide how to develop GNU Midnight Commander.  It's
+<a id='L5' name='L5'></a>quite incomplete, but may be worth reading anyway.
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a>The document was written by Miguel de Icaza and reworked by Pavel
+<a id='L8' name='L8'></a>Roskin and later from Patrick Winnertz.
+<a id='L9' name='L9'></a> Some parts were taken from the messages posted in the mailing
+<a id='L10' name='L10'></a>lists.
+<a id='L11' name='L11'></a> 
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>Compiling from GIT
+<a id='L14' name='L14'></a>==================
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>To compile GNU Midnight commander from GIT, the following software is
+<a id='L17' name='L17'></a>required:
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>Autoconf 2.64 and above (latest is recommended)
+<a id='L20' name='L20'></a>Automake 1.12 and above (latest is recommended)
+<a id='L21' name='L21'></a>Gettext 0.18.2 and above
+<a id='L22' name='L22'></a>Glib 2.32 and above
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>Full list of requirements you can see at:
+<a id='L25' name='L25'></a>https://www.midnight-commander.org/wiki/doc/buildAndInstall/req
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>It is recommended that all those tools are installed with the same
+<a id='L28' name='L28'></a>prefix.  Make sure that the tools with the right version are first in
+<a id='L29' name='L29'></a>PATH.
+<a id='L30' name='L30'></a> 
+<a id='L31' name='L31'></a>Once you have the right tools, run `autogen.sh' - it will generate
+<a id='L32' name='L32'></a>everything necessary for the build `configure'. Then run 'configure'
+<a id='L33' name='L33'></a>and `make' as usually.
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>The distribution tarball is created by the command `make distcheck'. 
+<a id='L36' name='L36'></a>This command can take a while.
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a>Currently snapshots are made on Debian unstable and use the versions of
+<a id='L39' name='L39'></a>the tools from the unstable repository.  Yes, the rpm packages are made
+<a id='L40' name='L40'></a>on Debian too.
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>Note that the version of gettext doesn't affect the snapshot because the
+<a id='L43' name='L43'></a>distributed files are installed by gettext from archives for the version
+<a id='L44' name='L44'></a>used in the AM_GNU_GETTEXT_VERSION macro, which is 0.18.2.
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a> 
+<a id='L47' name='L47'></a> 
+<a id='L48' name='L48'></a>Working with GNU Midnight Commander
+<a id='L49' name='L49'></a>===================================
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>Please use the GIT version.  It may be quite different from the released
+<a id='L52' name='L52'></a>versions.  A lot of cleanup is going on.  The GIT version may be easier
+<a id='L53' name='L53'></a>to understand, in addition to the obvious fact that the merging is
+<a id='L54' name='L54'></a>easier with the GIT version.
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a>In order to compile GNU Midnight Commander from a clean GIT checkout you
+<a id='L57' name='L57'></a>should use 'autogen.sh &amp;&amp; ./configure' instead of 'configure'.
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>GNU Midnight Commander uses Autoconf and Automake, with make it fairly
+<a id='L60' name='L60'></a>portable.  However, GNU Make is strongly recommended for development
+<a id='L61' name='L61'></a>because other versions of make may not track dependencies properly. 
+<a id='L62' name='L62'></a>This is very important for correct compilation, especially if you change
+<a id='L63' name='L63'></a>any header files.
+<a id='L64' name='L64'></a> 
+<a id='L65' name='L65'></a>If you add or remove any files, please change Makefile.am in the same
+<a id='L66' name='L66'></a>directory accordingly.  When doing significant changes in the tree
+<a id='L67' name='L67'></a>structure, "make distcheck" is strongly recommended.
+<a id='L68' name='L68'></a> 
+<a id='L69' name='L69'></a>GNU Autoconf allows you to test several different configurations are
+<a id='L70' name='L70'></a>once.  To do so, use the so called out-of-tree (or VPATH) compilation. 
+<a id='L71' name='L71'></a>Create separate empty directories and run configure with full path from
+<a id='L72' name='L72'></a>those directories, like this:
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>cd /usr/local/src
+<a id='L75' name='L75'></a>mkdir mc-slang
+<a id='L76' name='L76'></a>mkdir mc-ncurses
+<a id='L77' name='L77'></a>cd mc-slang
+<a id='L78' name='L78'></a>/usr/local/src/mc/configure &amp;&amp; make all
+<a id='L79' name='L79'></a>cd ../mc-ncurses
+<a id='L80' name='L80'></a>/usr/local/src/mc/configure --with-screen=ncurses &amp;&amp; make all
+<a id='L81' name='L81'></a> 
+<a id='L82' name='L82'></a>Please use the same indentation as other developers.  To indent a block,
+<a id='L83' name='L83'></a>select in the internal editor and use Shift-F9 to call the external
+<a id='L84' name='L84'></a>indent.  For historic reasons, GNU Midnight Commander used formatting
+<a id='L85' name='L85'></a>that is not default for GNU Indent.  Please put following text to your
+<a id='L86' name='L86'></a>~/.indent.pro file to make GNU Indent follow the style used in GNU
+<a id='L87' name='L87'></a>Midnight Commander:
+<a id='L88' name='L88'></a> 
+<a id='L89' name='L89'></a>--gnu-style
+<a id='L90' name='L90'></a>--format-first-column-comments
+<a id='L91' name='L91'></a>--indent-level4
+<a id='L92' name='L92'></a>--brace-indent0
+<a id='L93' name='L93'></a>--line-length100
+<a id='L94' name='L94'></a>--no-tabs
+<a id='L95' name='L95'></a>--blank-lines-after-procedures
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a>or in short notation:
+<a id='L98' name='L98'></a> 
+<a id='L99' name='L99'></a>indent -gnu -fc1 -i4 -bli0 -nut -bap -l100
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>It's OK to indent the whole function if you edit it.  However, please
+<a id='L102' name='L102'></a>refrain from it if you are posting your patch for review.  In this case
+<a id='L103' name='L103'></a>you would save time of other developers if you only include significant
+<a id='L104' name='L104'></a>changes.  The developer applying your patch can format the code for you.
+<a id='L105' name='L105'></a> 
+<a id='L106' name='L106'></a>Please keep in mind that the VFS subsystem is licensed under LGPL, while
+<a id='L107' name='L107'></a>the rest of the code uses GPL.
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>Code structure - outline
+<a id='L111' name='L111'></a>========================
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a>The code is located in following directories.
+<a id='L114' name='L114'></a> 
+<a id='L115' name='L115'></a>vfs - Virtual File System.
+<a id='L116' name='L116'></a> 
+<a id='L117' name='L117'></a>This library provides filesystem-like access to various data, such are
+<a id='L118' name='L118'></a>archives and remote filesystems.  To use VFS, you should use wrappers
+<a id='L119' name='L119'></a>around POSIX calls.  The wrappers have names composed from "mc_" and the
+<a id='L120' name='L120'></a>standard name of the function.  For example, to open a file on VFS, use
+<a id='L121' name='L121'></a>mc_open() instead.
+<a id='L122' name='L122'></a> 
+<a id='L123' name='L123'></a>edit - the internal editor.
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>This code has been contributed by Paul Sheer, the author of Cooledit.
+<a id='L126' name='L126'></a>The internal editor shares some code with Cooledit, but now it's
+<a id='L127' name='L127'></a>developed as part of GNU Midnight Commander.
+<a id='L128' name='L128'></a> 
+<a id='L129' name='L129'></a>src - the main part of the code.
+<a id='L130' name='L130'></a> 
+<a id='L131' name='L131'></a>This code includes the dialog manager written by Radek Doulik and source
+<a id='L132' name='L132'></a>code of the main application.
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a>Code structure - details
+<a id='L135' name='L135'></a>========================
+<a id='L136' name='L136'></a> 
+<a id='L137' name='L137'></a>GNU Midnight Commander uses extensively the dialog manager written by
+<a id='L138' name='L138'></a>Radek Doulik.  To understand how the dialog manager works, please read
+<a id='L139' name='L139'></a>the dialog.c.  You will find the basic widgets in the files widget.c.
+<a id='L140' name='L140'></a>Some more high-level functions, e.g. to display a message box, are
+<a id='L141' name='L141'></a>located in wtools.c.  This file also contains the Quick Dialog code,
+<a id='L142' name='L142'></a>which makes it easier to create complex dialogs.
+<a id='L143' name='L143'></a> 
+<a id='L144' name='L144'></a>The files util.c and utilunix.c have a lot of utility functions.  Get
+<a id='L145' name='L145'></a>familiar with them, they are very simple.
+<a id='L146' name='L146'></a> 
+<a id='L147' name='L147'></a>glib is used for memory allocation and for some utility functions, such
+<a id='L148' name='L148'></a>as manipulation with lists and trees.  gmodule (part of the glib
+<a id='L149' name='L149'></a>distribution) is used to load some libraries dynamically at the run
+<a id='L150' name='L150'></a>time.
+<a id='L151' name='L151'></a> 
+<a id='L152' name='L152'></a>Thanks to glib, the code has almost no hardcoded limits, since there are
+<a id='L153' name='L153'></a>many ways to avoid them.  For example, when you want to concatenate
+<a id='L154' name='L154'></a>strings, use the g_strconcat() function:
+<a id='L155' name='L155'></a> 
+<a id='L156' name='L156'></a>        new_text = g_strconcat (username, " ", password, (char *)0);
+<a id='L157' name='L157'></a> 
+<a id='L158' name='L158'></a>This allocates new memory for the string, so you should use g_free() on
+<a id='L159' name='L159'></a>the result.
+<a id='L160' name='L160'></a> 
+<a id='L161' name='L161'></a>The parent of all dialogs is called midnight_dlg.  Both panels are
+<a id='L162' name='L162'></a>widgets in that dialog.  Other widgets include the menu, the command
+<a id='L163' name='L163'></a>line and the button bar.
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a> 
+<a id='L166' name='L166'></a>Input handling
+<a id='L167' name='L167'></a>==============
+<a id='L168' name='L168'></a> 
+<a id='L169' name='L169'></a>The routines for input handling on the Midnight Commander are:
+<a id='L170' name='L170'></a>getch, get_key_code, mi_getch and get_event.
+<a id='L171' name='L171'></a> 
+<a id='L172' name='L172'></a>getch is an interface to the low level system input mechanism.  It
+<a id='L173' name='L173'></a>does not deal with the mouse.  
+<a id='L174' name='L174'></a> 
+<a id='L175' name='L175'></a>    In the case of ncurses, this is a function implemented in the
+<a id='L176' name='L176'></a>    ncurses library that translates key sequences to key codes (\E[A to
+<a id='L177' name='L177'></a>    something like KEY_UP and so on).
+<a id='L178' name='L178'></a> 
+<a id='L179' name='L179'></a>    In the case of S-Lang there is no such conversion, that's why we
+<a id='L180' name='L180'></a>    load a set of extra definitions.
+<a id='L181' name='L181'></a> 
+<a id='L182' name='L182'></a>The get_key_code routine converts the data from getch to the
+<a id='L183' name='L183'></a>constants the Midnight Commander uses.
+<a id='L184' name='L184'></a> 
+<a id='L185' name='L185'></a>    In the case of S-Lang, it will actually do all the jobs that getch
+<a id='L186' name='L186'></a>    does for curses.  In the case of curses it patches a couple of
+<a id='L187' name='L187'></a>    sequences that are not available on some terminal databases.  This
+<a id='L188' name='L188'></a>    routine is the one you want to use if you want a character without
+<a id='L189' name='L189'></a>    the mouse support.
+<a id='L190' name='L190'></a> 
+<a id='L191' name='L191'></a>get_event is the routine you want to use if you want to handle mouse
+<a id='L192' name='L192'></a>events, it will return 0 on a mouse event, -1 if no input is available
+<a id='L193' name='L193'></a>or a key code if there is some input available.  This routine in turn
+<a id='L194' name='L194'></a>uses get_key_code to decode the input stream and convert it to useful
+<a id='L195' name='L195'></a>constants.
+<a id='L196' name='L196'></a> 
+<a id='L197' name='L197'></a>mi_getch is just a wrapper around get_event that ignores all the mouse
+<a id='L198' name='L198'></a>events.  It's used only in a couple of places, this routine may return
+<a id='L199' name='L199'></a>-1 if no input is available (if you have set the nodelay option of
+<a id='L200' name='L200'></a>ncurses or S-Lang with nodelay) or a character code if no such option is
+<a id='L201' name='L201'></a>available. 
+<a id='L202' name='L202'></a> 
+<a id='L203' name='L203'></a> 
+<a id='L204' name='L204'></a>Mouse support
+<a id='L205' name='L205'></a>=============
+<a id='L206' name='L206'></a> 
+<a id='L207' name='L207'></a>The mouse support in the Midnight Commander is based on the get_event
+<a id='L208' name='L208'></a>routine.  The core of the mouse event dispatching is in the
+<a id='L209' name='L209'></a>dlg.c:run_dlg routine.
+<a id='L210' name='L210'></a> 
+<a id='L211' name='L211'></a> 
+<a id='L212' name='L212'></a>ncurses
+<a id='L213' name='L213'></a>=======
+<a id='L214' name='L214'></a> 
+<a id='L215' name='L215'></a>Although S-Lang is now used by default, we still support ncurses.  We
+<a id='L216' name='L216'></a>basically are using a small subset of ncurses because we want to be
+<a id='L217' name='L217'></a>compatible with Slang.
+<a id='L218' name='L218'></a> 
+<a id='L219' name='L219'></a> 
+<a id='L220' name='L220'></a>The Dialog manager and the Widgets
+<a id='L221' name='L221'></a>==================================
+<a id='L222' name='L222'></a> 
+<a id='L223' name='L223'></a>The Dialog manager and the Widget structure are implemented in
+<a id='L224' name='L224'></a>src/dialog.c.  Everything shown on screen is a dialog.  Dialogs contain
+<a id='L225' name='L225'></a>widgets, but not everything on screen is a widget.  Dialogs can draw
+<a id='L226' name='L226'></a>themselves.
+<a id='L227' name='L227'></a> 
+<a id='L228' name='L228'></a>Dialogs are connected into a singly linked list using "parent" field. 
+<a id='L229' name='L229'></a>Currently active dialog is saved in current_dlg variable.  The toplevel
+<a id='L230' name='L230'></a>dialog has parent NULL.  Usually it's midnight_dlg.
+<a id='L231' name='L231'></a> 
+<a id='L232' name='L232'></a>            parent                  parent
+<a id='L233' name='L233'></a>current_dlg -------&gt;another dialog-- ... --&gt;midnight_dlg
+<a id='L234' name='L234'></a> 
+<a id='L235' name='L235'></a>When the screen needs to be refreshed, every dialog asks its parent to
+<a id='L236' name='L236'></a>refresh first, and then refreshes itself.
+<a id='L237' name='L237'></a> 
+<a id='L238' name='L238'></a>A dialog is created by create_dlg().  Then it's populated by widgets
+<a id='L239' name='L239'></a>using add_widget().  Then the dialog is run by calling run_dlg(), which
+<a id='L240' name='L240'></a>returns the id of the button selected by the user.  Finally, the dialog
+<a id='L241' name='L241'></a>is destroyed by calling destroy_dlg().
+<a id='L242' name='L242'></a> 
+<a id='L243' name='L243'></a>Widgets are placed to a doubly linked circular list.  Each widget has
+<a id='L244' name='L244'></a>previous and next widget.
+<a id='L245' name='L245'></a> 
+<a id='L246' name='L246'></a>        prev   next         prev   next
+<a id='L247' name='L247'></a>widget1 &lt;---------&gt; widget2 &lt;---------&gt; widget3
+<a id='L248' name='L248'></a>   ^                                       ^
+<a id='L249' name='L249'></a>   -----------------------------------------
+<a id='L250' name='L250'></a>   next                                 prev
+<a id='L251' name='L251'></a> 
+<a id='L252' name='L252'></a>Pressing Tab moves focus to the "next" widget, pressing Shift-Tab moves
+<a id='L253' name='L253'></a>focus to "prev".  The tab order is equal to the add order except some
+<a id='L254' name='L254'></a>old code that use the reverse order by setting DLG_REVERSE flag in
+<a id='L255' name='L255'></a>create_dlg() call.  Please don't use reverse order in the new code.
+<a id='L256' name='L256'></a> 
+<a id='L257' name='L257'></a>The initial widget to get focus can be selected by calling
+<a id='L258' name='L258'></a>dlg_select_widget().
+<a id='L259' name='L259'></a> 
+<a id='L260' name='L260'></a>When creating a dialog, you may want to use a callback that would
+<a id='L261' name='L261'></a>intercept some dialog events.  However, many widgets will do the right
+<a id='L262' name='L262'></a>thing by default, so some dialogs can work just fine without callbacks.
+<a id='L263' name='L263'></a> 
+<a id='L264' name='L264'></a>There are also widget events, which are sent by the dialog to individual
+<a id='L265' name='L265'></a>widgets.  Some widgets also have user callbacks.
+<a id='L266' name='L266'></a> 
+<a id='L267' name='L267'></a>To create your own widget, use init_widget().  In this case, you must
+<a id='L268' name='L268'></a>provide a callback function.  Please note that it's not the same as the
+<a id='L269' name='L269'></a>user callback in some widgets.
+<a id='L270' name='L270'></a> 
+<a id='L271' name='L271'></a> 
+<a id='L272' name='L272'></a>Where to Find Bug Reports and Patches
+<a id='L273' name='L273'></a>=====================================
+<a id='L274' name='L274'></a> 
+<a id='L275' name='L275'></a>The official place for bug reports is:
+<a id='L276' name='L276'></a> 
+<a id='L277' name='L277'></a>    https://www.midnight-commander.org/
+<a id='L278' name='L278'></a> 
+<a id='L279' name='L279'></a> 
+<a id='L280' name='L280'></a>There are various unofficial sources where bug reports and patches can
+<a id='L281' name='L281'></a>be found (NOT maintained by the MC team).
+<a id='L282' name='L282'></a> 
+<a id='L283' name='L283'></a> 
+<a id='L284' name='L284'></a>http://bugs.debian.org/mc
+<a id='L285' name='L285'></a>        The bug tracking system for Debian, a package collection mainly
+<a id='L286' name='L286'></a>        for GNU/Linux and the Hurd.
+<a id='L287' name='L287'></a> 
+<a id='L288' name='L288'></a>http://bugzilla.redhat.com/bugzilla/buglist.cgi?component=mc
+<a id='L289' name='L289'></a>        Bugs reported in Redhat Linux.
+<a id='L290' name='L290'></a> 
+<a id='L291' name='L291'></a>http://www.openbsd.org/cgi-bin/cvsweb/ports/misc/mc/patches/
+<a id='L292' name='L292'></a>        The patches that are applied for the OpenBSD version of MC.
+<a id='L293' name='L293'></a> 
+<a id='L294' name='L294'></a>http://www.freebsd.org/cgi/cvsweb.cgi/ports/misc/mc/files/
+<a id='L295' name='L295'></a>        The patches that are applied for the FreeBSD version of MC.
+<a id='L296' name='L296'></a> 
+<a id='L297' name='L297'></a>http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/sysutils/mc/patches/
+<a id='L298' name='L298'></a>        The patches that are applied for the NetBSD version of MC.
+<a id='L299' name='L299'></a> 
+<a id='L300' name='L300'></a>http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/app-misc/mc/files/?hideattic=1
+<a id='L301' name='L301'></a>        The patches that are applied for the Gentoo Linux version of MC.
+<a id='L302' name='L302'></a> 
+<a id='L303' name='L303'></a> 
+<a id='L304' name='L304'></a>Programming Tips
+<a id='L305' name='L305'></a>================
+<a id='L306' name='L306'></a> 
+<a id='L307' name='L307'></a>(This list should be sorted alphabetically.)
+<a id='L308' name='L308'></a> 
+<a id='L309' name='L309'></a>?: This operator has a precedence that is easy to use the wrong way. You
+<a id='L310' name='L310'></a>        might think that
+<a id='L311' name='L311'></a> 
+<a id='L312' name='L312'></a>                int right = 25 + have_frame() ? 1 : 0; /* WRONG */
+<a id='L313' name='L313'></a> 
+<a id='L314' name='L314'></a>        results in either 25 or 26. This is not the case. The C compiler
+<a id='L315' name='L315'></a>        sees this as:
+<a id='L316' name='L316'></a> 
+<a id='L317' name='L317'></a>                int right = (25 + have_frame()) ? 1 : 0; /* WRONG */
+<a id='L318' name='L318'></a> 
+<a id='L319' name='L319'></a>        To avoid this, put the ?: in parentheses, like this
+<a id='L320' name='L320'></a> 
+<a id='L321' name='L321'></a>                int right = 25 + (have_frame() ? 1 : 0); /* RIGHT */
+<a id='L322' name='L322'></a> 
+<a id='L323' name='L323'></a>        If the condition is more complicated, put it in additional
+<a id='L324' name='L324'></a>        parentheses:
+<a id='L325' name='L325'></a> 
+<a id='L326' name='L326'></a>                int right = 25 + ((have_frame()) ? 1 : 0); /* RIGHT */
+<a id='L327' name='L327'></a> 
+<a id='L328' name='L328'></a>const: For every function taking a string argument, decide whether you
+<a id='L329' name='L329'></a>        (as a user of the function) would expect that the string is modi-
+<a id='L330' name='L330'></a>        fied by the function. If not, declare the string argument as
+<a id='L331' name='L331'></a>        "const char *". If your implementation needs to modify the string,
+<a id='L332' name='L332'></a>        use g_strdup to create a local copy.
+<a id='L333' name='L333'></a> 
+<a id='L334' name='L334'></a>const_cast: Has been replaced by str_unconst.
+<a id='L335' name='L335'></a> 
+<a id='L336' name='L336'></a>g_free: g_free handles NULL argument too, no need for the comparison.
+<a id='L337' name='L337'></a>        Bad way:
+<a id='L338' name='L338'></a>            if (old_dir) g_free (old_dir);
+<a id='L339' name='L339'></a>        Right way:
+<a id='L340' name='L340'></a>            g_free (old_dir);
+<a id='L341' name='L341'></a> 
+<a id='L342' name='L342'></a>g_strdup: When you use g_strdup to create a local copy of a string, use
+<a id='L343' name='L343'></a>        the following pattern to keep the reference.
+<a id='L344' name='L344'></a> 
+<a id='L345' name='L345'></a>        char * const pathref = g_strdup(argument);
+<a id='L346' name='L346'></a>        /* ... */
+<a id='L347' name='L347'></a>        g_free (pathref);
+<a id='L348' name='L348'></a> 
+<a id='L349' name='L349'></a>        The "const" will make the pointer unmodifiable (pathref++
+<a id='L350' name='L350'></a>        is not possible), but you can still modify the string contents.
+<a id='L351' name='L351'></a> 
+<a id='L352' name='L352'></a>NULL: When you pass NULL as an argument of a varargs function, cast the
+<a id='L353' name='L353'></a>        0 to the appropriate data type. If a system #defines NULL to
+<a id='L354' name='L354'></a>        be 0 (at least NetBSD and OpenBSD do), and the sizes of int and
+<a id='L355' name='L355'></a>        a pointer are different, the argument will be passed as int 0,
+<a id='L356' name='L356'></a>        not as a pointer.
+<a id='L357' name='L357'></a> 
+<a id='L358' name='L358'></a>        This tip applies at least to catstrs (edit/edit.h), execl(3),
+<a id='L359' name='L359'></a>        execle(3), execlp(3), g_strconcat (glib), parent_call
+<a id='L360' name='L360'></a>        (src/background.h), parent_call_string (src/background.h).
+<a id='L361' name='L361'></a> 
+<a id='L362' name='L362'></a>        example:
+<a id='L363' name='L363'></a>        char *path = g_strconcat("dir", "/", "file", (char *)0);
+<a id='L364' name='L364'></a> 
+<a id='L365' name='L365'></a>size_t: This data type is suitable for expressing sizes of memory or the
+<a id='L366' name='L366'></a>        length of strings. This type is unsigned, so you need not check
+<a id='L367' name='L367'></a>        if the value is &gt;= 0.
+<a id='L368' name='L368'></a> 
+<a id='L369' name='L369'></a>strncpy: Don't use this function in newly created code. It is slow, insecure
+<a id='L370' name='L370'></a>        and hard to use. A much better alternative is g_strlcpy (see there).
+<a id='L371' name='L371'></a> 
+<a id='L372' name='L372'></a>str_unconst: We use many libraries that do not know about "const char *"
+<a id='L373' name='L373'></a>        and thus declare their functions to require "char *". If you
+<a id='L374' name='L374'></a>        know for sure that an external function does not modify the
+<a id='L375' name='L375'></a>        string, you can "unconst" a string using the function
+<a id='L376' name='L376'></a>        str_unconst(). If you are not sure whether the function modifies
+<a id='L377' name='L377'></a>        the string, you should use g_strdup() to pass a copy of a string
+<a id='L378' name='L378'></a>        to the function. Don't forget to call g_free() after work is done.
+<a id='L379' name='L379'></a> 
+<a id='L380' name='L380'></a>unused: Unused arguments of a function can be marked like this:
+<a id='L381' name='L381'></a> 
+<a id='L382' name='L382'></a>        void do_nothing(int data)
+<a id='L383' name='L383'></a>        {
+<a id='L384' name='L384'></a>            (void) &amp;data;
+<a id='L385' name='L385'></a>        }
+<a id='L386' name='L386'></a> 
+<a id='L387' name='L387'></a>        This tells the GNU C Compiler not to emit a warning, and has no
+<a id='L388' name='L388'></a>        side effects for other compilers.
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+388 doc/HACKING'  /> */</em>
+</body>
+</html>

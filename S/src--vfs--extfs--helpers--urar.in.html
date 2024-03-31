@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/urar.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/urar.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/urar.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/urar.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Written by andrey joukov
+<a id='L4' name='L4'></a># (C) 1996 2:5020/337.13@fidonet.org
+<a id='L5' name='L5'></a># Updated by christian.gennerat@alcatel.fr 1999
+<a id='L6' name='L6'></a>#            Andrew V. Samoilov &lt;sav@bcs.zp.ua&gt; 2000
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a># Andrew Borodin &lt;aborodin@vmail.ru&gt;
+<a id='L9' name='L9'></a># David Haller &lt;dnh@opensuse.org&gt;
+<a id='L10' name='L10'></a>#       2013: support unrar5
+<a id='L11' name='L11'></a>#
+<a id='L12' name='L12'></a># beta version 2.0
+<a id='L13' name='L13'></a>#
+<a id='L14' name='L14'></a># rar and unrar can be found on http://www.rarlabs.com/
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>RAR=rar
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a># Prefer unrar (freeware).
+<a id='L19' name='L19'></a>UNRAR=`which unrar 2&gt;/dev/null`
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>[ -z $UNRAR ] &amp;&amp; UNRAR=$RAR
+<a id='L22' name='L22'></a>[ ! -x $UNRAR -a -x $RAR ] &amp;&amp; UNRAR=$RAR
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a># Let the test framework hook in:
+<a id='L25' name='L25'></a>UNRAR=${MC_TEST_EXTFS_LIST_CMD:-$UNRAR}
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a># Determine the $UNRAR version
+<a id='L28' name='L28'></a>if [ -n "$MC_TEST_EXTFS_UNRAR_VERSION" ]; then
+<a id='L29' name='L29'></a>  # Let the test framework fool us:
+<a id='L30' name='L30'></a>  UNRAR_VERSION=$MC_TEST_EXTFS_UNRAR_VERSION
+<a id='L31' name='L31'></a>else
+<a id='L32' name='L32'></a>  # Figure it out from rar itself:
+<a id='L33' name='L33'></a>  UNRAR_VERSION=`$UNRAR -cfg- -? | grep "Copyright" | sed -e 's/.*\([0-9]\)\..*/\1/'`
+<a id='L34' name='L34'></a>fi
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>mcrar4fs_list ()
+<a id='L37' name='L37'></a>{
+<a id='L38' name='L38'></a>     $UNRAR v -c- -cfg- "$1" | @AWK@ -v uid=`id -u` -v gid=`id -g` '
+<a id='L39' name='L39'></a>BEGIN { flag=0 }
+<a id='L40' name='L40'></a>/^-------/ { flag++; if (flag &gt; 1) exit 0; next }
+<a id='L41' name='L41'></a>flag==1 {
+<a id='L42' name='L42'></a>    str = substr($0, 2)
+<a id='L43' name='L43'></a>    getline
+<a id='L44' name='L44'></a>    split($4, a, "-")
+<a id='L45' name='L45'></a>    if (index($6, "D") != 0)
+<a id='L46' name='L46'></a>        $6="drwxr-xr-x"
+<a id='L47' name='L47'></a>    else
+<a id='L48' name='L48'></a>        if (index($6, ".") != 0)
+<a id='L49' name='L49'></a>            $6="-rw-r--r--"
+<a id='L50' name='L50'></a>    printf "%s 1 %s %s %d %02d/%02d/%02d %s ./%s\n", $6, uid, gid, $1, a[2], a[1], a[3], $5, str
+<a id='L51' name='L51'></a>}'
+<a id='L52' name='L52'></a>}
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a>mcrar5fs_list ()
+<a id='L55' name='L55'></a>{
+<a id='L56' name='L56'></a>    $UNRAR vt -c- -cfg- "$1" | @AWK@ -F ':' -v uid=`id -u` -v gid=`id -g` '
+<a id='L57' name='L57'></a>    {
+<a id='L58' name='L58'></a>        ### remove space after the ":" of the field name
+<a id='L59' name='L59'></a>        sub ("^ ", "", $2);
+<a id='L60' name='L60'></a>    }
+<a id='L61' name='L61'></a> 
+<a id='L62' name='L62'></a>    $1 ~ /^ *Name$/ {
+<a id='L63' name='L63'></a>        ### next file
+<a id='L64' name='L64'></a>        name = mtime = size = attrs = "";
+<a id='L65' name='L65'></a>        delete date;
+<a id='L66' name='L66'></a>        name = $2;
+<a id='L67' name='L67'></a>        ### if the name contains ":", append the rest of the fields
+<a id='L68' name='L68'></a>        if (NF &gt; 2) {
+<a id='L69' name='L69'></a>            for (i = 3; i &lt;= NF; i++) {
+<a id='L70' name='L70'></a>                name = name ":" $i;
+<a id='L71' name='L71'></a>            }
+<a id='L72' name='L72'></a>        }
+<a id='L73' name='L73'></a>    }
+<a id='L74' name='L74'></a>    $1 ~ /^ *mtime$/ {
+<a id='L75' name='L75'></a>        mtime = $2 ":" $3;
+<a id='L76' name='L76'></a>    }
+<a id='L77' name='L77'></a>    $1 ~ /^ *Size$/ {
+<a id='L78' name='L78'></a>        size = $2;
+<a id='L79' name='L79'></a>    }
+<a id='L80' name='L80'></a>    $1 ~ /^ *Attributes$/ {
+<a id='L81' name='L81'></a>        attrs = $2;
+<a id='L82' name='L82'></a>    }
+<a id='L83' name='L83'></a> 
+<a id='L84' name='L84'></a>    $1 ~ /^ *Compression$/ {
+<a id='L85' name='L85'></a>        ### file done, using /^$/ is not so good you
+<a id='L86' name='L86'></a>        ### would have to skip the version stuff first
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a>        ### get date and time
+<a id='L89' name='L89'></a>        split (mtime, date, " ");
+<a id='L90' name='L90'></a>        time = date[2];
+<a id='L91' name='L91'></a>        ### cut off seconds from the time
+<a id='L92' name='L92'></a>        sub (",[0-9]*$", "", time);
+<a id='L93' name='L93'></a>        ### split for reordering of the date in the printf below
+<a id='L94' name='L94'></a>        split (date[1], date, "-");
+<a id='L95' name='L95'></a>        ### mc seems to be able to parse 4 digit years too, so remove if tested
+<a id='L96' name='L96'></a>        # sub ("^..", "", date[1]); ### cut year to 2 digits only
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>        ### check/adjust rights
+<a id='L99' name='L99'></a>        if (index (attrs, "D") != 0) {
+<a id='L100' name='L100'></a>            attrs = "drwxr-xr-x";
+<a id='L101' name='L101'></a>        } else {
+<a id='L102' name='L102'></a>            if (index (attrs, ".") != 0) {
+<a id='L103' name='L103'></a>                attrs = "-rw-r--r--";
+<a id='L104' name='L104'></a>            }
+<a id='L105' name='L105'></a>        }
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>        ### and finally
+<a id='L108' name='L108'></a>        printf ("%s 1 %s %s %d %02d/%02d/%02d %s ./%s\n",
+<a id='L109' name='L109'></a>                attrs, uid, gid, size, date[2], date[3], date[1], time, name);
+<a id='L110' name='L110'></a>    }
+<a id='L111' name='L111'></a>'
+<a id='L112' name='L112'></a>}
+<a id='L113' name='L113'></a> 
+<a id='L114' name='L114'></a>mcrarfs_list ()
+<a id='L115' name='L115'></a>{
+<a id='L116' name='L116'></a>    case x$UNRAR_VERSION in
+<a id='L117' name='L117'></a>        x5 | x6 | x7) mcrar5fs_list "$@" ;;
+<a id='L118' name='L118'></a>        *)            mcrar4fs_list "$@" ;;
+<a id='L119' name='L119'></a>    esac
+<a id='L120' name='L120'></a>}
+<a id='L121' name='L121'></a> 
+<a id='L122' name='L122'></a>mcrarfs_copyin ()
+<a id='L123' name='L123'></a>{
+<a id='L124' name='L124'></a># copyin by christian.gennerat@alcatel.fr
+<a id='L125' name='L125'></a># preserve pwd. It is clean, but is it necessary?
+<a id='L126' name='L126'></a>    pwd=`pwd`
+<a id='L127' name='L127'></a># Create a directory and copy in it the tmp file with the good name     
+<a id='L128' name='L128'></a>    mkdir "$3.dir"
+<a id='L129' name='L129'></a>    cd "$3.dir"
+<a id='L130' name='L130'></a>    di="${2%/*}"
+<a id='L131' name='L131'></a># if file is to be written upper in the archive tree, make fake dir
+<a id='L132' name='L132'></a>    if test x"$di" != x"${2##*/}" ; then
+<a id='L133' name='L133'></a>        mkdir -p "$di"
+<a id='L134' name='L134'></a>    fi
+<a id='L135' name='L135'></a>    cp -fp "$3" "$3.dir/$2" 
+<a id='L136' name='L136'></a>    $RAR a "$1" "$2" &gt;/dev/null
+<a id='L137' name='L137'></a>    cd "$pwd"
+<a id='L138' name='L138'></a>    rm -rf "$3.dir"
+<a id='L139' name='L139'></a>}
+<a id='L140' name='L140'></a> 
+<a id='L141' name='L141'></a>mcrarfs_copyout ()
+<a id='L142' name='L142'></a>{
+<a id='L143' name='L143'></a>    $UNRAR p -p- -c- -cfg- -inul "$1" "$2" &gt; "$3"
+<a id='L144' name='L144'></a>}
+<a id='L145' name='L145'></a> 
+<a id='L146' name='L146'></a>mcrarfs_mkdir ()
+<a id='L147' name='L147'></a>{
+<a id='L148' name='L148'></a># preserve pwd. It is clean, but is it necessary?
+<a id='L149' name='L149'></a>    pwd=`pwd`
+<a id='L150' name='L150'></a># Create a directory and create in it a tmp directory with the good name     
+<a id='L151' name='L151'></a>    dir=`mktemp -d "${MC_TMPDIR:-/tmp}/mctmpdir-urar.XXXXXX"` || exit 1
+<a id='L152' name='L152'></a>    cd "$dir"
+<a id='L153' name='L153'></a>    mkdir -p "$2"  
+<a id='L154' name='L154'></a># rar cannot create an empty directory    
+<a id='L155' name='L155'></a>    touch "$2"/.rarfs
+<a id='L156' name='L156'></a>    $RAR a -r "$1" "$2" &gt;/dev/null
+<a id='L157' name='L157'></a>    $RAR d "$1" "$2/.rarfs" &gt;/dev/null
+<a id='L158' name='L158'></a>    cd "$pwd"
+<a id='L159' name='L159'></a>    rm -rf "$dir"
+<a id='L160' name='L160'></a>}
+<a id='L161' name='L161'></a> 
+<a id='L162' name='L162'></a>mcrarfs_rm ()
+<a id='L163' name='L163'></a>{
+<a id='L164' name='L164'></a>    $RAR d "$1" "$2" &gt;/dev/null
+<a id='L165' name='L165'></a>}
+<a id='L166' name='L166'></a> 
+<a id='L167' name='L167'></a>umask 077
+<a id='L168' name='L168'></a> 
+<a id='L169' name='L169'></a>cmd="$1"
+<a id='L170' name='L170'></a>shift
+<a id='L171' name='L171'></a> 
+<a id='L172' name='L172'></a>case "$cmd" in
+<a id='L173' name='L173'></a>  # Workaround for a bug in mc - directories must precede files to
+<a id='L174' name='L174'></a>  # avoid duplicate entries, so we sort output by filenames
+<a id='L175' name='L175'></a>  list)    mcrarfs_list    "$@" | sort -k 8 ;;
+<a id='L176' name='L176'></a>  rm)      mcrarfs_rm      "$@" ;;
+<a id='L177' name='L177'></a>  rmdir)   mcrarfs_rm      "$@" ;;
+<a id='L178' name='L178'></a>  mkdir)   mcrarfs_mkdir   "$@" ;;
+<a id='L179' name='L179'></a>  copyin)  mcrarfs_copyin  "$@" ;;
+<a id='L180' name='L180'></a>  copyout) mcrarfs_copyout "$@" ;;
+<a id='L181' name='L181'></a>  *) exit 1 ;;
+<a id='L182' name='L182'></a>esac
+<a id='L183' name='L183'></a>exit 0
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+183 src/vfs/extfs/helpers/urar.in'  /> */</em>
+</body>
+</html>

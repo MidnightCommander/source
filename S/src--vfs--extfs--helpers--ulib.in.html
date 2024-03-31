@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/ulib.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/ulib.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/ulib.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/ulib.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># VFS to manage the gputils archives.
+<a id='L4' name='L4'></a># Written by Molnár Károly (proton7@freemail.hu) 2012
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a>use warnings;
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>my %month = ('jan' =&gt; '01', 'feb' =&gt; '02', 'mar' =&gt; '03',
+<a id='L10' name='L10'></a>             'apr' =&gt; '04', 'may' =&gt; '05', 'jun' =&gt; '06',
+<a id='L11' name='L11'></a>             'jul' =&gt; '07', 'aug' =&gt; '08', 'sep' =&gt; '09',
+<a id='L12' name='L12'></a>             'oct' =&gt; '10', 'nov' =&gt; '11', 'dec' =&gt; '12');
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>my @PATHS = ('/usr/bin/gplib', '/usr/local/bin/gplib');
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>my $gplib = '';
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>foreach my $i (@PATHS)
+<a id='L19' name='L19'></a>{
+<a id='L20' name='L20'></a>    if (-x $i)
+<a id='L21' name='L21'></a>    {
+<a id='L22' name='L22'></a>        $gplib = $i;
+<a id='L23' name='L23'></a>        last;
+<a id='L24' name='L24'></a>    }
+<a id='L25' name='L25'></a>}
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>if ($gplib eq '')
+<a id='L28' name='L28'></a>{
+<a id='L29' name='L29'></a>    print STDERR "\a\t$0 : Gplib not found!\n";
+<a id='L30' name='L30'></a>    exit(1);
+<a id='L31' name='L31'></a>}
+<a id='L32' name='L32'></a> 
+<a id='L33' name='L33'></a>my $cmd = shift;
+<a id='L34' name='L34'></a>my $archive = shift;
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>#-------------------------------------------------------------------------------
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a>sub mc_ulib_fs_list
+<a id='L39' name='L39'></a>{
+<a id='L40' name='L40'></a>    open(PIPE, "$gplib -tq $archive |") || die("Error in $gplib -tq");
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>    my($dev, $inode, $mode, $nlink, $uid, $gid) = stat($archive);
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>    while (&lt;PIPE&gt;)
+<a id='L45' name='L45'></a>    {
+<a id='L46' name='L46'></a>        chomp;
+<a id='L47' name='L47'></a>        my @w = split(/\s+/o);
+<a id='L48' name='L48'></a>        my $fname = $w[0];
+<a id='L49' name='L49'></a> 
+<a id='L50' name='L50'></a>        $fname =~ s|\\|/|g;
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>        printf("-rw-r--r-- 1 %s %s %d %s-%02u-%s %s %s\n",
+<a id='L53' name='L53'></a>           $uid, $gid, int($w[1]), $month{lc($w[4])}, $w[5], $w[7], substr($w[6], 0, 5), $fname);
+<a id='L54' name='L54'></a>    }
+<a id='L55' name='L55'></a>    close (PIPE);
+<a id='L56' name='L56'></a>}
+<a id='L57' name='L57'></a> 
+<a id='L58' name='L58'></a>#-------------------------------------------------------------------------------
+<a id='L59' name='L59'></a> 
+<a id='L60' name='L60'></a>sub mc_ulib_fs_copyin
+<a id='L61' name='L61'></a>{
+<a id='L62' name='L62'></a>    system("$gplib -r $archive $_[0]");
+<a id='L63' name='L63'></a>    my $ret = $?;
+<a id='L64' name='L64'></a> 
+<a id='L65' name='L65'></a>    if ($ret)
+<a id='L66' name='L66'></a>    {
+<a id='L67' name='L67'></a>        die("Error in: $gplib -r");
+<a id='L68' name='L68'></a>    }
+<a id='L69' name='L69'></a>}
+<a id='L70' name='L70'></a> 
+<a id='L71' name='L71'></a>#-------------------------------------------------------------------------------
+<a id='L72' name='L72'></a> 
+<a id='L73' name='L73'></a>sub mc_ulib_fs_copyout
+<a id='L74' name='L74'></a>{
+<a id='L75' name='L75'></a>    my($module, $fname) = @_;
+<a id='L76' name='L76'></a>    my $tmpdir = $ENV{'TMPDIR'};
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>    $tmpdir = '/tmp' if (! defined $tmpdir or $tmpdir eq '');
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a>    open(PIPE, "$gplib -tq $archive |") || die("Error in: $gplib -tq");
+<a id='L81' name='L81'></a> 
+<a id='L82' name='L82'></a>    while (&lt;PIPE&gt;)
+<a id='L83' name='L83'></a>    {
+<a id='L84' name='L84'></a>        chomp;
+<a id='L85' name='L85'></a>        my @w = split(/\s+/o);
+<a id='L86' name='L86'></a>        my $module_orig = $w[0];
+<a id='L87' name='L87'></a>        my $count = () = ($module_orig =~ /(\\)/g);
+<a id='L88' name='L88'></a>        my $md = $module_orig;
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>        $md =~ s|\\|/|g;
+<a id='L91' name='L91'></a> 
+<a id='L92' name='L92'></a>        if ($module eq $md)
+<a id='L93' name='L93'></a>        {
+<a id='L94' name='L94'></a>            return if ($count);
+<a id='L95' name='L95'></a>        }
+<a id='L96' name='L96'></a>    }
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>    close (PIPE);
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>    chdir($tmpdir);
+<a id='L101' name='L101'></a>    system("$gplib -x $archive $module");
+<a id='L102' name='L102'></a>    my $ret = $?;
+<a id='L103' name='L103'></a> 
+<a id='L104' name='L104'></a>    if ($ret)
+<a id='L105' name='L105'></a>    {
+<a id='L106' name='L106'></a>        die("Error in: $gplib -x");
+<a id='L107' name='L107'></a>    }
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a>    rename($module, $fname) || die("Error in: rename($module, $fname)");
+<a id='L110' name='L110'></a>}
+<a id='L111' name='L111'></a> 
+<a id='L112' name='L112'></a>#-------------------------------------------------------------------------------
+<a id='L113' name='L113'></a> 
+<a id='L114' name='L114'></a>sub mc_ulib_fs_rm
+<a id='L115' name='L115'></a>{
+<a id='L116' name='L116'></a>    system("$gplib -d $archive $_[0]");
+<a id='L117' name='L117'></a>    my $ret = $?;
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>    if ($ret)
+<a id='L120' name='L120'></a>    {
+<a id='L121' name='L121'></a>        die("Error in: $gplib -d");
+<a id='L122' name='L122'></a>    }
+<a id='L123' name='L123'></a>}
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>################################################################################
+<a id='L126' name='L126'></a> 
+<a id='L127' name='L127'></a>if ($cmd eq 'list')
+<a id='L128' name='L128'></a>{
+<a id='L129' name='L129'></a>    mc_ulib_fs_list(@ARGV);
+<a id='L130' name='L130'></a>}
+<a id='L131' name='L131'></a>elsif ($cmd eq 'copyin')
+<a id='L132' name='L132'></a>{
+<a id='L133' name='L133'></a>    mc_ulib_fs_copyin(@ARGV);
+<a id='L134' name='L134'></a>}
+<a id='L135' name='L135'></a>elsif ($cmd eq 'copyout')
+<a id='L136' name='L136'></a>{
+<a id='L137' name='L137'></a>    mc_ulib_fs_copyout(@ARGV);
+<a id='L138' name='L138'></a>}
+<a id='L139' name='L139'></a>elsif ($cmd eq 'rm')
+<a id='L140' name='L140'></a>{
+<a id='L141' name='L141'></a>    mc_ulib_fs_rm(@ARGV);
+<a id='L142' name='L142'></a>}
+<a id='L143' name='L143'></a>else
+<a id='L144' name='L144'></a>{
+<a id='L145' name='L145'></a>    exit(1);
+<a id='L146' name='L146'></a>}
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+146 src/vfs/extfs/helpers/ulib.in'  /> */</em>
+</body>
+</html>

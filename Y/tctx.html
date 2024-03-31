@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tctx</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L825'>tctx</a>              825 src/filemanager/file.c progress_update_one (file_op_total_context_t * tctx, file_op_context_t * ctx, off_t add)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L830'>tctx</a>              830 src/filemanager/file.c     tctx-&gt;progress_count++;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L831'>tctx</a>              831 src/filemanager/file.c     tctx-&gt;progress_bytes += (uintmax_t) add;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L842'>tctx</a>              842 src/filemanager/file.c             file_progress_show_count (ctx, tctx-&gt;progress_count, ctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L843'>tctx</a>              843 src/filemanager/file.c             file_progress_show_total (tctx, ctx, tctx-&gt;progress_bytes, TRUE);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1156'>tctx</a>             1156 src/filemanager/file.c copy_file_file_display_progress (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1182'>tctx</a>             1182 src/filemanager/file.c         remain_bytes = ctx-&gt;progress_bytes - tctx-&gt;copied_bytes;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1187'>tctx</a>             1187 src/filemanager/file.c             total_secs = (tv_current - tctx-&gt;transfer_start) / G_USEC_PER_SEC;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1190'>tctx</a>             1190 src/filemanager/file.c             tctx-&gt;bps = tctx-&gt;copied_bytes / total_secs;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1191'>tctx</a>             1191 src/filemanager/file.c             tctx-&gt;eta_secs = (tctx-&gt;bps != 0) ? remain_bytes / tctx-&gt;bps : 0;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1195'>tctx</a>             1195 src/filemanager/file.c         tctx-&gt;bps_count++;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1196'>tctx</a>             1196 src/filemanager/file.c         tctx-&gt;bps = (tctx-&gt;bps * (tctx-&gt;bps_count - 1) + ctx-&gt;bps) / tctx-&gt;bps_count;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1197'>tctx</a>             1197 src/filemanager/file.c         tctx-&gt;eta_secs = (tctx-&gt;bps != 0) ? remain_bytes / tctx-&gt;bps : 0;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1236'>tctx</a>             1236 src/filemanager/file.c move_file_file (const WPanel * panel, file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1320'>tctx</a>             1320 src/filemanager/file.c             return_status = progress_update_one (tctx, ctx, src_stat.st_size);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1361'>tctx</a>             1361 src/filemanager/file.c     old_ask_overwrite = tctx-&gt;ask_overwrite;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1362'>tctx</a>             1362 src/filemanager/file.c     tctx-&gt;ask_overwrite = FALSE;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1363'>tctx</a>             1363 src/filemanager/file.c     return_status = copy_file_file (tctx, ctx, s, d);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1364'>tctx</a>             1364 src/filemanager/file.c     tctx-&gt;ask_overwrite = old_ask_overwrite;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1389'>tctx</a>             1389 src/filemanager/file.c         return_status = progress_update_one (tctx, ctx, src_stat.st_size);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1405'>tctx</a>             1405 src/filemanager/file.c erase_file (file_op_total_context_t * tctx, file_op_context_t * ctx, const vfs_path_t * vpath)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1411'>tctx</a>             1411 src/filemanager/file.c     if (file_progress_show_deleting (ctx, vfs_path_as_str (vpath), &amp;tctx-&gt;progress_count))</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1413'>tctx</a>             1413 src/filemanager/file.c         file_progress_show_count (ctx, tctx-&gt;progress_count, ctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1420'>tctx</a>             1420 src/filemanager/file.c     if (tctx-&gt;progress_count != 0 &amp;&amp; mc_lstat (vpath, &amp;buf) != 0)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1429'>tctx</a>             1429 src/filemanager/file.c     if (tctx-&gt;progress_count == 0)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1463'>tctx</a>             1463 src/filemanager/file.c recursive_erase (file_op_total_context_t * tctx, file_op_context_t * ctx, const vfs_path_t * vpath)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1490'>tctx</a>             1490 src/filemanager/file.c             return_status = recursive_erase (tctx, ctx, tmp_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1492'>tctx</a>             1492 src/filemanager/file.c             return_status = erase_file (tctx, ctx, tmp_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1503'>tctx</a>             1503 src/filemanager/file.c     file_progress_show_count (ctx, tctx-&gt;progress_count, ctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1575'>tctx</a>             1575 src/filemanager/file.c erase_dir_after_copy (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1581'>tctx</a>             1581 src/filemanager/file.c         tctx-&gt;progress_count = tctx-&gt;prev_progress_count;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1590'>tctx</a>             1590 src/filemanager/file.c                 *status = erase_dir_iff_empty (ctx, lp-&gt;src_vpath, tctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1592'>tctx</a>             1592 src/filemanager/file.c                 *status = erase_file (tctx, ctx, lp-&gt;src_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1598'>tctx</a>             1598 src/filemanager/file.c         tctx-&gt;prev_progress_count = tctx-&gt;progress_count;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1601'>tctx</a>             1601 src/filemanager/file.c     erase_dir_iff_empty (ctx, vpath, tctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1620'>tctx</a>             1620 src/filemanager/file.c do_move_dir_dir (const WPanel * panel, file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1683'>tctx</a>             1683 src/filemanager/file.c             return_status = copy_dir_dir (tctx, ctx, s, d, FALSE, TRUE, TRUE, NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1738'>tctx</a>             1738 src/filemanager/file.c     return_status = copy_dir_dir (tctx, ctx, s, d, FALSE, FALSE, TRUE, NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1759'>tctx</a>             1759 src/filemanager/file.c     erase_dir_after_copy (tctx, ctx, src_vpath, &amp;return_status);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2030'>tctx</a>             2030 src/filemanager/file.c operate_single_file (const WPanel * panel, file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2059'>tctx</a>             2059 src/filemanager/file.c                 value = erase_file (tctx, ctx, src_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2061'>tctx</a>             2061 src/filemanager/file.c                 value = erase_dir (tctx, ctx, src_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2097'>tctx</a>             2097 src/filemanager/file.c                         value = copy_file_file (tctx, ctx, src, dest);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2099'>tctx</a>             2099 src/filemanager/file.c                         value = copy_dir_dir (tctx, ctx, src, dest, TRUE, FALSE, FALSE, NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2111'>tctx</a>             2111 src/filemanager/file.c                     value = move_file_file (panel, tctx, ctx, src, dest);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2113'>tctx</a>             2113 src/filemanager/file.c                     value = do_move_dir_dir (panel, tctx, ctx, src, dest);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2133'>tctx</a>             2133 src/filemanager/file.c operate_one_file (const WPanel * panel, file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2150'>tctx</a>             2150 src/filemanager/file.c             value = erase_file (tctx, ctx, src_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2152'>tctx</a>             2152 src/filemanager/file.c             value = erase_dir (tctx, ctx, src_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2173'>tctx</a>             2173 src/filemanager/file.c                     value = copy_file_file (tctx, ctx, src, dest);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2175'>tctx</a>             2175 src/filemanager/file.c                     value = copy_dir_dir (tctx, ctx, src, dest, TRUE, FALSE, FALSE, NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2181'>tctx</a>             2181 src/filemanager/file.c                     value = move_file_file (NULL, tctx, ctx, src, dest);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2183'>tctx</a>             2183 src/filemanager/file.c                     value = do_move_dir_dir (NULL, tctx, ctx, src, dest);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2265'>tctx</a>             2265 src/filemanager/file.c copy_file_file (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2372'>tctx</a>             2372 src/filemanager/file.c         if (tctx-&gt;ask_overwrite)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2658'>tctx</a>             2658 src/filemanager/file.c     if (tctx-&gt;bps == 0 || (file_size / tctx-&gt;bps) &gt; FILEOP_UPDATE_INTERVAL)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2748'>tctx</a>             2748 src/filemanager/file.c             tctx-&gt;copied_bytes = tctx-&gt;progress_bytes + file_part + ctx-&gt;do_reget;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2755'>tctx</a>             2755 src/filemanager/file.c                 copy_file_file_display_progress (tctx, ctx, tv_current, tv_transfer_start,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2765'>tctx</a>             2765 src/filemanager/file.c             force_update = (tv_current - tctx-&gt;transfer_start) &gt; FILEOP_UPDATE_INTERVAL_US;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2769'>tctx</a>             2769 src/filemanager/file.c                 file_progress_show_count (ctx, tctx-&gt;progress_count, ctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2770'>tctx</a>             2770 src/filemanager/file.c                 file_progress_show_total (tctx, ctx, tctx-&gt;copied_bytes, force_update);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2929'>tctx</a>             2929 src/filemanager/file.c         return_status = progress_update_one (tctx, ctx, file_size);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2946'>tctx</a>             2946 src/filemanager/file.c copy_dir_dir (file_op_total_context_t * tctx, file_op_context_t * ctx, const char *s, const char *d,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3193'>tctx</a>             3193 src/filemanager/file.c                 copy_dir_dir (tctx, ctx, path, mdpath, FALSE, FALSE, do_delete, parent_dirs);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3201'>tctx</a>             3201 src/filemanager/file.c             return_status = copy_file_file (tctx, ctx, path, dest_file);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3221'>tctx</a>             3221 src/filemanager/file.c                 return_status = erase_dir_iff_empty (ctx, tmp_vpath, tctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3223'>tctx</a>             3223 src/filemanager/file.c                 return_status = erase_file (tctx, ctx, tmp_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3264'>tctx</a>             3264 src/filemanager/file.c move_dir_dir (file_op_total_context_t * tctx, file_op_context_t * ctx, const char *s, const char *d)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3266'>tctx</a>             3266 src/filemanager/file.c     return do_move_dir_dir (NULL, tctx, ctx, s, d);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3275'>tctx</a>             3275 src/filemanager/file.c erase_dir (file_op_total_context_t * tctx, file_op_context_t * ctx, const vfs_path_t * vpath)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3278'>tctx</a>             3278 src/filemanager/file.c     file_progress_show_count (ctx, tctx-&gt;progress_count, ctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3297'>tctx</a>             3297 src/filemanager/file.c             error = recursive_erase (tctx, ctx, vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3449'>tctx</a>             3449 src/filemanager/file.c     file_op_total_context_t *tctx;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3495'>tctx</a>             3495 src/filemanager/file.c     tctx = file_op_total_context_new ();</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3496'>tctx</a>             3496 src/filemanager/file.c     tctx-&gt;transfer_start = g_get_monotonic_time ();</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3570'>tctx</a>             3570 src/filemanager/file.c         value = operate_single_file (panel, tctx, ctx, source, &amp;src_stat, dest, dialog_type);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3614'>tctx</a>             3614 src/filemanager/file.c                 value = operate_one_file (panel, tctx, ctx, source2, &amp;src_stat, dest);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3624'>tctx</a>             3624 src/filemanager/file.c                     file_progress_show_count (ctx, tctx-&gt;progress_count, ctx-&gt;progress_count);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3625'>tctx</a>             3625 src/filemanager/file.c                     file_progress_show_total (tctx, ctx, tctx-&gt;progress_bytes, FALSE);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3674'>tctx</a>             3674 src/filemanager/file.c     file_op_total_context_destroy (tctx);</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L44'>tctx</a>               44 src/filemanager/file.h FileProgressStatus copy_file_file (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L46'>tctx</a>               46 src/filemanager/file.h FileProgressStatus move_dir_dir (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L48'>tctx</a>               48 src/filemanager/file.h FileProgressStatus copy_dir_dir (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L52'>tctx</a>               52 src/filemanager/file.h FileProgressStatus erase_dir (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1058'>tctx</a>             1058 src/filemanager/filegui.c file_progress_show_total (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1082'>tctx</a>             1082 src/filemanager/filegui.c     if (!show_summary &amp;&amp; tctx-&gt;bps == 0)</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1091'>tctx</a>             1091 src/filemanager/filegui.c         file_frmt_time (buffer2, (tv_current - tctx-&gt;transfer_start) / G_USEC_PER_SEC);</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1095'>tctx</a>             1095 src/filemanager/filegui.c             file_eta_prepare_for_show (buffer3, tctx-&gt;eta_secs, TRUE);</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1096'>tctx</a>             1096 src/filemanager/filegui.c             if (tctx-&gt;bps == 0)</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1100'>tctx</a>             1100 src/filemanager/filegui.c                 file_bps_prepare_for_show (buffer4, (long) tctx-&gt;bps);</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1106'>tctx</a>             1106 src/filemanager/filegui.c             if (tctx-&gt;bps == 0)</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1110'>tctx</a>             1110 src/filemanager/filegui.c                 file_bps_prepare_for_show (buffer4, (long) tctx-&gt;bps);</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1118'>tctx</a>             1118 src/filemanager/filegui.c         size_trunc_len (buffer2, 5, tctx-&gt;copied_bytes, 0, panels_options.kilobyte_si);</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.h.html#L33'>tctx</a>               33 src/filemanager/filegui.h void file_progress_show_total (file_op_total_context_t * tctx, file_op_context_t * ctx,</span>
+<span class='curline'><a href='../S/src--filemanager--fileopctx.c.html#L114'>tctx</a>              114 src/filemanager/fileopctx.c     file_op_total_context_t *tctx;</span>
+<span class='curline'><a href='../S/src--filemanager--fileopctx.c.html#L115'>tctx</a>              115 src/filemanager/fileopctx.c     tctx = g_new0 (file_op_total_context_t, 1);</span>
+<span class='curline'><a href='../S/src--filemanager--fileopctx.c.html#L116'>tctx</a>              116 src/filemanager/fileopctx.c     tctx-&gt;ask_overwrite = TRUE;</span>
+<span class='curline'><a href='../S/src--filemanager--fileopctx.c.html#L117'>tctx</a>              117 src/filemanager/fileopctx.c     return tctx;</span>
+<span class='curline'><a href='../S/src--filemanager--fileopctx.c.html#L123'>tctx</a>              123 src/filemanager/fileopctx.c file_op_total_context_destroy (file_op_total_context_t * tctx)</span>
+<span class='curline'><a href='../S/src--filemanager--fileopctx.c.html#L125'>tctx</a>              125 src/filemanager/fileopctx.c     g_free (tctx);</span>
+<span class='curline'><a href='../S/src--filemanager--fileopctx.h.html#L189'>tctx</a>              189 src/filemanager/fileopctx.h void file_op_total_context_destroy (file_op_total_context_t * tctx);</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L726'>tctx</a>              726 src/filemanager/tree.c         file_op_total_context_t *tctx;</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L729'>tctx</a>              729 src/filemanager/tree.c         tctx = file_op_total_context_new ();</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L731'>tctx</a>              731 src/filemanager/tree.c         tctx-&gt;ask_overwrite = FALSE;</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L732'>tctx</a>              732 src/filemanager/tree.c         copy_dir_dir (tctx, ctx, vfs_path_as_str (tree-&gt;selected_ptr-&gt;name), dest, TRUE, FALSE,</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L734'>tctx</a>              734 src/filemanager/tree.c         file_op_total_context_destroy (tctx);</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L773'>tctx</a>              773 src/filemanager/tree.c             file_op_total_context_t *tctx;</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L776'>tctx</a>              776 src/filemanager/tree.c             tctx = file_op_total_context_new ();</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L778'>tctx</a>              778 src/filemanager/tree.c             move_dir_dir (tctx, ctx, vfs_path_as_str (tree-&gt;selected_ptr-&gt;name), dest);</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L779'>tctx</a>              779 src/filemanager/tree.c             file_op_total_context_destroy (tctx);</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L814'>tctx</a>              814 src/filemanager/tree.c     file_op_total_context_t *tctx;</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L833'>tctx</a>              833 src/filemanager/tree.c     tctx = file_op_total_context_new ();</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L836'>tctx</a>              836 src/filemanager/tree.c     if (erase_dir (tctx, ctx, tree-&gt;selected_ptr-&gt;name) == FILE_CONT)</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L838'>tctx</a>              838 src/filemanager/tree.c     file_op_total_context_destroy (tctx);</span>
+<span class='curline'><a href='../S/src--util.c.html#L58'>tctx</a>               58 src/util.c             file_op_total_context_t *tctx;</span>
+<span class='curline'><a href='../S/src--util.c.html#L64'>tctx</a>               64 src/util.c             tctx = file_op_total_context_new ();</span>
+<span class='curline'><a href='../S/src--util.c.html#L66'>tctx</a>               66 src/util.c             copy_file_file (tctx, ctx, vfs_path_as_str (default_file_vpath),</span>
+<span class='curline'><a href='../S/src--util.c.html#L68'>tctx</a>               68 src/util.c             file_op_total_context_destroy (tctx);</span>
+</pre>
+</body>
+</html>

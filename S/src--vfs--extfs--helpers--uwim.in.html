@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/uwim.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uwim.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uwim.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/uwim.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a># Midnight Commander - WIM support
+<a id='L3' name='L3'></a>#
+<a id='L4' name='L4'></a># Written by:
+<a id='L5' name='L5'></a>#  Vadim Kalinnikov &lt;moose@ylsoftware.com&gt;,
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a># This file is part of the Midnight Commander.
+<a id='L8' name='L8'></a>#
+<a id='L9' name='L9'></a># It required wimtools: https://wimlib.net/
+<a id='L10' name='L10'></a># On Debian/Ubuntu wimtools can be installed via:
+<a id='L11' name='L11'></a># apt install wimtools
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>which wimlib-imagex 2&gt;/dev/null &gt; /dev/null || exit 1
+<a id='L14' name='L14'></a>WIM=`which wimlib-imagex`
+<a id='L15' name='L15'></a>AWK=@AWK@
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a>[ -n "$2" ] || exit 1
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>ACTION=$1
+<a id='L20' name='L20'></a>WIMFILENAME=$2
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a>mcwim_list() {
+<a id='L23' name='L23'></a>        # Here we can use "Image count" from output,
+<a id='L24' name='L24'></a>        # but on some broken images we can get garbage, instead of number
+<a id='L25' name='L25'></a>        IMAGECOUNT=`${WIM} info ${WIMFILENAME} | grep  Index: | grep -v Boot | wc -l`
+<a id='L26' name='L26'></a>        IMGNUM=1
+<a id='L27' name='L27'></a>        VUID=`id -nu`
+<a id='L28' name='L28'></a>        VGID=`id -ng`
+<a id='L29' name='L29'></a>        while [ ${IMGNUM} -le ${IMAGECOUNT} ]; do
+<a id='L30' name='L30'></a>                ${WIM} dir ${WIMFILENAME} ${IMGNUM} --detailed | \
+<a id='L31' name='L31'></a>                        ${AWK}  -v uid=${VUID} -v gid=${VGID} -v imgnum=${IMGNUM} '
+<a id='L32' name='L32'></a>                                /^----------------------------------------------------------------------------/,/^$/ {
+<a id='L33' name='L33'></a>                                        if (match($0, /^Full Path/)) {
+<a id='L34' name='L34'></a>                                                split($0, namesrc, "\"");
+<a id='L35' name='L35'></a>                                                name=namesrc[2];
+<a id='L36' name='L36'></a>                                        }
+<a id='L37' name='L37'></a>                                        if (match($0, /FILE_ATTRIBUTE_DIRECTORY is set/)) {
+<a id='L38' name='L38'></a>                                                attr="drwxr-xr-x"
+<a id='L39' name='L39'></a>                                        }
+<a id='L40' name='L40'></a>                                        if (match($0, /^Uncompressed size/)) {
+<a id='L41' name='L41'></a>                                                size=$4;
+<a id='L42' name='L42'></a>                                        }
+<a id='L43' name='L43'></a>                                        if (match($0, /^Last Write Time/)) {
+<a id='L44' name='L44'></a>                                                months["Jan"] = "01";
+<a id='L45' name='L45'></a>                                                months["Feb"] = "02";
+<a id='L46' name='L46'></a>                                                months["Mar"] = "03";
+<a id='L47' name='L47'></a>                                                months["Apr"] = "04";
+<a id='L48' name='L48'></a>                                                months["May"] = "05";
+<a id='L49' name='L49'></a>                                                months["Jun"] = "06";
+<a id='L50' name='L50'></a>                                                months["Jul"] = "07";
+<a id='L51' name='L51'></a>                                                months["Aug"] = "08";
+<a id='L52' name='L52'></a>                                                months["Sep"] = "09";
+<a id='L53' name='L53'></a>                                                months["Oct"] = "10";
+<a id='L54' name='L54'></a>                                                months["Nov"] = "11";
+<a id='L55' name='L55'></a>                                                months["Dec"] = "12";
+<a id='L56' name='L56'></a>                                                split($0, mtimesrc, " ");
+<a id='L57' name='L57'></a>                                                mtime=sprintf("%s/%s/%s %s", months[mtimesrc[6]], mtimesrc[7], mtimesrc[9], mtimesrc[8]);
+<a id='L58' name='L58'></a>                                        }
+<a id='L59' name='L59'></a>                                        
+<a id='L60' name='L60'></a>                                        if (match($0, /^$/)) {
+<a id='L61' name='L61'></a>                                                printf("%s 1 %s %s % 20s % 24s IMAGE%s%s\n",
+<a id='L62' name='L62'></a>                                                        attr, uid, gid, size, mtime, imgnum, name);
+<a id='L63' name='L63'></a>                                                name = size = mtime = "";
+<a id='L64' name='L64'></a>                                                attr="-rw-r--r--";
+<a id='L65' name='L65'></a>                                        }
+<a id='L66' name='L66'></a>                                }
+<a id='L67' name='L67'></a>                        '
+<a id='L68' name='L68'></a>                
+<a id='L69' name='L69'></a>                IMGNUM=$((IMGNUM+1))
+<a id='L70' name='L70'></a>        done
+<a id='L71' name='L71'></a>        
+<a id='L72' name='L72'></a>        # Virtual files
+<a id='L73' name='L73'></a>        echo "-r-xr-xr-x 1 ${VUID} ${VGID}                    1      01/01/2020 00:00:00 OPTIMIZE"
+<a id='L74' name='L74'></a>        echo "-r-xr-xr-x 1 ${VUID} ${VGID}                    1      01/01/2020 00:00:00 VERIFY"
+<a id='L75' name='L75'></a>}
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a>mcwim_copyout() {
+<a id='L78' name='L78'></a>        # Virtual files
+<a id='L79' name='L79'></a>        if [ "${FILENAMESRC}" = "OPTIMIZE" ]; then
+<a id='L80' name='L80'></a>                echo "#/bin/sh" &gt; ${FILENAMEDST}
+<a id='L81' name='L81'></a>                echo "# Run this to optimize archive" &gt;&gt; ${FILENAMEDST}
+<a id='L82' name='L82'></a>                echo "${WIM} optimize \"${WIMFILENAME}\"" &gt;&gt; ${FILENAMEDST}
+<a id='L83' name='L83'></a>                chmod a+x ${FILENAMEDST}
+<a id='L84' name='L84'></a>                exit 0;
+<a id='L85' name='L85'></a>        elif [ "${FILENAMESRC}" = "VERIFY" ]; then
+<a id='L86' name='L86'></a>                echo "#/bin/sh" &gt; ${FILENAMEDST}
+<a id='L87' name='L87'></a>                echo "# Run this to verify archive" &gt;&gt; ${FILENAMEDST}
+<a id='L88' name='L88'></a>                echo "${WIM} verify \"${WIMFILENAME}\"" &gt;&gt; ${FILENAMEDST}
+<a id='L89' name='L89'></a>                chmod a+x ${FILENAMEDST}
+<a id='L90' name='L90'></a>                exit 0;
+<a id='L91' name='L91'></a>        fi
+<a id='L92' name='L92'></a> 
+<a id='L93' name='L93'></a>        # Filename must contain imgnum
+<a id='L94' name='L94'></a>        echo ${FILENAMESRC} | grep -E '^IMAGE[0-9]+/' || exit 1
+<a id='L95' name='L95'></a> 
+<a id='L96' name='L96'></a>        IMGNUM=`echo ${FILENAMESRC} | cut -d '/' -f1 | sed "s/IMAGE//"`
+<a id='L97' name='L97'></a>        REALFILENAME=`echo ${FILENAMESRC} | sed "s/IMAGE${IMGNUM}//"`
+<a id='L98' name='L98'></a>        ${WIM} extract ${WIMFILENAME} ${IMGNUM} ${REALFILENAME} --to-stdout &gt; ${FILENAMEDST}
+<a id='L99' name='L99'></a>}
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>mcwim_copyin() {
+<a id='L102' name='L102'></a>        # Skip virtual files
+<a id='L103' name='L103'></a>        [ "${FILENAMEDST}" = "OPTIMIZE" ] &amp;&amp; exit 1;
+<a id='L104' name='L104'></a>        [ "${FILENAMEDST}" = "VERIFY" ] &amp;&amp; exit 1;
+<a id='L105' name='L105'></a> 
+<a id='L106' name='L106'></a>        # Filename must contain imgnum
+<a id='L107' name='L107'></a>        echo ${FILENAMEDST} | grep -E '^IMAGE[0-9]+/' || exit 1
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a>        IMGNUM=`echo ${FILENAMEDST} | cut -d '/' -f1 | sed "s/IMAGE//"`
+<a id='L110' name='L110'></a>        REALFILENAME=`echo ${FILENAMEDST} | sed "s/IMAGE${IMGNUM}//"`
+<a id='L111' name='L111'></a>        echo "add \"${FILENAMESRC}\" \"${REALFILENAME}\"" | ${WIM} update ${WIMFILENAME} ${IMGNUM} &gt; /dev/null
+<a id='L112' name='L112'></a>}
+<a id='L113' name='L113'></a> 
+<a id='L114' name='L114'></a> 
+<a id='L115' name='L115'></a>mcwim_rm() {
+<a id='L116' name='L116'></a>        # Skip virtual files
+<a id='L117' name='L117'></a>        [ "${FILENAMESRC}" = "OPTIMIZE" ] &amp;&amp; exit 0;
+<a id='L118' name='L118'></a>        [ "${FILENAMESRC}" = "VERIFY" ] &amp;&amp; exit 0;
+<a id='L119' name='L119'></a> 
+<a id='L120' name='L120'></a>        # Filename must contain imgnum
+<a id='L121' name='L121'></a>        echo ${FILENAMESRC} | grep -E '^IMAGE[0-9]+/' || exit 1
+<a id='L122' name='L122'></a>        
+<a id='L123' name='L123'></a>        IMGNUM=`echo ${FILENAMESRC} | cut -d '/' -f1 | sed "s/IMAGE//"`
+<a id='L124' name='L124'></a>        REALFILENAME=`echo ${FILENAMESRC} | sed "s/IMAGE${IMGNUM}//"`
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a>        if [ -z "${REALFILENAME}" ]; then
+<a id='L127' name='L127'></a>                # If user want to remove image
+<a id='L128' name='L128'></a>                ${WIM} delete ${WIMFILENAME} ${IMGNUM}
+<a id='L129' name='L129'></a>        else
+<a id='L130' name='L130'></a>                # remove regular file or directory
+<a id='L131' name='L131'></a>                echo "delete \"${REALFILENAME}\"" | ${WIM} update ${WIMFILENAME} ${IMGNUM} --force --recursive &gt; /dev/null
+<a id='L132' name='L132'></a>        fi
+<a id='L133' name='L133'></a>}
+<a id='L134' name='L134'></a> 
+<a id='L135' name='L135'></a>mcwim_run() {
+<a id='L136' name='L136'></a>        case ${RUNFILENAME} in
+<a id='L137' name='L137'></a>                OPTIMIZE)
+<a id='L138' name='L138'></a>                        ${WIM} optimize ${WIMFILENAME}
+<a id='L139' name='L139'></a>                        exit 0;
+<a id='L140' name='L140'></a>                ;;
+<a id='L141' name='L141'></a>                VERIFY)
+<a id='L142' name='L142'></a>                        ${WIM} verify ${WIMFILENAME}
+<a id='L143' name='L143'></a>                        exit 0;
+<a id='L144' name='L144'></a>                ;;
+<a id='L145' name='L145'></a>        esac
+<a id='L146' name='L146'></a>        exit 1;
+<a id='L147' name='L147'></a>}
+<a id='L148' name='L148'></a> 
+<a id='L149' name='L149'></a> 
+<a id='L150' name='L150'></a>mcwim_mkdir() {
+<a id='L151' name='L151'></a>        # New dirname must contain imgnum
+<a id='L152' name='L152'></a>        echo ${NEWDIRNAME} | grep -E '^IMAGE[0-9]+/' || exit 1
+<a id='L153' name='L153'></a>        IMGNUM=`echo ${NEWDIRNAME} | cut -d '/' -f1 | sed "s/IMAGE//"`
+<a id='L154' name='L154'></a>        REALDIRNAME=`echo ${NEWDIRNAME} | sed "s/IMAGE${IMGNUM}//"`
+<a id='L155' name='L155'></a>        [ -z "${REALDIRNAME}" ] &amp;&amp; exit 1
+<a id='L156' name='L156'></a>        
+<a id='L157' name='L157'></a>        TMPDIR=`mktemp -d`
+<a id='L158' name='L158'></a>        DSTBASENAME=`basename ${REALDIRNAME}`
+<a id='L159' name='L159'></a>        SRCDIRNAME="${TMPDIR}/${DSTBASENAME}"
+<a id='L160' name='L160'></a>        mkdir -p ${SRCDIRNAME}
+<a id='L161' name='L161'></a>        echo "add \"${SRCDIRNAME}\" \"${REALDIRNAME}\"" | ${WIM} update ${WIMFILENAME} ${IMGNUM} &gt; /dev/null
+<a id='L162' name='L162'></a>        rm -rf ${TMPDIR}
+<a id='L163' name='L163'></a>}
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a>#echo "'$1' '$2' '$3' '$4' '$5'" &gt;&gt; /tmp/mcdebug
+<a id='L166' name='L166'></a> 
+<a id='L167' name='L167'></a>case "$ACTION" in
+<a id='L168' name='L168'></a>        list)
+<a id='L169' name='L169'></a>                mcwim_list
+<a id='L170' name='L170'></a>        ;;
+<a id='L171' name='L171'></a>        
+<a id='L172' name='L172'></a>        copyout)
+<a id='L173' name='L173'></a>                [ -n "$4" ] || exit 1
+<a id='L174' name='L174'></a>                FILENAMESRC="$3"
+<a id='L175' name='L175'></a>                FILENAMEDST="$4"
+<a id='L176' name='L176'></a>                mcwim_copyout
+<a id='L177' name='L177'></a>        ;;
+<a id='L178' name='L178'></a>        
+<a id='L179' name='L179'></a>        copyin)
+<a id='L180' name='L180'></a>                [ -n "$4" ] || exit 1
+<a id='L181' name='L181'></a>                FILENAMEDST="$3"
+<a id='L182' name='L182'></a>                FILENAMESRC="$4"
+<a id='L183' name='L183'></a>                mcwim_copyin
+<a id='L184' name='L184'></a>        ;;
+<a id='L185' name='L185'></a>        
+<a id='L186' name='L186'></a>        rm|rmdir)
+<a id='L187' name='L187'></a>                [ -n "$3" ] || exit 1
+<a id='L188' name='L188'></a>                FILENAMESRC="$3"
+<a id='L189' name='L189'></a>                mcwim_rm
+<a id='L190' name='L190'></a>        ;;
+<a id='L191' name='L191'></a>        
+<a id='L192' name='L192'></a>        run)
+<a id='L193' name='L193'></a>                [ -n "$3" ] || exit 1
+<a id='L194' name='L194'></a>                RUNFILENAME="$3"
+<a id='L195' name='L195'></a>                mcwim_run
+<a id='L196' name='L196'></a>        ;;
+<a id='L197' name='L197'></a>        
+<a id='L198' name='L198'></a>        mkdir)
+<a id='L199' name='L199'></a>                [ -n "$3" ] || exit 1
+<a id='L200' name='L200'></a>                NEWDIRNAME="$3"
+<a id='L201' name='L201'></a>                mcwim_mkdir
+<a id='L202' name='L202'></a>        ;;
+<a id='L203' name='L203'></a>        
+<a id='L204' name='L204'></a> 
+<a id='L205' name='L205'></a>        *)
+<a id='L206' name='L206'></a>                exit 1
+<a id='L207' name='L207'></a>        ;;
+<a id='L208' name='L208'></a>esac
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+208 src/vfs/extfs/helpers/uwim.in'  /> */</em>
+</body>
+</html>

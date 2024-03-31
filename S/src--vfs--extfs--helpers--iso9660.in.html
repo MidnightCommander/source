@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/iso9660.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/iso9660.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/iso9660.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/iso9660.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a># Midnight Commander - ISO9660 VFS for MC
+<a id='L3' name='L3'></a># based on lslR by Tomas Novak &lt;tnovak@ipex.cz&gt;   April 2000
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a># Copyright (C) 2000, 2003
+<a id='L6' name='L6'></a># The Free Software Foundation, Inc.
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a># Written by:
+<a id='L9' name='L9'></a>#  Michael Shigorin &lt;mike@altlinux.org&gt;,
+<a id='L10' name='L10'></a>#  Grigory Milev &lt;week@altlinux.org&gt;,
+<a id='L11' name='L11'></a>#  Kachalov Anton &lt;mouse@linux.ru.net&gt;, 2003
+<a id='L12' name='L12'></a>#  Victor Ananjevsky &lt;ananasik@gmail.com&gt;, 2013
+<a id='L13' name='L13'></a>#  slava zanko &lt;slavazanko@gmail.com&gt;, 2013
+<a id='L14' name='L14'></a>#
+<a id='L15' name='L15'></a># This file is part of the Midnight Commander.
+<a id='L16' name='L16'></a>#
+<a id='L17' name='L17'></a># The Midnight Commander is free software: you can redistribute it
+<a id='L18' name='L18'></a># and/or modify it under the terms of the GNU General Public License as
+<a id='L19' name='L19'></a># published by the Free Software Foundation, either version 3 of the License,
+<a id='L20' name='L20'></a># or (at your option) any later version.
+<a id='L21' name='L21'></a>#
+<a id='L22' name='L22'></a># The Midnight Commander is distributed in the hope that it will be useful,
+<a id='L23' name='L23'></a># but WITHOUT ANY WARRANTY; without even the implied warranty of
+<a id='L24' name='L24'></a># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<a id='L25' name='L25'></a># GNU General Public License for more details.
+<a id='L26' name='L26'></a>#
+<a id='L27' name='L27'></a># You should have received a copy of the GNU General Public License
+<a id='L28' name='L28'></a># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>#*** include section (source functions, for example) *******************
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>#*** file scope functions **********************************************
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>XORRISO=$(which xorriso 2&gt;/dev/null)
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>xorriso_list() {
+<a id='L37' name='L37'></a>    if test -z "$XORRISO"; then
+<a id='L38' name='L38'></a>        return 1
+<a id='L39' name='L39'></a>    fi
+<a id='L40' name='L40'></a>    local dir attr ln usr gr sz dt1 dt2 dt3 nm len name lsl r
+<a id='L41' name='L41'></a>    dir="${2:-/}"
+<a id='L42' name='L42'></a>    lsl=$( $XORRISO -abort_on FATAL -dev stdio:"$1" -cd "$dir" -lsl 2&gt; /dev/null )
+<a id='L43' name='L43'></a>    r=$?
+<a id='L44' name='L44'></a>    test $r -gt 0 &amp;&amp; return $r
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>    echo "$lsl" | grep "^[-d]" | \
+<a id='L47' name='L47'></a>    while read attr ln usr gr sz dt1 dt2 dt3 nm ; do
+<a id='L48' name='L48'></a>        len=$((${#nm} - 1))
+<a id='L49' name='L49'></a>        name=$(printf -- "$nm" | cut -c2-$len)  # remove quotes
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>        if test $(printf -- "$attr" | cut -c1-1) != "d"; then
+<a id='L52' name='L52'></a>            printf -- "%s %s %s %s %s %s %s %s %s/%s\n" "$attr" "$ln" "$usr" "$gr" "$sz" "$dt1" "$dt2" "$dt3" "$dir" "$name"
+<a id='L53' name='L53'></a>        else
+<a id='L54' name='L54'></a>            xorriso_list "$1" "$dir/$name"
+<a id='L55' name='L55'></a>        fi
+<a id='L56' name='L56'></a>    done
+<a id='L57' name='L57'></a>}
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>xorriso_copyout() {
+<a id='L60' name='L60'></a>    if test -z "$XORRISO"; then
+<a id='L61' name='L61'></a>        return 1
+<a id='L62' name='L62'></a>    fi
+<a id='L63' name='L63'></a>    $XORRISO -dev stdio:"$1" -osirrox on -extract "$2" "$3" &gt;/dev/null 2&gt;&amp;1
+<a id='L64' name='L64'></a>}
+<a id='L65' name='L65'></a> 
+<a id='L66' name='L66'></a>xorriso_copyin() {
+<a id='L67' name='L67'></a>    if test -z "$XORRISO"; then
+<a id='L68' name='L68'></a>        return 1
+<a id='L69' name='L69'></a>    fi
+<a id='L70' name='L70'></a>    $XORRISO -dev stdio:"$1" -cpr "$3" "$2" &gt;/dev/null 2&gt;&amp;1
+<a id='L71' name='L71'></a>}
+<a id='L72' name='L72'></a> 
+<a id='L73' name='L73'></a>xorriso_mkdir() {
+<a id='L74' name='L74'></a>    if test -z "$XORRISO"; then
+<a id='L75' name='L75'></a>        return 1
+<a id='L76' name='L76'></a>    fi
+<a id='L77' name='L77'></a>    $XORRISO -dev stdio:"$1" -mkdir "$2" &gt;/dev/null 2&gt;&amp;1
+<a id='L78' name='L78'></a>}
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a>xorriso_rmdir() {
+<a id='L81' name='L81'></a>    if test -z "$XORRISO"; then
+<a id='L82' name='L82'></a>        return 1
+<a id='L83' name='L83'></a>    fi
+<a id='L84' name='L84'></a>    $XORRISO -dev stdio:"$1" -rmdir "$2" &gt;/dev/null 2&gt;&amp;1
+<a id='L85' name='L85'></a>}
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a>xorriso_rm() {
+<a id='L88' name='L88'></a>    if test -z "$XORRISO"; then
+<a id='L89' name='L89'></a>        return 1
+<a id='L90' name='L90'></a>    fi
+<a id='L91' name='L91'></a>    $XORRISO -dev stdio:"$1" -rm "$2" &gt;/dev/null 2&gt;&amp;1
+<a id='L92' name='L92'></a>}
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a># tested to comply with isoinfo 2.0's output
+<a id='L95' name='L95'></a>test_iso () {
+<a id='L96' name='L96'></a>    ISOINFO=$(which isoinfo 2&gt;/dev/null)
+<a id='L97' name='L97'></a>    if test -z "$ISOINFO"; then
+<a id='L98' name='L98'></a>        echo "isoinfo not found" &gt;&amp;2
+<a id='L99' name='L99'></a>        return 1
+<a id='L100' name='L100'></a>    fi
+<a id='L101' name='L101'></a> 
+<a id='L102' name='L102'></a>    CHARSET=$(locale charmap 2&gt;/dev/null)
+<a id='L103' name='L103'></a>    if test -z "$CHARSET"; then
+<a id='L104' name='L104'></a>        CHARSET=$(locale 2&gt;/dev/null | grep LC_CTYPE | sed -n -e 's/.*\.\(.*\)"$/\1/p')
+<a id='L105' name='L105'></a>    fi
+<a id='L106' name='L106'></a>    if test -n "$CHARSET"; then
+<a id='L107' name='L107'></a>        CHARSET=$(echo "$CHARSET" | tr '[A-Z]' '[a-z]' | sed -e 's/^iso-/iso/')
+<a id='L108' name='L108'></a>        $ISOINFO -j $CHARSET -i /dev/null 2&gt;&amp;1 | grep "Iconv not yet supported\|Unknown charset" &gt;/dev/null &amp;&amp; CHARSET=
+<a id='L109' name='L109'></a>    fi
+<a id='L110' name='L110'></a>    if test -n "$CHARSET"; then
+<a id='L111' name='L111'></a>        JOLIET_OPT="-j $CHARSET -J"
+<a id='L112' name='L112'></a>    else
+<a id='L113' name='L113'></a>        JOLIET_OPT="-J"
+<a id='L114' name='L114'></a>    fi
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>    ISOINFO_D_I="$($ISOINFO -d -i "$1" 2&gt;/dev/null)"
+<a id='L117' name='L117'></a>    ISOINFO="$ISOINFO -R"
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>    echo "$ISOINFO_D_I" | grep "UCS level 1\|NO Joliet" &gt; /dev/null || ISOINFO="$ISOINFO $JOLIET_OPT"
+<a id='L120' name='L120'></a> 
+<a id='L121' name='L121'></a>    if [ $(echo "$ISOINFO_D_I" | grep "Joliet with UCS level 3 found" | wc -l) = 1 \
+<a id='L122' name='L122'></a>        -a $(echo "$ISOINFO_D_I" | grep "NO Rock Ridge" | wc -l) = 1 ] ; then
+<a id='L123' name='L123'></a>        SEMICOLON="YES"
+<a id='L124' name='L124'></a>    fi
+<a id='L125' name='L125'></a>}
+<a id='L126' name='L126'></a> 
+<a id='L127' name='L127'></a>mcisofs_list () {
+<a id='L128' name='L128'></a>    local lsl r
+<a id='L129' name='L129'></a> 
+<a id='L130' name='L130'></a>    # left as a reminder to implement compressed image support =)
+<a id='L131' name='L131'></a>    case "$1" in
+<a id='L132' name='L132'></a>      *.lz)  MYCAT="lzip -dc";;
+<a id='L133' name='L133'></a>      *.lz4) MYCAT="lz4 -dc";;
+<a id='L134' name='L134'></a>      *.lzma) MYCAT="lzma -dc";;
+<a id='L135' name='L135'></a>      *.lzo) MYCAT="lzop -dc";;
+<a id='L136' name='L136'></a>      *.xz)  MYCAT="xz -dc";;
+<a id='L137' name='L137'></a>      *.zst) MYCAT="zstd -dc";;
+<a id='L138' name='L138'></a>      *.bz2) MYCAT="bzip2 -dc";;
+<a id='L139' name='L139'></a>      *.gz)  MYCAT="gzip -dc";;
+<a id='L140' name='L140'></a>      *.z)   MYCAT="gzip -dc";;
+<a id='L141' name='L141'></a>      *.Z)   MYCAT="gzip -dc";;
+<a id='L142' name='L142'></a>      *)     MYCAT="cat";;
+<a id='L143' name='L143'></a>    esac
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a>    lsl=$($ISOINFO -l -i "$1"  2&gt;/dev/null)
+<a id='L146' name='L146'></a>    r=$?
+<a id='L147' name='L147'></a>    test $r -gt 0 &amp;&amp; return $r
+<a id='L148' name='L148'></a> 
+<a id='L149' name='L149'></a>    echo "$lsl" | @AWK@ -v SEMICOLON=$SEMICOLON '
+<a id='L150' name='L150'></a>BEGIN {
+<a id='L151' name='L151'></a>  dir="";
+<a id='L152' name='L152'></a>  # Pattern to match 8 first fields.
+<a id='L153' name='L153'></a>  rx = "[^      ]+[     ]+";
+<a id='L154' name='L154'></a>  rx = "^" rx rx rx rx rx rx rx rx;
+<a id='L155' name='L155'></a>  irx = "^\\[ *-?[0-9]* *[0-9]+\\] +";
+<a id='L156' name='L156'></a>}
+<a id='L157' name='L157'></a>/^$/ { next }
+<a id='L158' name='L158'></a>/^d---------/ { next }
+<a id='L159' name='L159'></a>/^Directory listing of [^       ].*$/ {
+<a id='L160' name='L160'></a>  dir=substr($0, 23);
+<a id='L161' name='L161'></a>  next;
+<a id='L162' name='L162'></a>}
+<a id='L163' name='L163'></a>{ $11 != "" } {
+<a id='L164' name='L164'></a>  name=$0
+<a id='L165' name='L165'></a>  sub(rx, "", name)
+<a id='L166' name='L166'></a>  attr=substr($0, 1, length($0)-length(name))
+<a id='L167' name='L167'></a>  # strip inodes and extra dir entries; fix perms
+<a id='L168' name='L168'></a>  sub(irx, "", name)
+<a id='L169' name='L169'></a>  sub("^----------   0    0    0", "-r--r--r--   1 root root", attr)
+<a id='L170' name='L170'></a>  sub(" $", "", name)
+<a id='L171' name='L171'></a>  # for Joliet UCS level 3
+<a id='L172' name='L172'></a>  if (SEMICOLON == "YES") sub(";1$", "", name);
+<a id='L173' name='L173'></a>  ## sub(";[0-9]+$", "", name) ## would break copyout
+<a id='L174' name='L174'></a>  # skip . and ..
+<a id='L175' name='L175'></a>  if (name == ".") next;
+<a id='L176' name='L176'></a>  if (name == "..") next;
+<a id='L177' name='L177'></a>  printf "%s%s%s\n", attr, dir, name
+<a id='L178' name='L178'></a>}'
+<a id='L179' name='L179'></a>}
+<a id='L180' name='L180'></a> 
+<a id='L181' name='L181'></a>mcisofs_copyout () {
+<a id='L182' name='L182'></a>    if [ "x$SEMICOLON" = "xYES" ]; then
+<a id='L183' name='L183'></a>        $ISOINFO -i "$1" -x "/$2;1" 2&gt;/dev/null &gt; "$3"
+<a id='L184' name='L184'></a>    else
+<a id='L185' name='L185'></a>        $ISOINFO -i "$1" -x "/$2" 2&gt;/dev/null &gt; "$3"
+<a id='L186' name='L186'></a>    fi
+<a id='L187' name='L187'></a>}
+<a id='L188' name='L188'></a> 
+<a id='L189' name='L189'></a>#*** main code *********************************************************
+<a id='L190' name='L190'></a> 
+<a id='L191' name='L191'></a>LC_ALL=C
+<a id='L192' name='L192'></a> 
+<a id='L193' name='L193'></a>cmd="$1"
+<a id='L194' name='L194'></a>shift
+<a id='L195' name='L195'></a> 
+<a id='L196' name='L196'></a>case "$cmd" in
+<a id='L197' name='L197'></a>  list)
+<a id='L198' name='L198'></a>    xorriso_list "$@" || {
+<a id='L199' name='L199'></a>        test_iso "$@" || exit 1
+<a id='L200' name='L200'></a>        mcisofs_list "$@" || exit 1
+<a id='L201' name='L201'></a>    }
+<a id='L202' name='L202'></a>    exit 0
+<a id='L203' name='L203'></a>    ;;
+<a id='L204' name='L204'></a>  rm)
+<a id='L205' name='L205'></a>    xorriso_rm "$@" || {
+<a id='L206' name='L206'></a>        exit 1
+<a id='L207' name='L207'></a>    }
+<a id='L208' name='L208'></a>    exit 0
+<a id='L209' name='L209'></a>    ;;
+<a id='L210' name='L210'></a>  rmdir)
+<a id='L211' name='L211'></a>    xorriso_rmdir "$@" || {
+<a id='L212' name='L212'></a>        exit 1
+<a id='L213' name='L213'></a>    }
+<a id='L214' name='L214'></a>    exit 0
+<a id='L215' name='L215'></a>    ;;
+<a id='L216' name='L216'></a>  mkdir)
+<a id='L217' name='L217'></a>    xorriso_mkdir "$@" || {
+<a id='L218' name='L218'></a>        exit 1
+<a id='L219' name='L219'></a>    }
+<a id='L220' name='L220'></a>    exit 0
+<a id='L221' name='L221'></a>    ;;
+<a id='L222' name='L222'></a>  copyin)
+<a id='L223' name='L223'></a>    xorriso_copyin "$@" || {
+<a id='L224' name='L224'></a>        exit 1
+<a id='L225' name='L225'></a>    }
+<a id='L226' name='L226'></a>    exit 0
+<a id='L227' name='L227'></a>    ;;
+<a id='L228' name='L228'></a>  copyout)
+<a id='L229' name='L229'></a>    xorriso_copyout "$@" || {
+<a id='L230' name='L230'></a>        test_iso "$@" || exit 1
+<a id='L231' name='L231'></a>        mcisofs_copyout "$@" || exit 1
+<a id='L232' name='L232'></a>    }
+<a id='L233' name='L233'></a>    exit 0
+<a id='L234' name='L234'></a>    ;;
+<a id='L235' name='L235'></a>esac
+<a id='L236' name='L236'></a>exit 1
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+236 src/vfs/extfs/helpers/iso9660.in'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/a+.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/a+.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/a+.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/a+.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># External filesystem for mc, using mtools
+<a id='L4' name='L4'></a># Written Ludek Brukner &lt;lubr@barco.cz&gt;, 1997
+<a id='L5' name='L5'></a># Much improved by Tom Perkins &lt;968794022@noid.net&gt;, 2000
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a># WARNING - This software is ALPHA - Absolutely NO WARRANTY
+<a id='L8' name='L8'></a># 
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a># These mtools components must be in PATH for this to work
+<a id='L11' name='L11'></a> 
+<a id='L12' name='L12'></a>use warnings;
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>sub quote {
+<a id='L15' name='L15'></a>    $_ = shift(@_);
+<a id='L16' name='L16'></a>    s/([^\w\/.+-])/\\$1/g;
+<a id='L17' name='L17'></a>    return($_);
+<a id='L18' name='L18'></a>}
+<a id='L19' name='L19'></a> 
+<a id='L20' name='L20'></a>$mmd = "mmd";
+<a id='L21' name='L21'></a>$mrd = "mrd";
+<a id='L22' name='L22'></a>$mdel = "mdel";
+<a id='L23' name='L23'></a>$mdir = "mdir -a";
+<a id='L24' name='L24'></a>$mcopy = "mcopy -noQ";
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>$0 =~ s|.*/||;
+<a id='L27' name='L27'></a>$qdisk = quote($0);
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>$ENV{MTOOLS_DATE_STRING} = "mm-dd-yyyy";
+<a id='L30' name='L30'></a>$ENV{MTOOLS_TWENTY_FOUR_HOUR_CLOCK} = "1";
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>SWITCH: for ( $ARGV[0] ) {
+<a id='L33' name='L33'></a>  /list/ &amp;&amp; do {
+<a id='L34' name='L34'></a>    @dirs = get_dirs("");
+<a id='L35' name='L35'></a>    while ($dir = shift(@dirs)) {
+<a id='L36' name='L36'></a>      push @dirs, get_dirs("$dir/");
+<a id='L37' name='L37'></a>    } exit 0; };
+<a id='L38' name='L38'></a>  /mkdir/ &amp;&amp; do {
+<a id='L39' name='L39'></a>    shift; shift;
+<a id='L40' name='L40'></a>    exit 1 if scalar(@ARGV) != 1;
+<a id='L41' name='L41'></a>    $qname = quote($ARGV[0]);
+<a id='L42' name='L42'></a>    system("$mmd $qdisk:/$qname &gt;/dev/null");
+<a id='L43' name='L43'></a>    exit 0; };
+<a id='L44' name='L44'></a>  /rmdir/ &amp;&amp; do {
+<a id='L45' name='L45'></a>    shift; shift;
+<a id='L46' name='L46'></a>    exit 1 if scalar(@ARGV) != 1;
+<a id='L47' name='L47'></a>    $qname = quote($ARGV[0]);
+<a id='L48' name='L48'></a>    system("$mrd $qdisk:/$qname &gt;/dev/null");
+<a id='L49' name='L49'></a>    exit 0; };
+<a id='L50' name='L50'></a>  /rm/ &amp;&amp; do {
+<a id='L51' name='L51'></a>    shift; shift;
+<a id='L52' name='L52'></a>    exit 1 if scalar(@ARGV) != 1;
+<a id='L53' name='L53'></a>    $qname = quote($ARGV[0]);
+<a id='L54' name='L54'></a>    system("$mdel $qdisk:/$qname &gt;/dev/null");
+<a id='L55' name='L55'></a>    exit 0; };
+<a id='L56' name='L56'></a>  /copyout/ &amp;&amp; do {
+<a id='L57' name='L57'></a>    shift; shift;
+<a id='L58' name='L58'></a>    exit 1 if scalar(@ARGV) != 2;
+<a id='L59' name='L59'></a>    ( $qsrc, $qdest ) = @ARGV;
+<a id='L60' name='L60'></a>    $qsrc = quote($qsrc);
+<a id='L61' name='L61'></a>    $qdest = quote($qdest);
+<a id='L62' name='L62'></a>    system("$mcopy $qdisk:/$qsrc $qdest &gt;/dev/null");
+<a id='L63' name='L63'></a>    exit 0; };
+<a id='L64' name='L64'></a>  /copyin/ &amp;&amp; do {
+<a id='L65' name='L65'></a>    shift; shift;
+<a id='L66' name='L66'></a>    exit 1 if scalar(@ARGV) != 2;
+<a id='L67' name='L67'></a>    ( $qdest, $qsrc ) = @ARGV;
+<a id='L68' name='L68'></a>    $qsrc = quote($qsrc);
+<a id='L69' name='L69'></a>    $qdest = quote($qdest);
+<a id='L70' name='L70'></a>    system("$mcopy $qsrc $qdisk:/$qdest &gt;/dev/null");
+<a id='L71' name='L71'></a>    exit 0; };
+<a id='L72' name='L72'></a>  /.*/ &amp;&amp; do {                               # an unfamiliar command
+<a id='L73' name='L73'></a>    exit 1; };
+<a id='L74' name='L74'></a>}
+<a id='L75' name='L75'></a> 
+<a id='L76' name='L76'></a>sub get_dirs {
+<a id='L77' name='L77'></a>  my ($path, $name, $size, $date, $time, $longname, @lst, @rv);
+<a id='L78' name='L78'></a>  $path = shift(@_);
+<a id='L79' name='L79'></a>  my $qpath = quote($path);
+<a id='L80' name='L80'></a>  @rv = ();
+<a id='L81' name='L81'></a> 
+<a id='L82' name='L82'></a>  open(FILE,"$mdir $qdisk:/$qpath |");
+<a id='L83' name='L83'></a>  while ( &lt;FILE&gt; ) {
+<a id='L84' name='L84'></a>    chomp();
+<a id='L85' name='L85'></a>    /^ / &amp;&amp; next;                            # ignore `non-file' lines
+<a id='L86' name='L86'></a>    m{^Directory for $0:/}i &amp;&amp; next;         # ignore `non-file' lines
+<a id='L87' name='L87'></a>    /^$/ &amp;&amp; next;                            # ignore empty lines
+<a id='L88' name='L88'></a>    /^\.\.?/ &amp;&amp; next;                        # ignore `.' and `..'
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>    $name = substr($_,0,12);
+<a id='L91' name='L91'></a>    $name =~ s/^([^ ]*) +([^ ]+)[ \t]*$/$1.$2/;
+<a id='L92' name='L92'></a>    $name =~ s/[ .]+$//;
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>    $_ = substr($_,12);
+<a id='L95' name='L95'></a>    s/^[ ]+//;
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a>    ($size,$date,$time,$longname) = split(/[ \t]+/, $_, 4);
+<a id='L98' name='L98'></a> 
+<a id='L99' name='L99'></a>    defined $time || next;
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>    # process "am" and "pm".  Should not be needed if
+<a id='L102' name='L102'></a>    # MTOOLS_TWENTY_FOUR_HOUR_CLOCK is respected.
+<a id='L103' name='L103'></a>    @lst = split(/([:ap])/, $time);
+<a id='L104' name='L104'></a>    $lst[0] += 12 if (defined $lst[3] &amp;&amp; $lst[3] eq "p");
+<a id='L105' name='L105'></a> 
+<a id='L106' name='L106'></a>    $time = sprintf("%02d:%02d", $lst[0], $lst[2]);
+<a id='L107' name='L107'></a>    @lst = split(/-/, $date);
+<a id='L108' name='L108'></a>    $lst[2] %= 100 if ($lst[2] &gt; 100);
+<a id='L109' name='L109'></a>    $date = sprintf ("%02d-%02d-%02d", @lst);
+<a id='L110' name='L110'></a> 
+<a id='L111' name='L111'></a>    $name = $path . lc(($longname) ? $longname : $name);
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a>    if ($size =~ /DIR/) {
+<a id='L114' name='L114'></a>      printf("drwxr-xr-x   1 %-8d %-8d %8d %s %s %s\n",
+<a id='L115' name='L115'></a>        0, 0, 0, $date, $time, $name);
+<a id='L116' name='L116'></a>      push @rv, $name;
+<a id='L117' name='L117'></a>    } else {
+<a id='L118' name='L118'></a>      printf("-rw-r--r--   1 %-8d %-8d %8d %s %s %s\n",
+<a id='L119' name='L119'></a>        0, 0, $size, $date, $time, $name);
+<a id='L120' name='L120'></a>    }
+<a id='L121' name='L121'></a>  }
+<a id='L122' name='L122'></a>  close(FILE);
+<a id='L123' name='L123'></a>  return @rv;
+<a id='L124' name='L124'></a>}
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a>1;
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+126 src/vfs/extfs/helpers/a+.in'  /> */</em>
+</body>
+</html>

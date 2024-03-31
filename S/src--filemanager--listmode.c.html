@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/filemanager/listmode.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L114'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L323'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--filemanager.html'>filemanager</a>/listmode.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--filemanager.html'>filemanager</a>/listmode.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/filemanager/listmode.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L114' title='Defined at 114.'>select_new_item</a></li>
+<li><a href='#L141' title='Defined at 141.'>bplus_cback</a></li>
+<li><a href='#L149' title='Defined at 149.'>bminus_cback</a></li>
+<li><a href='#L157' title='Defined at 157.'>badd_cback</a></li>
+<li><a href='#L171' title='Defined at 171.'>bremove_cback</a></li>
+<li><a href='#L180' title='Defined at 180.'>init_listmode</a></li>
+<li><a href='#L277' title='Defined at 277.'>listmode_done</a></li>
+<li><a href='#L288' title='Defined at 288.'>collect_new_format</a></li>
+<li><a href='#L323' title='Defined at 323.'>listmode_edit</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Directory panel listing format editor -- for the Midnight Commander</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 1994-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Radek Doulik, 1994</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Janne Kukonlehto, 1995</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'></em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'></em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='comment'>/** \file listmode.c</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> *  \brief Source: directory panel listing format editor</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'> */</em>
+<a id='L30' name='L30'></a>  30 
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#ifdef</em> <a href='../Y/LISTMODE_EDITOR.html' title='Multiple used in 7 places.'>LISTMODE_EDITOR</a>
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> &lt;stdio.h&gt;
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;string.h&gt;
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;sys/types.h&gt;
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> &lt;sys/stat.h&gt;
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> &lt;unistd.h&gt;
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>lib/tty/tty.h</a>"
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#include</em> "<a href='lib--tty--key.h.html'>lib/tty/key.h</a>"
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#include</em> "<a href='lib--skin.h.html'>lib/skin/skin.h</a>"
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <em class='comment'>/* Needed for the extern declarations of integer parameters */</em>
+<a id='L50' name='L50'></a>  50 <em class='sharp'>#include</em> "<a href='src--filemanager--dir.h.html'>dir.h</a>"
+<a id='L51' name='L51'></a>  51 <em class='sharp'>#include</em> "<a href='src--filemanager--panel.h.html'>panel.h</a>"              <em class='comment'>/* Needed for the externs */</em>
+<a id='L52' name='L52'></a>  52 <em class='sharp'>#include</em> "<a href='src--filemanager--file.h.html'>file.h</a>"
+<a id='L53' name='L53'></a>  53 <em class='sharp'>#include</em> "<a href='src--filemanager--listmode.h.html'>listmode.h</a>"
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <em class='sharp'>#define</em> <a href='../R/UX.html' title='Multiple referred from 25 places.'>UX</a> 5
+<a id='L60' name='L60'></a>  60 <em class='sharp'>#define</em> <a href='../R/UY.html' title='Multiple referred from 17 places.'>UY</a> 2
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <em class='sharp'>#define</em> <a href='../R/BX.html' title='Multiple referred from 5 places.'>BX</a> 5
+<a id='L63' name='L63'></a>  63 <em class='sharp'>#define</em> <a href='../R/BY.html' title='Multiple referred from 22 places.'>BY</a> 18
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65 <em class='sharp'>#define</em> <a href='../R/B_ADD.html' title='Multiple referred from 3 places.'>B_ADD</a>    <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>
+<a id='L66' name='L66'></a>  66 <em class='sharp'>#define</em> <a href='../R/B_REMOVE.html' title='Multiple referred from 6 places.'>B_REMOVE</a> (<a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a> + 1)
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <em class='sharp'>#define</em> <a href='../R/B_PLUS.html' title='Multiple referred from 2 places.'>B_PLUS</a> <a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>
+<a id='L69' name='L69'></a>  69 <em class='sharp'>#define</em> <a href='../R/B_MINUS.html' title='Multiple referred from 2 places.'>B_MINUS</a> (<a href='../S/lib--widget--dialog.h.html#L29' title='Defined at 29 in lib/widget/dialog.h.'>B_USER</a>+1)
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73 <strong class='reserved'>struct</strong> <a href='../R/listmode_button.html' title='Multiple referred from 2 places.'>listmode_button</a>
+<a id='L74' name='L74'></a>  74 <em class='brace'>{</em>
+<a id='L75' name='L75'></a>  75     <strong class='reserved'>int</strong> <a href='../Y/ret_cmd.html' title='Multiple used in 28 places.'>ret_cmd</a>, <a href='../Y/flags.html' title='Multiple used in 411 places.'>flags</a>, <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>;
+<a id='L76' name='L76'></a>  76     <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>;
+<a id='L77' name='L77'></a>  77     bcback <a href='../Y/callback.html' title='Multiple used in 80 places.'>callback</a>;
+<a id='L78' name='L78'></a>  78 <em class='brace'>}</em>;
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80 <strong class='reserved'>struct</strong> <a href='../R/listmode_label.html' title='Multiple referred from 2 places.'>listmode_label</a>
+<a id='L81' name='L81'></a>  81 <em class='brace'>{</em>
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>int</strong> <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>;
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>;
+<a id='L84' name='L84'></a>  84 <em class='brace'>}</em>;
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L87' name='L87'></a>  87 
+<a id='L88' name='L88'></a>  88 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90 <strong class='reserved'>static</strong> <a href='../D/WListbox.html' title='Multiple defined in 2 places.'>WListbox</a> *<a href='../Y/l_listmode.html' title='Multiple used in 8 places.'>l_listmode</a>;
+<a id='L91' name='L91'></a>  91 
+<a id='L92' name='L92'></a>  92 <strong class='reserved'>static</strong> <a href='../S/lib--widget--label.h.html#L23' title='Defined at 23 in lib/widget/label.h.'>WLabel</a> *<a href='../Y/pname.html' title='Multiple used in 26 places.'>pname</a>;
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *<a href='../Y/listmode_section.html' title='Multiple used in 3 places.'>listmode_section</a> = "[Listing format edit]";
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *<a href='../Y/s_genwidth.html' title='Multiple used in 2 places.'>s_genwidth</a>[2] = <em class='brace'>{</em> "Half width", "Full width" <em class='brace'>}</em>;
+<a id='L97' name='L97'></a>  97 
+<a id='L98' name='L98'></a>  98 <strong class='reserved'>static</strong> <a href='../D/WRadio.html' title='Multiple defined in 2 places.'>WRadio</a> *<a href='../Y/radio_genwidth.html' title='Multiple used in 5 places.'>radio_genwidth</a>;
+<a id='L99' name='L99'></a>  99 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *<a href='../Y/s_columns.html' title='Multiple used in 2 places.'>s_columns</a>[2] = <em class='brace'>{</em> "One column", "Two columns" <em class='brace'>}</em>;
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101 <strong class='reserved'>static</strong> <a href='../D/WRadio.html' title='Multiple defined in 2 places.'>WRadio</a> *<a href='../Y/radio_columns.html' title='Multiple used in 5 places.'>radio_columns</a>;
+<a id='L102' name='L102'></a> 102 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *<a href='../Y/s_justify.html' title='Multiple used in 2 places.'>s_justify</a>[3] = <em class='brace'>{</em> "Left justified", "Default justification", "Right justified" <em class='brace'>}</em>;
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104 <strong class='reserved'>static</strong> <a href='../D/WRadio.html' title='Multiple defined in 2 places.'>WRadio</a> *<a href='../Y/radio_justify.html' title='Multiple used in 4 places.'>radio_justify</a>;
+<a id='L105' name='L105'></a> 105 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *<a href='../Y/s_itemwidth.html' title='Multiple used in 2 places.'>s_itemwidth</a>[3] = <em class='brace'>{</em> "Free width", "Fixed width", "Growable width" <em class='brace'>}</em>;
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 <strong class='reserved'>static</strong> <a href='../D/WRadio.html' title='Multiple defined in 2 places.'>WRadio</a> *<a href='../Y/radio_itemwidth.html' title='Multiple used in 4 places.'>radio_itemwidth</a>;
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *
+<a id='L114' name='L114'></a> 114 <a href='../S/src--filemanager--listmode.c.html#L159' title='Referred from 159 in src/filemanager/listmode.c.'>select_new_item</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L141'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+114 src/filemanager/listmode.c'  /> */</em>
+<a id='L115' name='L115'></a> 115 <em class='brace'>{</em>
+<a id='L116' name='L116'></a> 116     <strong class='reserved'>char</strong> **<a href='../Y/possible_items.html' title='Multiple used in 6 places.'>possible_items</a>;
+<a id='L117' name='L117'></a> 117     <strong class='reserved'>char</strong> *<a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L118' name='L118'></a> 118     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L119' name='L119'></a> 119     <a href='../S/lib--widget--listbox-window.h.html#L21' title='Defined at 21 in lib/widget/listbox-window.h.'>Listbox</a> *<a href='../Y/mylistbox.html' title='Multiple used in 4 places.'>mylistbox</a>;
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121     <a href='../Y/possible_items.html' title='Multiple used in 6 places.'>possible_items</a> = <a href='../S/src--filemanager--panel.c.html#L5176' title='Defined at 5176 in src/filemanager/panel.c.'>panel_get_user_possible_fields</a> (<a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123     <a href='../Y/mylistbox.html' title='Multiple used in 4 places.'>mylistbox</a> = <a href='../S/lib--widget--listbox-window.c.html#L120' title='Defined at 120 in lib/widget/listbox-window.c.'>listbox_window_new</a> (20, 12, "Add listing format item", <a href='../Y/listmode_section.html' title='Multiple used in 3 places.'>listmode_section</a>);
+<a id='L124' name='L124'></a> 124     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/possible_items.html' title='Multiple used in 6 places.'>possible_items</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>]; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L125' name='L125'></a> 125     <em class='brace'>{</em>
+<a id='L126' name='L126'></a> 126         <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/mylistbox.html' title='Multiple used in 4 places.'>mylistbox</a>-&gt;<a href='../Y/list.html' title='Multiple used in 368 places.'>list</a>, <a href='../S/lib--widget--listbox.h.html#L25' title='Defined at 25 in lib/widget/listbox.h.'>LISTBOX_APPEND_AT_END</a>, 0, <a href='../Y/possible_items.html' title='Multiple used in 6 places.'>possible_items</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>], <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>,
+<a id='L127' name='L127'></a> 127                           <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L128' name='L128'></a> 128     <em class='brace'>}</em>
+<a id='L129' name='L129'></a> 129 
+<a id='L130' name='L130'></a> 130     <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = <a href='../S/lib--widget--listbox-window.c.html#L129' title='Defined at 129 in lib/widget/listbox-window.c.'>listbox_run</a> (<a href='../Y/mylistbox.html' title='Multiple used in 4 places.'>mylistbox</a>);
+<a id='L131' name='L131'></a> 131     <strong class='reserved'>if</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &gt;= 0)
+<a id='L132' name='L132'></a> 132         <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (<a href='../Y/possible_items.html' title='Multiple used in 6 places.'>possible_items</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>]);
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134     <a href='../Y/g_strfreev.html' title='Multiple used in 59 places.'>g_strfreev</a> (<a href='../Y/possible_items.html' title='Multiple used in 6 places.'>possible_items</a>);
+<a id='L135' name='L135'></a> 135     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L136' name='L136'></a> 136 <em class='brace'>}</em>
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L139' name='L139'></a> 139 
+<a id='L140' name='L140'></a> 140 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L141' name='L141'></a> 141 <a href='../R/bplus_cback.html' title='Multiple referred from 2 places.'>bplus_cback</a> (<strong class='reserved'>int</strong> <a href='../Y/action.html' title='Multiple used in 148 places.'>action</a>)
+     <em class='comment'>/* <a href='#L114'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L149'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+141 src/filemanager/listmode.c'  /> */</em>
+<a id='L142' name='L142'></a> 142 <em class='brace'>{</em>
+<a id='L143' name='L143'></a> 143     <strong class='reserved'>return</strong> 0;
+<a id='L144' name='L144'></a> 144 <em class='brace'>}</em>
+<a id='L145' name='L145'></a> 145 
+<a id='L146' name='L146'></a> 146 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L147' name='L147'></a> 147 
+<a id='L148' name='L148'></a> 148 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L149' name='L149'></a> 149 <a href='../R/bminus_cback.html' title='Multiple referred from 2 places.'>bminus_cback</a> (<strong class='reserved'>int</strong> <a href='../Y/action.html' title='Multiple used in 148 places.'>action</a>)
+     <em class='comment'>/* <a href='#L141'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L157'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+149 src/filemanager/listmode.c'  /> */</em>
+<a id='L150' name='L150'></a> 150 <em class='brace'>{</em>
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>return</strong> 0;
+<a id='L152' name='L152'></a> 152 <em class='brace'>}</em>
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L155' name='L155'></a> 155 
+<a id='L156' name='L156'></a> 156 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L157' name='L157'></a> 157 <a href='../S/src--filemanager--listmode.c.html#L194' title='Referred from 194 in src/filemanager/listmode.c.'>badd_cback</a> (<strong class='reserved'>int</strong> <a href='../Y/action.html' title='Multiple used in 148 places.'>action</a>)
+     <em class='comment'>/* <a href='#L149'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L171'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+157 src/filemanager/listmode.c'  /> */</em>
+<a id='L158' name='L158'></a> 158 <em class='brace'>{</em>
+<a id='L159' name='L159'></a> 159     <strong class='reserved'>char</strong> *<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a> = <a href='../S/src--filemanager--listmode.c.html#L114' title='Defined at 114 in src/filemanager/listmode.c.'>select_new_item</a> ();
+<a id='L160' name='L160'></a> 160     <strong class='reserved'>if</strong> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>)
+<a id='L161' name='L161'></a> 161     <em class='brace'>{</em>
+<a id='L162' name='L162'></a> 162         <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/l_listmode.html' title='Multiple used in 8 places.'>l_listmode</a>, <a href='../S/lib--widget--listbox.h.html#L25' title='Defined at 25 in lib/widget/listbox.h.'>LISTBOX_APPEND_AT_END</a>, 0, <a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L163' name='L163'></a> 163         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>);
+<a id='L164' name='L164'></a> 164     <em class='brace'>}</em>
+<a id='L165' name='L165'></a> 165     <strong class='reserved'>return</strong> 0;
+<a id='L166' name='L166'></a> 166 <em class='brace'>}</em>
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L169' name='L169'></a> 169 
+<a id='L170' name='L170'></a> 170 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L171' name='L171'></a> 171 <a href='../S/src--filemanager--listmode.c.html#L195' title='Referred from 195 in src/filemanager/listmode.c.'>bremove_cback</a> (<strong class='reserved'>int</strong> <a href='../Y/action.html' title='Multiple used in 148 places.'>action</a>)
+     <em class='comment'>/* <a href='#L157'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L180'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+171 src/filemanager/listmode.c'  /> */</em>
+<a id='L172' name='L172'></a> 172 <em class='brace'>{</em>
+<a id='L173' name='L173'></a> 173     <a href='../S/lib--widget--listbox.c.html#L745' title='Defined at 745 in lib/widget/listbox.c.'>listbox_remove_current</a> (<a href='../Y/l_listmode.html' title='Multiple used in 8 places.'>l_listmode</a>);
+<a id='L174' name='L174'></a> 174     <strong class='reserved'>return</strong> 0;
+<a id='L175' name='L175'></a> 175 <em class='brace'>}</em>
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L178' name='L178'></a> 178 
+<a id='L179' name='L179'></a> 179 <strong class='reserved'>static</strong> <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *
+<a id='L180' name='L180'></a> 180 <a href='../S/src--filemanager--listmode.c.html#L330' title='Referred from 330 in src/filemanager/listmode.c.'>init_listmode</a> (<strong class='reserved'>char</strong> *<a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a>)
+     <em class='comment'>/* <a href='#L171'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L277'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+180 src/filemanager/listmode.c'  /> */</em>
+<a id='L181' name='L181'></a> 181 <em class='brace'>{</em>
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L183' name='L183'></a> 183     <strong class='reserved'>char</strong> *<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>;
+<a id='L184' name='L184'></a> 184     <strong class='reserved'>int</strong> <a href='../Y/format_width.html' title='Multiple used in 3 places.'>format_width</a> = 0;
+<a id='L185' name='L185'></a> 185     <strong class='reserved'>int</strong> <a href='../Y/format_columns.html' title='Multiple used in 3 places.'>format_columns</a> = 0;
+<a id='L186' name='L186'></a> 186     <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>;
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../S/src--filemanager--listmode.c.html#L80' title='Defined at 80 in src/filemanager/listmode.c.'>listmode_label</a> <a href='../Y/listmode_labels.html' title='Multiple used in 3 places.'>listmode_labels</a>[] = <em class='brace'>{</em>
+<a id='L189' name='L189'></a> 189         <em class='brace'>{</em><a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 13, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 22, "Item width:"<em class='brace'>}</em>
+<a id='L190' name='L190'></a> 190     <em class='brace'>}</em>;
+<a id='L191' name='L191'></a> 191 
+<a id='L192' name='L192'></a> 192     <strong class='reserved'>static</strong> <strong class='reserved'>struct</strong> <a href='../S/src--filemanager--listmode.c.html#L73' title='Defined at 73 in src/filemanager/listmode.c.'>listmode_button</a> <a href='../Y/listmode_but.html' title='Multiple used in 6 places.'>listmode_but</a>[] = <em class='brace'>{</em>
+<a id='L193' name='L193'></a> 193         <em class='brace'>{</em><a href='../S/lib--widget--dialog.h.html#L26' title='Defined at 26 in lib/widget/dialog.h.'>B_CANCEL</a>, <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, <a href='../D/BY.html' title='Multiple defined in 2 places.'>BY</a>, <a href='../D/BX.html' title='Multiple defined in 2 places.'>BX</a> + 53, "&amp;Cancel", <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a><em class='brace'>}</em>,
+<a id='L194' name='L194'></a> 194         <em class='brace'>{</em><a href='../D/B_ADD.html' title='Multiple defined in 2 places.'>B_ADD</a>, <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, <a href='../D/BY.html' title='Multiple defined in 2 places.'>BY</a>, <a href='../D/BX.html' title='Multiple defined in 2 places.'>BX</a> + 22, "&amp;Add item", <a href='../S/src--filemanager--listmode.c.html#L157' title='Defined at 157 in src/filemanager/listmode.c.'>badd_cback</a><em class='brace'>}</em>,
+<a id='L195' name='L195'></a> 195         <em class='brace'>{</em><a href='../D/B_REMOVE.html' title='Multiple defined in 3 places.'>B_REMOVE</a>, <a href='../S/lib--widget--button.h.html#L25' title='Defined at 25 in lib/widget/button.h.'>NORMAL_BUTTON</a>, <a href='../D/BY.html' title='Multiple defined in 2 places.'>BY</a>, <a href='../D/BX.html' title='Multiple defined in 2 places.'>BX</a> + 10, "&amp;Remove", <a href='../S/src--filemanager--listmode.c.html#L171' title='Defined at 171 in src/filemanager/listmode.c.'>bremove_cback</a><em class='brace'>}</em>,
+<a id='L196' name='L196'></a> 196         <em class='brace'>{</em><a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>, <a href='../S/lib--widget--button.h.html#L26' title='Defined at 26 in lib/widget/button.h.'>DEFPUSH_BUTTON</a>, <a href='../D/BY.html' title='Multiple defined in 2 places.'>BY</a>, <a href='../D/BX.html' title='Multiple defined in 2 places.'>BX</a>, "&amp;OK", <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a><em class='brace'>}</em>,
+<a id='L197' name='L197'></a> 197         <em class='brace'>{</em><a href='../D/B_PLUS.html' title='Multiple defined in 2 places.'>B_PLUS</a>, <a href='../S/lib--widget--button.h.html#L24' title='Defined at 24 in lib/widget/button.h.'>NARROW_BUTTON</a>, <a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 13, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 37, "&amp;+", <a href='../D/bplus_cback.html' title='Multiple defined in 2 places.'>bplus_cback</a><em class='brace'>}</em>,
+<a id='L198' name='L198'></a> 198         <em class='brace'>{</em><a href='../D/B_MINUS.html' title='Multiple defined in 2 places.'>B_MINUS</a>, <a href='../S/lib--widget--button.h.html#L24' title='Defined at 24 in lib/widget/button.h.'>NARROW_BUTTON</a>, <a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 13, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 34, "&amp;-", <a href='../D/bminus_cback.html' title='Multiple defined in 2 places.'>bminus_cback</a><em class='brace'>}</em>,
+<a id='L199' name='L199'></a> 199     <em class='brace'>}</em>;
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201     <a href='../S/lib--widget--dialog-switch.c.html#L327' title='Defined at 327 in lib/widget/dialog-switch.c.'>do_refresh</a> ();
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203     <a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a> =
+<a id='L204' name='L204'></a> 204         <a href='../S/lib--widget--dialog.c.html#L399' title='Defined at 399 in lib/widget/dialog.c.'>dlg_create</a> (<a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>, 0, 0, 22, 74, <a href='../S/lib--widget--widget-common.h.html#L101' title='Defined at 101 in lib/widget/widget-common.h.'>WPOS_CENTER</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/dialog_colors.html' title='Multiple used in 35 places.'>dialog_colors</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>,
+<a id='L205' name='L205'></a> 205                     <a href='../Y/listmode_section.html' title='Multiple used in 3 places.'>listmode_section</a>, "Listing format edit");
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207     <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../S/lib--widget--groupbox.c.html#L100' title='Defined at 100 in lib/widget/groupbox.c.'>groupbox_new</a> (<a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a>, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a>, 4, 63, "General options"));
+<a id='L208' name='L208'></a> 208     <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../S/lib--widget--groupbox.c.html#L100' title='Defined at 100 in lib/widget/groupbox.c.'>groupbox_new</a> (<a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 4, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a>, 11, 18, "Items"));
+<a id='L209' name='L209'></a> 209     <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../S/lib--widget--groupbox.c.html#L100' title='Defined at 100 in lib/widget/groupbox.c.'>groupbox_new</a> (<a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 4, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 20, 11, 43, "Item options"));
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <strong class='reserved'>sizeof</strong> (<a href='../Y/listmode_but.html' title='Multiple used in 6 places.'>listmode_but</a>) / <strong class='reserved'>sizeof</strong> (<strong class='reserved'>struct</strong> <a href='../S/src--filemanager--listmode.c.html#L73' title='Defined at 73 in src/filemanager/listmode.c.'>listmode_button</a>); <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L212' name='L212'></a> 212         <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>,
+<a id='L213' name='L213'></a> 213                     <a href='../S/lib--widget--button.c.html#L207' title='Defined at 207 in lib/widget/button.c.'>button_new</a> (<a href='../Y/listmode_but.html' title='Multiple used in 6 places.'>listmode_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/listmode_but.html' title='Multiple used in 6 places.'>listmode_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>,
+<a id='L214' name='L214'></a> 214                                 <a href='../Y/listmode_but.html' title='Multiple used in 6 places.'>listmode_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/ret_cmd.html' title='Multiple used in 28 places.'>ret_cmd</a>,
+<a id='L215' name='L215'></a> 215                                 <a href='../Y/listmode_but.html' title='Multiple used in 6 places.'>listmode_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/flags.html' title='Multiple used in 411 places.'>flags</a>,
+<a id='L216' name='L216'></a> 216                                 <a href='../Y/listmode_but.html' title='Multiple used in 6 places.'>listmode_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/listmode_but.html' title='Multiple used in 6 places.'>listmode_but</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/callback.html' title='Multiple used in 80 places.'>callback</a>));
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218     <em class='comment'>/* We add the labels. */</em>
+<a id='L219' name='L219'></a> 219     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <strong class='reserved'>sizeof</strong> (<a href='../Y/listmode_labels.html' title='Multiple used in 3 places.'>listmode_labels</a>) / <strong class='reserved'>sizeof</strong> (<strong class='reserved'>struct</strong> <a href='../S/src--filemanager--listmode.c.html#L80' title='Defined at 80 in src/filemanager/listmode.c.'>listmode_label</a>); <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L220' name='L220'></a> 220     <em class='brace'>{</em>
+<a id='L221' name='L221'></a> 221         <a href='../Y/pname.html' title='Multiple used in 26 places.'>pname</a> = <a href='../S/lib--widget--label.c.html#L134' title='Defined at 134 in lib/widget/label.c.'>label_new</a> (<a href='../Y/listmode_labels.html' title='Multiple used in 3 places.'>listmode_labels</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/listmode_labels.html' title='Multiple used in 3 places.'>listmode_labels</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>, <a href='../Y/listmode_labels.html' title='Multiple used in 3 places.'>listmode_labels</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>);
+<a id='L222' name='L222'></a> 222         <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../Y/pname.html' title='Multiple used in 26 places.'>pname</a>);
+<a id='L223' name='L223'></a> 223     <em class='brace'>}</em>
+<a id='L224' name='L224'></a> 224 
+<a id='L225' name='L225'></a> 225     <a href='../Y/radio_itemwidth.html' title='Multiple used in 4 places.'>radio_itemwidth</a> = <a href='../S/lib--widget--radio.c.html#L216' title='Defined at 216 in lib/widget/radio.c.'>radio_new</a> (<a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 9, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 22, 3, <a href='../Y/s_itemwidth.html' title='Multiple used in 2 places.'>s_itemwidth</a>);
+<a id='L226' name='L226'></a> 226     <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../Y/radio_itemwidth.html' title='Multiple used in 4 places.'>radio_itemwidth</a>);
+<a id='L227' name='L227'></a> 227     <a href='../Y/radio_itemwidth.html' title='Multiple used in 4 places.'>radio_itemwidth</a> = 0;
+<a id='L228' name='L228'></a> 228     <a href='../Y/radio_justify.html' title='Multiple used in 4 places.'>radio_justify</a> = <a href='../S/lib--widget--radio.c.html#L216' title='Defined at 216 in lib/widget/radio.c.'>radio_new</a> (<a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 5, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 22, 3, <a href='../Y/s_justify.html' title='Multiple used in 2 places.'>s_justify</a>);
+<a id='L229' name='L229'></a> 229     <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../Y/radio_justify.html' title='Multiple used in 4 places.'>radio_justify</a>);
+<a id='L230' name='L230'></a> 230     <a href='../Y/radio_justify.html' title='Multiple used in 4 places.'>radio_justify</a>-&gt;<a href='../Y/sel.html' title='Multiple used in 19 places.'>sel</a> = 1;
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232     <em class='comment'>/* get new listbox */</em>
+<a id='L233' name='L233'></a> 233     <a href='../Y/l_listmode.html' title='Multiple used in 8 places.'>l_listmode</a> = <a href='../S/lib--widget--listbox.c.html#L553' title='Defined at 553 in lib/widget/listbox.c.'>listbox_new</a> (<a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 5, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 1, 9, 16, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235     <strong class='reserved'>if</strong> (<a href='../Y/strncmp.html' title='Multiple used in 110 places.'>strncmp</a> (<a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a>, "full ", 5) == 0)
+<a id='L236' name='L236'></a> 236     <em class='brace'>{</em>
+<a id='L237' name='L237'></a> 237         <a href='../Y/format_width.html' title='Multiple used in 3 places.'>format_width</a> = 1;
+<a id='L238' name='L238'></a> 238         <a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a> += 5;
+<a id='L239' name='L239'></a> 239     <em class='brace'>}</em>
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>if</strong> (<a href='../Y/strncmp.html' title='Multiple used in 110 places.'>strncmp</a> (<a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a>, "half ", 5) == 0)
+<a id='L241' name='L241'></a> 241     <em class='brace'>{</em>
+<a id='L242' name='L242'></a> 242         <a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a> += 5;
+<a id='L243' name='L243'></a> 243     <em class='brace'>}</em>
+<a id='L244' name='L244'></a> 244     <strong class='reserved'>if</strong> (<a href='../Y/strncmp.html' title='Multiple used in 110 places.'>strncmp</a> (<a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a>, "2 ", 2) == 0)
+<a id='L245' name='L245'></a> 245     <em class='brace'>{</em>
+<a id='L246' name='L246'></a> 246         <a href='../Y/format_columns.html' title='Multiple used in 3 places.'>format_columns</a> = 1;
+<a id='L247' name='L247'></a> 247         <a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a> += 2;
+<a id='L248' name='L248'></a> 248     <em class='brace'>}</em>
+<a id='L249' name='L249'></a> 249     <strong class='reserved'>if</strong> (<a href='../Y/strncmp.html' title='Multiple used in 110 places.'>strncmp</a> (<a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a>, "1 ", 2) == 0)
+<a id='L250' name='L250'></a> 250     <em class='brace'>{</em>
+<a id='L251' name='L251'></a> 251         <a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a> += 2;
+<a id='L252' name='L252'></a> 252     <em class='brace'>}</em>
+<a id='L253' name='L253'></a> 253     <a href='../Y/s.html' title='Multiple used in 793 places.'>s</a> = <a href='../Y/strtok.html' title='Multiple used in 11 places.'>strtok</a> (<a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a>, ",");
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255     <strong class='reserved'>while</strong> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>)
+<a id='L256' name='L256'></a> 256     <em class='brace'>{</em>
+<a id='L257' name='L257'></a> 257         <a href='../S/lib--widget--listbox.c.html#L810' title='Defined at 810 in lib/widget/listbox.c.'>listbox_add_item</a> (<a href='../Y/l_listmode.html' title='Multiple used in 8 places.'>l_listmode</a>, <a href='../S/lib--widget--listbox.h.html#L25' title='Defined at 25 in lib/widget/listbox.h.'>LISTBOX_APPEND_AT_END</a>, 0, <a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L258' name='L258'></a> 258         <a href='../Y/s.html' title='Multiple used in 793 places.'>s</a> = <a href='../Y/strtok.html' title='Multiple used in 11 places.'>strtok</a> (<a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, ",");
+<a id='L259' name='L259'></a> 259     <em class='brace'>}</em>
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261     <em class='comment'>/* add listbox to the dialogs */</em>
+<a id='L262' name='L262'></a> 262     <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../Y/l_listmode.html' title='Multiple used in 8 places.'>l_listmode</a>);
+<a id='L263' name='L263'></a> 263 
+<a id='L264' name='L264'></a> 264     <a href='../Y/radio_columns.html' title='Multiple used in 5 places.'>radio_columns</a> = <a href='../S/lib--widget--radio.c.html#L216' title='Defined at 216 in lib/widget/radio.c.'>radio_new</a> (<a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 1, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 32, 2, <a href='../Y/s_columns.html' title='Multiple used in 2 places.'>s_columns</a>);
+<a id='L265' name='L265'></a> 265     <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../Y/radio_columns.html' title='Multiple used in 5 places.'>radio_columns</a>);
+<a id='L266' name='L266'></a> 266     <a href='../Y/radio_columns.html' title='Multiple used in 5 places.'>radio_columns</a>-&gt;<a href='../Y/sel.html' title='Multiple used in 19 places.'>sel</a> = <a href='../Y/format_columns.html' title='Multiple used in 3 places.'>format_columns</a>;
+<a id='L267' name='L267'></a> 267     <a href='../Y/radio_genwidth.html' title='Multiple used in 5 places.'>radio_genwidth</a> = <a href='../S/lib--widget--radio.c.html#L216' title='Defined at 216 in lib/widget/radio.c.'>radio_new</a> (<a href='../D/UY.html' title='Multiple defined in 4 places.'>UY</a> + 1, <a href='../D/UX.html' title='Multiple defined in 4 places.'>UX</a> + 2, 2, <a href='../Y/s_genwidth.html' title='Multiple used in 2 places.'>s_genwidth</a>);
+<a id='L268' name='L268'></a> 268     <a href='../Y/add_widget.html' title='Multiple used in 10 places.'>add_widget</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>, <a href='../Y/radio_genwidth.html' title='Multiple used in 5 places.'>radio_genwidth</a>);
+<a id='L269' name='L269'></a> 269     <a href='../Y/radio_genwidth.html' title='Multiple used in 5 places.'>radio_genwidth</a>-&gt;<a href='../Y/sel.html' title='Multiple used in 19 places.'>sel</a> = <a href='../Y/format_width.html' title='Multiple used in 3 places.'>format_width</a>;
+<a id='L270' name='L270'></a> 270 
+<a id='L271' name='L271'></a> 271     <strong class='reserved'>return</strong> <a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>;
+<a id='L272' name='L272'></a> 272 <em class='brace'>}</em>
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L275' name='L275'></a> 275 
+<a id='L276' name='L276'></a> 276 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L277' name='L277'></a> 277 <a href='../S/src--filemanager--listmode.c.html#L338' title='Referred from 338 in src/filemanager/listmode.c.'>listmode_done</a> (<a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> * <a href='../Y/h.html' title='Multiple used in 492 places.'>h</a>)
+     <em class='comment'>/* <a href='#L180'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L288'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+277 src/filemanager/listmode.c'  /> */</em>
+<a id='L278' name='L278'></a> 278 <em class='brace'>{</em>
+<a id='L279' name='L279'></a> 279     <a href='../S/lib--widget--widget-common.h.html#L394' title='Defined at 394 in lib/widget/widget-common.h.'>widget_destroy</a> (<a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/h.html' title='Multiple used in 492 places.'>h</a>));
+<a id='L280' name='L280'></a> 280     <strong class='reserved'>if</strong> (0)
+<a id='L281' name='L281'></a> 281         <a href='../S/src--filemanager--panel.c.html#L5053' title='Defined at 5053 in src/filemanager/panel.c.'>update_panels</a> (<a href='../S/src--filemanager--panel.h.html#L47' title='Defined at 47 in src/filemanager/panel.h.'>UP_OPTIMIZE</a>, <a href='../S/src--filemanager--panel.h.html#L27' title='Defined at 27 in src/filemanager/panel.h.'>UP_KEEPSEL</a>);
+<a id='L282' name='L282'></a> 282     <a href='../S/lib--widget--dialog-switch.c.html#L357' title='Defined at 357 in lib/widget/dialog-switch.c.'>repaint_screen</a> ();
+<a id='L283' name='L283'></a> 283 <em class='brace'>}</em>
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *
+<a id='L288' name='L288'></a> 288 <a href='../S/src--filemanager--listmode.c.html#L335' title='Referred from 335 in src/filemanager/listmode.c.'>collect_new_format</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L277'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L323'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+288 src/filemanager/listmode.c'  /> */</em>
+<a id='L289' name='L289'></a> 289 <em class='brace'>{</em>
+<a id='L290' name='L290'></a> 290     <strong class='reserved'>char</strong> *<a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a>;
+<a id='L291' name='L291'></a> 291     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L292' name='L292'></a> 292     <strong class='reserved'>char</strong> *<a href='../Y/last.html' title='Multiple used in 31 places.'>last</a>;
+<a id='L293' name='L293'></a> 293     <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, *<a href='../Y/extra.html' title='Multiple used in 18 places.'>extra</a>;
+<a id='L294' name='L294'></a> 294 
+<a id='L295' name='L295'></a> 295     <a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a> = <a href='../Y/g_malloc.html' title='Multiple used in 37 places.'>g_malloc</a> (1024);
+<a id='L296' name='L296'></a> 296     <strong class='reserved'>if</strong> (<a href='../Y/radio_genwidth.html' title='Multiple used in 5 places.'>radio_genwidth</a>-&gt;<a href='../Y/sel.html' title='Multiple used in 19 places.'>sel</a>)
+<a id='L297' name='L297'></a> 297         <a href='../Y/strcpy.html' title='Multiple used in 28 places.'>strcpy</a> (<a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a>, "full ");
+<a id='L298' name='L298'></a> 298     <strong class='reserved'>else</strong>
+<a id='L299' name='L299'></a> 299         <a href='../Y/strcpy.html' title='Multiple used in 28 places.'>strcpy</a> (<a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a>, "half ");
+<a id='L300' name='L300'></a> 300     <strong class='reserved'>if</strong> (<a href='../Y/radio_columns.html' title='Multiple used in 5 places.'>radio_columns</a>-&gt;<a href='../Y/sel.html' title='Multiple used in 19 places.'>sel</a>)
+<a id='L301' name='L301'></a> 301         <a href='../Y/strcat.html' title='Multiple used in 15 places.'>strcat</a> (<a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a>, "2 ");
+<a id='L302' name='L302'></a> 302     <a href='../Y/last.html' title='Multiple used in 31 places.'>last</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L303' name='L303'></a> 303     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0;; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L304' name='L304'></a> 304     <em class='brace'>{</em>
+<a id='L305' name='L305'></a> 305         <a href='../S/lib--widget--listbox.c.html#L653' title='Defined at 653 in lib/widget/listbox.c.'>listbox_set_current</a> (<a href='../Y/l_listmode.html' title='Multiple used in 8 places.'>l_listmode</a>, <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>);
+<a id='L306' name='L306'></a> 306         <a href='../S/lib--widget--listbox.c.html#L700' title='Defined at 700 in lib/widget/listbox.c.'>listbox_get_current</a> (<a href='../Y/l_listmode.html' title='Multiple used in 8 places.'>l_listmode</a>, &amp;<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, &amp;<a href='../Y/extra.html' title='Multiple used in 18 places.'>extra</a>);
+<a id='L307' name='L307'></a> 307         <strong class='reserved'>if</strong> (<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a> == <a href='../Y/last.html' title='Multiple used in 31 places.'>last</a>)
+<a id='L308' name='L308'></a> 308             <strong class='reserved'>break</strong>;
+<a id='L309' name='L309'></a> 309         <strong class='reserved'>if</strong> (<a href='../Y/last.html' title='Multiple used in 31 places.'>last</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L310' name='L310'></a> 310             <a href='../Y/strcat.html' title='Multiple used in 15 places.'>strcat</a> (<a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a>, ",");
+<a id='L311' name='L311'></a> 311         <a href='../Y/strcat.html' title='Multiple used in 15 places.'>strcat</a> (<a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a>, <a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>);
+<a id='L312' name='L312'></a> 312         <a href='../Y/last.html' title='Multiple used in 31 places.'>last</a> = <a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>;
+<a id='L313' name='L313'></a> 313     <em class='brace'>}</em>
+<a id='L314' name='L314'></a> 314     <strong class='reserved'>return</strong> <a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a>;
+<a id='L315' name='L315'></a> 315 <em class='brace'>}</em>
+<a id='L316' name='L316'></a> 316 
+<a id='L317' name='L317'></a> 317 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L318' name='L318'></a> 318 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L319' name='L319'></a> 319 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L320' name='L320'></a> 320 
+<a id='L321' name='L321'></a> 321 <em class='comment'>/** Return new format or NULL if the user cancelled the dialog */</em>
+<a id='L322' name='L322'></a> 322 <strong class='reserved'>char</strong> *
+<a id='L323' name='L323'></a> 323 <a href='../R/listmode_edit.html' title='Multiple referred from 2 places.'>listmode_edit</a> (<strong class='reserved'>char</strong> *<a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a>)
+     <em class='comment'>/* <a href='#L288'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+323 src/filemanager/listmode.c'  /> */</em>
+<a id='L324' name='L324'></a> 324 <em class='brace'>{</em>
+<a id='L325' name='L325'></a> 325     <strong class='reserved'>char</strong> *<a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L326' name='L326'></a> 326     <strong class='reserved'>char</strong> *<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>;
+<a id='L327' name='L327'></a> 327     <a href='../D/WDialog.html' title='Multiple defined in 2 places.'>WDialog</a> *<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>;
+<a id='L328' name='L328'></a> 328 
+<a id='L329' name='L329'></a> 329     <a href='../Y/s.html' title='Multiple used in 793 places.'>s</a> = <a href='../Y/g_strdup.html' title='Multiple used in 384 places.'>g_strdup</a> (<a href='../Y/oldlistformat.html' title='Multiple used in 12 places.'>oldlistformat</a>);
+<a id='L330' name='L330'></a> 330     <a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a> = <a href='../S/src--filemanager--listmode.c.html#L180' title='Defined at 180 in src/filemanager/listmode.c.'>init_listmode</a> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>);
+<a id='L331' name='L331'></a> 331     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>);
+<a id='L332' name='L332'></a> 332 
+<a id='L333' name='L333'></a> 333     <strong class='reserved'>if</strong> (<a href='../S/lib--widget--dialog.c.html#L570' title='Defined at 570 in lib/widget/dialog.c.'>dlg_run</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>) == <a href='../S/lib--widget--dialog.h.html#L27' title='Defined at 27 in lib/widget/dialog.h.'>B_ENTER</a>)
+<a id='L334' name='L334'></a> 334     <em class='brace'>{</em>
+<a id='L335' name='L335'></a> 335         <a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a> = <a href='../S/src--filemanager--listmode.c.html#L288' title='Defined at 288 in src/filemanager/listmode.c.'>collect_new_format</a> ();
+<a id='L336' name='L336'></a> 336     <em class='brace'>}</em>
+<a id='L337' name='L337'></a> 337 
+<a id='L338' name='L338'></a> 338     <a href='../S/src--filemanager--listmode.c.html#L277' title='Defined at 277 in src/filemanager/listmode.c.'>listmode_done</a> (<a href='../Y/listmode_dlg.html' title='Multiple used in 17 places.'>listmode_dlg</a>);
+<a id='L339' name='L339'></a> 339     <strong class='reserved'>return</strong> <a href='../Y/newformat.html' title='Multiple used in 11 places.'>newformat</a>;
+<a id='L340' name='L340'></a> 340 <em class='brace'>}</em>
+<a id='L341' name='L341'></a> 341 
+<a id='L342' name='L342'></a> 342 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L343' name='L343'></a> 343 
+<a id='L344' name='L344'></a> 344 <em class='sharp'>#endif</em> <em class='comment'>/* LISTMODE_EDITOR */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L114'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L323'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+344 src/filemanager/listmode.c'  /> */</em>
+</body>
+</html>

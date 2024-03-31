@@ -1,0 +1,514 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/uzip.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uzip.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uzip.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/uzip.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># zip file archive Virtual File System for Midnight Commander
+<a id='L4' name='L4'></a># Version 1.4.0 (2001-08-07).
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># (C) 2000-2001  Oskar Liljeblad &lt;osk@hem.passagen.se&gt;.
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>use POSIX;
+<a id='L10' name='L10'></a>use File::Basename;
+<a id='L11' name='L11'></a>use strict;
+<a id='L12' name='L12'></a>use warnings;
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>#
+<a id='L15' name='L15'></a># Configuration options
+<a id='L16' name='L16'></a>#
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a># Location of the zip program
+<a id='L19' name='L19'></a>my $app_zip = "@ZIP@";
+<a id='L20' name='L20'></a># Location of the unzip program
+<a id='L21' name='L21'></a>my $app_unzip = $ENV{MC_TEST_EXTFS_LIST_CMD} || "@UNZIP@";
+<a id='L22' name='L22'></a># Set this to 1 if zipinfo (unzip -Z) is to be used (recommended), otherwise 0.
+<a id='L23' name='L23'></a>my $op_has_zipinfo = exists($ENV{MC_TEST_EXTFS_HAVE_ZIPINFO}) ? $ENV{MC_TEST_EXTFS_HAVE_ZIPINFO} : @HAVE_ZIPINFO@;
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a># Command used to list archives (zipinfo mode)
+<a id='L26' name='L26'></a>my $cmd_list_zi = "$app_unzip -Z -l -T";
+<a id='L27' name='L27'></a># Command used to list archives (non-zipinfo mode)
+<a id='L28' name='L28'></a>my $cmd_list_nzi = "$app_unzip -qq -v";
+<a id='L29' name='L29'></a># Command used to add a file to the archive
+<a id='L30' name='L30'></a>my $cmd_add = "$app_zip -g";
+<a id='L31' name='L31'></a># Command used to add a link file to the archive (unused)
+<a id='L32' name='L32'></a>my $cmd_addlink = "$app_zip -g -y";
+<a id='L33' name='L33'></a># Command used to delete a file from the archive
+<a id='L34' name='L34'></a>my $cmd_delete = "$app_zip -d";
+<a id='L35' name='L35'></a># Command used to extract a file to standard out
+<a id='L36' name='L36'></a>my $cmd_extract = "$app_unzip -p";
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a># -rw-r--r--  2.2 unx     2891 tx     1435 defN 20000330.211927 ./edit.html
+<a id='L39' name='L39'></a># (perm) (?) (?) (size) (?) (zippedsize) (method) (yyyy)(mm)(dd).(HH)(MM)(SS) (fname)
+<a id='L40' name='L40'></a>my $regex_zipinfo_line = qr"^(\S{7,10})\s+(\d+\.\d+)\s+(\S+)\s+(\d+)\s+(\S\S)\s+(\d+)\s+(\S{4})\s+(\d{4})(\d\d)(\d\d)\.(\d\d)(\d\d)(\d\d)\s(.*)$";
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>#     2891  Defl:N     1435  50%  03-30-00 21:19  50cbaaf8  ./edit.html
+<a id='L43' name='L43'></a># (size) (method) (zippedsize) (zipratio) (mm)-(dd)-(yy|yyyy) (HH):(MM) (cksum) (fname)
+<a id='L44' name='L44'></a>#                                       or: (yyyy)-(mm)-(dd)
+<a id='L45' name='L45'></a>my $regex_nonzipinfo_line = qr"^\s*(\d+)\s+(\S+)\s+(\d+)\s+(-?\d+\%)\s+(\d+)-(\d?\d)-(\d+)\s+(\d?\d):(\d\d)\s+([0-9a-f]+)\s\s(.*)$";
+<a id='L46' name='L46'></a> 
+<a id='L47' name='L47'></a>#
+<a id='L48' name='L48'></a># Main code
+<a id='L49' name='L49'></a>#
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>die "uzip: missing command and/or archive arguments\n" if ($#ARGV &lt; 1);
+<a id='L52' name='L52'></a> 
+<a id='L53' name='L53'></a># Initialization of some global variables
+<a id='L54' name='L54'></a>my $cmd = shift;
+<a id='L55' name='L55'></a>my %known = ( './' =&gt; 1 );
+<a id='L56' name='L56'></a>my %pending = ();
+<a id='L57' name='L57'></a>my $oldpwd = POSIX::getcwd();
+<a id='L58' name='L58'></a>my $archive = shift;
+<a id='L59' name='L59'></a>my $aarchive = absolutize($archive, $oldpwd);
+<a id='L60' name='L60'></a>my $cmd_list = ($op_has_zipinfo ? $cmd_list_zi : $cmd_list_nzi);
+<a id='L61' name='L61'></a>my ($qarchive, $aqarchive) = map (quotemeta, $archive, $aarchive);
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a># Strip all "." and ".." path components from a pathname.
+<a id='L64' name='L64'></a>sub zipfs_canonicalize_pathname($) {
+<a id='L65' name='L65'></a>  my ($fname) = @_;
+<a id='L66' name='L66'></a>  $fname =~ s,/+,/,g;
+<a id='L67' name='L67'></a>  $fname =~ s,(^|/)(?:\.?\./)+,$1,;
+<a id='L68' name='L68'></a>  return $fname;
+<a id='L69' name='L69'></a>}
+<a id='L70' name='L70'></a> 
+<a id='L71' name='L71'></a># The Midnight Commander never calls this script with archive pathnames
+<a id='L72' name='L72'></a># starting with either "./" or "../". Some ZIP files contain such names,
+<a id='L73' name='L73'></a># so we need to build a translation table for them.
+<a id='L74' name='L74'></a>my $zipfs_realpathname_table = undef;
+<a id='L75' name='L75'></a>sub zipfs_realpathname($) {
+<a id='L76' name='L76'></a>    my ($fname) = @_;
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>    if (!defined($zipfs_realpathname_table)) {
+<a id='L79' name='L79'></a>        $zipfs_realpathname_table = {};
+<a id='L80' name='L80'></a>        if (!open(ZIP, "$cmd_list $qarchive |")) {
+<a id='L81' name='L81'></a>            return $fname;
+<a id='L82' name='L82'></a>        }
+<a id='L83' name='L83'></a>        foreach my $line (&lt;ZIP&gt;) {
+<a id='L84' name='L84'></a>            $line =~ s/\r*\n*$//;
+<a id='L85' name='L85'></a>            if ($op_has_zipinfo) {
+<a id='L86' name='L86'></a>                if ($line =~ $regex_zipinfo_line) {
+<a id='L87' name='L87'></a>                    my ($fname) = ($14);
+<a id='L88' name='L88'></a>                    $zipfs_realpathname_table-&gt;{zipfs_canonicalize_pathname($fname)} = $fname;
+<a id='L89' name='L89'></a>                }
+<a id='L90' name='L90'></a>            } else {
+<a id='L91' name='L91'></a>                if ($line =~ $regex_nonzipinfo_line) {
+<a id='L92' name='L92'></a>                    my ($fname) = ($11);
+<a id='L93' name='L93'></a>                    $zipfs_realpathname_table-&gt;{zipfs_canonicalize_pathname($fname)} = $fname;
+<a id='L94' name='L94'></a>                }
+<a id='L95' name='L95'></a>            }
+<a id='L96' name='L96'></a>        }
+<a id='L97' name='L97'></a>        if (!close(ZIP)) {
+<a id='L98' name='L98'></a>            return $fname;
+<a id='L99' name='L99'></a>        }
+<a id='L100' name='L100'></a>    }
+<a id='L101' name='L101'></a>    if (exists($zipfs_realpathname_table-&gt;{$fname})) {
+<a id='L102' name='L102'></a>        return $zipfs_realpathname_table-&gt;{$fname};
+<a id='L103' name='L103'></a>    }
+<a id='L104' name='L104'></a>    return $fname;
+<a id='L105' name='L105'></a>}
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>if ($cmd eq 'list')    { &amp;mczipfs_list(@ARGV); }
+<a id='L108' name='L108'></a>if ($cmd eq 'rm')      { &amp;mczipfs_rm(@ARGV); }
+<a id='L109' name='L109'></a>if ($cmd eq 'rmdir')   { &amp;mczipfs_rmdir(@ARGV); }
+<a id='L110' name='L110'></a>if ($cmd eq 'mkdir')   { &amp;mczipfs_mkdir(@ARGV); }
+<a id='L111' name='L111'></a>if ($cmd eq 'copyin')  { &amp;mczipfs_copyin(@ARGV); }
+<a id='L112' name='L112'></a>if ($cmd eq 'copyout') { &amp;mczipfs_copyout(@ARGV); }
+<a id='L113' name='L113'></a>if ($cmd eq 'run')               { &amp;mczipfs_run(@ARGV); }
+<a id='L114' name='L114'></a>#if ($cmd eq 'mklink')  { &amp;mczipfs_mklink(@ARGV); }             # Not supported by MC extfs
+<a id='L115' name='L115'></a>#if ($cmd eq 'linkout') { &amp;mczipfs_linkout(@ARGV); }    # Not supported by MC extfs
+<a id='L116' name='L116'></a>exit 1;
+<a id='L117' name='L117'></a> 
+<a id='L118' name='L118'></a># Remove a file from the archive.
+<a id='L119' name='L119'></a>sub mczipfs_rm {
+<a id='L120' name='L120'></a>        my ($qfile) = map { &amp;zipquotemeta(zipfs_realpathname($_)) } @_;
+<a id='L121' name='L121'></a> 
+<a id='L122' name='L122'></a>        # "./" at the beginning of pathnames is stripped by Info-ZIP,
+<a id='L123' name='L123'></a>        # so convert it to "[.]/" to prevent stripping.
+<a id='L124' name='L124'></a>        $qfile =~ s/^\\\./[.]/;
+<a id='L125' name='L125'></a> 
+<a id='L126' name='L126'></a>        &amp;checkargs(1, 'archive file', @_);
+<a id='L127' name='L127'></a>        &amp;safesystem("$cmd_delete $qarchive $qfile &gt;/dev/null");
+<a id='L128' name='L128'></a>        exit;
+<a id='L129' name='L129'></a>}
+<a id='L130' name='L130'></a> 
+<a id='L131' name='L131'></a># Remove an empty directory from the archive.
+<a id='L132' name='L132'></a># The only difference from mczipfs_rm is that we append an 
+<a id='L133' name='L133'></a># additional slash to the directory name to remove. I am not
+<a id='L134' name='L134'></a># sure this is absolutely necessary, but it doesn't hurt.
+<a id='L135' name='L135'></a>sub mczipfs_rmdir {
+<a id='L136' name='L136'></a>        my ($qfile) = map { &amp;zipquotemeta(zipfs_realpathname($_)) } @_;
+<a id='L137' name='L137'></a>        &amp;checkargs(1, 'archive directory', @_);
+<a id='L138' name='L138'></a>        &amp;safesystem("$cmd_delete $qarchive $qfile/ &gt;/dev/null", 12);
+<a id='L139' name='L139'></a>  exit;
+<a id='L140' name='L140'></a>}
+<a id='L141' name='L141'></a> 
+<a id='L142' name='L142'></a># Extract a file from the archive.
+<a id='L143' name='L143'></a># Note that we don't need to check if the file is a link,
+<a id='L144' name='L144'></a># because mc apparently doesn't call copyout for symbolic links.
+<a id='L145' name='L145'></a>sub mczipfs_copyout {
+<a id='L146' name='L146'></a>        my ($qafile, $qfsfile) = map { &amp;zipquotemeta(zipfs_realpathname($_)) } @_;
+<a id='L147' name='L147'></a>        &amp;checkargs(1, 'archive file', @_);
+<a id='L148' name='L148'></a>        &amp;checkargs(2, 'local file', @_);
+<a id='L149' name='L149'></a>        &amp;safesystem("$cmd_extract $qarchive $qafile &gt; $qfsfile", 11);
+<a id='L150' name='L150'></a>  exit;
+<a id='L151' name='L151'></a>}
+<a id='L152' name='L152'></a> 
+<a id='L153' name='L153'></a># Add a file to the archive.
+<a id='L154' name='L154'></a># This is done by making a temporary directory, in which
+<a id='L155' name='L155'></a># we create a symlink the original file (with a new name).
+<a id='L156' name='L156'></a># Zip is then run to include the real file in the archive,
+<a id='L157' name='L157'></a># with the name of the symbolic link.
+<a id='L158' name='L158'></a># Here we also doesn't need to check for symbolic links,
+<a id='L159' name='L159'></a># because the mc extfs doesn't allow adding of symbolic
+<a id='L160' name='L160'></a># links.
+<a id='L161' name='L161'></a>sub mczipfs_copyin {
+<a id='L162' name='L162'></a>        my ($afile, $fsfile) = @_;
+<a id='L163' name='L163'></a>        &amp;checkargs(1, 'archive file', @_);
+<a id='L164' name='L164'></a>        &amp;checkargs(2, 'local file', @_);
+<a id='L165' name='L165'></a>        my ($qafile) = quotemeta $afile;
+<a id='L166' name='L166'></a>        $fsfile = &amp;absolutize($fsfile, $oldpwd);
+<a id='L167' name='L167'></a>        my $adir = File::Basename::dirname($afile);
+<a id='L168' name='L168'></a> 
+<a id='L169' name='L169'></a>        my $tmpdir = &amp;mktmpdir();
+<a id='L170' name='L170'></a>        chdir $tmpdir || &amp;croak("chdir $tmpdir failed");
+<a id='L171' name='L171'></a>        &amp;mkdirs($adir, 0700);
+<a id='L172' name='L172'></a>        symlink ($fsfile, $afile) || &amp;croak("link $afile failed");
+<a id='L173' name='L173'></a>        &amp;safesystem("$cmd_add $aqarchive $qafile &gt;/dev/null");
+<a id='L174' name='L174'></a>        unlink $afile || &amp;croak("unlink $afile failed");
+<a id='L175' name='L175'></a>        &amp;rmdirs($adir);
+<a id='L176' name='L176'></a>        chdir $oldpwd || &amp;croak("chdir $oldpwd failed");
+<a id='L177' name='L177'></a>        rmdir $tmpdir || &amp;croak("rmdir $tmpdir failed");
+<a id='L178' name='L178'></a>  exit;
+<a id='L179' name='L179'></a>}
+<a id='L180' name='L180'></a> 
+<a id='L181' name='L181'></a># Add an empty directory the the archive.
+<a id='L182' name='L182'></a># This is similar to mczipfs_copyin, except that we don't need
+<a id='L183' name='L183'></a># to use symlinks.
+<a id='L184' name='L184'></a>sub mczipfs_mkdir {
+<a id='L185' name='L185'></a>        my ($dir) = @_;
+<a id='L186' name='L186'></a>        &amp;checkargs(1, 'directory', @_);
+<a id='L187' name='L187'></a>        my ($qdir) = quotemeta $dir;
+<a id='L188' name='L188'></a> 
+<a id='L189' name='L189'></a>        my $tmpdir = &amp;mktmpdir();
+<a id='L190' name='L190'></a>        chdir $tmpdir || &amp;croak("chdir $tmpdir failed");
+<a id='L191' name='L191'></a>        &amp;mkdirs($dir, 0700);
+<a id='L192' name='L192'></a>        &amp;safesystem("$cmd_add $aqarchive $qdir &gt;/dev/null");
+<a id='L193' name='L193'></a>        &amp;rmdirs($dir);
+<a id='L194' name='L194'></a>        chdir $oldpwd || &amp;croak("chdir $oldpwd failed");
+<a id='L195' name='L195'></a>        rmdir $tmpdir || &amp;croak("rmdir $tmpdir failed");
+<a id='L196' name='L196'></a>  exit;
+<a id='L197' name='L197'></a>}
+<a id='L198' name='L198'></a> 
+<a id='L199' name='L199'></a># Add a link to the archive. This operation is not used yet,
+<a id='L200' name='L200'></a># because it is not supported by the MC extfs.
+<a id='L201' name='L201'></a>sub mczipfs_mklink {
+<a id='L202' name='L202'></a>        my ($linkdest, $afile) = @_;
+<a id='L203' name='L203'></a>        &amp;checkargs(1, 'link destination', @_);
+<a id='L204' name='L204'></a>        &amp;checkargs(2, 'archive file', @_);
+<a id='L205' name='L205'></a>        my ($qafile) = quotemeta $afile;
+<a id='L206' name='L206'></a>        my $adir = File::Basename::dirname($afile);
+<a id='L207' name='L207'></a> 
+<a id='L208' name='L208'></a>        my $tmpdir = &amp;mktmpdir();
+<a id='L209' name='L209'></a>        chdir $tmpdir || &amp;croak("chdir $tmpdir failed");
+<a id='L210' name='L210'></a>        &amp;mkdirs($adir, 0700);
+<a id='L211' name='L211'></a>        symlink ($linkdest, $afile) || &amp;croak("link $afile failed");
+<a id='L212' name='L212'></a>        &amp;safesystem("$cmd_addlink $aqarchive $qafile &gt;/dev/null");
+<a id='L213' name='L213'></a>        unlink $afile || &amp;croak("unlink $afile failed");
+<a id='L214' name='L214'></a>        &amp;rmdirs($adir);
+<a id='L215' name='L215'></a>        chdir $oldpwd || &amp;croak("chdir $oldpwd failed");
+<a id='L216' name='L216'></a>        rmdir $tmpdir || &amp;croak("rmdir $tmpdir failed");
+<a id='L217' name='L217'></a>  exit;
+<a id='L218' name='L218'></a>}
+<a id='L219' name='L219'></a> 
+<a id='L220' name='L220'></a># This operation is not used yet, because it is not
+<a id='L221' name='L221'></a># supported by the MC extfs.
+<a id='L222' name='L222'></a>sub mczipfs_linkout {
+<a id='L223' name='L223'></a>        my ($afile, $fsfile) = @_;
+<a id='L224' name='L224'></a>        &amp;checkargs(1, 'archive file', @_);
+<a id='L225' name='L225'></a>        &amp;checkargs(2, 'local file', @_);
+<a id='L226' name='L226'></a>        my ($qafile) = map { &amp;zipquotemeta($_) } $afile;
+<a id='L227' name='L227'></a> 
+<a id='L228' name='L228'></a>        my $linkdest = &amp;get_link_destination($afile);
+<a id='L229' name='L229'></a>        symlink ($linkdest, $fsfile) || &amp;croak("link $fsfile failed");
+<a id='L230' name='L230'></a>  exit;
+<a id='L231' name='L231'></a>}
+<a id='L232' name='L232'></a> 
+<a id='L233' name='L233'></a># Use unzip to find the link destination of a certain file in the
+<a id='L234' name='L234'></a># archive.
+<a id='L235' name='L235'></a>sub get_link_destination {
+<a id='L236' name='L236'></a>        my ($afile) = @_;
+<a id='L237' name='L237'></a>        my ($qafile) = map { &amp;zipquotemeta($_) } $afile;
+<a id='L238' name='L238'></a>        my $linkdest = safeticks("$cmd_extract $qarchive $qafile");
+<a id='L239' name='L239'></a>        &amp;croak ("extract failed", "link destination of $afile not found")
+<a id='L240' name='L240'></a>                        if (!defined $linkdest || $linkdest eq '');
+<a id='L241' name='L241'></a>        return $linkdest;
+<a id='L242' name='L242'></a>}
+<a id='L243' name='L243'></a> 
+<a id='L244' name='L244'></a># List files in the archive.
+<a id='L245' name='L245'></a># Because mc currently doesn't allow a file's parent directory
+<a id='L246' name='L246'></a># to be listed after the file itself, we need to do some
+<a id='L247' name='L247'></a># rearranging of the output. Most of this is done in
+<a id='L248' name='L248'></a># checked_print_file.
+<a id='L249' name='L249'></a>sub mczipfs_list {
+<a id='L250' name='L250'></a>        open (PIPE, "$cmd_list $qarchive |") || &amp;croak("$app_unzip failed");
+<a id='L251' name='L251'></a>        if ($op_has_zipinfo) {
+<a id='L252' name='L252'></a>                while (&lt;PIPE&gt;) {
+<a id='L253' name='L253'></a>                        chomp;
+<a id='L254' name='L254'></a>                        next if /^Archive:/;
+<a id='L255' name='L255'></a>                        next if /^\d+ file/;
+<a id='L256' name='L256'></a>                        next if /^Empty zipfile\.$/;
+<a id='L257' name='L257'></a>                        my @match = /$regex_zipinfo_line/;
+<a id='L258' name='L258'></a>                        next if ($#match != 13);
+<a id='L259' name='L259'></a>                        &amp;checked_print_file(@match);
+<a id='L260' name='L260'></a>                }
+<a id='L261' name='L261'></a>        } else {
+<a id='L262' name='L262'></a>                while (&lt;PIPE&gt;) {
+<a id='L263' name='L263'></a>                        chomp;
+<a id='L264' name='L264'></a>                        my @match = /$regex_nonzipinfo_line/;
+<a id='L265' name='L265'></a>                        next if ($#match != 10);
+<a id='L266' name='L266'></a> 
+<a id='L267' name='L267'></a>                        # Massage the date.
+<a id='L268' name='L268'></a>                        my ($year, $month, $day) = $match[4] &gt; 12
+<a id='L269' name='L269'></a>                                                     ? ($match[4], $match[5], $match[6])   # 4,5,6 = Y,M,D
+<a id='L270' name='L270'></a>                                                     : ($match[6], $match[4], $match[5]);  # 4,5,6 = M,D,Y
+<a id='L271' name='L271'></a>                        $year += ($year &lt; 70 ? 2000 : 1900) if $year &lt; 100;  # Fix 2-digit year.
+<a id='L272' name='L272'></a> 
+<a id='L273' name='L273'></a>                        my @rmatch = ('', '', 'unknown', $match[0], '', $match[2], $match[1],
+<a id='L274' name='L274'></a>                                        $year, $month, $day, $match[7], $match[8], "00", $match[10]);
+<a id='L275' name='L275'></a>                        &amp;checked_print_file(@rmatch);
+<a id='L276' name='L276'></a>                }
+<a id='L277' name='L277'></a>        }
+<a id='L278' name='L278'></a>        if (!close (PIPE)) {
+<a id='L279' name='L279'></a>                &amp;croak("$app_unzip failed") if ($! != 0);
+<a id='L280' name='L280'></a>                &amp;croak("$app_unzip failed", 'non-zero exit status ('.($? &gt;&gt; 8).')') 
+<a id='L281' name='L281'></a>        }
+<a id='L282' name='L282'></a> 
+<a id='L283' name='L283'></a>        foreach my $key (sort keys %pending) {
+<a id='L284' name='L284'></a>                foreach my $file (@{ $pending{$key} }) {
+<a id='L285' name='L285'></a>                        &amp;print_file(@{ $file });
+<a id='L286' name='L286'></a>                }
+<a id='L287' name='L287'></a>        }
+<a id='L288' name='L288'></a> 
+<a id='L289' name='L289'></a>  exit;
+<a id='L290' name='L290'></a>}
+<a id='L291' name='L291'></a> 
+<a id='L292' name='L292'></a># Execute a file in the archive, by first extracting it to a
+<a id='L293' name='L293'></a># temporary directory. The name of the extracted file will be
+<a id='L294' name='L294'></a># the same as the name of it in the archive.
+<a id='L295' name='L295'></a>sub mczipfs_run {
+<a id='L296' name='L296'></a>        my ($afile) = @_;
+<a id='L297' name='L297'></a>        &amp;checkargs(1, 'archive file', @_);
+<a id='L298' name='L298'></a>        my $qafile = &amp;zipquotemeta(zipfs_realpathname($afile));
+<a id='L299' name='L299'></a>        my $tmpdir = &amp;mktmpdir();
+<a id='L300' name='L300'></a>        my $tmpfile = File::Basename::basename($afile);
+<a id='L301' name='L301'></a> 
+<a id='L302' name='L302'></a>        chdir $tmpdir || &amp;croak("chdir $tmpdir failed");
+<a id='L303' name='L303'></a>        &amp;safesystem("$cmd_extract $aqarchive $qafile &gt; $tmpfile");
+<a id='L304' name='L304'></a>  chmod 0700, $tmpfile;
+<a id='L305' name='L305'></a>        &amp;safesystem("./$tmpfile");
+<a id='L306' name='L306'></a>        unlink $tmpfile || &amp;croak("rm $tmpfile failed");
+<a id='L307' name='L307'></a>        chdir $oldpwd || &amp;croak("chdir $oldpwd failed");
+<a id='L308' name='L308'></a>        rmdir $tmpdir || &amp;croak("rmdir $tmpdir failed");
+<a id='L309' name='L309'></a>  exit;
+<a id='L310' name='L310'></a>}
+<a id='L311' name='L311'></a> 
+<a id='L312' name='L312'></a># This is called prior to printing the listing of a file.
+<a id='L313' name='L313'></a># A check is done to see if the parent directory of the file has already
+<a id='L314' name='L314'></a># been printed or not. If it hasn't, we must cache it (in %pending) and
+<a id='L315' name='L315'></a># print it later once the parent directory has been listed. When all
+<a id='L316' name='L316'></a># files have been processed, there may still be some that haven't been 
+<a id='L317' name='L317'></a># printed because their parent directories weren't listed at all. These
+<a id='L318' name='L318'></a># files are dealt with in mczipfs_list.
+<a id='L319' name='L319'></a>sub checked_print_file {
+<a id='L320' name='L320'></a>        my @waiting = ([ @_ ]);
+<a id='L321' name='L321'></a> 
+<a id='L322' name='L322'></a>        while ($#waiting != -1) {
+<a id='L323' name='L323'></a>                my $item = shift @waiting;
+<a id='L324' name='L324'></a>                my $filename = ${$item}[13];
+<a id='L325' name='L325'></a>                my $dirname = File::Basename::dirname($filename) . '/';
+<a id='L326' name='L326'></a> 
+<a id='L327' name='L327'></a>                if (exists $known{$dirname}) {
+<a id='L328' name='L328'></a>                        &amp;print_file(@{$item});
+<a id='L329' name='L329'></a>                        if ($filename =~ /\/$/) {
+<a id='L330' name='L330'></a>                                $known{$filename} = 1;
+<a id='L331' name='L331'></a>                                if (exists $pending{$filename}) {
+<a id='L332' name='L332'></a>                                        push @waiting, @{ $pending{$filename} };
+<a id='L333' name='L333'></a>                                        delete $pending{$filename};
+<a id='L334' name='L334'></a>                                }
+<a id='L335' name='L335'></a>                        }
+<a id='L336' name='L336'></a>                } else {
+<a id='L337' name='L337'></a>                        push @{$pending{$dirname}}, $item;
+<a id='L338' name='L338'></a>                }
+<a id='L339' name='L339'></a>        }
+<a id='L340' name='L340'></a>}
+<a id='L341' name='L341'></a> 
+<a id='L342' name='L342'></a># Print the mc extfs listing of a file from a set of parsed fields.
+<a id='L343' name='L343'></a># If the file is a link, we extract it from the zip archive and
+<a id='L344' name='L344'></a># include the output as the link destination. Because this output
+<a id='L345' name='L345'></a># is not newline terminated, we must execute unzip once for each
+<a id='L346' name='L346'></a># link file encountered.
+<a id='L347' name='L347'></a>sub print_file {
+<a id='L348' name='L348'></a>        my ($perms,$zipver,$platform,$realsize,$format,$cmpsize,$comp,$year,$mon,$day,$hours,$mins,$secs,$filename) = @_;
+<a id='L349' name='L349'></a>        if ($platform ne 'unx') {
+<a id='L350' name='L350'></a>                $perms = ($filename =~ /\/$/ ? 'drwxr-xr-x' : '-rw-r--r--');
+<a id='L351' name='L351'></a>        }
+<a id='L352' name='L352'></a>        # adjust abnormal perms on directory
+<a id='L353' name='L353'></a>        if ($platform eq 'unx' &amp;&amp; $filename =~ /\/$/ &amp;&amp; $perms =~ /^\?(.*)$/) {
+<a id='L354' name='L354'></a>                $perms = 'd'.$1;
+<a id='L355' name='L355'></a>        }
+<a id='L356' name='L356'></a>        printf "%-10s    1 %-8d %-8d %8s %s/%s/%s %s:%s:%s ./%s", $perms, $&lt;,
+<a id='L357' name='L357'></a>                $(, $realsize, $mon, $day, $year, $hours, $mins, $secs, $filename;
+<a id='L358' name='L358'></a>        if ($platform eq 'unx' &amp;&amp; $perms =~ /^l/) {
+<a id='L359' name='L359'></a>                my $linkdest = &amp;get_link_destination($filename);
+<a id='L360' name='L360'></a>                print " -&gt; $linkdest";
+<a id='L361' name='L361'></a>        }
+<a id='L362' name='L362'></a>        print "\n";
+<a id='L363' name='L363'></a>}
+<a id='L364' name='L364'></a> 
+<a id='L365' name='L365'></a># Die with a reasonable error message.
+<a id='L366' name='L366'></a>sub croak {
+<a id='L367' name='L367'></a>        my ($command, $desc) = @_;
+<a id='L368' name='L368'></a>        die "uzip ($cmd): $command - $desc\n" if (defined $desc);
+<a id='L369' name='L369'></a>        die "uzip ($cmd): $command - $!\n";
+<a id='L370' name='L370'></a>}
+<a id='L371' name='L371'></a> 
+<a id='L372' name='L372'></a># Make a set of directories, like the command `mkdir -p'.
+<a id='L373' name='L373'></a># This subroutine has been tailored for this script, and
+<a id='L374' name='L374'></a># because of that, it ignored the directory name '.'.
+<a id='L375' name='L375'></a>sub mkdirs {
+<a id='L376' name='L376'></a>        my ($dirs, $mode) = @_;
+<a id='L377' name='L377'></a>        $dirs = &amp;cleandirs($dirs);
+<a id='L378' name='L378'></a>        return if ($dirs eq '.');
+<a id='L379' name='L379'></a> 
+<a id='L380' name='L380'></a>        my $newpos = -1;
+<a id='L381' name='L381'></a>        while (($newpos = index($dirs, '/', $newpos+1)) != -1) {
+<a id='L382' name='L382'></a>                my $dir = substr($dirs, 0, $newpos);
+<a id='L383' name='L383'></a>                mkdir ($dir, $mode) || &amp;croak("mkdir $dir failed");
+<a id='L384' name='L384'></a>        }
+<a id='L385' name='L385'></a>        mkdir ($dirs, $mode) || &amp;croak("mkdir $dirs failed");
+<a id='L386' name='L386'></a>}
+<a id='L387' name='L387'></a> 
+<a id='L388' name='L388'></a># Remove a set of directories, failing if the directories
+<a id='L389' name='L389'></a># contain other files.
+<a id='L390' name='L390'></a># This subroutine has been tailored for this script, and
+<a id='L391' name='L391'></a># because of that, it ignored the directory name '.'.
+<a id='L392' name='L392'></a>sub rmdirs {
+<a id='L393' name='L393'></a>        my ($dirs) = @_;
+<a id='L394' name='L394'></a>        $dirs = &amp;cleandirs($dirs);
+<a id='L395' name='L395'></a>        return if ($dirs eq '.');
+<a id='L396' name='L396'></a> 
+<a id='L397' name='L397'></a>        rmdir $dirs || &amp;croak("rmdir $dirs failed");
+<a id='L398' name='L398'></a>        my $newpos = length($dirs);
+<a id='L399' name='L399'></a>        while (($newpos = rindex($dirs, '/', $newpos-1)) != -1) {
+<a id='L400' name='L400'></a>                my $dir = substr($dirs, 0, $newpos);
+<a id='L401' name='L401'></a>                rmdir $dir || &amp;croak("rmdir $dir failed");
+<a id='L402' name='L402'></a>        }
+<a id='L403' name='L403'></a>}
+<a id='L404' name='L404'></a> 
+<a id='L405' name='L405'></a># Return a semi-canonical directory name.
+<a id='L406' name='L406'></a>sub cleandirs {
+<a id='L407' name='L407'></a>        my ($dir) = @_;
+<a id='L408' name='L408'></a>        $dir =~ s:/+:/:g;
+<a id='L409' name='L409'></a>        $dir =~ s:/*$::;
+<a id='L410' name='L410'></a>        return $dir;
+<a id='L411' name='L411'></a>}
+<a id='L412' name='L412'></a> 
+<a id='L413' name='L413'></a># Make a temporary directory with mode 0700.
+<a id='L414' name='L414'></a>sub mktmpdir {
+<a id='L415' name='L415'></a>        use File::Temp qw(mkdtemp);
+<a id='L416' name='L416'></a>        my $template = "/tmp/mcuzipfs.XXXXXX";
+<a id='L417' name='L417'></a>        $template="$ENV{MC_TMPDIR}/mcuzipfs.XXXXXX" if ($ENV{MC_TMPDIR});
+<a id='L418' name='L418'></a>        return mkdtemp($template);
+<a id='L419' name='L419'></a>}
+<a id='L420' name='L420'></a> 
+<a id='L421' name='L421'></a># Make a filename absolute and return it.
+<a id='L422' name='L422'></a>sub absolutize {
+<a id='L423' name='L423'></a>        my ($file, $pwd) = @_;
+<a id='L424' name='L424'></a>        return "$pwd/$file" if ($file !~ /^\//);
+<a id='L425' name='L425'></a>        return $file;
+<a id='L426' name='L426'></a>}
+<a id='L427' name='L427'></a> 
+<a id='L428' name='L428'></a># Like the system built-in function, but with error checking.
+<a id='L429' name='L429'></a># The other argument is an exit status to allow.
+<a id='L430' name='L430'></a>sub safesystem {
+<a id='L431' name='L431'></a>        my ($command, @allowrc) = @_;
+<a id='L432' name='L432'></a>        my ($desc) = ($command =~ /^([^ ]*) */);
+<a id='L433' name='L433'></a>        $desc = File::Basename::basename($desc);
+<a id='L434' name='L434'></a>        system $command;
+<a id='L435' name='L435'></a>        my $rc = $?;
+<a id='L436' name='L436'></a>        &amp;croak("`$desc' failed") if (($rc &amp; 0xFF) != 0);
+<a id='L437' name='L437'></a>        if ($rc != 0) {
+<a id='L438' name='L438'></a>                $rc = $rc &gt;&gt; 8;
+<a id='L439' name='L439'></a>                foreach my $arc (@allowrc) {
+<a id='L440' name='L440'></a>                        return if ($rc == $arc);
+<a id='L441' name='L441'></a>                }
+<a id='L442' name='L442'></a>                &amp;croak("`$desc' failed", "non-zero exit status ($rc)");
+<a id='L443' name='L443'></a>        }
+<a id='L444' name='L444'></a>}
+<a id='L445' name='L445'></a> 
+<a id='L446' name='L446'></a># Like backticks built-in, but with error checking.
+<a id='L447' name='L447'></a>sub safeticks {
+<a id='L448' name='L448'></a>        my ($command, @allowrc) = @_;
+<a id='L449' name='L449'></a>        my ($desc) = ($command =~ /^([^ ]*) /);
+<a id='L450' name='L450'></a>        $desc = File::Basename::basename($desc);
+<a id='L451' name='L451'></a>        my $out = `$command`;
+<a id='L452' name='L452'></a>        my $rc = $?;
+<a id='L453' name='L453'></a>        &amp;croak("`$desc' failed") if (($rc &amp; 0xFF) != 0);
+<a id='L454' name='L454'></a>        if ($rc != 0) {
+<a id='L455' name='L455'></a>                $rc = $rc &gt;&gt; 8;
+<a id='L456' name='L456'></a>                foreach my $arc (@allowrc) {
+<a id='L457' name='L457'></a>                        return if ($rc == $arc);
+<a id='L458' name='L458'></a>                }
+<a id='L459' name='L459'></a>                &amp;croak("`$desc' failed", "non-zero exit status ($rc)");
+<a id='L460' name='L460'></a>        }
+<a id='L461' name='L461'></a>        return $out;
+<a id='L462' name='L462'></a>}
+<a id='L463' name='L463'></a> 
+<a id='L464' name='L464'></a># Make sure enough arguments are supplied, or die.
+<a id='L465' name='L465'></a>sub checkargs {
+<a id='L466' name='L466'></a>        my $count = shift;
+<a id='L467' name='L467'></a>        my $desc = shift;
+<a id='L468' name='L468'></a>        &amp;croak('missing argument', $desc) if ($count-1 &gt; $#_);
+<a id='L469' name='L469'></a>}
+<a id='L470' name='L470'></a> 
+<a id='L471' name='L471'></a># Quote zip wildcard metacharacters. Unfortunately Info-ZIP zip and unzip
+<a id='L472' name='L472'></a># on unix interpret some wildcards in filenames, despite the fact that
+<a id='L473' name='L473'></a># the shell already does this. Thus this function.
+<a id='L474' name='L474'></a>sub zipquotemeta {
+<a id='L475' name='L475'></a>        my ($name) = @_;
+<a id='L476' name='L476'></a>        my $out = '';
+<a id='L477' name='L477'></a>        for (my $c = 0; $c &lt; length $name; $c++) {
+<a id='L478' name='L478'></a>                my $ch = substr($name, $c, 1);
+<a id='L479' name='L479'></a>                $out .= '\\' if (index('*?[]\\', $ch) != -1);
+<a id='L480' name='L480'></a>                $out .= $ch;
+<a id='L481' name='L481'></a>        }
+<a id='L482' name='L482'></a>        return quotemeta($out);
+<a id='L483' name='L483'></a>}
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+483 src/vfs/extfs/helpers/uzip.in'  /> */</em>
+</body>
+</html>

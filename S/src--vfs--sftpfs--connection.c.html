@@ -1,0 +1,1071 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/sftpfs/connection.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L133'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L969'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--sftpfs.html'>sftpfs</a>/connection.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--sftpfs.html'>sftpfs</a>/connection.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/sftpfs/connection.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L133' title='Defined at 133.'>sftpfs_open_socket</a></li>
+<li><a href='#L264' title='Defined at 264.'>sftpfs_read_known_hosts</a></li>
+<li><a href='#L402' title='Defined at 402.'>sftpfs_update_known_hosts</a></li>
+<li><a href='#L436' title='Defined at 436.'>sftpfs_compute_fingerprint_hash</a></li>
+<li><a href='#L468' title='Defined at 468.'>sftpfs_process_known_host</a></li>
+<li><a href='#L622' title='Defined at 622.'>sftpfs_recognize_auth_types</a></li>
+<li><a href='#L660' title='Defined at 660.'>sftpfs_open_connection_ssh_agent</a></li>
+<li><a href='#L712' title='Defined at 712.'>sftpfs_open_connection_ssh_key</a></li>
+<li><a href='#L768' title='Defined at 768.'>LIBSSH2_USERAUTH_KBDINT_RESPONSE_FUNC</a></li>
+<li><a href='#L804' title='Defined at 804.'>sftpfs_open_connection_ssh_password</a></li>
+<li><a href='#L894' title='Defined at 894.'>sftpfs_open_connection</a></li>
+<li><a href='#L969' title='Defined at 969.'>sftpfs_close_connection</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/* Virtual File System: SFTP file system.</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   The internal functions: connections</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2011-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Ilia Maslakov &lt;il.smind@gmail.com&gt;, 2011</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Slava Zanko &lt;slavazanko@gmail.com&gt;, 2011, 2012, 2013</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'></em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'></em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'></em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'> */</em>
+<a id='L26' name='L26'></a>  26 
+<a id='L27' name='L27'></a>  27 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> &lt;errno.h&gt;
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;netdb.h&gt;              <em class='comment'>/* struct hostent */</em>
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;sys/socket.h&gt;         <em class='comment'>/* AF_INET */</em>
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;netinet/in.h&gt;         <em class='comment'>/* struct in_addr */</em>
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#ifdef</em> <a href='../Y/HAVE_ARPA_INET_H.html' title='Multiple used in 2 places.'>HAVE_ARPA_INET_H</a>
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;arpa/inet.h&gt;
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#endif</em>
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;libssh2.h&gt;
+<a id='L38' name='L38'></a>  38 <em class='sharp'>#include</em> &lt;libssh2_sftp.h&gt;
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> "<a href='lib--tty--tty.h.html'>lib/tty/tty.h</a>"        <em class='comment'>/* tty_enable_interrupt_key () */</em>
+<a id='L44' name='L44'></a>  44 <em class='sharp'>#include</em> "<a href='lib--vfs--utilvfs.h.html'>lib/vfs/utilvfs.h</a>"
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> "<a href='lib--mcconfig.h.html'>lib/mcconfig.h</a>"       <em class='comment'>/* mc_config_get_home_dir () */</em>
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"         <em class='comment'>/* query_dialog () */</em>
+<a id='L47' name='L47'></a>  47 
+<a id='L48' name='L48'></a>  48 <em class='sharp'>#include</em> "<a href='../I/internal.h.html'>internal.h</a>"
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <em class='sharp'>#define</em> <a href='../R/SHA1_DIGEST_LENGTH.html' title='Multiple referred from 2 places.'>SHA1_DIGEST_LENGTH</a> 20
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ED25519.html' title='Multiple used in 5 places.'>LIBSSH2_KNOWNHOST_KEY_ED25519</a>
+<a id='L63' name='L63'></a>  63 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/hostkey_method_ssh_ed25519.html' title='Multiple used in 2 places.'>hostkey_method_ssh_ed25519</a> = "ssh-ed25519";
+<a id='L64' name='L64'></a>  64 <em class='sharp'>#endif</em>
+<a id='L65' name='L65'></a>  65 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_521.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_521</a>
+<a id='L66' name='L66'></a>  66 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/hostkey_method_ssh_ecdsa_521.html' title='Multiple used in 2 places.'>hostkey_method_ssh_ecdsa_521</a> = "ecdsa-sha2-nistp521";
+<a id='L67' name='L67'></a>  67 <em class='sharp'>#endif</em>
+<a id='L68' name='L68'></a>  68 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_384.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_384</a>
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/hostkey_method_ssh_ecdsa_384.html' title='Multiple used in 2 places.'>hostkey_method_ssh_ecdsa_384</a> = "ecdsa-sha2-nistp384";
+<a id='L70' name='L70'></a>  70 <em class='sharp'>#endif</em>
+<a id='L71' name='L71'></a>  71 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_256.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_256</a>
+<a id='L72' name='L72'></a>  72 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/hostkey_method_ssh_ecdsa_256.html' title='Multiple used in 2 places.'>hostkey_method_ssh_ecdsa_256</a> = "ecdsa-sha2-nistp256";
+<a id='L73' name='L73'></a>  73 <em class='sharp'>#endif</em>
+<a id='L74' name='L74'></a>  74 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/hostkey_method_ssh_rsa.html' title='Multiple used in 2 places.'>hostkey_method_ssh_rsa</a> = "ssh-rsa";
+<a id='L75' name='L75'></a>  75 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> <a href='../Y/hostkey_method_ssh_dss.html' title='Multiple used in 2 places.'>hostkey_method_ssh_dss</a> = "ssh-dss";
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L78' name='L78'></a>  78 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/default_hostkey_methods.html' title='Multiple used in 2 places.'>default_hostkey_methods</a> =
+<a id='L79' name='L79'></a>  79 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_256.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_256</a>
+<a id='L80' name='L80'></a>  80     "ecdsa-sha2-nistp256,"
+<a id='L81' name='L81'></a>  81 <em class='sharp'>#endif</em>
+<a id='L82' name='L82'></a>  82 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_384.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_384</a>
+<a id='L83' name='L83'></a>  83     "ecdsa-sha2-nistp384,"
+<a id='L84' name='L84'></a>  84 <em class='sharp'>#endif</em>
+<a id='L85' name='L85'></a>  85 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_521.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_521</a>
+<a id='L86' name='L86'></a>  86     "ecdsa-sha2-nistp521,"
+<a id='L87' name='L87'></a>  87 <em class='sharp'>#endif</em>
+<a id='L88' name='L88'></a>  88 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_256.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_256</a>
+<a id='L89' name='L89'></a>  89     "ecdsa-sha2-nistp256-cert-v01@openssh.com,"
+<a id='L90' name='L90'></a>  90 <em class='sharp'>#endif</em>
+<a id='L91' name='L91'></a>  91 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_384.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_384</a>
+<a id='L92' name='L92'></a>  92     "ecdsa-sha2-nistp384-cert-v01@openssh.com,"
+<a id='L93' name='L93'></a>  93 <em class='sharp'>#endif</em>
+<a id='L94' name='L94'></a>  94 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_521.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_521</a>
+<a id='L95' name='L95'></a>  95     "ecdsa-sha2-nistp521-cert-v01@openssh.com,"
+<a id='L96' name='L96'></a>  96 <em class='sharp'>#endif</em>
+<a id='L97' name='L97'></a>  97 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ED25519.html' title='Multiple used in 5 places.'>LIBSSH2_KNOWNHOST_KEY_ED25519</a>
+<a id='L98' name='L98'></a>  98     "ssh-ed25519,"
+<a id='L99' name='L99'></a>  99     "ssh-ed25519-cert-v01@openssh.com,"
+<a id='L100' name='L100'></a> 100 <em class='sharp'>#endif</em>
+<a id='L101' name='L101'></a> 101     "rsa-sha2-256,"
+<a id='L102' name='L102'></a> 102     "rsa-sha2-512,"
+<a id='L103' name='L103'></a> 103     "ssh-rsa,"
+<a id='L104' name='L104'></a> 104     "ssh-rsa-cert-v01@openssh.com,"
+<a id='L105' name='L105'></a> 105     "ssh-dss";
+<a id='L106' name='L106'></a> 106 <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L107' name='L107'></a> 107 
+<a id='L108' name='L108'></a> 108 <em class='comment'>/**</em>
+<a id='L109' name='L109'></a> 109 <em class='comment'> *</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'> * The current implementation of know host key checking has following limitations:</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'> *</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'> *   - Only plain-text entries are supported (`HashKnownHosts no` OpenSSH option)</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'> *   - Only HEX-encoded SHA1 fingerprint display is supported (`FingerprintHash` OpenSSH option)</em>
+<a id='L114' name='L114'></a> 114 <em class='comment'> *   - Resolved IP addresses are *not* saved/validated along with the hostnames</em>
+<a id='L115' name='L115'></a> 115 <em class='comment'> *</em>
+<a id='L116' name='L116'></a> 116 <em class='comment'> */</em>
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/kbi_passwd.html' title='Multiple used in 8 places.'>kbi_passwd</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L119' name='L119'></a> 119 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/kbi_super.html' title='Multiple used in 7 places.'>kbi_super</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L122' name='L122'></a> 122 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L123' name='L123'></a> 123 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L124' name='L124'></a> 124 <em class='comment'>/**</em>
+<a id='L125' name='L125'></a> 125 <em class='comment'> * Create socket to host.</em>
+<a id='L126' name='L126'></a> 126 <em class='comment'> *</em>
+<a id='L127' name='L127'></a> 127 <em class='comment'> * @param super   connection data</em>
+<a id='L128' name='L128'></a> 128 <em class='comment'> * @param mcerror pointer to the error handler</em>
+<a id='L129' name='L129'></a> 129 <em class='comment'> * @return socket descriptor number, -1 if any error was occurred</em>
+<a id='L130' name='L130'></a> 130 <em class='comment'> */</em>
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L133' name='L133'></a> 133 <a href='../S/src--vfs--sftpfs--connection.c.html#L905' title='Referred from 905 in src/vfs/sftpfs/connection.c.'>sftpfs_open_socket</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> ** <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L264'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+133 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L134' name='L134'></a> 134 <em class='brace'>{</em>
+<a id='L135' name='L135'></a> 135     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L136' name='L136'></a> 136     <strong class='reserved'>struct</strong> <a href='../Y/addrinfo.html' title='Multiple used in 2 places.'>addrinfo</a> <a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>, *<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, *<a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>;
+<a id='L137' name='L137'></a> 137     <strong class='reserved'>int</strong> <a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a> = 0;
+<a id='L138' name='L138'></a> 138     <strong class='reserved'>char</strong> <a href='../Y/port.html' title='Multiple used in 65 places.'>port</a>[<a href='../S/lib--global.h.html#L110' title='Defined at 110 in lib/global.h.'>BUF_TINY</a>];
+<a id='L139' name='L139'></a> 139     <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> <a href='../Y/address_ipv4.html' title='Multiple used in 2 places.'>address_ipv4</a>[<a href='../Y/INET_ADDRSTRLEN.html' title='Multiple used in 2 places.'>INET_ADDRSTRLEN</a>];
+<a id='L140' name='L140'></a> 140     <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> <a href='../Y/address_ipv6.html' title='Multiple used in 2 places.'>address_ipv6</a>[<a href='../Y/INET6_ADDRSTRLEN.html' title='Multiple used in 2 places.'>INET6_ADDRSTRLEN</a>];
+<a id='L141' name='L141'></a> 141     <strong class='reserved'>int</strong> <a href='../Y/e.html' title='Multiple used in 238 places.'>e</a>;
+<a id='L142' name='L142'></a> 142 
+<a id='L143' name='L143'></a> 143     <a href='../S/lib--util.h.html#L28' title='Defined at 28 in lib/util.h.'>mc_return_val_if_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>);
+<a id='L144' name='L144'></a> 144 
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>if</strong> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> || *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a> == '\0')
+<a id='L146' name='L146'></a> 146     <em class='brace'>{</em>
+<a id='L147' name='L147'></a> 147         <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: Invalid host name."));
+<a id='L148' name='L148'></a> 148         <strong class='reserved'>return</strong> <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>;
+<a id='L149' name='L149'></a> 149     <em class='brace'>}</em>
+<a id='L150' name='L150'></a> 150 
+<a id='L151' name='L151'></a> 151     <a href='../Y/sprintf.html' title='Multiple used in 4 places.'>sprintf</a> (<a href='../Y/port.html' title='Multiple used in 65 places.'>port</a>, "%hu", (<strong class='reserved'>unsigned</strong> <strong class='reserved'>short</strong>) <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/port.html' title='Multiple used in 65 places.'>port</a>);
+<a id='L152' name='L152'></a> 152 
+<a id='L153' name='L153'></a> 153     <a href='../S/lib--tty--tty.c.html#L155' title='Defined at 155 in lib/tty/tty.c.'>tty_enable_interrupt_key</a> ();        <em class='comment'>/* clear the interrupt flag */</em>
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155     <a href='../Y/memset.html' title='Multiple used in 73 places.'>memset</a> (&amp;<a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>, 0, <strong class='reserved'>sizeof</strong> (<a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>));
+<a id='L156' name='L156'></a> 156     <a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>.<a href='../Y/ai_family.html' title='Multiple used in 4 places.'>ai_family</a> = <a href='../Y/AF_UNSPEC.html' title='Multiple used in 2 places.'>AF_UNSPEC</a>;
+<a id='L157' name='L157'></a> 157     <a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>.<a href='../Y/ai_socktype.html' title='Multiple used in 4 places.'>ai_socktype</a> = <a href='../Y/SOCK_STREAM.html' title='Multiple used in 3 places.'>SOCK_STREAM</a>;
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159 <em class='sharp'>#ifdef</em> <a href='../Y/AI_ADDRCONFIG.html' title='Multiple used in 6 places.'>AI_ADDRCONFIG</a>
+<a id='L160' name='L160'></a> 160     <em class='comment'>/* By default, only look up addresses using address types for</em>
+<a id='L161' name='L161'></a> 161 <em class='comment'>     * which a local interface is configured (i.e. no IPv6 if no IPv6</em>
+<a id='L162' name='L162'></a> 162 <em class='comment'>     * interfaces, likewise for IPv4 (see RFC 3493 for details). */</em>
+<a id='L163' name='L163'></a> 163     <a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>.<a href='../Y/ai_flags.html' title='Multiple used in 4 places.'>ai_flags</a> = <a href='../Y/AI_ADDRCONFIG.html' title='Multiple used in 6 places.'>AI_ADDRCONFIG</a>;
+<a id='L164' name='L164'></a> 164 <em class='sharp'>#endif</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166     <a href='../Y/e.html' title='Multiple used in 238 places.'>e</a> = <a href='../Y/getaddrinfo.html' title='Multiple used in 4 places.'>getaddrinfo</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>, <a href='../Y/port.html' title='Multiple used in 65 places.'>port</a>, &amp;<a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>, &amp;<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>);
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168 <em class='sharp'>#ifdef</em> <a href='../Y/AI_ADDRCONFIG.html' title='Multiple used in 6 places.'>AI_ADDRCONFIG</a>
+<a id='L169' name='L169'></a> 169     <strong class='reserved'>if</strong> (<a href='../Y/e.html' title='Multiple used in 238 places.'>e</a> == <a href='../Y/EAI_BADFLAGS.html' title='Multiple used in 2 places.'>EAI_BADFLAGS</a>)
+<a id='L170' name='L170'></a> 170     <em class='brace'>{</em>
+<a id='L171' name='L171'></a> 171         <em class='comment'>/* Retry with no flags if AI_ADDRCONFIG was rejected. */</em>
+<a id='L172' name='L172'></a> 172         <a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>.<a href='../Y/ai_flags.html' title='Multiple used in 4 places.'>ai_flags</a> = 0;
+<a id='L173' name='L173'></a> 173         <a href='../Y/e.html' title='Multiple used in 238 places.'>e</a> = <a href='../Y/getaddrinfo.html' title='Multiple used in 4 places.'>getaddrinfo</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>, <a href='../Y/port.html' title='Multiple used in 65 places.'>port</a>, &amp;<a href='../Y/hints.html' title='Multiple used in 16 places.'>hints</a>, &amp;<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>);
+<a id='L174' name='L174'></a> 174     <em class='brace'>}</em>
+<a id='L175' name='L175'></a> 175 <em class='sharp'>#endif</em>
+<a id='L176' name='L176'></a> 176 
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>if</strong> (<a href='../Y/e.html' title='Multiple used in 238 places.'>e</a> != 0)
+<a id='L178' name='L178'></a> 178     <em class='brace'>{</em>
+<a id='L179' name='L179'></a> 179         <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, <a href='../Y/e.html' title='Multiple used in 238 places.'>e</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: %s"), <a href='../Y/gai_strerror.html' title='Multiple used in 3 places.'>gai_strerror</a> (<a href='../Y/e.html' title='Multiple used in 238 places.'>e</a>));
+<a id='L180' name='L180'></a> 180         <a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>;
+<a id='L181' name='L181'></a> 181         <strong class='reserved'>goto</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L182' name='L182'></a> 182     <em class='brace'>}</em>
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184     <strong class='reserved'>for</strong> (<a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a> = <a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>; <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>; <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a> = <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_next.html' title='Multiple used in 6 places.'>ai_next</a>)
+<a id='L185' name='L185'></a> 185     <em class='brace'>{</em>
+<a id='L186' name='L186'></a> 186         <strong class='reserved'>int</strong> <a href='../Y/save_errno.html' title='Multiple used in 5 places.'>save_errno</a>;
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188         <strong class='reserved'>switch</strong> (<a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_addr.html' title='Multiple used in 5 places.'>ai_addr</a>-&gt;sa_family)
+<a id='L189' name='L189'></a> 189         <em class='brace'>{</em>
+<a id='L190' name='L190'></a> 190         <strong class='reserved'>case</strong> <a href='../Y/AF_INET.html' title='Multiple used in 6 places.'>AF_INET</a>:
+<a id='L191' name='L191'></a> 191             <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/ip_address.html' title='Multiple used in 8 places.'>ip_address</a> =
+<a id='L192' name='L192'></a> 192                 <a href='../Y/inet_ntop.html' title='Multiple used in 2 places.'>inet_ntop</a> (<a href='../Y/AF_INET.html' title='Multiple used in 6 places.'>AF_INET</a>, &amp;((<strong class='reserved'>struct</strong> <a href='../Y/sockaddr_in.html' title='Multiple used in 7 places.'>sockaddr_in</a> *) <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_addr.html' title='Multiple used in 5 places.'>ai_addr</a>)-&gt;<a href='../Y/sin_addr.html' title='Multiple used in 3 places.'>sin_addr</a>,
+<a id='L193' name='L193'></a> 193                            <a href='../Y/address_ipv4.html' title='Multiple used in 2 places.'>address_ipv4</a>, <a href='../Y/INET_ADDRSTRLEN.html' title='Multiple used in 2 places.'>INET_ADDRSTRLEN</a>);
+<a id='L194' name='L194'></a> 194             <strong class='reserved'>break</strong>;
+<a id='L195' name='L195'></a> 195         <strong class='reserved'>case</strong> <a href='../Y/AF_INET6.html' title='Multiple used in 5 places.'>AF_INET6</a>:
+<a id='L196' name='L196'></a> 196             <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/ip_address.html' title='Multiple used in 8 places.'>ip_address</a> =
+<a id='L197' name='L197'></a> 197                 <a href='../Y/inet_ntop.html' title='Multiple used in 2 places.'>inet_ntop</a> (<a href='../Y/AF_INET6.html' title='Multiple used in 5 places.'>AF_INET6</a>, &amp;((<strong class='reserved'>struct</strong> <a href='../Y/sockaddr_in6.html' title='Multiple used in 4 places.'>sockaddr_in6</a> *) <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_addr.html' title='Multiple used in 5 places.'>ai_addr</a>)-&gt;sin6_addr,
+<a id='L198' name='L198'></a> 198                            <a href='../Y/address_ipv6.html' title='Multiple used in 2 places.'>address_ipv6</a>, <a href='../Y/INET6_ADDRSTRLEN.html' title='Multiple used in 2 places.'>INET6_ADDRSTRLEN</a>);
+<a id='L199' name='L199'></a> 199             <strong class='reserved'>break</strong>;
+<a id='L200' name='L200'></a> 200         <strong class='reserved'>default</strong>:
+<a id='L201' name='L201'></a> 201             <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/ip_address.html' title='Multiple used in 8 places.'>ip_address</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L202' name='L202'></a> 202         <em class='brace'>}</em>
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204         <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/ip_address.html' title='Multiple used in 8 places.'>ip_address</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L205' name='L205'></a> 205         <em class='brace'>{</em>
+<a id='L206' name='L206'></a> 206             <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s",
+<a id='L207' name='L207'></a> 207                                 <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: failed to convert remote host IP address into text form"));
+<a id='L208' name='L208'></a> 208             <a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>;
+<a id='L209' name='L209'></a> 209             <strong class='reserved'>goto</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L210' name='L210'></a> 210         <em class='brace'>}</em>
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212         <a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a> = <a href='../Y/socket.html' title='Multiple used in 3 places.'>socket</a> (<a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_family.html' title='Multiple used in 4 places.'>ai_family</a>, <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_socktype.html' title='Multiple used in 4 places.'>ai_socktype</a>, <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_protocol.html' title='Multiple used in 2 places.'>ai_protocol</a>);
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214         <strong class='reserved'>if</strong> (<a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a> &lt; 0)
+<a id='L215' name='L215'></a> 215         <em class='brace'>{</em>
+<a id='L216' name='L216'></a> 216             <strong class='reserved'>if</strong> (<a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_next.html' title='Multiple used in 6 places.'>ai_next</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L217' name='L217'></a> 217                 <strong class='reserved'>continue</strong>;
+<a id='L218' name='L218'></a> 218 
+<a id='L219' name='L219'></a> 219             <a href='../S/lib--vfs--vfs.c.html#L617' title='Defined at 617 in lib/vfs/vfs.c.'>vfs_print_message</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: %s"), <a href='../S/lib--util.c.html#L692' title='Defined at 692 in lib/util.c.'>unix_error_string</a> (<a href='../Y/errno.html' title='Multiple used in 236 places.'>errno</a>));
+<a id='L220' name='L220'></a> 220             <a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>;
+<a id='L221' name='L221'></a> 221             <strong class='reserved'>goto</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L222' name='L222'></a> 222         <em class='brace'>}</em>
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224         <a href='../S/lib--vfs--vfs.c.html#L617' title='Defined at 617 in lib/vfs/vfs.c.'>vfs_print_message</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: making connection to %s"), <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>);
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226         <strong class='reserved'>if</strong> (<a href='../Y/connect.html' title='Multiple used in 4 places.'>connect</a> (<a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a>, <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_addr.html' title='Multiple used in 5 places.'>ai_addr</a>, <a href='../Y/curr_res.html' title='Multiple used in 13 places.'>curr_res</a>-&gt;<a href='../Y/ai_addrlen.html' title='Multiple used in 2 places.'>ai_addrlen</a>) &gt;= 0)
+<a id='L227' name='L227'></a> 227             <strong class='reserved'>break</strong>;
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229         <a href='../Y/save_errno.html' title='Multiple used in 5 places.'>save_errno</a> = <a href='../Y/errno.html' title='Multiple used in 236 places.'>errno</a>;
+<a id='L230' name='L230'></a> 230 
+<a id='L231' name='L231'></a> 231         <a href='../Y/close.html' title='Multiple used in 126 places.'>close</a> (<a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a>);
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233         <strong class='reserved'>if</strong> (<a href='../Y/save_errno.html' title='Multiple used in 5 places.'>save_errno</a> == <a href='../Y/EINTR.html' title='Multiple used in 42 places.'>EINTR</a> &amp;&amp; <a href='../S/lib--tty--tty.c.html#L182' title='Defined at 182 in lib/tty/tty.c.'>tty_got_interrupt</a> ())
+<a id='L234' name='L234'></a> 234             <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: connection interrupted by user"));
+<a id='L235' name='L235'></a> 235         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>-&gt;<a href='../Y/ai_next.html' title='Multiple used in 6 places.'>ai_next</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L236' name='L236'></a> 236             <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, <a href='../Y/save_errno.html' title='Multiple used in 5 places.'>save_errno</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: connection to server failed: %s"),
+<a id='L237' name='L237'></a> 237                                 <a href='../S/lib--util.c.html#L692' title='Defined at 692 in lib/util.c.'>unix_error_string</a> (<a href='../Y/save_errno.html' title='Multiple used in 5 places.'>save_errno</a>));
+<a id='L238' name='L238'></a> 238         <strong class='reserved'>else</strong>
+<a id='L239' name='L239'></a> 239             <strong class='reserved'>continue</strong>;
+<a id='L240' name='L240'></a> 240 
+<a id='L241' name='L241'></a> 241         <a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>;
+<a id='L242' name='L242'></a> 242         <strong class='reserved'>break</strong>;
+<a id='L243' name='L243'></a> 243     <em class='brace'>}</em>
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245   <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>:
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>if</strong> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L247' name='L247'></a> 247         <a href='../Y/freeaddrinfo.html' title='Multiple used in 4 places.'>freeaddrinfo</a> (<a href='../Y/res.html' title='Multiple used in 366 places.'>res</a>);
+<a id='L248' name='L248'></a> 248     <a href='../S/lib--tty--tty.c.html#L169' title='Defined at 169 in lib/tty/tty.c.'>tty_disable_interrupt_key</a> ();
+<a id='L249' name='L249'></a> 249     <strong class='reserved'>return</strong> <a href='../Y/my_socket.html' title='Multiple used in 24 places.'>my_socket</a>;
+<a id='L250' name='L250'></a> 250 <em class='brace'>}</em>
+<a id='L251' name='L251'></a> 251 
+<a id='L252' name='L252'></a> 252 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254 <em class='comment'>/**</em>
+<a id='L255' name='L255'></a> 255 <em class='comment'> * Read ~/.ssh/known_hosts file.</em>
+<a id='L256' name='L256'></a> 256 <em class='comment'> *</em>
+<a id='L257' name='L257'></a> 257 <em class='comment'> * @param super connection data</em>
+<a id='L258' name='L258'></a> 258 <em class='comment'> * @param mcerror pointer to the error handler</em>
+<a id='L259' name='L259'></a> 259 <em class='comment'> * @return TRUE on success, FALSE otherwise</em>
+<a id='L260' name='L260'></a> 260 <em class='comment'> *</em>
+<a id='L261' name='L261'></a> 261 <em class='comment'> * Thanks the Curl project for the code used in this function.</em>
+<a id='L262' name='L262'></a> 262 <em class='comment'> */</em>
+<a id='L263' name='L263'></a> 263 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L264' name='L264'></a> 264 <a href='../S/src--vfs--sftpfs--connection.c.html#L914' title='Referred from 914 in src/vfs/sftpfs/connection.c.'>sftpfs_read_known_hosts</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> ** <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+     <em class='comment'>/* <a href='#L133'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L402'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+264 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L265' name='L265'></a> 265 <em class='brace'>{</em>
+<a id='L266' name='L266'></a> 266     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L267' name='L267'></a> 267     <strong class='reserved'>struct</strong> <a href='../Y/libssh2_knownhost.html' title='Multiple used in 2 places.'>libssh2_knownhost</a> *<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L268' name='L268'></a> 268     <strong class='reserved'>int</strong> <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>;
+<a id='L269' name='L269'></a> 269     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/found.html' title='Multiple used in 67 places.'>found</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L270' name='L270'></a> 270 
+<a id='L271' name='L271'></a> 271     <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a> = libssh2_knownhost_init (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>);
+<a id='L272' name='L272'></a> 272     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L273' name='L273'></a> 273         <strong class='reserved'>goto</strong> <a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>;
+<a id='L274' name='L274'></a> 274 
+<a id='L275' name='L275'></a> 275     <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts_file.html' title='Multiple used in 5 places.'>known_hosts_file</a> =
+<a id='L276' name='L276'></a> 276         <a href='../S/lib--utilunix.c.html#L1279' title='Defined at 1279 in lib/utilunix.c.'>mc_build_filename</a> (<a href='../D/mc_config_get_home_dir.html' title='Multiple defined in 4 places.'>mc_config_get_home_dir</a> (), ".ssh", "known_hosts", (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L277' name='L277'></a> 277     <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = libssh2_knownhost_readfile (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a>, <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts_file.html' title='Multiple used in 5 places.'>known_hosts_file</a>,
+<a id='L278' name='L278'></a> 278                                      <a href='../Y/LIBSSH2_KNOWNHOST_FILE_OPENSSH.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_FILE_OPENSSH</a>);
+<a id='L279' name='L279'></a> 279     <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> &gt; 0)
+<a id='L280' name='L280'></a> 280     <em class='brace'>{</em>
+<a id='L281' name='L281'></a> 281         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/kh_name_end.html' title='Multiple used in 5 places.'>kh_name_end</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L282' name='L282'></a> 282 
+<a id='L283' name='L283'></a> 283         <strong class='reserved'>while</strong> (!<a href='../Y/found.html' title='Multiple used in 67 places.'>found</a> &amp;&amp; libssh2_knownhost_get (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a>, &amp;<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>, <a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>) == 0)
+<a id='L284' name='L284'></a> 284         <em class='brace'>{</em>
+<a id='L285' name='L285'></a> 285             <em class='comment'>/* For non-standard ports, the name will be enclosed in</em>
+<a id='L286' name='L286'></a> 286 <em class='comment'>             * square brackets, followed by a colon and the port */</em>
+<a id='L287' name='L287'></a> 287             <strong class='reserved'>if</strong> (<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L288' name='L288'></a> 288                 <strong class='reserved'>continue</strong>;
+<a id='L289' name='L289'></a> 289 
+<a id='L290' name='L290'></a> 290             <strong class='reserved'>if</strong> (<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L291' name='L291'></a> 291                 <em class='comment'>/* Ignore hashed hostnames. Currently, libssh2 offers no way for us to match it */</em>
+<a id='L292' name='L292'></a> 292                 <strong class='reserved'>continue</strong>;
+<a id='L293' name='L293'></a> 293 
+<a id='L294' name='L294'></a> 294             <strong class='reserved'>if</strong> (<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>[0] != '[')
+<a id='L295' name='L295'></a> 295                 <a href='../Y/found.html' title='Multiple used in 67 places.'>found</a> = <a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>) == 0;
+<a id='L296' name='L296'></a> 296             <strong class='reserved'>else</strong>
+<a id='L297' name='L297'></a> 297             <em class='brace'>{</em>
+<a id='L298' name='L298'></a> 298                 <strong class='reserved'>int</strong> <a href='../Y/port.html' title='Multiple used in 65 places.'>port</a>;
+<a id='L299' name='L299'></a> 299 
+<a id='L300' name='L300'></a> 300                 <a href='../Y/kh_name_end.html' title='Multiple used in 5 places.'>kh_name_end</a> = <a href='../Y/strstr.html' title='Multiple used in 35 places.'>strstr</a> (<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>, "]:");
+<a id='L301' name='L301'></a> 301                 <strong class='reserved'>if</strong> (<a href='../Y/kh_name_end.html' title='Multiple used in 5 places.'>kh_name_end</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L302' name='L302'></a> 302                     <em class='comment'>/* Invalid host pattern */</em>
+<a id='L303' name='L303'></a> 303                     <strong class='reserved'>continue</strong>;
+<a id='L304' name='L304'></a> 304 
+<a id='L305' name='L305'></a> 305                 <a href='../Y/port.html' title='Multiple used in 65 places.'>port</a> = (<strong class='reserved'>int</strong>) <a href='../Y/g_ascii_strtoll.html' title='Multiple used in 10 places.'>g_ascii_strtoll</a> (<a href='../Y/kh_name_end.html' title='Multiple used in 5 places.'>kh_name_end</a> + 2, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, 10);
+<a id='L306' name='L306'></a> 306                 <strong class='reserved'>if</strong> (<a href='../Y/port.html' title='Multiple used in 65 places.'>port</a> == <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/port.html' title='Multiple used in 65 places.'>port</a>)
+<a id='L307' name='L307'></a> 307                 <em class='brace'>{</em>
+<a id='L308' name='L308'></a> 308                     <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/kh_name_size.html' title='Multiple used in 3 places.'>kh_name_size</a>;
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310                     <a href='../Y/kh_name_size.html' title='Multiple used in 3 places.'>kh_name_size</a> = <a href='../Y/strlen.html' title='Multiple used in 192 places.'>strlen</a> (<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>) - 1 - <a href='../Y/strlen.html' title='Multiple used in 192 places.'>strlen</a> (<a href='../Y/kh_name_end.html' title='Multiple used in 5 places.'>kh_name_end</a>);
+<a id='L311' name='L311'></a> 311                     <a href='../Y/found.html' title='Multiple used in 67 places.'>found</a> = <a href='../Y/strncmp.html' title='Multiple used in 110 places.'>strncmp</a> (<a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a> + 1, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>, <a href='../Y/kh_name_size.html' title='Multiple used in 3 places.'>kh_name_size</a>) == 0;
+<a id='L312' name='L312'></a> 312                 <em class='brace'>}</em>
+<a id='L313' name='L313'></a> 313             <em class='brace'>}</em>
+<a id='L314' name='L314'></a> 314         <em class='brace'>}</em>
+<a id='L315' name='L315'></a> 315     <em class='brace'>}</em>
+<a id='L316' name='L316'></a> 316 
+<a id='L317' name='L317'></a> 317     <strong class='reserved'>if</strong> (<a href='../Y/found.html' title='Multiple used in 67 places.'>found</a>)
+<a id='L318' name='L318'></a> 318     <em class='brace'>{</em>
+<a id='L319' name='L319'></a> 319         <strong class='reserved'>int</strong> <a href='../Y/mask.html' title='Multiple used in 14 places.'>mask</a>;
+<a id='L320' name='L320'></a> 320         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/hostkey_method.html' title='Multiple used in 8 places.'>hostkey_method</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L321' name='L321'></a> 321         <strong class='reserved'>char</strong> *<a href='../Y/hostkey_methods.html' title='Multiple used in 4 places.'>hostkey_methods</a>;
+<a id='L322' name='L322'></a> 322 
+<a id='L323' name='L323'></a> 323         <a href='../Y/mask.html' title='Multiple used in 14 places.'>mask</a> = <a href='../Y/store.html' title='Multiple used in 21 places.'>store</a>-&gt;typemask &amp; LIBSSH2_KNOWNHOST_KEY_MASK;
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325         <strong class='reserved'>switch</strong> (<a href='../Y/mask.html' title='Multiple used in 14 places.'>mask</a>)
+<a id='L326' name='L326'></a> 326         <em class='brace'>{</em>
+<a id='L327' name='L327'></a> 327 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ED25519.html' title='Multiple used in 5 places.'>LIBSSH2_KNOWNHOST_KEY_ED25519</a>
+<a id='L328' name='L328'></a> 328         <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ED25519.html' title='Multiple used in 5 places.'>LIBSSH2_KNOWNHOST_KEY_ED25519</a>:
+<a id='L329' name='L329'></a> 329             <a href='../Y/hostkey_method.html' title='Multiple used in 8 places.'>hostkey_method</a> = <a href='../Y/hostkey_method_ssh_ed25519.html' title='Multiple used in 2 places.'>hostkey_method_ssh_ed25519</a>;
+<a id='L330' name='L330'></a> 330             <strong class='reserved'>break</strong>;
+<a id='L331' name='L331'></a> 331 <em class='sharp'>#endif</em>
+<a id='L332' name='L332'></a> 332 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_521.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_521</a>
+<a id='L333' name='L333'></a> 333         <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_521.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_521</a>:
+<a id='L334' name='L334'></a> 334             <a href='../Y/hostkey_method.html' title='Multiple used in 8 places.'>hostkey_method</a> = <a href='../Y/hostkey_method_ssh_ecdsa_521.html' title='Multiple used in 2 places.'>hostkey_method_ssh_ecdsa_521</a>;
+<a id='L335' name='L335'></a> 335             <strong class='reserved'>break</strong>;
+<a id='L336' name='L336'></a> 336 <em class='sharp'>#endif</em>
+<a id='L337' name='L337'></a> 337 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_384.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_384</a>
+<a id='L338' name='L338'></a> 338         <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_384.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_384</a>:
+<a id='L339' name='L339'></a> 339             <a href='../Y/hostkey_method.html' title='Multiple used in 8 places.'>hostkey_method</a> = <a href='../Y/hostkey_method_ssh_ecdsa_384.html' title='Multiple used in 2 places.'>hostkey_method_ssh_ecdsa_384</a>;
+<a id='L340' name='L340'></a> 340             <strong class='reserved'>break</strong>;
+<a id='L341' name='L341'></a> 341 <em class='sharp'>#endif</em>
+<a id='L342' name='L342'></a> 342 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_256.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_256</a>
+<a id='L343' name='L343'></a> 343         <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_256.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_256</a>:
+<a id='L344' name='L344'></a> 344             <a href='../Y/hostkey_method.html' title='Multiple used in 8 places.'>hostkey_method</a> = <a href='../Y/hostkey_method_ssh_ecdsa_256.html' title='Multiple used in 2 places.'>hostkey_method_ssh_ecdsa_256</a>;
+<a id='L345' name='L345'></a> 345             <strong class='reserved'>break</strong>;
+<a id='L346' name='L346'></a> 346 <em class='sharp'>#endif</em>
+<a id='L347' name='L347'></a> 347         <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_SSHRSA.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_KEY_SSHRSA</a>:
+<a id='L348' name='L348'></a> 348             <a href='../Y/hostkey_method.html' title='Multiple used in 8 places.'>hostkey_method</a> = <a href='../Y/hostkey_method_ssh_rsa.html' title='Multiple used in 2 places.'>hostkey_method_ssh_rsa</a>;
+<a id='L349' name='L349'></a> 349             <strong class='reserved'>break</strong>;
+<a id='L350' name='L350'></a> 350         <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_KNOWNHOST_KEY_SSHDSS.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_KEY_SSHDSS</a>:
+<a id='L351' name='L351'></a> 351             <a href='../Y/hostkey_method.html' title='Multiple used in 8 places.'>hostkey_method</a> = <a href='../Y/hostkey_method_ssh_dss.html' title='Multiple used in 2 places.'>hostkey_method_ssh_dss</a>;
+<a id='L352' name='L352'></a> 352             <strong class='reserved'>break</strong>;
+<a id='L353' name='L353'></a> 353         <strong class='reserved'>case</strong> LIBSSH2_KNOWNHOST_KEY_RSA1:
+<a id='L354' name='L354'></a> 354             <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s",
+<a id='L355' name='L355'></a> 355                                 <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: found host key of unsupported type: RSA1"));
+<a id='L356' name='L356'></a> 356             <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L357' name='L357'></a> 357         <strong class='reserved'>default</strong>:
+<a id='L358' name='L358'></a> 358             <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s 0x%x", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: unknown host key type:"),
+<a id='L359' name='L359'></a> 359                                 (<strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong>) <a href='../Y/mask.html' title='Multiple used in 14 places.'>mask</a>);
+<a id='L360' name='L360'></a> 360             <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L361' name='L361'></a> 361         <em class='brace'>}</em>
+<a id='L362' name='L362'></a> 362 
+<a id='L363' name='L363'></a> 363         <em class='comment'>/* Append the default hostkey methods (with lower priority).</em>
+<a id='L364' name='L364'></a> 364 <em class='comment'>         * Since we ignored hashed hostnames, the actual matching host</em>
+<a id='L365' name='L365'></a> 365 <em class='comment'>         * key might have different type than the one found in</em>
+<a id='L366' name='L366'></a> 366 <em class='comment'>         * known_hosts for non-hashed hostname. Methods not supported</em>
+<a id='L367' name='L367'></a> 367 <em class='comment'>         * by libssh2 it are ignored. */</em>
+<a id='L368' name='L368'></a> 368         <a href='../Y/hostkey_methods.html' title='Multiple used in 4 places.'>hostkey_methods</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> ("%s,%s", <a href='../Y/hostkey_method.html' title='Multiple used in 8 places.'>hostkey_method</a>, <a href='../Y/default_hostkey_methods.html' title='Multiple used in 2 places.'>default_hostkey_methods</a>);
+<a id='L369' name='L369'></a> 369         <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = libssh2_session_method_pref (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, LIBSSH2_METHOD_HOSTKEY,
+<a id='L370' name='L370'></a> 370                                           <a href='../Y/hostkey_methods.html' title='Multiple used in 4 places.'>hostkey_methods</a>);
+<a id='L371' name='L371'></a> 371         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/hostkey_methods.html' title='Multiple used in 4 places.'>hostkey_methods</a>);
+<a id='L372' name='L372'></a> 372         <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> &lt; 0)
+<a id='L373' name='L373'></a> 373             <strong class='reserved'>goto</strong> <a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>;
+<a id='L374' name='L374'></a> 374     <em class='brace'>}</em>
+<a id='L375' name='L375'></a> 375 
+<a id='L376' name='L376'></a> 376     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L377' name='L377'></a> 377 
+<a id='L378' name='L378'></a> 378   <a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>:
+<a id='L379' name='L379'></a> 379     <em class='brace'>{</em>
+<a id='L380' name='L380'></a> 380         <strong class='reserved'>int</strong> <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a>;
+<a id='L381' name='L381'></a> 381 
+<a id='L382' name='L382'></a> 382         <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a> = <a href='../Y/libssh2_session_last_errno.html' title='Multiple used in 5 places.'>libssh2_session_last_errno</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>);
+<a id='L383' name='L383'></a> 383         <a href='../S/src--vfs--sftpfs--internal.c.html#L187' title='Defined at 187 in src/vfs/sftpfs/internal.c.'>sftpfs_ssherror_to_gliberror</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>, <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>);
+<a id='L384' name='L384'></a> 384     <em class='brace'>}</em>
+<a id='L385' name='L385'></a> 385     <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L386' name='L386'></a> 386 <em class='brace'>}</em>
+<a id='L387' name='L387'></a> 387 
+<a id='L388' name='L388'></a> 388 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L389' name='L389'></a> 389 
+<a id='L390' name='L390'></a> 390 <em class='comment'>/**</em>
+<a id='L391' name='L391'></a> 391 <em class='comment'> * Write new host + key pair to the ~/.ssh/known_hosts file.</em>
+<a id='L392' name='L392'></a> 392 <em class='comment'> *</em>
+<a id='L393' name='L393'></a> 393 <em class='comment'> * @param super connection data</em>
+<a id='L394' name='L394'></a> 394 <em class='comment'> * @param remote_key he key for the remote host</em>
+<a id='L395' name='L395'></a> 395 <em class='comment'> * @param remote_key_len length of @remote_key</em>
+<a id='L396' name='L396'></a> 396 <em class='comment'> * @param type_mask info about format of host name, key and key type</em>
+<a id='L397' name='L397'></a> 397 <em class='comment'> * @return 0 on success, regular libssh2 error code otherwise</em>
+<a id='L398' name='L398'></a> 398 <em class='comment'> *</em>
+<a id='L399' name='L399'></a> 399 <em class='comment'> * Thanks the Curl project for the code used in this function.</em>
+<a id='L400' name='L400'></a> 400 <em class='comment'> */</em>
+<a id='L401' name='L401'></a> 401 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L402' name='L402'></a> 402 <a href='../S/src--vfs--sftpfs--connection.c.html#L585' title='Referred from 585 in src/vfs/sftpfs/connection.c.'>sftpfs_update_known_hosts</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/remote_key.html' title='Multiple used in 7 places.'>remote_key</a>, <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/remote_key_len.html' title='Multiple used in 7 places.'>remote_key_len</a>,
+     <em class='comment'>/* <a href='#L264'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L436'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+402 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L403' name='L403'></a> 403                            <strong class='reserved'>int</strong> <a href='../Y/type_mask.html' title='Multiple used in 2 places.'>type_mask</a>)
+<a id='L404' name='L404'></a> 404 <em class='brace'>{</em>
+<a id='L405' name='L405'></a> 405     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L406' name='L406'></a> 406     <strong class='reserved'>int</strong> <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>;
+<a id='L407' name='L407'></a> 407 
+<a id='L408' name='L408'></a> 408     <em class='comment'>/* add this host + key pair  */</em>
+<a id='L409' name='L409'></a> 409     <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = libssh2_knownhost_addc (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a>, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>,
+<a id='L410' name='L410'></a> 410                                  <a href='../Y/remote_key.html' title='Multiple used in 7 places.'>remote_key</a>, <a href='../Y/remote_key_len.html' title='Multiple used in 7 places.'>remote_key_len</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, 0, <a href='../Y/type_mask.html' title='Multiple used in 2 places.'>type_mask</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L411' name='L411'></a> 411     <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> &lt; 0)
+<a id='L412' name='L412'></a> 412         <strong class='reserved'>return</strong> <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>;
+<a id='L413' name='L413'></a> 413 
+<a id='L414' name='L414'></a> 414     <em class='comment'>/* write the entire in-memory list of known hosts to the known_hosts file */</em>
+<a id='L415' name='L415'></a> 415     <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = libssh2_knownhost_writefile (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a>, <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts_file.html' title='Multiple used in 5 places.'>known_hosts_file</a>,
+<a id='L416' name='L416'></a> 416                                       <a href='../Y/LIBSSH2_KNOWNHOST_FILE_OPENSSH.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_FILE_OPENSSH</a>);
+<a id='L417' name='L417'></a> 417 
+<a id='L418' name='L418'></a> 418     <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> &lt; 0)
+<a id='L419' name='L419'></a> 419         <strong class='reserved'>return</strong> <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>;
+<a id='L420' name='L420'></a> 420 
+<a id='L421' name='L421'></a> 421     (<strong class='reserved'>void</strong>) <a href='../D/message.html' title='Multiple defined in 5 places.'>message</a> (<a href='../S/lib--widget--wtools.h.html#L30' title='Defined at 30 in lib/widget/wtools.h.'>D_NORMAL</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Information"),
+<a id='L422' name='L422'></a> 422                     <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Permanently added\n%s (%s)\nto the list of known hosts."),
+<a id='L423' name='L423'></a> 423                     <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>, <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/ip_address.html' title='Multiple used in 8 places.'>ip_address</a>);
+<a id='L424' name='L424'></a> 424 
+<a id='L425' name='L425'></a> 425     <strong class='reserved'>return</strong> 0;
+<a id='L426' name='L426'></a> 426 <em class='brace'>}</em>
+<a id='L427' name='L427'></a> 427 
+<a id='L428' name='L428'></a> 428 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L429' name='L429'></a> 429 <em class='comment'>/**</em>
+<a id='L430' name='L430'></a> 430 <em class='comment'> * Compute and return readable host key fingerprint hash.</em>
+<a id='L431' name='L431'></a> 431 <em class='comment'> *</em>
+<a id='L432' name='L432'></a> 432 <em class='comment'> * @param session libssh2 session handle</em>
+<a id='L433' name='L433'></a> 433 <em class='comment'> * @return pointer to static buffer on success, NULL otherwise</em>
+<a id='L434' name='L434'></a> 434 <em class='comment'> */</em>
+<a id='L435' name='L435'></a> 435 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *
+<a id='L436' name='L436'></a> 436 <a href='../S/src--vfs--sftpfs--connection.c.html#L530' title='Referred from 530 in src/vfs/sftpfs/connection.c.'>sftpfs_compute_fingerprint_hash</a> (<a href='../Y/LIBSSH2_SESSION.html' title='Multiple used in 2 places.'>LIBSSH2_SESSION</a> * <a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>)
+     <em class='comment'>/* <a href='#L402'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L468'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+436 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L437' name='L437'></a> 437 <em class='brace'>{</em>
+<a id='L438' name='L438'></a> 438     <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>[<a href='../S/src--vfs--sftpfs--connection.c.html#L54' title='Defined at 54 in src/vfs/sftpfs/connection.c.'>SHA1_DIGEST_LENGTH</a> * 3 + 1];     <em class='comment'>/* "XX:" for each byte, and EOL */</em>
+<a id='L439' name='L439'></a> 439     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/fingerprint.html' title='Multiple used in 4 places.'>fingerprint</a>;
+<a id='L440' name='L440'></a> 440     <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L441' name='L441'></a> 441 
+<a id='L442' name='L442'></a> 442     <em class='comment'>/* The fingerprint points to static storage (!), don't free() it. */</em>
+<a id='L443' name='L443'></a> 443     <a href='../Y/fingerprint.html' title='Multiple used in 4 places.'>fingerprint</a> = libssh2_hostkey_hash (<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, LIBSSH2_HOSTKEY_HASH_SHA1);
+<a id='L444' name='L444'></a> 444     <strong class='reserved'>if</strong> (<a href='../Y/fingerprint.html' title='Multiple used in 4 places.'>fingerprint</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L445' name='L445'></a> 445         <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L446' name='L446'></a> 446 
+<a id='L447' name='L447'></a> 447     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; <a href='../S/src--vfs--sftpfs--connection.c.html#L54' title='Defined at 54 in src/vfs/sftpfs/connection.c.'>SHA1_DIGEST_LENGTH</a> &amp;&amp; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> * 3 &lt; <strong class='reserved'>sizeof</strong> (<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>) - 1; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L448' name='L448'></a> 448         <a href='../Y/g_snprintf.html' title='Multiple used in 109 places.'>g_snprintf</a> ((<a href='../Y/gchar.html' title='Multiple used in 324 places.'>gchar</a> *) (<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a> + <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> * 3), 4, "%02x:", (guint8) <a href='../Y/fingerprint.html' title='Multiple used in 4 places.'>fingerprint</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>]);
+<a id='L449' name='L449'></a> 449 
+<a id='L450' name='L450'></a> 450     <em class='comment'>/* remove last ":" */</em>
+<a id='L451' name='L451'></a> 451     <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> * 3 - 1] = '\0';
+<a id='L452' name='L452'></a> 452 
+<a id='L453' name='L453'></a> 453     <strong class='reserved'>return</strong> <a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>;
+<a id='L454' name='L454'></a> 454 <em class='brace'>}</em>
+<a id='L455' name='L455'></a> 455 
+<a id='L456' name='L456'></a> 456 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L457' name='L457'></a> 457 
+<a id='L458' name='L458'></a> 458 <em class='comment'>/**</em>
+<a id='L459' name='L459'></a> 459 <em class='comment'> * Process host info found in ~/.ssh/known_hosts file.</em>
+<a id='L460' name='L460'></a> 460 <em class='comment'> *</em>
+<a id='L461' name='L461'></a> 461 <em class='comment'> * @param super connection data</em>
+<a id='L462' name='L462'></a> 462 <em class='comment'> * @param mcerror pointer to the error handler</em>
+<a id='L463' name='L463'></a> 463 <em class='comment'> * @return TRUE on success, FALSE otherwise</em>
+<a id='L464' name='L464'></a> 464 <em class='comment'> *</em>
+<a id='L465' name='L465'></a> 465 <em class='comment'> * Thanks the Curl project for the code used in this function.</em>
+<a id='L466' name='L466'></a> 466 <em class='comment'> */</em>
+<a id='L467' name='L467'></a> 467 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L468' name='L468'></a> 468 <a href='../S/src--vfs--sftpfs--connection.c.html#L931' title='Referred from 931 in src/vfs/sftpfs/connection.c.'>sftpfs_process_known_host</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> ** <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+     <em class='comment'>/* <a href='#L436'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L622'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+468 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L469' name='L469'></a> 469 <em class='brace'>{</em>
+<a id='L470' name='L470'></a> 470     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L471' name='L471'></a> 471     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/remote_key.html' title='Multiple used in 7 places.'>remote_key</a>;
+<a id='L472' name='L472'></a> 472     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/key_type.html' title='Multiple used in 8 places.'>key_type</a>;
+<a id='L473' name='L473'></a> 473     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/fingerprint_hash.html' title='Multiple used in 4 places.'>fingerprint_hash</a>;
+<a id='L474' name='L474'></a> 474     <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/remote_key_len.html' title='Multiple used in 7 places.'>remote_key_len</a> = 0;
+<a id='L475' name='L475'></a> 475     <strong class='reserved'>int</strong> <a href='../Y/remote_key_type.html' title='Multiple used in 4 places.'>remote_key_type</a> = <a href='../Y/LIBSSH2_HOSTKEY_TYPE_UNKNOWN.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_UNKNOWN</a>;
+<a id='L476' name='L476'></a> 476     <strong class='reserved'>int</strong> <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a> = 0;
+<a id='L477' name='L477'></a> 477     <strong class='reserved'>struct</strong> <a href='../Y/libssh2_knownhost.html' title='Multiple used in 2 places.'>libssh2_knownhost</a> *<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L478' name='L478'></a> 478     <strong class='reserved'>int</strong> <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>;
+<a id='L479' name='L479'></a> 479     <strong class='reserved'>char</strong> *<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L480' name='L480'></a> 480     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/handle_query.html' title='Multiple used in 4 places.'>handle_query</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L481' name='L481'></a> 481 
+<a id='L482' name='L482'></a> 482     <a href='../Y/remote_key.html' title='Multiple used in 7 places.'>remote_key</a> = libssh2_session_hostkey (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, &amp;<a href='../Y/remote_key_len.html' title='Multiple used in 7 places.'>remote_key_len</a>, &amp;<a href='../Y/remote_key_type.html' title='Multiple used in 4 places.'>remote_key_type</a>);
+<a id='L483' name='L483'></a> 483     <strong class='reserved'>if</strong> (<a href='../Y/remote_key.html' title='Multiple used in 7 places.'>remote_key</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> || <a href='../Y/remote_key_len.html' title='Multiple used in 7 places.'>remote_key_len</a> == 0
+<a id='L484' name='L484'></a> 484         || <a href='../Y/remote_key_type.html' title='Multiple used in 4 places.'>remote_key_type</a> == <a href='../Y/LIBSSH2_HOSTKEY_TYPE_UNKNOWN.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_UNKNOWN</a>)
+<a id='L485' name='L485'></a> 485     <em class='brace'>{</em>
+<a id='L486' name='L486'></a> 486         <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: cannot get the remote host key"));
+<a id='L487' name='L487'></a> 487         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L488' name='L488'></a> 488     <em class='brace'>}</em>
+<a id='L489' name='L489'></a> 489 
+<a id='L490' name='L490'></a> 490     <strong class='reserved'>switch</strong> (<a href='../Y/remote_key_type.html' title='Multiple used in 4 places.'>remote_key_type</a>)
+<a id='L491' name='L491'></a> 491     <em class='brace'>{</em>
+<a id='L492' name='L492'></a> 492     <strong class='reserved'>case</strong> LIBSSH2_HOSTKEY_TYPE_RSA:
+<a id='L493' name='L493'></a> 493         <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a> = <a href='../Y/LIBSSH2_KNOWNHOST_KEY_SSHRSA.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_KEY_SSHRSA</a>;
+<a id='L494' name='L494'></a> 494         <a href='../Y/key_type.html' title='Multiple used in 8 places.'>key_type</a> = "RSA";
+<a id='L495' name='L495'></a> 495         <strong class='reserved'>break</strong>;
+<a id='L496' name='L496'></a> 496     <strong class='reserved'>case</strong> LIBSSH2_HOSTKEY_TYPE_DSS:
+<a id='L497' name='L497'></a> 497         <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a> = <a href='../Y/LIBSSH2_KNOWNHOST_KEY_SSHDSS.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_KEY_SSHDSS</a>;
+<a id='L498' name='L498'></a> 498         <a href='../Y/key_type.html' title='Multiple used in 8 places.'>key_type</a> = "DSS";
+<a id='L499' name='L499'></a> 499         <strong class='reserved'>break</strong>;
+<a id='L500' name='L500'></a> 500 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_HOSTKEY_TYPE_ECDSA_256.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_ECDSA_256</a>
+<a id='L501' name='L501'></a> 501     <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_HOSTKEY_TYPE_ECDSA_256.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_ECDSA_256</a>:
+<a id='L502' name='L502'></a> 502         <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a> = <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_256.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_256</a>;
+<a id='L503' name='L503'></a> 503         <a href='../Y/key_type.html' title='Multiple used in 8 places.'>key_type</a> = "ECDSA";
+<a id='L504' name='L504'></a> 504         <strong class='reserved'>break</strong>;
+<a id='L505' name='L505'></a> 505 <em class='sharp'>#endif</em>
+<a id='L506' name='L506'></a> 506 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_HOSTKEY_TYPE_ECDSA_384.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_ECDSA_384</a>
+<a id='L507' name='L507'></a> 507     <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_HOSTKEY_TYPE_ECDSA_384.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_ECDSA_384</a>:
+<a id='L508' name='L508'></a> 508         <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a> = <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_384.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_384</a>;
+<a id='L509' name='L509'></a> 509         <a href='../Y/key_type.html' title='Multiple used in 8 places.'>key_type</a> = "ECDSA";
+<a id='L510' name='L510'></a> 510         <strong class='reserved'>break</strong>;
+<a id='L511' name='L511'></a> 511 <em class='sharp'>#endif</em>
+<a id='L512' name='L512'></a> 512 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_HOSTKEY_TYPE_ECDSA_521.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_ECDSA_521</a>
+<a id='L513' name='L513'></a> 513     <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_HOSTKEY_TYPE_ECDSA_521.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_ECDSA_521</a>:
+<a id='L514' name='L514'></a> 514         <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a> = <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ECDSA_521.html' title='Multiple used in 6 places.'>LIBSSH2_KNOWNHOST_KEY_ECDSA_521</a>;
+<a id='L515' name='L515'></a> 515         <a href='../Y/key_type.html' title='Multiple used in 8 places.'>key_type</a> = "ECDSA";
+<a id='L516' name='L516'></a> 516         <strong class='reserved'>break</strong>;
+<a id='L517' name='L517'></a> 517 <em class='sharp'>#endif</em>
+<a id='L518' name='L518'></a> 518 <em class='sharp'>#ifdef</em> <a href='../Y/LIBSSH2_HOSTKEY_TYPE_ED25519.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_ED25519</a>
+<a id='L519' name='L519'></a> 519     <strong class='reserved'>case</strong> <a href='../Y/LIBSSH2_HOSTKEY_TYPE_ED25519.html' title='Multiple used in 2 places.'>LIBSSH2_HOSTKEY_TYPE_ED25519</a>:
+<a id='L520' name='L520'></a> 520         <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a> = <a href='../Y/LIBSSH2_KNOWNHOST_KEY_ED25519.html' title='Multiple used in 5 places.'>LIBSSH2_KNOWNHOST_KEY_ED25519</a>;
+<a id='L521' name='L521'></a> 521         <a href='../Y/key_type.html' title='Multiple used in 8 places.'>key_type</a> = "ED25519";
+<a id='L522' name='L522'></a> 522         <strong class='reserved'>break</strong>;
+<a id='L523' name='L523'></a> 523 <em class='sharp'>#endif</em>
+<a id='L524' name='L524'></a> 524     <strong class='reserved'>default</strong>:
+<a id='L525' name='L525'></a> 525         <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s",
+<a id='L526' name='L526'></a> 526                             <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: unsupported key type, can't check remote host key"));
+<a id='L527' name='L527'></a> 527         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L528' name='L528'></a> 528     <em class='brace'>}</em>
+<a id='L529' name='L529'></a> 529 
+<a id='L530' name='L530'></a> 530     <a href='../Y/fingerprint_hash.html' title='Multiple used in 4 places.'>fingerprint_hash</a> = <a href='../S/src--vfs--sftpfs--connection.c.html#L436' title='Defined at 436 in src/vfs/sftpfs/connection.c.'>sftpfs_compute_fingerprint_hash</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>);
+<a id='L531' name='L531'></a> 531     <strong class='reserved'>if</strong> (<a href='../Y/fingerprint_hash.html' title='Multiple used in 4 places.'>fingerprint_hash</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L532' name='L532'></a> 532     <em class='brace'>{</em>
+<a id='L533' name='L533'></a> 533         <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: can't compute host key fingerprint hash"));
+<a id='L534' name='L534'></a> 534         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L535' name='L535'></a> 535     <em class='brace'>}</em>
+<a id='L536' name='L536'></a> 536 
+<a id='L537' name='L537'></a> 537     <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = libssh2_knownhost_checkp (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a>, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>,
+<a id='L538' name='L538'></a> 538                                    <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/port.html' title='Multiple used in 65 places.'>port</a>, <a href='../Y/remote_key.html' title='Multiple used in 7 places.'>remote_key</a>, <a href='../Y/remote_key_len.html' title='Multiple used in 7 places.'>remote_key_len</a>,
+<a id='L539' name='L539'></a> 539                                    <a href='../Y/LIBSSH2_KNOWNHOST_TYPE_PLAIN.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_TYPE_PLAIN</a> | <a href='../Y/LIBSSH2_KNOWNHOST_KEYENC_RAW.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_KEYENC_RAW</a> |
+<a id='L540' name='L540'></a> 540                                    <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a>, &amp;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>);
+<a id='L541' name='L541'></a> 541 
+<a id='L542' name='L542'></a> 542     <strong class='reserved'>switch</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>)
+<a id='L543' name='L543'></a> 543     <em class='brace'>{</em>
+<a id='L544' name='L544'></a> 544     <strong class='reserved'>default</strong>:
+<a id='L545' name='L545'></a> 545     <strong class='reserved'>case</strong> LIBSSH2_KNOWNHOST_CHECK_FAILURE:
+<a id='L546' name='L546'></a> 546         <em class='comment'>/* something prevented the check to be made */</em>
+<a id='L547' name='L547'></a> 547         <strong class='reserved'>goto</strong> <a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>;
+<a id='L548' name='L548'></a> 548 
+<a id='L549' name='L549'></a> 549     <strong class='reserved'>case</strong> LIBSSH2_KNOWNHOST_CHECK_MATCH:
+<a id='L550' name='L550'></a> 550         <em class='comment'>/* host + key pair matched -- OK */</em>
+<a id='L551' name='L551'></a> 551         <strong class='reserved'>break</strong>;
+<a id='L552' name='L552'></a> 552 
+<a id='L553' name='L553'></a> 553     <strong class='reserved'>case</strong> LIBSSH2_KNOWNHOST_CHECK_NOTFOUND:
+<a id='L554' name='L554'></a> 554         <em class='comment'>/* no host match was found -- add it to the known_hosts file */</em>
+<a id='L555' name='L555'></a> 555         <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("The authenticity of host\n%s (%s)\ncan't be established!\n"
+<a id='L556' name='L556'></a> 556                                  "%s key fingerprint hash is\nSHA1:%s.\n"
+<a id='L557' name='L557'></a> 557                                  "Do you want to add it to the list of known hosts and continue connecting?"),
+<a id='L558' name='L558'></a> 558                                <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>, <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/ip_address.html' title='Multiple used in 8 places.'>ip_address</a>,
+<a id='L559' name='L559'></a> 559                                <a href='../Y/key_type.html' title='Multiple used in 8 places.'>key_type</a>, <a href='../Y/fingerprint_hash.html' title='Multiple used in 4 places.'>fingerprint_hash</a>);
+<a id='L560' name='L560'></a> 560         <em class='comment'>/* Select "No" initially */</em>
+<a id='L561' name='L561'></a> 561         <a href='../S/lib--widget--wtools.c.html#L382' title='Defined at 382 in lib/widget/wtools.c.'>query_set_sel</a> (2);
+<a id='L562' name='L562'></a> 562         <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = <a href='../S/lib--widget--wtools.c.html#L280' title='Defined at 280 in lib/widget/wtools.c.'>query_dialog</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Warning"), <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../S/lib--widget--wtools.h.html#L30' title='Defined at 30 in lib/widget/wtools.h.'>D_NORMAL</a>, 3, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Yes"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Ignore"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;No"));
+<a id='L563' name='L563'></a> 563         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>);
+<a id='L564' name='L564'></a> 564         <a href='../Y/handle_query.html' title='Multiple used in 4 places.'>handle_query</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L565' name='L565'></a> 565         <strong class='reserved'>break</strong>;
+<a id='L566' name='L566'></a> 566 
+<a id='L567' name='L567'></a> 567     <strong class='reserved'>case</strong> LIBSSH2_KNOWNHOST_CHECK_MISMATCH:
+<a id='L568' name='L568'></a> 568         <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("%s (%s)\nis found in the list of known hosts but\n"
+<a id='L569' name='L569'></a> 569                                  "KEYS DO NOT MATCH! THIS COULD BE A MITM ATTACK!\n"
+<a id='L570' name='L570'></a> 570                                  "Are you sure you want to add it to the list of known hosts and continue connecting?"),
+<a id='L571' name='L571'></a> 571                                <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/host.html' title='Multiple used in 104 places.'>host</a>, <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/ip_address.html' title='Multiple used in 8 places.'>ip_address</a>);
+<a id='L572' name='L572'></a> 572         <em class='comment'>/* Select "No" initially */</em>
+<a id='L573' name='L573'></a> 573         <a href='../S/lib--widget--wtools.c.html#L382' title='Defined at 382 in lib/widget/wtools.c.'>query_set_sel</a> (2);
+<a id='L574' name='L574'></a> 574         <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = <a href='../S/lib--widget--wtools.c.html#L280' title='Defined at 280 in lib/widget/wtools.c.'>query_dialog</a> (<a href='../S/lib--widget--wtools.h.html#L14' title='Defined at 14 in lib/widget/wtools.h.'>MSG_ERROR</a>, <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../S/lib--widget--wtools.h.html#L31' title='Defined at 31 in lib/widget/wtools.h.'>D_ERROR</a>, 3, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Yes"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;Ignore"), <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("&amp;No"));
+<a id='L575' name='L575'></a> 575         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>);
+<a id='L576' name='L576'></a> 576         <a href='../Y/handle_query.html' title='Multiple used in 4 places.'>handle_query</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L577' name='L577'></a> 577         <strong class='reserved'>break</strong>;
+<a id='L578' name='L578'></a> 578     <em class='brace'>}</em>
+<a id='L579' name='L579'></a> 579 
+<a id='L580' name='L580'></a> 580     <strong class='reserved'>if</strong> (<a href='../Y/handle_query.html' title='Multiple used in 4 places.'>handle_query</a>)
+<a id='L581' name='L581'></a> 581         <strong class='reserved'>switch</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>)
+<a id='L582' name='L582'></a> 582         <em class='brace'>{</em>
+<a id='L583' name='L583'></a> 583         <strong class='reserved'>case</strong> 0:
+<a id='L584' name='L584'></a> 584             <em class='comment'>/* Yes: add this host + key pair, continue connecting */</em>
+<a id='L585' name='L585'></a> 585             <strong class='reserved'>if</strong> (<a href='../S/src--vfs--sftpfs--connection.c.html#L402' title='Defined at 402 in src/vfs/sftpfs/connection.c.'>sftpfs_update_known_hosts</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/remote_key.html' title='Multiple used in 7 places.'>remote_key</a>, <a href='../Y/remote_key_len.html' title='Multiple used in 7 places.'>remote_key_len</a>,
+<a id='L586' name='L586'></a> 586                                            <a href='../Y/LIBSSH2_KNOWNHOST_TYPE_PLAIN.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_TYPE_PLAIN</a>
+<a id='L587' name='L587'></a> 587                                            | <a href='../Y/LIBSSH2_KNOWNHOST_KEYENC_RAW.html' title='Multiple used in 2 places.'>LIBSSH2_KNOWNHOST_KEYENC_RAW</a> | <a href='../Y/keybit.html' title='Multiple used in 9 places.'>keybit</a>) &lt; 0)
+<a id='L588' name='L588'></a> 588                 <strong class='reserved'>goto</strong> <a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>;
+<a id='L589' name='L589'></a> 589             <strong class='reserved'>break</strong>;
+<a id='L590' name='L590'></a> 590         <strong class='reserved'>case</strong> 1:
+<a id='L591' name='L591'></a> 591             <em class='comment'>/* Ignore: do not add this host + key pair, continue connecting anyway */</em>
+<a id='L592' name='L592'></a> 592             <strong class='reserved'>break</strong>;
+<a id='L593' name='L593'></a> 593         <strong class='reserved'>case</strong> 2:
+<a id='L594' name='L594'></a> 594         <strong class='reserved'>default</strong>:
+<a id='L595' name='L595'></a> 595             <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: host key verification failed"));
+<a id='L596' name='L596'></a> 596             <em class='comment'>/* No: abort connection */</em>
+<a id='L597' name='L597'></a> 597             <strong class='reserved'>goto</strong> <a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>;
+<a id='L598' name='L598'></a> 598         <em class='brace'>}</em>
+<a id='L599' name='L599'></a> 599 
+<a id='L600' name='L600'></a> 600     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L601' name='L601'></a> 601 
+<a id='L602' name='L602'></a> 602   <a href='../Y/err.html' title='Multiple used in 119 places.'>err</a>:
+<a id='L603' name='L603'></a> 603     <em class='brace'>{</em>
+<a id='L604' name='L604'></a> 604         <strong class='reserved'>int</strong> <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a>;
+<a id='L605' name='L605'></a> 605 
+<a id='L606' name='L606'></a> 606         <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a> = <a href='../Y/libssh2_session_last_errno.html' title='Multiple used in 5 places.'>libssh2_session_last_errno</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>);
+<a id='L607' name='L607'></a> 607         <a href='../S/src--vfs--sftpfs--internal.c.html#L187' title='Defined at 187 in src/vfs/sftpfs/internal.c.'>sftpfs_ssherror_to_gliberror</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>, <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>);
+<a id='L608' name='L608'></a> 608     <em class='brace'>}</em>
+<a id='L609' name='L609'></a> 609 
+<a id='L610' name='L610'></a> 610     <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L611' name='L611'></a> 611 <em class='brace'>}</em>
+<a id='L612' name='L612'></a> 612 
+<a id='L613' name='L613'></a> 613 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L614' name='L614'></a> 614 <em class='comment'>/**</em>
+<a id='L615' name='L615'></a> 615 <em class='comment'> * Recognize authentication types supported by remote side and filling internal 'super' structure by</em>
+<a id='L616' name='L616'></a> 616 <em class='comment'> * proper enum's values.</em>
+<a id='L617' name='L617'></a> 617 <em class='comment'> *</em>
+<a id='L618' name='L618'></a> 618 <em class='comment'> * @param super connection data</em>
+<a id='L619' name='L619'></a> 619 <em class='comment'> * @return TRUE if some of authentication methods is available, FALSE otherwise</em>
+<a id='L620' name='L620'></a> 620 <em class='comment'> */</em>
+<a id='L621' name='L621'></a> 621 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L622' name='L622'></a> 622 <a href='../S/src--vfs--sftpfs--connection.c.html#L934' title='Referred from 934 in src/vfs/sftpfs/connection.c.'>sftpfs_recognize_auth_types</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>)
+     <em class='comment'>/* <a href='#L468'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L660'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+622 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L623' name='L623'></a> 623 <em class='brace'>{</em>
+<a id='L624' name='L624'></a> 624     <strong class='reserved'>char</strong> *<a href='../Y/userauthlist.html' title='Multiple used in 6 places.'>userauthlist</a>;
+<a id='L625' name='L625'></a> 625     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L626' name='L626'></a> 626 
+<a id='L627' name='L627'></a> 627     <em class='comment'>/* check what authentication methods are available */</em>
+<a id='L628' name='L628'></a> 628     <em class='comment'>/* userauthlist is internally managed by libssh2 and freed by libssh2_session_free() */</em>
+<a id='L629' name='L629'></a> 629     <a href='../Y/userauthlist.html' title='Multiple used in 6 places.'>userauthlist</a> = libssh2_userauth_list (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>,
+<a id='L630' name='L630'></a> 630                                           <a href='../Y/strlen.html' title='Multiple used in 192 places.'>strlen</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>));
+<a id='L631' name='L631'></a> 631 
+<a id='L632' name='L632'></a> 632     <strong class='reserved'>if</strong> (<a href='../Y/userauthlist.html' title='Multiple used in 6 places.'>userauthlist</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L633' name='L633'></a> 633         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L634' name='L634'></a> 634 
+<a id='L635' name='L635'></a> 635     <strong class='reserved'>if</strong> ((<a href='../Y/strstr.html' title='Multiple used in 35 places.'>strstr</a> (<a href='../Y/userauthlist.html' title='Multiple used in 6 places.'>userauthlist</a>, "password") != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>
+<a id='L636' name='L636'></a> 636          || <a href='../Y/strstr.html' title='Multiple used in 35 places.'>strstr</a> (<a href='../Y/userauthlist.html' title='Multiple used in 6 places.'>userauthlist</a>, "keyboard-interactive") != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L637' name='L637'></a> 637         &amp;&amp; (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/config_auth_type.html' title='Multiple used in 8 places.'>config_auth_type</a> &amp; <a href='../S/src--vfs--sftpfs--internal.h.html#L32' title='Defined at 32 in src/vfs/sftpfs/internal.h.'>PASSWORD</a>) != 0)
+<a id='L638' name='L638'></a> 638         <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/auth_type.html' title='Multiple used in 8 places.'>auth_type</a> |= <a href='../S/src--vfs--sftpfs--internal.h.html#L32' title='Defined at 32 in src/vfs/sftpfs/internal.h.'>PASSWORD</a>;
+<a id='L639' name='L639'></a> 639 
+<a id='L640' name='L640'></a> 640     <strong class='reserved'>if</strong> (<a href='../Y/strstr.html' title='Multiple used in 35 places.'>strstr</a> (<a href='../Y/userauthlist.html' title='Multiple used in 6 places.'>userauthlist</a>, "publickey") != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>
+<a id='L641' name='L641'></a> 641         &amp;&amp; (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/config_auth_type.html' title='Multiple used in 8 places.'>config_auth_type</a> &amp; <a href='../S/src--vfs--sftpfs--internal.h.html#L31' title='Defined at 31 in src/vfs/sftpfs/internal.h.'>PUBKEY</a>) != 0)
+<a id='L642' name='L642'></a> 642         <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/auth_type.html' title='Multiple used in 8 places.'>auth_type</a> |= <a href='../S/src--vfs--sftpfs--internal.h.html#L31' title='Defined at 31 in src/vfs/sftpfs/internal.h.'>PUBKEY</a>;
+<a id='L643' name='L643'></a> 643 
+<a id='L644' name='L644'></a> 644     <strong class='reserved'>if</strong> ((<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/config_auth_type.html' title='Multiple used in 8 places.'>config_auth_type</a> &amp; <a href='../S/src--vfs--sftpfs--internal.h.html#L33' title='Defined at 33 in src/vfs/sftpfs/internal.h.'>AGENT</a>) != 0)
+<a id='L645' name='L645'></a> 645         <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/auth_type.html' title='Multiple used in 8 places.'>auth_type</a> |= <a href='../S/src--vfs--sftpfs--internal.h.html#L33' title='Defined at 33 in src/vfs/sftpfs/internal.h.'>AGENT</a>;
+<a id='L646' name='L646'></a> 646 
+<a id='L647' name='L647'></a> 647     <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L648' name='L648'></a> 648 <em class='brace'>}</em>
+<a id='L649' name='L649'></a> 649 
+<a id='L650' name='L650'></a> 650 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L651' name='L651'></a> 651 <em class='comment'>/**</em>
+<a id='L652' name='L652'></a> 652 <em class='comment'> * Open connection to host using SSH-agent helper.</em>
+<a id='L653' name='L653'></a> 653 <em class='comment'> *</em>
+<a id='L654' name='L654'></a> 654 <em class='comment'> * @param super   connection data</em>
+<a id='L655' name='L655'></a> 655 <em class='comment'> * @param mcerror pointer to the error handler</em>
+<a id='L656' name='L656'></a> 656 <em class='comment'> * @return TRUE if connection was successfully opened, FALSE otherwise</em>
+<a id='L657' name='L657'></a> 657 <em class='comment'> */</em>
+<a id='L658' name='L658'></a> 658 
+<a id='L659' name='L659'></a> 659 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L660' name='L660'></a> 660 <a href='../S/src--vfs--sftpfs--connection.c.html#L943' title='Referred from 943 in src/vfs/sftpfs/connection.c.'>sftpfs_open_connection_ssh_agent</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> ** <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+     <em class='comment'>/* <a href='#L622'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L712'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+660 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L661' name='L661'></a> 661 <em class='brace'>{</em>
+<a id='L662' name='L662'></a> 662     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L663' name='L663'></a> 663     <strong class='reserved'>struct</strong> libssh2_agent_publickey *<a href='../Y/identity.html' title='Multiple used in 4 places.'>identity</a>, *<a href='../Y/prev_identity.html' title='Multiple used in 3 places.'>prev_identity</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L664' name='L664'></a> 664     <strong class='reserved'>int</strong> <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>;
+<a id='L665' name='L665'></a> 665 
+<a id='L666' name='L666'></a> 666     <a href='../S/lib--util.h.html#L28' title='Defined at 28 in lib/util.h.'>mc_return_val_if_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L667' name='L667'></a> 667 
+<a id='L668' name='L668'></a> 668     <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L669' name='L669'></a> 669 
+<a id='L670' name='L670'></a> 670     <strong class='reserved'>if</strong> ((<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/auth_type.html' title='Multiple used in 8 places.'>auth_type</a> &amp; <a href='../S/src--vfs--sftpfs--internal.h.html#L33' title='Defined at 33 in src/vfs/sftpfs/internal.h.'>AGENT</a>) == 0)
+<a id='L671' name='L671'></a> 671         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L672' name='L672'></a> 672 
+<a id='L673' name='L673'></a> 673     <em class='comment'>/* Connect to the ssh-agent */</em>
+<a id='L674' name='L674'></a> 674     <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a> = libssh2_agent_init (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>);
+<a id='L675' name='L675'></a> 675     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L676' name='L676'></a> 676         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L677' name='L677'></a> 677 
+<a id='L678' name='L678'></a> 678     <strong class='reserved'>if</strong> (libssh2_agent_connect (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a>) != 0)
+<a id='L679' name='L679'></a> 679         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L680' name='L680'></a> 680 
+<a id='L681' name='L681'></a> 681     <strong class='reserved'>if</strong> (libssh2_agent_list_identities (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a>) != 0)
+<a id='L682' name='L682'></a> 682         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L683' name='L683'></a> 683 
+<a id='L684' name='L684'></a> 684     <strong class='reserved'>while</strong> (<a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>)
+<a id='L685' name='L685'></a> 685     <em class='brace'>{</em>
+<a id='L686' name='L686'></a> 686         <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = libssh2_agent_get_identity (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a>, &amp;<a href='../Y/identity.html' title='Multiple used in 4 places.'>identity</a>, <a href='../Y/prev_identity.html' title='Multiple used in 3 places.'>prev_identity</a>);
+<a id='L687' name='L687'></a> 687         <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> == 1)
+<a id='L688' name='L688'></a> 688             <strong class='reserved'>break</strong>;
+<a id='L689' name='L689'></a> 689 
+<a id='L690' name='L690'></a> 690         <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> &lt; 0)
+<a id='L691' name='L691'></a> 691             <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L692' name='L692'></a> 692 
+<a id='L693' name='L693'></a> 693         <strong class='reserved'>if</strong> (libssh2_agent_userauth (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a>, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>, <a href='../Y/identity.html' title='Multiple used in 4 places.'>identity</a>) == 0)
+<a id='L694' name='L694'></a> 694             <strong class='reserved'>break</strong>;
+<a id='L695' name='L695'></a> 695 
+<a id='L696' name='L696'></a> 696         <a href='../Y/prev_identity.html' title='Multiple used in 3 places.'>prev_identity</a> = <a href='../Y/identity.html' title='Multiple used in 4 places.'>identity</a>;
+<a id='L697' name='L697'></a> 697     <em class='brace'>}</em>
+<a id='L698' name='L698'></a> 698 
+<a id='L699' name='L699'></a> 699     <strong class='reserved'>return</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> == 0);
+<a id='L700' name='L700'></a> 700 <em class='brace'>}</em>
+<a id='L701' name='L701'></a> 701 
+<a id='L702' name='L702'></a> 702 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L703' name='L703'></a> 703 <em class='comment'>/**</em>
+<a id='L704' name='L704'></a> 704 <em class='comment'> * Open connection to host using SSH-keypair.</em>
+<a id='L705' name='L705'></a> 705 <em class='comment'> *</em>
+<a id='L706' name='L706'></a> 706 <em class='comment'> * @param super   connection data</em>
+<a id='L707' name='L707'></a> 707 <em class='comment'> * @param mcerror pointer to the error handler</em>
+<a id='L708' name='L708'></a> 708 <em class='comment'> * @return TRUE if connection was successfully opened, FALSE otherwise</em>
+<a id='L709' name='L709'></a> 709 <em class='comment'> */</em>
+<a id='L710' name='L710'></a> 710 
+<a id='L711' name='L711'></a> 711 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L712' name='L712'></a> 712 <a href='../S/src--vfs--sftpfs--connection.c.html#L944' title='Referred from 944 in src/vfs/sftpfs/connection.c.'>sftpfs_open_connection_ssh_key</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> ** <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+     <em class='comment'>/* <a href='#L660'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L768'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+712 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L713' name='L713'></a> 713 <em class='brace'>{</em>
+<a id='L714' name='L714'></a> 714     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L715' name='L715'></a> 715     <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>, *<a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a>;
+<a id='L716' name='L716'></a> 716     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/ret_value.html' title='Multiple used in 52 places.'>ret_value</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L717' name='L717'></a> 717 
+<a id='L718' name='L718'></a> 718     <a href='../S/lib--util.h.html#L28' title='Defined at 28 in lib/util.h.'>mc_return_val_if_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L719' name='L719'></a> 719 
+<a id='L720' name='L720'></a> 720     <strong class='reserved'>if</strong> ((<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/auth_type.html' title='Multiple used in 8 places.'>auth_type</a> &amp; <a href='../S/src--vfs--sftpfs--internal.h.html#L31' title='Defined at 31 in src/vfs/sftpfs/internal.h.'>PUBKEY</a>) == 0)
+<a id='L721' name='L721'></a> 721         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L722' name='L722'></a> 722 
+<a id='L723' name='L723'></a> 723     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/privkey.html' title='Multiple used in 5 places.'>privkey</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L724' name='L724'></a> 724         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L725' name='L725'></a> 725 
+<a id='L726' name='L726'></a> 726     <strong class='reserved'>if</strong> (<a href='../Y/libssh2_userauth_publickey_fromfile.html' title='Multiple used in 2 places.'>libssh2_userauth_publickey_fromfile</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>,
+<a id='L727' name='L727'></a> 727                                              <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/pubkey.html' title='Multiple used in 4 places.'>pubkey</a>, <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/privkey.html' title='Multiple used in 5 places.'>privkey</a>,
+<a id='L728' name='L728'></a> 728                                              <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/password.html' title='Multiple used in 29 places.'>password</a>) == 0)
+<a id='L729' name='L729'></a> 729         <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L730' name='L730'></a> 730 
+<a id='L731' name='L731'></a> 731     <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: Enter passphrase for %s "), <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>);
+<a id='L732' name='L732'></a> 732     <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a> = <a href='../S/lib--vfs--utilvfs.c.html#L368' title='Defined at 368 in lib/vfs/utilvfs.c.'>vfs_get_password</a> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>);
+<a id='L733' name='L733'></a> 733     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>);
+<a id='L734' name='L734'></a> 734 
+<a id='L735' name='L735'></a> 735     <strong class='reserved'>if</strong> (<a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L736' name='L736'></a> 736         <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: Passphrase is empty."));
+<a id='L737' name='L737'></a> 737     <strong class='reserved'>else</strong>
+<a id='L738' name='L738'></a> 738     <em class='brace'>{</em>
+<a id='L739' name='L739'></a> 739         <a href='../Y/ret_value.html' title='Multiple used in 52 places.'>ret_value</a> = (<a href='../Y/libssh2_userauth_publickey_fromfile.html' title='Multiple used in 2 places.'>libssh2_userauth_publickey_fromfile</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>,
+<a id='L740' name='L740'></a> 740                                                           <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>,
+<a id='L741' name='L741'></a> 741                                                           <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/pubkey.html' title='Multiple used in 4 places.'>pubkey</a>,
+<a id='L742' name='L742'></a> 742                                                           <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/privkey.html' title='Multiple used in 5 places.'>privkey</a>, <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a>) == 0);
+<a id='L743' name='L743'></a> 743         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a>);
+<a id='L744' name='L744'></a> 744     <em class='brace'>}</em>
+<a id='L745' name='L745'></a> 745 
+<a id='L746' name='L746'></a> 746     <strong class='reserved'>return</strong> <a href='../Y/ret_value.html' title='Multiple used in 52 places.'>ret_value</a>;
+<a id='L747' name='L747'></a> 747 <em class='brace'>}</em>
+<a id='L748' name='L748'></a> 748 
+<a id='L749' name='L749'></a> 749 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L750' name='L750'></a> 750 
+<a id='L751' name='L751'></a> 751 <em class='comment'>/**</em>
+<a id='L752' name='L752'></a> 752 <em class='comment'> * Keyboard-interactive password helper for opening connection to host by</em>
+<a id='L753' name='L753'></a> 753 <em class='comment'> * sftpfs_open_connection_ssh_password</em>
+<a id='L754' name='L754'></a> 754 <em class='comment'> *</em>
+<a id='L755' name='L755'></a> 755 <em class='comment'> * Uses global kbi_super (data with existing connection) and kbi_passwd (password)</em>
+<a id='L756' name='L756'></a> 756 <em class='comment'> *</em>
+<a id='L757' name='L757'></a> 757 <em class='comment'> * @param name             username</em>
+<a id='L758' name='L758'></a> 758 <em class='comment'> * @param name_len         length of @name</em>
+<a id='L759' name='L759'></a> 759 <em class='comment'> * @param instruction      unused</em>
+<a id='L760' name='L760'></a> 760 <em class='comment'> * @param instruction_len  unused</em>
+<a id='L761' name='L761'></a> 761 <em class='comment'> * @param num_prompts      number of possible problems to process</em>
+<a id='L762' name='L762'></a> 762 <em class='comment'> * @param prompts          array of prompts to process</em>
+<a id='L763' name='L763'></a> 763 <em class='comment'> * @param responses        array of responses, one per prompt</em>
+<a id='L764' name='L764'></a> 764 <em class='comment'> * @param abstract         unused</em>
+<a id='L765' name='L765'></a> 765 <em class='comment'> */</em>
+<a id='L766' name='L766'></a> 766 
+<a id='L767' name='L767'></a> 767 <strong class='reserved'>static</strong>
+<a id='L768' name='L768'></a> 768 LIBSSH2_USERAUTH_KBDINT_RESPONSE_FUNC (<a href='../Y/sftpfs_keyboard_interactive_helper.html' title='Multiple used in 3 places.'>sftpfs_keyboard_interactive_helper</a>)
+     <em class='comment'>/* <a href='#L712'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L804'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+768 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L769' name='L769'></a> 769 <em class='brace'>{</em>
+<a id='L770' name='L770'></a> 770     <strong class='reserved'>int</strong> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L771' name='L771'></a> 771     <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>;
+<a id='L772' name='L772'></a> 772 
+<a id='L773' name='L773'></a> 773     (<strong class='reserved'>void</strong>) instruction;
+<a id='L774' name='L774'></a> 774     (<strong class='reserved'>void</strong>) instruction_len;
+<a id='L775' name='L775'></a> 775     (<strong class='reserved'>void</strong>) abstract;
+<a id='L776' name='L776'></a> 776 
+<a id='L777' name='L777'></a> 777     <strong class='reserved'>if</strong> (<a href='../Y/kbi_super.html' title='Multiple used in 7 places.'>kbi_super</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a> || <a href='../Y/kbi_passwd.html' title='Multiple used in 8 places.'>kbi_passwd</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L778' name='L778'></a> 778         <strong class='reserved'>return</strong>;
+<a id='L779' name='L779'></a> 779 
+<a id='L780' name='L780'></a> 780     <strong class='reserved'>if</strong> (<a href='../Y/strncmp.html' title='Multiple used in 110 places.'>strncmp</a> (<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>, <a href='../Y/kbi_super.html' title='Multiple used in 7 places.'>kbi_super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>, <a href='../Y/name_len.html' title='Multiple used in 4 places.'>name_len</a>) != 0)
+<a id='L781' name='L781'></a> 781         <strong class='reserved'>return</strong>;
+<a id='L782' name='L782'></a> 782 
+<a id='L783' name='L783'></a> 783     <em class='comment'>/* assume these are password prompts */</em>
+<a id='L784' name='L784'></a> 784     <a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a> = <a href='../Y/strlen.html' title='Multiple used in 192 places.'>strlen</a> (<a href='../Y/kbi_passwd.html' title='Multiple used in 8 places.'>kbi_passwd</a>);
+<a id='L785' name='L785'></a> 785 
+<a id='L786' name='L786'></a> 786     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> &lt; num_prompts; ++<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>)
+<a id='L787' name='L787'></a> 787         <strong class='reserved'>if</strong> (<a href='../Y/strncmp.html' title='Multiple used in 110 places.'>strncmp</a> (prompts[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, "Password: ", prompts[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/length.html' title='Multiple used in 190 places.'>length</a>) == 0)
+<a id='L788' name='L788'></a> 788         <em class='brace'>{</em>
+<a id='L789' name='L789'></a> 789             <a href='../Y/responses.html' title='Multiple used in 2 places.'>responses</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a> = <a href='../Y/strdup.html' title='Multiple used in 4 places.'>strdup</a> (<a href='../Y/kbi_passwd.html' title='Multiple used in 8 places.'>kbi_passwd</a>);
+<a id='L790' name='L790'></a> 790             <a href='../Y/responses.html' title='Multiple used in 2 places.'>responses</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>].<a href='../Y/length.html' title='Multiple used in 190 places.'>length</a> = <a href='../Y/len.html' title='Multiple used in 1010 places.'>len</a>;
+<a id='L791' name='L791'></a> 791         <em class='brace'>}</em>
+<a id='L792' name='L792'></a> 792 <em class='brace'>}</em>
+<a id='L793' name='L793'></a> 793 
+<a id='L794' name='L794'></a> 794 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L795' name='L795'></a> 795 <em class='comment'>/**</em>
+<a id='L796' name='L796'></a> 796 <em class='comment'> * Open connection to host using password.</em>
+<a id='L797' name='L797'></a> 797 <em class='comment'> *</em>
+<a id='L798' name='L798'></a> 798 <em class='comment'> * @param super   connection data</em>
+<a id='L799' name='L799'></a> 799 <em class='comment'> * @param mcerror pointer to the error handler</em>
+<a id='L800' name='L800'></a> 800 <em class='comment'> * @return TRUE if connection was successfully opened, FALSE otherwise</em>
+<a id='L801' name='L801'></a> 801 <em class='comment'> */</em>
+<a id='L802' name='L802'></a> 802 
+<a id='L803' name='L803'></a> 803 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a>
+<a id='L804' name='L804'></a> 804 <a href='../S/src--vfs--sftpfs--connection.c.html#L945' title='Referred from 945 in src/vfs/sftpfs/connection.c.'>sftpfs_open_connection_ssh_password</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> ** <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+     <em class='comment'>/* <a href='#L768'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L894'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+804 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L805' name='L805'></a> 805 <em class='brace'>{</em>
+<a id='L806' name='L806'></a> 806     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L807' name='L807'></a> 807     <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>, *<a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a>;
+<a id='L808' name='L808'></a> 808     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/ret_value.html' title='Multiple used in 52 places.'>ret_value</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L809' name='L809'></a> 809     <strong class='reserved'>int</strong> <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>;
+<a id='L810' name='L810'></a> 810 
+<a id='L811' name='L811'></a> 811     <a href='../S/lib--util.h.html#L28' title='Defined at 28 in lib/util.h.'>mc_return_val_if_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L812' name='L812'></a> 812 
+<a id='L813' name='L813'></a> 813     <strong class='reserved'>if</strong> ((<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/auth_type.html' title='Multiple used in 8 places.'>auth_type</a> &amp; <a href='../S/src--vfs--sftpfs--internal.h.html#L32' title='Defined at 32 in src/vfs/sftpfs/internal.h.'>PASSWORD</a>) == 0)
+<a id='L814' name='L814'></a> 814         <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L815' name='L815'></a> 815 
+<a id='L816' name='L816'></a> 816     <strong class='reserved'>if</strong> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/password.html' title='Multiple used in 29 places.'>password</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L817' name='L817'></a> 817     <em class='brace'>{</em>
+<a id='L818' name='L818'></a> 818         <strong class='reserved'>while</strong> ((<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = <a href='../Y/libssh2_userauth_password.html' title='Multiple used in 2 places.'>libssh2_userauth_password</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>,
+<a id='L819' name='L819'></a> 819                                                 <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/password.html' title='Multiple used in 29 places.'>password</a>)) ==
+<a id='L820' name='L820'></a> 820                <a href='../Y/LIBSSH2_ERROR_EAGAIN.html' title='Multiple used in 20 places.'>LIBSSH2_ERROR_EAGAIN</a>);
+<a id='L821' name='L821'></a> 821         <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> == 0)
+<a id='L822' name='L822'></a> 822             <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L823' name='L823'></a> 823 
+<a id='L824' name='L824'></a> 824         <a href='../Y/kbi_super.html' title='Multiple used in 7 places.'>kbi_super</a> = <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>;
+<a id='L825' name='L825'></a> 825         <a href='../Y/kbi_passwd.html' title='Multiple used in 8 places.'>kbi_passwd</a> = <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/password.html' title='Multiple used in 29 places.'>password</a>;
+<a id='L826' name='L826'></a> 826 
+<a id='L827' name='L827'></a> 827         <strong class='reserved'>while</strong> ((<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> =
+<a id='L828' name='L828'></a> 828                 <a href='../Y/libssh2_userauth_keyboard_interactive.html' title='Multiple used in 2 places.'>libssh2_userauth_keyboard_interactive</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>,
+<a id='L829' name='L829'></a> 829                                                        <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>,
+<a id='L830' name='L830'></a> 830                                                        <a href='../Y/sftpfs_keyboard_interactive_helper.html' title='Multiple used in 3 places.'>sftpfs_keyboard_interactive_helper</a>)) ==
+<a id='L831' name='L831'></a> 831                <a href='../Y/LIBSSH2_ERROR_EAGAIN.html' title='Multiple used in 20 places.'>LIBSSH2_ERROR_EAGAIN</a>)
+<a id='L832' name='L832'></a> 832             ;
+<a id='L833' name='L833'></a> 833 
+<a id='L834' name='L834'></a> 834         <a href='../Y/kbi_super.html' title='Multiple used in 7 places.'>kbi_super</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L835' name='L835'></a> 835         <a href='../Y/kbi_passwd.html' title='Multiple used in 8 places.'>kbi_passwd</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L836' name='L836'></a> 836 
+<a id='L837' name='L837'></a> 837         <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> == 0)
+<a id='L838' name='L838'></a> 838             <strong class='reserved'>return</strong> <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L839' name='L839'></a> 839     <em class='brace'>}</em>
+<a id='L840' name='L840'></a> 840 
+<a id='L841' name='L841'></a> 841     <a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 100 places.'>g_strdup_printf</a> (<a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: Enter password for %s "), <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>);
+<a id='L842' name='L842'></a> 842     <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a> = <a href='../S/lib--vfs--utilvfs.c.html#L368' title='Defined at 368 in lib/vfs/utilvfs.c.'>vfs_get_password</a> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>);
+<a id='L843' name='L843'></a> 843     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>);
+<a id='L844' name='L844'></a> 844 
+<a id='L845' name='L845'></a> 845     <strong class='reserved'>if</strong> (<a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L846' name='L846'></a> 846         <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, 0, "%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: Password is empty."));
+<a id='L847' name='L847'></a> 847     <strong class='reserved'>else</strong>
+<a id='L848' name='L848'></a> 848     <em class='brace'>{</em>
+<a id='L849' name='L849'></a> 849         <strong class='reserved'>while</strong> ((<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> = <a href='../Y/libssh2_userauth_password.html' title='Multiple used in 2 places.'>libssh2_userauth_password</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>,
+<a id='L850' name='L850'></a> 850                                                 <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a>)) == <a href='../Y/LIBSSH2_ERROR_EAGAIN.html' title='Multiple used in 20 places.'>LIBSSH2_ERROR_EAGAIN</a>)
+<a id='L851' name='L851'></a> 851             ;
+<a id='L852' name='L852'></a> 852 
+<a id='L853' name='L853'></a> 853         <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> != 0)
+<a id='L854' name='L854'></a> 854         <em class='brace'>{</em>
+<a id='L855' name='L855'></a> 855             <a href='../Y/kbi_super.html' title='Multiple used in 7 places.'>kbi_super</a> = <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>;
+<a id='L856' name='L856'></a> 856             <a href='../Y/kbi_passwd.html' title='Multiple used in 8 places.'>kbi_passwd</a> = <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a>;
+<a id='L857' name='L857'></a> 857 
+<a id='L858' name='L858'></a> 858             <strong class='reserved'>while</strong> ((<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> =
+<a id='L859' name='L859'></a> 859                     <a href='../Y/libssh2_userauth_keyboard_interactive.html' title='Multiple used in 2 places.'>libssh2_userauth_keyboard_interactive</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>,
+<a id='L860' name='L860'></a> 860                                                            <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/user.html' title='Multiple used in 85 places.'>user</a>,
+<a id='L861' name='L861'></a> 861                                                            <a href='../Y/sftpfs_keyboard_interactive_helper.html' title='Multiple used in 3 places.'>sftpfs_keyboard_interactive_helper</a>)) ==
+<a id='L862' name='L862'></a> 862                    <a href='../Y/LIBSSH2_ERROR_EAGAIN.html' title='Multiple used in 20 places.'>LIBSSH2_ERROR_EAGAIN</a>)
+<a id='L863' name='L863'></a> 863                 ;
+<a id='L864' name='L864'></a> 864 
+<a id='L865' name='L865'></a> 865             <a href='../Y/kbi_super.html' title='Multiple used in 7 places.'>kbi_super</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L866' name='L866'></a> 866             <a href='../Y/kbi_passwd.html' title='Multiple used in 8 places.'>kbi_passwd</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L867' name='L867'></a> 867         <em class='brace'>}</em>
+<a id='L868' name='L868'></a> 868 
+<a id='L869' name='L869'></a> 869         <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> == 0)
+<a id='L870' name='L870'></a> 870         <em class='brace'>{</em>
+<a id='L871' name='L871'></a> 871             <a href='../Y/ret_value.html' title='Multiple used in 52 places.'>ret_value</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L872' name='L872'></a> 872             <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/password.html' title='Multiple used in 29 places.'>password</a>);
+<a id='L873' name='L873'></a> 873             <a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>-&gt;<a href='../Y/path_element.html' title='Multiple used in 300 places.'>path_element</a>-&gt;<a href='../Y/password.html' title='Multiple used in 29 places.'>password</a> = <a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a>;
+<a id='L874' name='L874'></a> 874         <em class='brace'>}</em>
+<a id='L875' name='L875'></a> 875         <strong class='reserved'>else</strong>
+<a id='L876' name='L876'></a> 876             <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/passwd.html' title='Multiple used in 36 places.'>passwd</a>);
+<a id='L877' name='L877'></a> 877     <em class='brace'>}</em>
+<a id='L878' name='L878'></a> 878 
+<a id='L879' name='L879'></a> 879     <strong class='reserved'>return</strong> <a href='../Y/ret_value.html' title='Multiple used in 52 places.'>ret_value</a>;
+<a id='L880' name='L880'></a> 880 <em class='brace'>}</em>
+<a id='L881' name='L881'></a> 881 
+<a id='L882' name='L882'></a> 882 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L883' name='L883'></a> 883 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L884' name='L884'></a> 884 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L885' name='L885'></a> 885 <em class='comment'>/**</em>
+<a id='L886' name='L886'></a> 886 <em class='comment'> * Open new connection.</em>
+<a id='L887' name='L887'></a> 887 <em class='comment'> *</em>
+<a id='L888' name='L888'></a> 888 <em class='comment'> * @param super   connection data</em>
+<a id='L889' name='L889'></a> 889 <em class='comment'> * @param mcerror pointer to the error handler</em>
+<a id='L890' name='L890'></a> 890 <em class='comment'> * @return 0 if success, -1 otherwise</em>
+<a id='L891' name='L891'></a> 891 <em class='comment'> */</em>
+<a id='L892' name='L892'></a> 892 
+<a id='L893' name='L893'></a> 893 <strong class='reserved'>int</strong>
+<a id='L894' name='L894'></a> 894 <a href='../R/sftpfs_open_connection.html' title='Multiple referred from 2 places.'>sftpfs_open_connection</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> ** <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+     <em class='comment'>/* <a href='#L804'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L969'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+894 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L895' name='L895'></a> 895 <em class='brace'>{</em>
+<a id='L896' name='L896'></a> 896     <strong class='reserved'>int</strong> <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>;
+<a id='L897' name='L897'></a> 897     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L898' name='L898'></a> 898 
+<a id='L899' name='L899'></a> 899     <a href='../S/lib--util.h.html#L28' title='Defined at 28 in lib/util.h.'>mc_return_val_if_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, -1);
+<a id='L900' name='L900'></a> 900 
+<a id='L901' name='L901'></a> 901     <em class='comment'>/*</em>
+<a id='L902' name='L902'></a> 902 <em class='comment'>     * The application code is responsible for creating the socket</em>
+<a id='L903' name='L903'></a> 903 <em class='comment'>     * and establishing the connection</em>
+<a id='L904' name='L904'></a> 904 <em class='comment'>     */</em>
+<a id='L905' name='L905'></a> 905     <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/socket_handle.html' title='Multiple used in 10 places.'>socket_handle</a> = <a href='../S/src--vfs--sftpfs--connection.c.html#L133' title='Defined at 133 in src/vfs/sftpfs/connection.c.'>sftpfs_open_socket</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>);
+<a id='L906' name='L906'></a> 906     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/socket_handle.html' title='Multiple used in 10 places.'>socket_handle</a> == <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>)
+<a id='L907' name='L907'></a> 907         <strong class='reserved'>return</strong> (-1);
+<a id='L908' name='L908'></a> 908 
+<a id='L909' name='L909'></a> 909     <em class='comment'>/* Create a session instance */</em>
+<a id='L910' name='L910'></a> 910     <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a> = libssh2_session_init ();
+<a id='L911' name='L911'></a> 911     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L912' name='L912'></a> 912         <strong class='reserved'>return</strong> (-1);
+<a id='L913' name='L913'></a> 913 
+<a id='L914' name='L914'></a> 914     <strong class='reserved'>if</strong> (!<a href='../S/src--vfs--sftpfs--connection.c.html#L264' title='Defined at 264 in src/vfs/sftpfs/connection.c.'>sftpfs_read_known_hosts</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>))
+<a id='L915' name='L915'></a> 915         <strong class='reserved'>return</strong> (-1);
+<a id='L916' name='L916'></a> 916 
+<a id='L917' name='L917'></a> 917     <em class='comment'>/* ... start it up. This will trade welcome banners, exchange keys,</em>
+<a id='L918' name='L918'></a> 918 <em class='comment'>     * and setup crypto, compression, and MAC layers</em>
+<a id='L919' name='L919'></a> 919 <em class='comment'>     */</em>
+<a id='L920' name='L920'></a> 920     <strong class='reserved'>while</strong> ((<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> =
+<a id='L921' name='L921'></a> 921             libssh2_session_handshake (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>,
+<a id='L922' name='L922'></a> 922                                        (libssh2_socket_t) <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/socket_handle.html' title='Multiple used in 10 places.'>socket_handle</a>)) ==
+<a id='L923' name='L923'></a> 923            <a href='../Y/LIBSSH2_ERROR_EAGAIN.html' title='Multiple used in 20 places.'>LIBSSH2_ERROR_EAGAIN</a>)
+<a id='L924' name='L924'></a> 924         ;
+<a id='L925' name='L925'></a> 925     <strong class='reserved'>if</strong> (<a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a> != 0)
+<a id='L926' name='L926'></a> 926     <em class='brace'>{</em>
+<a id='L927' name='L927'></a> 927         <a href='../D/mc_propagate_error.html' title='Multiple defined in 2 places.'>mc_propagate_error</a> (<a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>, <a href='../Y/rc.html' title='Multiple used in 144 places.'>rc</a>, "%s", <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("sftp: failure establishing SSH session"));
+<a id='L928' name='L928'></a> 928         <strong class='reserved'>return</strong> (-1);
+<a id='L929' name='L929'></a> 929     <em class='brace'>}</em>
+<a id='L930' name='L930'></a> 930 
+<a id='L931' name='L931'></a> 931     <strong class='reserved'>if</strong> (!<a href='../S/src--vfs--sftpfs--connection.c.html#L468' title='Defined at 468 in src/vfs/sftpfs/connection.c.'>sftpfs_process_known_host</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>))
+<a id='L932' name='L932'></a> 932         <strong class='reserved'>return</strong> (-1);
+<a id='L933' name='L933'></a> 933 
+<a id='L934' name='L934'></a> 934     <strong class='reserved'>if</strong> (!<a href='../S/src--vfs--sftpfs--connection.c.html#L622' title='Defined at 622 in src/vfs/sftpfs/connection.c.'>sftpfs_recognize_auth_types</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>))
+<a id='L935' name='L935'></a> 935     <em class='brace'>{</em>
+<a id='L936' name='L936'></a> 936         <strong class='reserved'>int</strong> <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a>;
+<a id='L937' name='L937'></a> 937 
+<a id='L938' name='L938'></a> 938         <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a> = <a href='../Y/libssh2_session_last_errno.html' title='Multiple used in 5 places.'>libssh2_session_last_errno</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>);
+<a id='L939' name='L939'></a> 939         <a href='../S/src--vfs--sftpfs--internal.c.html#L187' title='Defined at 187 in src/vfs/sftpfs/internal.c.'>sftpfs_ssherror_to_gliberror</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>, <a href='../Y/sftp_errno.html' title='Multiple used in 9 places.'>sftp_errno</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>);
+<a id='L940' name='L940'></a> 940         <strong class='reserved'>return</strong> (-1);
+<a id='L941' name='L941'></a> 941     <em class='brace'>}</em>
+<a id='L942' name='L942'></a> 942 
+<a id='L943' name='L943'></a> 943     <strong class='reserved'>if</strong> (!<a href='../S/src--vfs--sftpfs--connection.c.html#L660' title='Defined at 660 in src/vfs/sftpfs/connection.c.'>sftpfs_open_connection_ssh_agent</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+<a id='L944' name='L944'></a> 944         &amp;&amp; !<a href='../S/src--vfs--sftpfs--connection.c.html#L712' title='Defined at 712 in src/vfs/sftpfs/connection.c.'>sftpfs_open_connection_ssh_key</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+<a id='L945' name='L945'></a> 945         &amp;&amp; !<a href='../S/src--vfs--sftpfs--connection.c.html#L804' title='Defined at 804 in src/vfs/sftpfs/connection.c.'>sftpfs_open_connection_ssh_password</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>))
+<a id='L946' name='L946'></a> 946         <strong class='reserved'>return</strong> (-1);
+<a id='L947' name='L947'></a> 947 
+<a id='L948' name='L948'></a> 948     <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/sftp_session.html' title='Multiple used in 31 places.'>sftp_session</a> = libssh2_sftp_init (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>);
+<a id='L949' name='L949'></a> 949 
+<a id='L950' name='L950'></a> 950     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/sftp_session.html' title='Multiple used in 31 places.'>sftp_session</a> == <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L951' name='L951'></a> 951         <strong class='reserved'>return</strong> (-1);
+<a id='L952' name='L952'></a> 952 
+<a id='L953' name='L953'></a> 953     <em class='comment'>/* Since we have not set non-blocking, tell libssh2 we are blocking */</em>
+<a id='L954' name='L954'></a> 954     libssh2_session_set_blocking (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, 1);
+<a id='L955' name='L955'></a> 955 
+<a id='L956' name='L956'></a> 956     <strong class='reserved'>return</strong> 0;
+<a id='L957' name='L957'></a> 957 <em class='brace'>}</em>
+<a id='L958' name='L958'></a> 958 
+<a id='L959' name='L959'></a> 959 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L960' name='L960'></a> 960 <em class='comment'>/**</em>
+<a id='L961' name='L961'></a> 961 <em class='comment'> * Close connection.</em>
+<a id='L962' name='L962'></a> 962 <em class='comment'> *</em>
+<a id='L963' name='L963'></a> 963 <em class='comment'> * @param super            connection data</em>
+<a id='L964' name='L964'></a> 964 <em class='comment'> * @param shutdown_message message for shutdown functions</em>
+<a id='L965' name='L965'></a> 965 <em class='comment'> * @param mcerror          pointer to the error handler</em>
+<a id='L966' name='L966'></a> 966 <em class='comment'> */</em>
+<a id='L967' name='L967'></a> 967 
+<a id='L968' name='L968'></a> 968 <strong class='reserved'>void</strong>
+<a id='L969' name='L969'></a> 969 <a href='../R/sftpfs_close_connection.html' title='Multiple referred from 2 places.'>sftpfs_close_connection</a> (<strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> *<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/shutdown_message.html' title='Multiple used in 3 places.'>shutdown_message</a>, <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> ** <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>)
+     <em class='comment'>/* <a href='#L894'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+969 src/vfs/sftpfs/connection.c'  /> */</em>
+<a id='L970' name='L970'></a> 970 <em class='brace'>{</em>
+<a id='L971' name='L971'></a> 971     <a href='../S/src--vfs--sftpfs--internal.h.html#L59' title='Defined at 59 in src/vfs/sftpfs/internal.h.'>sftpfs_super_t</a> *<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L24' title='Defined at 24 in src/vfs/sftpfs/internal.h.'>SFTP_SUPER</a> (<a href='../Y/super.html' title='Multiple used in 624 places.'>super</a>);
+<a id='L972' name='L972'></a> 972 
+<a id='L973' name='L973'></a> 973     <em class='comment'>/* no mc_return_*_if_error() here because of abort open_connection handling too */</em>
+<a id='L974' name='L974'></a> 974     (<strong class='reserved'>void</strong>) <a href='../Y/mcerror.html' title='Multiple used in 394 places.'>mcerror</a>;
+<a id='L975' name='L975'></a> 975 
+<a id='L976' name='L976'></a> 976     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/sftp_session.html' title='Multiple used in 31 places.'>sftp_session</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L977' name='L977'></a> 977     <em class='brace'>{</em>
+<a id='L978' name='L978'></a> 978         libssh2_sftp_shutdown (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/sftp_session.html' title='Multiple used in 31 places.'>sftp_session</a>);
+<a id='L979' name='L979'></a> 979         <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/sftp_session.html' title='Multiple used in 31 places.'>sftp_session</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L980' name='L980'></a> 980     <em class='brace'>}</em>
+<a id='L981' name='L981'></a> 981 
+<a id='L982' name='L982'></a> 982     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L983' name='L983'></a> 983     <em class='brace'>{</em>
+<a id='L984' name='L984'></a> 984         libssh2_agent_disconnect (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a>);
+<a id='L985' name='L985'></a> 985         libssh2_agent_free (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a>);
+<a id='L986' name='L986'></a> 986         <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/agent.html' title='Multiple used in 12 places.'>agent</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L987' name='L987'></a> 987     <em class='brace'>}</em>
+<a id='L988' name='L988'></a> 988 
+<a id='L989' name='L989'></a> 989     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L990' name='L990'></a> 990     <em class='brace'>{</em>
+<a id='L991' name='L991'></a> 991         libssh2_knownhost_free (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a>);
+<a id='L992' name='L992'></a> 992         <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts.html' title='Multiple used in 11 places.'>known_hosts</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L993' name='L993'></a> 993     <em class='brace'>}</em>
+<a id='L994' name='L994'></a> 994 
+<a id='L995' name='L995'></a> 995     <a href='../S/lib--util.h.html#L25' title='Defined at 25 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/known_hosts_file.html' title='Multiple used in 5 places.'>known_hosts_file</a>);
+<a id='L996' name='L996'></a> 996 
+<a id='L997' name='L997'></a> 997     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L998' name='L998'></a> 998     <em class='brace'>{</em>
+<a id='L999' name='L999'></a> 999         libssh2_session_disconnect (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>, <a href='../Y/shutdown_message.html' title='Multiple used in 3 places.'>shutdown_message</a>);
+<a id='L1000' name='L1000'></a>1000         libssh2_session_free (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a>);
+<a id='L1001' name='L1001'></a>1001         <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/session.html' title='Multiple used in 31 places.'>session</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L1002' name='L1002'></a>1002     <em class='brace'>}</em>
+<a id='L1003' name='L1003'></a>1003 
+<a id='L1004' name='L1004'></a>1004     <strong class='reserved'>if</strong> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/socket_handle.html' title='Multiple used in 10 places.'>socket_handle</a> != <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>)
+<a id='L1005' name='L1005'></a>1005     <em class='brace'>{</em>
+<a id='L1006' name='L1006'></a>1006         <a href='../Y/close.html' title='Multiple used in 126 places.'>close</a> (<a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/socket_handle.html' title='Multiple used in 10 places.'>socket_handle</a>);
+<a id='L1007' name='L1007'></a>1007         <a href='../Y/sftpfs_super.html' title='Multiple used in 112 places.'>sftpfs_super</a>-&gt;<a href='../Y/socket_handle.html' title='Multiple used in 10 places.'>socket_handle</a> = <a href='../S/src--vfs--sftpfs--internal.h.html#L21' title='Defined at 21 in src/vfs/sftpfs/internal.h.'>LIBSSH2_INVALID_SOCKET</a>;
+<a id='L1008' name='L1008'></a>1008     <em class='brace'>}</em>
+<a id='L1009' name='L1009'></a>1009 <em class='brace'>}</em>
+<a id='L1010' name='L1010'></a>1010 
+<a id='L1011' name='L1011'></a>1011 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L133'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L969'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1011 src/vfs/sftpfs/connection.c'  /> */</em>
+</body>
+</html>

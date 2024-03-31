@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tests/lib/mcconfig/config_string.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L42'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L239'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/tests.html'>tests</a>/<a href='../files/tests--lib.html'>lib</a>/<a href='../files/tests--lib--mcconfig.html'>mcconfig</a>/config_string.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/tests.html'>tests</a>/<a href='../files/tests--lib.html'>lib</a>/<a href='../files/tests--lib--mcconfig.html'>mcconfig</a>/config_string.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 tests/lib/mcconfig/config_string.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L42' title='Defined at 42.'>config_object__init</a></li>
+<li><a href='#L53' title='Defined at 53.'>config_object__reopen</a></li>
+<li><a href='#L70' title='Defined at 70.'>config_object__deinit</a></li>
+<li><a href='#L80' title='Defined at 80.'>setup</a></li>
+<li><a href='#L93' title='Defined at 93.'>teardown</a></li>
+<li><a href='#L169' title='Defined at 169.'>START_PARAMETRIZED_TEST</a></li>
+<li><a href='#L209' title='Defined at 209.'>START_TEST</a></li>
+<li><a href='#L239' title='Defined at 239.'>main</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   libmc - check mcconfig submodule. read and write config files</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2011-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Slava Zanko &lt;slavazanko@gmail.com&gt;, 2011, 2013</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'></em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'></em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/tests--mctest.h.html#L93' title='Referred from 93 in tests/mctest.h.'>TEST_SUITE_NAME</a> "lib/mcconfig"
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='tests--mctest.h.html'>tests/mctest.h</a>"
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> "<a href='lib--mcconfig.h.html'>lib/mcconfig.h</a>"
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> "<a href='lib--strescape.h.html'>lib/strescape.h</a>"
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='lib--vfs--vfs.h.html'>lib/vfs/vfs.h</a>"
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "src/vfs/local/local.c"
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <strong class='reserved'>static</strong> <a href='../D/mc_config_t.html' title='Multiple defined in 2 places.'>mc_config_t</a> *<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>;
+<a id='L37' name='L37'></a>  37 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *<a href='../Y/ini_filename.html' title='Multiple used in 6 places.'>ini_filename</a>;
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L42' name='L42'></a>  42 <a href='../S/tests--lib--mcconfig--config_string.c.html#L86' title='Referred from 86 in tests/lib/mcconfig/config_string.c.'>config_object__init</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L53'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+42 tests/lib/mcconfig/config_string.c'  /> */</em>
+<a id='L43' name='L43'></a>  43 <em class='brace'>{</em>
+<a id='L44' name='L44'></a>  44     <a href='../Y/ini_filename.html' title='Multiple used in 6 places.'>ini_filename</a> = <a href='../Y/g_build_filename.html' title='Multiple used in 32 places.'>g_build_filename</a> (WORKDIR, "config_string.ini", (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
+<a id='L45' name='L45'></a>  45     <a href='../Y/unlink.html' title='Multiple used in 24 places.'>unlink</a> (<a href='../Y/ini_filename.html' title='Multiple used in 6 places.'>ini_filename</a>);
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47     <a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a> = <a href='../S/lib--mcconfig--common.c.html#L107' title='Defined at 107 in lib/mcconfig/common.c.'>mc_config_init</a> (<a href='../Y/ini_filename.html' title='Multiple used in 6 places.'>ini_filename</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L48' name='L48'></a>  48 <em class='brace'>}</em>
+<a id='L49' name='L49'></a>  49 
+<a id='L50' name='L50'></a>  50 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L53' name='L53'></a>  53 <a href='../R/config_object__reopen.html' title='Multiple referred from 2 places.'>config_object__reopen</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L42'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L70'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+53 tests/lib/mcconfig/config_string.c'  /> */</em>
+<a id='L54' name='L54'></a>  54 <em class='brace'>{</em>
+<a id='L55' name='L55'></a>  55     <a href='../Y/GError.html' title='Multiple used in 184 places.'>GError</a> *<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a> = <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>;
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57     <strong class='reserved'>if</strong> (!<a href='../S/lib--mcconfig--common.c.html#L264' title='Defined at 264 in lib/mcconfig/common.c.'>mc_config_save_file</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, &amp;<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>))
+<a id='L58' name='L58'></a>  58     <em class='brace'>{</em>
+<a id='L59' name='L59'></a>  59         <a href='../Y/ck_abort_msg.html' title='Multiple used in 2 places.'>ck_abort_msg</a> ("Unable to save config file: %s", <a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>-&gt;<a href='../D/message.html' title='Multiple defined in 5 places.'>message</a>);
+<a id='L60' name='L60'></a>  60         <a href='../Y/g_error_free.html' title='Multiple used in 27 places.'>g_error_free</a> (<a href='../Y/error.html' title='Multiple used in 271 places.'>error</a>);
+<a id='L61' name='L61'></a>  61     <em class='brace'>}</em>
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63     <a href='../S/lib--mcconfig--common.c.html#L151' title='Defined at 151 in lib/mcconfig/common.c.'>mc_config_deinit</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>);
+<a id='L64' name='L64'></a>  64     <a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a> = <a href='../S/lib--mcconfig--common.c.html#L107' title='Defined at 107 in lib/mcconfig/common.c.'>mc_config_init</a> (<a href='../Y/ini_filename.html' title='Multiple used in 6 places.'>ini_filename</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L65' name='L65'></a>  65 <em class='brace'>}</em>
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L70' name='L70'></a>  70 <a href='../S/tests--lib--mcconfig--config_string.c.html#L95' title='Referred from 95 in tests/lib/mcconfig/config_string.c.'>config_object__deinit</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L53'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L80'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+70 tests/lib/mcconfig/config_string.c'  /> */</em>
+<a id='L71' name='L71'></a>  71 <em class='brace'>{</em>
+<a id='L72' name='L72'></a>  72     <a href='../S/lib--mcconfig--common.c.html#L151' title='Defined at 151 in lib/mcconfig/common.c.'>mc_config_deinit</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>);
+<a id='L73' name='L73'></a>  73     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/ini_filename.html' title='Multiple used in 6 places.'>ini_filename</a>);
+<a id='L74' name='L74'></a>  74 <em class='brace'>}</em>
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78 <em class='comment'>/* @Before */</em>
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L80' name='L80'></a>  80 <a href='../R/setup.html' title='Multiple referred from 44 places.'>setup</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L70'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L93'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+80 tests/lib/mcconfig/config_string.c'  /> */</em>
+<a id='L81' name='L81'></a>  81 <em class='brace'>{</em>
+<a id='L82' name='L82'></a>  82     <a href='../S/lib--strutil--strutil.c.html#L403' title='Defined at 403 in lib/strutil/strutil.c.'>str_init_strings</a> ("KOI8-R");
+<a id='L83' name='L83'></a>  83     <a href='../S/lib--vfs--vfs.c.html#L466' title='Defined at 466 in lib/vfs/vfs.c.'>vfs_init</a> ();
+<a id='L84' name='L84'></a>  84     <a href='../S/src--vfs--local--local.c.html#L482' title='Defined at 482 in src/vfs/local/local.c.'>vfs_init_localfs</a> ();
+<a id='L85' name='L85'></a>  85 
+<a id='L86' name='L86'></a>  86     <a href='../S/tests--lib--mcconfig--config_string.c.html#L42' title='Defined at 42 in tests/lib/mcconfig/config_string.c.'>config_object__init</a> ();
+<a id='L87' name='L87'></a>  87 <em class='brace'>}</em>
+<a id='L88' name='L88'></a>  88 
+<a id='L89' name='L89'></a>  89 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91 <em class='comment'>/* @After */</em>
+<a id='L92' name='L92'></a>  92 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L93' name='L93'></a>  93 <a href='../R/teardown.html' title='Multiple referred from 43 places.'>teardown</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L80'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L169'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+93 tests/lib/mcconfig/config_string.c'  /> */</em>
+<a id='L94' name='L94'></a>  94 <em class='brace'>{</em>
+<a id='L95' name='L95'></a>  95     <a href='../S/tests--lib--mcconfig--config_string.c.html#L70' title='Defined at 70 in tests/lib/mcconfig/config_string.c.'>config_object__deinit</a> ();
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <a href='../S/lib--vfs--vfs.c.html#L498' title='Defined at 498 in lib/vfs/vfs.c.'>vfs_shut</a> ();
+<a id='L98' name='L98'></a>  98     <a href='../S/lib--strutil--strutil.c.html#L434' title='Defined at 434 in lib/strutil/strutil.c.'>str_uninit_strings</a> ();
+<a id='L99' name='L99'></a>  99 <em class='brace'>}</em>
+<a id='L100' name='L100'></a> 100 
+<a id='L101' name='L101'></a> 101 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103 <em class='comment'>/* @DataSource("test_create_ini_file_ds") */</em>
+<a id='L104' name='L104'></a> 104 <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L105' name='L105'></a> 105 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../R/test_create_ini_file_ds.html' title='Multiple referred from 3 places.'>test_create_ini_file_ds</a>
+<a id='L106' name='L106'></a> 106 <em class='brace'>{</em>
+<a id='L107' name='L107'></a> 107     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/input_group.html' title='Multiple used in 3 places.'>input_group</a>;
+<a id='L108' name='L108'></a> 108     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/input_param.html' title='Multiple used in 3 places.'>input_param</a>;
+<a id='L109' name='L109'></a> 109     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/input_default_value.html' title='Multiple used in 3 places.'>input_default_value</a>;
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/expected_value.html' title='Multiple used in 4 places.'>expected_value</a>;
+<a id='L111' name='L111'></a> 111     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/expected_raw_value.html' title='Multiple used in 2 places.'>expected_raw_value</a>;
+<a id='L112' name='L112'></a> 112 <em class='brace'>}</em> <a href='../S/tests--lib--mcconfig--config_string.c.html#L105' title='Defined at 105 in tests/lib/mcconfig/config_string.c.'>test_create_ini_file_ds</a>[] =
+<a id='L113' name='L113'></a> 113 <em class='brace'>{</em>
+<a id='L114' name='L114'></a> 114     <em class='brace'>{</em> <em class='comment'>/* 0. */</em>
+<a id='L115' name='L115'></a> 115         "group-not-exists",
+<a id='L116' name='L116'></a> 116         "param-not_exists",
+<a id='L117' name='L117'></a> 117         <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>,
+<a id='L118' name='L118'></a> 118         <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>,
+<a id='L119' name='L119'></a> 119         <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>
+<a id='L120' name='L120'></a> 120     <em class='brace'>}</em>,
+<a id='L121' name='L121'></a> 121     <em class='brace'>{</em> <em class='comment'>/* 1. */</em>
+<a id='L122' name='L122'></a> 122         "test-group1",
+<a id='L123' name='L123'></a> 123         "test-param1",
+<a id='L124' name='L124'></a> 124         "not-exists",
+<a id='L125' name='L125'></a> 125         " some value ",
+<a id='L126' name='L126'></a> 126         " some value "
+<a id='L127' name='L127'></a> 127     <em class='brace'>}</em>,
+<a id='L128' name='L128'></a> 128     <em class='brace'>{</em> <em class='comment'>/* 2. */</em>
+<a id='L129' name='L129'></a> 129         "test-group1",
+<a id='L130' name='L130'></a> 130         "test-param2",
+<a id='L131' name='L131'></a> 131         "not-exists",
+<a id='L132' name='L132'></a> 132         " \tkoi8-r: Тестовое значение ",
+<a id='L133' name='L133'></a> 133         " \tkoi8-r: \320\242\320\265\321\201\321\202\320\276\320\262\320\276\320\265 \320\267\320\275\320\260\321\207\320\265\320\275\320\270\320\265 "
+<a id='L134' name='L134'></a> 134     <em class='brace'>}</em>,
+<a id='L135' name='L135'></a> 135     <em class='brace'>{</em> <em class='comment'>/* 3. */</em>
+<a id='L136' name='L136'></a> 136         "test-group1",
+<a id='L137' name='L137'></a> 137         "test-param3",
+<a id='L138' name='L138'></a> 138         "not-exists",
+<a id='L139' name='L139'></a> 139         " \tsome value2\n\nf\b\005fff ",
+<a id='L140' name='L140'></a> 140         " \tsome value2\n\nf\b\005fff "
+<a id='L141' name='L141'></a> 141     <em class='brace'>}</em>,
+<a id='L142' name='L142'></a> 142     <em class='brace'>{</em> <em class='comment'>/* 4. */</em>
+<a id='L143' name='L143'></a> 143         "test-group2",
+<a id='L144' name='L144'></a> 144         "test-param1",
+<a id='L145' name='L145'></a> 145         "not-exists",
+<a id='L146' name='L146'></a> 146         " some value ",
+<a id='L147' name='L147'></a> 147         " some value "
+<a id='L148' name='L148'></a> 148     <em class='brace'>}</em>,
+<a id='L149' name='L149'></a> 149     <em class='brace'>{</em> <em class='comment'>/* 5. */</em>
+<a id='L150' name='L150'></a> 150         "test-group2",
+<a id='L151' name='L151'></a> 151         "test-param2",
+<a id='L152' name='L152'></a> 152         "not-exists",
+<a id='L153' name='L153'></a> 153         "not-exists",
+<a id='L154' name='L154'></a> 154         "not-exists"
+<a id='L155' name='L155'></a> 155     <em class='brace'>}</em>,
+<a id='L156' name='L156'></a> 156     <em class='brace'>{</em> <em class='comment'>/* 6. */</em>
+<a id='L157' name='L157'></a> 157         "test-group2",
+<a id='L158' name='L158'></a> 158         "test-param3",
+<a id='L159' name='L159'></a> 159         "not-exists",
+<a id='L160' name='L160'></a> 160         " \tsome value2\n\nf\b\005fff ",
+<a id='L161' name='L161'></a> 161         " \tsome value2\n\nf\b\005fff "
+<a id='L162' name='L162'></a> 162     <em class='brace'>}</em>,
+<a id='L163' name='L163'></a> 163 
+<a id='L164' name='L164'></a> 164 <em class='brace'>}</em>;
+<a id='L165' name='L165'></a> 165 <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L166' name='L166'></a> 166 
+<a id='L167' name='L167'></a> 167 <em class='comment'>/* @Test(dataSource = "test_create_ini_file_ds") */</em>
+<a id='L168' name='L168'></a> 168 <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L169' name='L169'></a> 169 START_PARAMETRIZED_TEST (<a href='../Y/test_create_ini_file_paths.html' title='Multiple used in 2 places.'>test_create_ini_file_paths</a>, <a href='../S/tests--lib--mcconfig--config_string.c.html#L105' title='Defined at 105 in tests/lib/mcconfig/config_string.c.'>test_create_ini_file_ds</a>)
+     <em class='comment'>/* <a href='#L93'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L209'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+169 tests/lib/mcconfig/config_string.c'  /> */</em>
+<a id='L170' name='L170'></a> 170 <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L171' name='L171'></a> 171 <em class='brace'>{</em>
+<a id='L172' name='L172'></a> 172     <em class='comment'>/* given */</em>
+<a id='L173' name='L173'></a> 173     <strong class='reserved'>char</strong> *<a href='../Y/actual_value.html' title='Multiple used in 34 places.'>actual_value</a>, *<a href='../Y/actual_raw_value.html' title='Multiple used in 4 places.'>actual_raw_value</a>;
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175     <a href='../S/lib--mcconfig--set.c.html#L97' title='Defined at 97 in lib/mcconfig/set.c.'>mc_config_set_string</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, "test-group1", "test-param1", " some value ");
+<a id='L176' name='L176'></a> 176     <a href='../S/lib--mcconfig--set.c.html#L97' title='Defined at 97 in lib/mcconfig/set.c.'>mc_config_set_string</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, "test-group1", "test-param2", " \tkoi8-r: Тестовое значение ");
+<a id='L177' name='L177'></a> 177     <a href='../S/lib--mcconfig--set.c.html#L97' title='Defined at 97 in lib/mcconfig/set.c.'>mc_config_set_string</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, "test-group1", "test-param3", " \tsome value2\n\nf\b\005fff ");
+<a id='L178' name='L178'></a> 178     <a href='../S/lib--mcconfig--set.c.html#L77' title='Defined at 77 in lib/mcconfig/set.c.'>mc_config_set_string_raw</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, "test-group2", "test-param1", " some value ");
+<a id='L179' name='L179'></a> 179     <a href='../S/lib--mcconfig--set.c.html#L77' title='Defined at 77 in lib/mcconfig/set.c.'>mc_config_set_string_raw</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, "test-group2", "test-param2",
+<a id='L180' name='L180'></a> 180                               " koi8-r: Тестовое значение");
+<a id='L181' name='L181'></a> 181     <a href='../S/lib--mcconfig--set.c.html#L77' title='Defined at 77 in lib/mcconfig/set.c.'>mc_config_set_string_raw</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, "test-group2", "test-param3",
+<a id='L182' name='L182'></a> 182                               " \tsome value2\n\nf\b\005fff ");
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184     <a href='../S/tests--lib--mcconfig--config_string.c.html#L53' title='Defined at 53 in tests/lib/mcconfig/config_string.c.'>config_object__reopen</a> ();
+<a id='L185' name='L185'></a> 185 
+<a id='L186' name='L186'></a> 186     <em class='comment'>/* when */</em>
+<a id='L187' name='L187'></a> 187     <a href='../Y/actual_value.html' title='Multiple used in 34 places.'>actual_value</a> =
+<a id='L188' name='L188'></a> 188         <a href='../S/lib--mcconfig--get.c.html#L89' title='Defined at 89 in lib/mcconfig/get.c.'>mc_config_get_string</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>-&gt;<a href='../Y/input_group.html' title='Multiple used in 3 places.'>input_group</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>-&gt;<a href='../Y/input_param.html' title='Multiple used in 3 places.'>input_param</a>,
+<a id='L189' name='L189'></a> 189                               <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>-&gt;<a href='../Y/input_default_value.html' title='Multiple used in 3 places.'>input_default_value</a>);
+<a id='L190' name='L190'></a> 190     <a href='../Y/actual_raw_value.html' title='Multiple used in 4 places.'>actual_raw_value</a> =
+<a id='L191' name='L191'></a> 191         <a href='../D/mc_config_get_string_raw.html' title='Multiple defined in 2 places.'>mc_config_get_string_raw</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>-&gt;<a href='../Y/input_group.html' title='Multiple used in 3 places.'>input_group</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>-&gt;<a href='../Y/input_param.html' title='Multiple used in 3 places.'>input_param</a>,
+<a id='L192' name='L192'></a> 192                                   <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>-&gt;<a href='../Y/input_default_value.html' title='Multiple used in 3 places.'>input_default_value</a>);
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194     <em class='comment'>/* then */</em>
+<a id='L195' name='L195'></a> 195     <a href='../S/tests--mctest.h.html#L16' title='Defined at 16 in tests/mctest.h.'>mctest_assert_str_eq</a> (<a href='../Y/actual_value.html' title='Multiple used in 34 places.'>actual_value</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>-&gt;<a href='../Y/expected_value.html' title='Multiple used in 4 places.'>expected_value</a>);
+<a id='L196' name='L196'></a> 196     <a href='../S/tests--mctest.h.html#L16' title='Defined at 16 in tests/mctest.h.'>mctest_assert_str_eq</a> (<a href='../Y/actual_raw_value.html' title='Multiple used in 4 places.'>actual_raw_value</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>-&gt;<a href='../Y/expected_raw_value.html' title='Multiple used in 2 places.'>expected_raw_value</a>);
+<a id='L197' name='L197'></a> 197 
+<a id='L198' name='L198'></a> 198     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/actual_value.html' title='Multiple used in 34 places.'>actual_value</a>);
+<a id='L199' name='L199'></a> 199     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/actual_raw_value.html' title='Multiple used in 4 places.'>actual_raw_value</a>);
+<a id='L200' name='L200'></a> 200 <em class='brace'>}</em>
+<a id='L201' name='L201'></a> 201 <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L202' name='L202'></a> 202 <a href='../S/tests--mctest.h.html#L73' title='Defined at 73 in tests/mctest.h.'>END_PARAMETRIZED_TEST</a>
+<a id='L203' name='L203'></a> 203 <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207 <em class='comment'>/* @Test(group='Integration') */</em>
+<a id='L208' name='L208'></a> 208 <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L209' name='L209'></a> 209 <a href='../S/tests--mctest.h.html#L67' title='Referred from 67 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/emulate__learn_save.html' title='Multiple used in 2 places.'>emulate__learn_save</a>)
+     <em class='comment'>/* <a href='#L169'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L239'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+209 tests/lib/mcconfig/config_string.c'  /> */</em>
+<a id='L210' name='L210'></a> 210 <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L211' name='L211'></a> 211 <em class='brace'>{</em>
+<a id='L212' name='L212'></a> 212     <em class='comment'>/* given */</em>
+<a id='L213' name='L213'></a> 213     <strong class='reserved'>char</strong> *<a href='../Y/actual_value.html' title='Multiple used in 34 places.'>actual_value</a>;
+<a id='L214' name='L214'></a> 214 
+<a id='L215' name='L215'></a> 215     <em class='brace'>{</em>
+<a id='L216' name='L216'></a> 216         <strong class='reserved'>char</strong> *<a href='../Y/esc_str.html' title='Multiple used in 12 places.'>esc_str</a>;
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218         <a href='../Y/esc_str.html' title='Multiple used in 12 places.'>esc_str</a> = <a href='../S/lib--strutil--strescape.c.html#L55' title='Defined at 55 in lib/strutil/strescape.c.'>strutils_escape</a> ("T;E\\X;T-FOR-\\T;E;S\\TI;N'G", -1, ";", <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L219' name='L219'></a> 219         <a href='../S/lib--mcconfig--set.c.html#L77' title='Defined at 77 in lib/mcconfig/set.c.'>mc_config_set_string_raw</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, "test-group1", "test-param1", <a href='../Y/esc_str.html' title='Multiple used in 12 places.'>esc_str</a>);
+<a id='L220' name='L220'></a> 220         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/esc_str.html' title='Multiple used in 12 places.'>esc_str</a>);
+<a id='L221' name='L221'></a> 221     <em class='brace'>}</em>
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223     <a href='../S/tests--lib--mcconfig--config_string.c.html#L53' title='Defined at 53 in tests/lib/mcconfig/config_string.c.'>config_object__reopen</a> ();
+<a id='L224' name='L224'></a> 224 
+<a id='L225' name='L225'></a> 225     <em class='comment'>/* when */</em>
+<a id='L226' name='L226'></a> 226     <a href='../Y/actual_value.html' title='Multiple used in 34 places.'>actual_value</a> = <a href='../D/mc_config_get_string_raw.html' title='Multiple defined in 2 places.'>mc_config_get_string_raw</a> (<a href='../Y/mc_config.html' title='Multiple used in 136 places.'>mc_config</a>, "test-group1", "test-param1", "not-exists");
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228     <em class='comment'>/* then */</em>
+<a id='L229' name='L229'></a> 229     <a href='../S/tests--mctest.h.html#L16' title='Defined at 16 in tests/mctest.h.'>mctest_assert_str_eq</a> (<a href='../Y/actual_value.html' title='Multiple used in 34 places.'>actual_value</a>, "T\\;E\\X\\;T-FOR-\\T\\;E\\;S\\TI\\;N'G");
+<a id='L230' name='L230'></a> 230     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/actual_value.html' title='Multiple used in 34 places.'>actual_value</a>);
+<a id='L231' name='L231'></a> 231 <em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232 <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L233' name='L233'></a> 233 <a href='../Y/END_TEST.html' title='Multiple used in 34 places.'>END_TEST</a>
+<a id='L234' name='L234'></a> 234 <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L237' name='L237'></a> 237 
+<a id='L238' name='L238'></a> 238 <strong class='reserved'>int</strong>
+<a id='L239' name='L239'></a> 239 main (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L209'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+239 tests/lib/mcconfig/config_string.c'  /> */</em>
+<a id='L240' name='L240'></a> 240 <em class='brace'>{</em>
+<a id='L241' name='L241'></a> 241     <a href='../Y/TCase.html' title='Multiple used in 56 places.'>TCase</a> *<a href='../Y/tc_core.html' title='Multiple used in 298 places.'>tc_core</a>;
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <a href='../Y/tc_core.html' title='Multiple used in 298 places.'>tc_core</a> = <a href='../Y/tcase_create.html' title='Multiple used in 55 places.'>tcase_create</a> ("Core");
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245     <a href='../Y/tcase_add_checked_fixture.html' title='Multiple used in 44 places.'>tcase_add_checked_fixture</a> (<a href='../Y/tc_core.html' title='Multiple used in 298 places.'>tc_core</a>, <a href='../D/setup.html' title='Multiple defined in 39 places.'>setup</a>, <a href='../D/teardown.html' title='Multiple defined in 40 places.'>teardown</a>);
+<a id='L246' name='L246'></a> 246 
+<a id='L247' name='L247'></a> 247     <em class='comment'>/* Add new tests here: *************** */</em>
+<a id='L248' name='L248'></a> 248     <a href='../S/tests--mctest.h.html#L12' title='Defined at 12 in tests/mctest.h.'>mctest_add_parameterized_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 298 places.'>tc_core</a>, <a href='../Y/test_create_ini_file_paths.html' title='Multiple used in 2 places.'>test_create_ini_file_paths</a>, <a href='../S/tests--lib--mcconfig--config_string.c.html#L105' title='Defined at 105 in tests/lib/mcconfig/config_string.c.'>test_create_ini_file_ds</a>);
+<a id='L249' name='L249'></a> 249     <a href='../Y/tcase_add_test.html' title='Multiple used in 28 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 298 places.'>tc_core</a>, <a href='../Y/emulate__learn_save.html' title='Multiple used in 2 places.'>emulate__learn_save</a>);
+<a id='L250' name='L250'></a> 250     <em class='comment'>/* *********************************** */</em>
+<a id='L251' name='L251'></a> 251 
+<a id='L252' name='L252'></a> 252     <strong class='reserved'>return</strong> <a href='../S/tests--mctest.h.html#L87' title='Defined at 87 in tests/mctest.h.'>mctest_run_all</a> (<a href='../Y/tc_core.html' title='Multiple used in 298 places.'>tc_core</a>);
+<a id='L253' name='L253'></a> 253 <em class='brace'>}</em>
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L42'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L239'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+255 tests/lib/mcconfig/config_string.c'  /> */</em>
+</body>
+</html>

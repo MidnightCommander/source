@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/gnulib/sys_types_h.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/<a href='../files/m4.include--gnulib.html'>gnulib</a>/sys_types_h.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/<a href='../files/m4.include--gnulib.html'>gnulib</a>/sys_types_h.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/gnulib/sys_types_h.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># sys_types_h.m4 serial 12
+<a id='L2' name='L2'></a>dnl Copyright (C) 2011-2021 Free Software Foundation, Inc.
+<a id='L3' name='L3'></a>dnl This file is free software; the Free Software Foundation
+<a id='L4' name='L4'></a>dnl gives unlimited permission to copy and/or distribute it,
+<a id='L5' name='L5'></a>dnl with or without modifications, as long as this notice is preserved.
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a>AC_DEFUN_ONCE([gl_SYS_TYPES_H],
+<a id='L8' name='L8'></a>[
+<a id='L9' name='L9'></a>  AC_REQUIRE([gl_SYS_TYPES_H_DEFAULTS])
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>  dnl Use sane struct stat types in OpenVMS 8.2 and later.
+<a id='L12' name='L12'></a>  AC_DEFINE([_USE_STD_STAT], 1, [For standard stat data types on VMS.])
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>  gl_NEXT_HEADERS([sys/types.h])
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>  dnl Ensure the type pid_t gets defined.
+<a id='L17' name='L17'></a>  AC_REQUIRE([AC_TYPE_PID_T])
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>  dnl Ensure the type mode_t gets defined.
+<a id='L20' name='L20'></a>  AC_REQUIRE([AC_TYPE_MODE_T])
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a>  dnl Whether to override the 'off_t' type.
+<a id='L23' name='L23'></a>  AC_REQUIRE([gl_TYPE_OFF_T])
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a>  dnl Whether to override the 'dev_t' and 'ino_t' types.
+<a id='L26' name='L26'></a>  m4_ifdef([gl_WINDOWS_STAT_INODES], [
+<a id='L27' name='L27'></a>    AC_REQUIRE([gl_WINDOWS_STAT_INODES])
+<a id='L28' name='L28'></a>  ], [
+<a id='L29' name='L29'></a>    WINDOWS_STAT_INODES=0
+<a id='L30' name='L30'></a>  ])
+<a id='L31' name='L31'></a>  AC_SUBST([WINDOWS_STAT_INODES])
+<a id='L32' name='L32'></a>])
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>AC_DEFUN([gl_SYS_TYPES_H_REQUIRE_DEFAULTS],
+<a id='L35' name='L35'></a>[
+<a id='L36' name='L36'></a>  m4_defun(GL_MODULE_INDICATOR_PREFIX[_SYS_TYPE_H_MODULE_INDICATOR_DEFAULTS], [
+<a id='L37' name='L37'></a>  ])
+<a id='L38' name='L38'></a>  m4_require(GL_MODULE_INDICATOR_PREFIX[_SYS_TYPE_H_MODULE_INDICATOR_DEFAULTS])
+<a id='L39' name='L39'></a>  AC_REQUIRE([gl_SYS_TYPES_H_DEFAULTS])
+<a id='L40' name='L40'></a>])
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>AC_DEFUN([gl_SYS_TYPES_H_DEFAULTS],
+<a id='L43' name='L43'></a>[
+<a id='L44' name='L44'></a>])
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a># This works around a buggy version in autoconf &lt;= 2.69.
+<a id='L47' name='L47'></a># See &lt;https://lists.gnu.org/r/autoconf/2016-08/msg00014.html&gt;
+<a id='L48' name='L48'></a># The 2.70 version isn't quoted properly, so override it too.
+<a id='L49' name='L49'></a> 
+<a id='L50' name='L50'></a>m4_version_prereq([2.70.1], [], [
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>m4_undefine([AC_HEADER_MAJOR])
+<a id='L53' name='L53'></a>AC_DEFUN([AC_HEADER_MAJOR],
+<a id='L54' name='L54'></a>[AC_CHECK_HEADERS_ONCE([sys/types.h])
+<a id='L55' name='L55'></a>AC_CHECK_HEADER([sys/mkdev.h],
+<a id='L56' name='L56'></a>                [AC_DEFINE([MAJOR_IN_MKDEV], [1],
+<a id='L57' name='L57'></a>                           [Define to 1 if `major', `minor', and `makedev' are
+<a id='L58' name='L58'></a>                            declared in &lt;mkdev.h&gt;.])])
+<a id='L59' name='L59'></a>if test $ac_cv_header_sys_mkdev_h = no; then
+<a id='L60' name='L60'></a>  AC_CHECK_HEADER([sys/sysmacros.h],
+<a id='L61' name='L61'></a>                  [AC_DEFINE([MAJOR_IN_SYSMACROS], [1],
+<a id='L62' name='L62'></a>                             [Define to 1 if `major', `minor', and `makedev'
+<a id='L63' name='L63'></a>                              are declared in &lt;sysmacros.h&gt;.])])
+<a id='L64' name='L64'></a>fi
+<a id='L65' name='L65'></a>])# AC_HEADER_MAJOR
+<a id='L66' name='L66'></a> 
+<a id='L67' name='L67'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+67 m4.include/gnulib/sys_types_h.m4'  /> */</em>
+</body>
+</html>

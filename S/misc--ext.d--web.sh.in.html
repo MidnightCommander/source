@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>misc/ext.d/web.sh.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/misc.html'>misc</a>/<a href='../files/misc--ext.d.html'>ext.d</a>/web.sh.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/misc.html'>misc</a>/<a href='../files/misc--ext.d.html'>ext.d</a>/web.sh.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 misc/ext.d/web.sh.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#!/bin/sh
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a># $1 - action
+<a id='L4' name='L4'></a># $2 - type of file
+<a id='L5' name='L5'></a> 
+<a id='L6' name='L6'></a>action=$1
+<a id='L7' name='L7'></a>filetype=$2
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>[ -n "${MC_XDG_OPEN}" ] || MC_XDG_OPEN="xdg-open"
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>do_view_action() {
+<a id='L12' name='L12'></a>    filetype=$1
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>    case "${filetype}" in
+<a id='L15' name='L15'></a>    html)
+<a id='L16' name='L16'></a>        links -dump "${MC_EXT_FILENAME}" 2&gt;/dev/null || \
+<a id='L17' name='L17'></a>            w3m -dump "${MC_EXT_FILENAME}" 2&gt;/dev/null || \
+<a id='L18' name='L18'></a>            lynx -dump -force_html "${MC_EXT_FILENAME}" 2&gt;/dev/null ||
+<a id='L19' name='L19'></a>            cat "${MC_EXT_FILENAME}"
+<a id='L20' name='L20'></a>        ;;
+<a id='L21' name='L21'></a>    *)
+<a id='L22' name='L22'></a>        ;;
+<a id='L23' name='L23'></a>    esac
+<a id='L24' name='L24'></a>}
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>do_open_action() {
+<a id='L27' name='L27'></a>    filetype=$1
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>    case "${filetype}" in
+<a id='L30' name='L30'></a>    html)
+<a id='L31' name='L31'></a>        (if [ -n "@X11_WWW@" -a  -n "$DISPLAY" ]; then
+<a id='L32' name='L32'></a>            (@X11_WWW@ file://"${MC_EXT_CURRENTDIR}"/"${MC_EXT_BASENAME}" &amp;) 1&gt;&amp;2
+<a id='L33' name='L33'></a>        else
+<a id='L34' name='L34'></a>            elinks "${MC_EXT_FILENAME}" || \
+<a id='L35' name='L35'></a>                links "${MC_EXT_FILENAME}" || \
+<a id='L36' name='L36'></a>                lynx -force_html "${MC_EXT_FILENAME}" || \
+<a id='L37' name='L37'></a>                ${PAGER:-more} "${MC_EXT_FILENAME}"
+<a id='L38' name='L38'></a>        fi) 2&gt;/dev/null
+<a id='L39' name='L39'></a>        ;;
+<a id='L40' name='L40'></a>    *)
+<a id='L41' name='L41'></a>        ;;
+<a id='L42' name='L42'></a>    esac
+<a id='L43' name='L43'></a>}
+<a id='L44' name='L44'></a> 
+<a id='L45' name='L45'></a>case "${action}" in
+<a id='L46' name='L46'></a>view)
+<a id='L47' name='L47'></a>    do_view_action "${filetype}"
+<a id='L48' name='L48'></a>    ;;
+<a id='L49' name='L49'></a>open)
+<a id='L50' name='L50'></a>    ("${MC_XDG_OPEN}" "${MC_EXT_FILENAME}" &gt;/dev/null 2&gt;&amp;1) || \
+<a id='L51' name='L51'></a>        do_open_action "${filetype}"
+<a id='L52' name='L52'></a>    ;;
+<a id='L53' name='L53'></a>*)
+<a id='L54' name='L54'></a>    ;;
+<a id='L55' name='L55'></a>esac
+<a id='L56' name='L56'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+56 misc/ext.d/web.sh.in'  /> */</em>
+</body>
+</html>

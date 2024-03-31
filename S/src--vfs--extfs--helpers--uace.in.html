@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/uace.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uace.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uace.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/uace.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>#
+<a id='L4' name='L4'></a># ACE Virtual filesystem executive v0.1
+<a id='L5' name='L5'></a># Works with unace v2.5
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a># Note: There are two packages for Debian: 'unace' (v1.2b) and
+<a id='L8' name='L8'></a># 'unace-nonfree' (v2.x). This script supports 'unace-nonfree' only.
+<a id='L9' name='L9'></a># 'unace', which supports only old versions of ACE archives (and is
+<a id='L10' name='L10'></a># therefore of little use), uses the pipe character to separate columns
+<a id='L11' name='L11'></a># in its listing format.
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a># Copyright (C) 2008 Jacques Pelletier
+<a id='L14' name='L14'></a># May be distributed under the terms of the GNU Public License
+<a id='L15' name='L15'></a># &lt;jpelletier@ieee.org&gt;
+<a id='L16' name='L16'></a>#
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a># Define which archiver you are using with appropriate options
+<a id='L19' name='L19'></a>ACE_LIST=${MC_TEST_EXTFS_LIST_CMD:-"unace l"}
+<a id='L20' name='L20'></a>ACE_GET="unace x"
+<a id='L21' name='L21'></a># ACE_PUT="unace ?"  not available
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a># The 'list' command executive
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a># Unace:        DD.MM.YY HH:MM packed size ratio file
+<a id='L26' name='L26'></a># ls:
+<a id='L27' name='L27'></a>mc_ace_fs_list()
+<a id='L28' name='L28'></a>{
+<a id='L29' name='L29'></a>    if [ "x$UID" = "x" ]; then
+<a id='L30' name='L30'></a>        UID=`id -ru 2&gt;/dev/null`
+<a id='L31' name='L31'></a>        if [ "x$UID" = "x" ]; then
+<a id='L32' name='L32'></a>            UID=0
+<a id='L33' name='L33'></a>        fi
+<a id='L34' name='L34'></a>    fi
+<a id='L35' name='L35'></a>    $ACE_LIST "$1" | @AWK@ -v uid=$UID '
+<a id='L36' name='L36'></a>/%/ { 
+<a id='L37' name='L37'></a>  split($1,date,".")
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a>  if (date[3] &gt; 50)
+<a id='L40' name='L40'></a>    date[3]=date[3] + 1900
+<a id='L41' name='L41'></a>  else
+<a id='L42' name='L42'></a>    date[3]=date[3] + 2000
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>  printf "-rw-r--r--   1 %-8d %-8d %8d %02d-%02d-%04d %s %s\n", uid, 0, $4, date[2], date[1], date[3], $2, $6
+<a id='L45' name='L45'></a>}' 2&gt;/dev/null
+<a id='L46' name='L46'></a>    exit 0
+<a id='L47' name='L47'></a>}
+<a id='L48' name='L48'></a> 
+<a id='L49' name='L49'></a># Command: copyout archivename storedfilename extractto
+<a id='L50' name='L50'></a>mc_ace_fs_copyout()
+<a id='L51' name='L51'></a>{
+<a id='L52' name='L52'></a>   $ACE_GET "$1" "$2" &gt; /dev/null 2&gt;&amp;1
+<a id='L53' name='L53'></a>        mv "$2" "$3"
+<a id='L54' name='L54'></a>}
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a># The main routine
+<a id='L57' name='L57'></a>umask 077
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>cmd="$1"
+<a id='L60' name='L60'></a>shift
+<a id='L61' name='L61'></a> 
+<a id='L62' name='L62'></a>case "$cmd" in
+<a id='L63' name='L63'></a>   list)        mc_ace_fs_list    "$@" ;;
+<a id='L64' name='L64'></a>   copyout) mc_ace_fs_copyout "$@" ;;
+<a id='L65' name='L65'></a>   *)       exit 1 ;;
+<a id='L66' name='L66'></a>esac
+<a id='L67' name='L67'></a>exit 0
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+67 src/vfs/extfs/helpers/uace.in'  /> */</em>
+</body>
+</html>

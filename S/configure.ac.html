@@ -1,0 +1,800 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>configure.ac</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span>configure.ac</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/configure.ac</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 configure.ac'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>dnl
+<a id='L2' name='L2'></a>dnl Configure.in file for the Midnight Commander
+<a id='L3' name='L3'></a>dnl
+<a id='L4' name='L4'></a> 
+<a id='L5' name='L5'></a>dnl 2.64 is required at least for m4_esyscmd_s()
+<a id='L6' name='L6'></a>AC_PREREQ(2.64)
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a>AC_INIT([GNU Midnight Commander], m4_esyscmd_s([./version.sh .]),
+<a id='L9' name='L9'></a>        [https://www.midnight-commander.org/wiki/NewTicket], [mc],
+<a id='L10' name='L10'></a>        [https://www.midnight-commander.org/])
+<a id='L11' name='L11'></a> 
+<a id='L12' name='L12'></a>m4_pattern_forbid(MC_)
+<a id='L13' name='L13'></a>AC_CONFIG_MACRO_DIR([m4])
+<a id='L14' name='L14'></a>AC_CONFIG_AUX_DIR(config)
+<a id='L15' name='L15'></a>AC_CONFIG_SRCDIR(src/main.c)
+<a id='L16' name='L16'></a>AC_CONFIG_HEADERS(config.h)
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>dnl Apply "no-define" to avoid defining the VERSION macro in config.h
+<a id='L19' name='L19'></a>AM_INIT_AUTOMAKE([no-define])
+<a id='L20' name='L20'></a>dnl PACKAGE macro isn't defined if "no-define" is applied
+<a id='L21' name='L21'></a>AC_DEFINE([PACKAGE], ["mc"], [Name of package])
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a>dnl Enable silent rules by default (if yes)
+<a id='L24' name='L24'></a>m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>mc_VERSION
+<a id='L27' name='L27'></a> 
+<a id='L28' name='L28'></a>AM_MAINTAINER_MODE
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>AC_CANONICAL_HOST
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>AC_USE_SYSTEM_EXTENSIONS
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>dnl ############################################################################
+<a id='L36' name='L36'></a>dnl Check for compiler
+<a id='L37' name='L37'></a>dnl ############################################################################
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a>AC_PROG_CC
+<a id='L40' name='L40'></a>AM_PROG_CC_C_O
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>mc_CHECK_CFLAGS
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>CFLAGS_OPTS=""
+<a id='L45' name='L45'></a>if test "x$CFLAGS" = "x"; then
+<a id='L46' name='L46'></a>    CFLAGS_OPTS=" -O2 "
+<a id='L47' name='L47'></a>fi
+<a id='L48' name='L48'></a>if test x$USE_MAINTAINER_MODE = xyes; then
+<a id='L49' name='L49'></a>    CFLAGS_OPTS="-g3 -O -ggdb"
+<a id='L50' name='L50'></a>    AC_DEFINE(USE_MAINTAINER_MODE, 1, [Use maintainer mode])
+<a id='L51' name='L51'></a>fi
+<a id='L52' name='L52'></a> 
+<a id='L53' name='L53'></a>AC_ARG_ENABLE([werror],
+<a id='L54' name='L54'></a>    AS_HELP_STRING([--enable-werror], [Handle all compiler warnings as errors]))
+<a id='L55' name='L55'></a>if test "x$enable_werror" = xyes; then
+<a id='L56' name='L56'></a>    AX_APPEND_COMPILE_FLAGS([-Werror], [mc_configured_cflags])
+<a id='L57' name='L57'></a>fi
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>dnl Compiler can generate warnings for unrecognized flags added to CFLAGS
+<a id='L60' name='L60'></a>dnl which causes attribute checks to fail
+<a id='L61' name='L61'></a>ax_gcc_func_attribute_save_flags=$[]_AC_LANG_PREFIX[]FLAGS
+<a id='L62' name='L62'></a>_AC_LANG_PREFIX[]FLAGS=
+<a id='L63' name='L63'></a>AX_GCC_FUNC_ATTRIBUTE([fallthrough])
+<a id='L64' name='L64'></a>_AC_LANG_PREFIX[]FLAGS=$ax_gcc_func_attribute_save_flags
+<a id='L65' name='L65'></a>unset ax_gcc_func_attribute_save_flags
+<a id='L66' name='L66'></a> 
+<a id='L67' name='L67'></a>LT_INIT
+<a id='L68' name='L68'></a> 
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a>dnl ############################################################################
+<a id='L71' name='L71'></a>dnl Check for programs
+<a id='L72' name='L72'></a>dnl ############################################################################
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>AC_PROG_SED
+<a id='L75' name='L75'></a>PKG_PROG_PKG_CONFIG
+<a id='L76' name='L76'></a>AC_PROG_INSTALL
+<a id='L77' name='L77'></a>AC_PROG_LN_S
+<a id='L78' name='L78'></a>dnl See also the "OS specific stuff" section below.
+<a id='L79' name='L79'></a> 
+<a id='L80' name='L80'></a>dnl Check nroff and the options it supports
+<a id='L81' name='L81'></a>AC_CHECK_PROG(HAVE_nroff, nroff, true, false)
+<a id='L82' name='L82'></a>dnl Default values
+<a id='L83' name='L83'></a>MANDOC=-man
+<a id='L84' name='L84'></a>MAN_FLAGS=
+<a id='L85' name='L85'></a>if $HAVE_nroff; then
+<a id='L86' name='L86'></a>    AC_MSG_CHECKING([for manual formatting macros])
+<a id='L87' name='L87'></a>    AC_CACHE_VAL(mc_cv_mandoc, [
+<a id='L88' name='L88'></a>    nroff -mandoc &lt; /dev/null &gt; /dev/null 2&gt;&amp;1
+<a id='L89' name='L89'></a>    if test $? = 0; then
+<a id='L90' name='L90'></a>        mc_cv_mandoc=-mandoc
+<a id='L91' name='L91'></a>    else
+<a id='L92' name='L92'></a>        mc_cv_mandoc=-man
+<a id='L93' name='L93'></a>    fi
+<a id='L94' name='L94'></a>    ])
+<a id='L95' name='L95'></a>    MANDOC=$mc_cv_mandoc
+<a id='L96' name='L96'></a>    AC_MSG_RESULT([$MANDOC])
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>    AC_MSG_CHECKING([for option to disable ANSI color in manuals])
+<a id='L99' name='L99'></a>    AC_CACHE_VAL(mc_cv_man_nocolor, [
+<a id='L100' name='L100'></a>    nroff -c &lt; /dev/null &gt; /dev/null 2&gt;&amp;1
+<a id='L101' name='L101'></a>    if test $? = 0; then
+<a id='L102' name='L102'></a>        mc_cv_man_nocolor=-c
+<a id='L103' name='L103'></a>    else
+<a id='L104' name='L104'></a>        mc_cv_man_nocolor=
+<a id='L105' name='L105'></a>    fi
+<a id='L106' name='L106'></a>    ])
+<a id='L107' name='L107'></a>    MAN_FLAGS=$mc_cv_man_nocolor
+<a id='L108' name='L108'></a>    AC_MSG_RESULT([${MAN_NOCOLOR-none}])
+<a id='L109' name='L109'></a> 
+<a id='L110' name='L110'></a>    AC_MSG_CHECKING([if nroff accepts -Tlatin1 or -Tascii])
+<a id='L111' name='L111'></a>    AC_CACHE_VAL(mc_cv_nroff_tascii, [
+<a id='L112' name='L112'></a>    mc_cv_nroff_tascii=
+<a id='L113' name='L113'></a>    nroff -Tlatin1 &lt; /dev/null &gt; /dev/null 2&gt;&amp;1 /dev/null
+<a id='L114' name='L114'></a>    if test $? = 0; then
+<a id='L115' name='L115'></a>        mc_cv_nroff_tascii=-Tlatin1
+<a id='L116' name='L116'></a>    else
+<a id='L117' name='L117'></a>        nroff -Tascii &lt; /dev/null &gt; /dev/null 2&gt;&amp;1 /dev/null
+<a id='L118' name='L118'></a>        if test $? = 0; then
+<a id='L119' name='L119'></a>            mc_cv_nroff_tascii=-Tascii
+<a id='L120' name='L120'></a>        fi
+<a id='L121' name='L121'></a>    fi
+<a id='L122' name='L122'></a>    ])
+<a id='L123' name='L123'></a>    AC_MSG_RESULT([${mc_cv_nroff_tascii-no}])
+<a id='L124' name='L124'></a>    MAN_FLAGS="$MAN_FLAGS $mc_cv_nroff_tascii"
+<a id='L125' name='L125'></a>fi
+<a id='L126' name='L126'></a> 
+<a id='L127' name='L127'></a>AC_SUBST(MANDOC)
+<a id='L128' name='L128'></a>AC_SUBST(MAN_FLAGS)
+<a id='L129' name='L129'></a> 
+<a id='L130' name='L130'></a>dnl Check for -z, -b, -L, and -S options to file
+<a id='L131' name='L131'></a>AC_CHECK_PROG(HAVE_FILECMD, file, true, false)
+<a id='L132' name='L132'></a>if $HAVE_FILECMD; then
+<a id='L133' name='L133'></a>    dnl Don't use the file command if it doesn't accept the -z option
+<a id='L134' name='L134'></a>    AC_MSG_CHECKING([for -z option to file command])
+<a id='L135' name='L135'></a>    AC_CACHE_VAL(mc_cv_file_z, [
+<a id='L136' name='L136'></a>        file -z . &gt; /dev/null 2&gt;&amp;1
+<a id='L137' name='L137'></a>        if test $? = 0; then
+<a id='L138' name='L138'></a>            mc_cv_file_z=yes
+<a id='L139' name='L139'></a>        else
+<a id='L140' name='L140'></a>            mc_cv_file_z=no
+<a id='L141' name='L141'></a>        fi
+<a id='L142' name='L142'></a>    ])
+<a id='L143' name='L143'></a>    AC_MSG_RESULT([$mc_cv_file_z])
+<a id='L144' name='L144'></a> 
+<a id='L145' name='L145'></a>    if test x$mc_cv_file_z = xyes; then
+<a id='L146' name='L146'></a>        AC_DEFINE(USE_FILE_CMD, 1, [Define if the file command accepts the -z option])
+<a id='L147' name='L147'></a>    else
+<a id='L148' name='L148'></a>        AC_MSG_WARN([The file command doesn't accept the -z option and will not be used])
+<a id='L149' name='L149'></a>    fi
+<a id='L150' name='L150'></a> 
+<a id='L151' name='L151'></a>    if test x$mc_cv_file_z = xyes; then
+<a id='L152' name='L152'></a>        dnl file is used; check -b, -L and -S options
+<a id='L153' name='L153'></a> 
+<a id='L154' name='L154'></a>        AC_MSG_CHECKING([for -b option to file command])
+<a id='L155' name='L155'></a>        AC_CACHE_VAL(mc_cv_file_b, [
+<a id='L156' name='L156'></a>            file -b . &gt; /dev/null 2&gt;&amp;1
+<a id='L157' name='L157'></a>            if test $? = 0; then
+<a id='L158' name='L158'></a>                mc_cv_file_b=yes
+<a id='L159' name='L159'></a>            else
+<a id='L160' name='L160'></a>                mc_cv_file_b=no
+<a id='L161' name='L161'></a>            fi
+<a id='L162' name='L162'></a>        ])
+<a id='L163' name='L163'></a>        AC_MSG_RESULT([$mc_cv_file_b])
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a>        if test x$mc_cv_file_b = xyes; then
+<a id='L166' name='L166'></a>            AC_DEFINE(FILE_B, "-b ", [Define if the file command accepts the -b option])
+<a id='L167' name='L167'></a>        fi
+<a id='L168' name='L168'></a> 
+<a id='L169' name='L169'></a>        AC_MSG_CHECKING([for -L option to file command])
+<a id='L170' name='L170'></a>        AC_CACHE_VAL(mc_cv_file_L, [
+<a id='L171' name='L171'></a>            file -L . &gt; /dev/null 2&gt;&amp;1
+<a id='L172' name='L172'></a>            if test $? = 0; then
+<a id='L173' name='L173'></a>                mc_cv_file_L=yes
+<a id='L174' name='L174'></a>            else
+<a id='L175' name='L175'></a>                mc_cv_file_L=no
+<a id='L176' name='L176'></a>            fi
+<a id='L177' name='L177'></a>        ])
+<a id='L178' name='L178'></a>        AC_MSG_RESULT([$mc_cv_file_L])
+<a id='L179' name='L179'></a> 
+<a id='L180' name='L180'></a>        if test x$mc_cv_file_L = xyes; then
+<a id='L181' name='L181'></a>            AC_DEFINE(FILE_L, "-L ", [Define if the file command accepts the -L option])
+<a id='L182' name='L182'></a>        else
+<a id='L183' name='L183'></a>            AC_DEFINE(FILE_L, "", [Define if the file command accepts the -L option])
+<a id='L184' name='L184'></a>        fi
+<a id='L185' name='L185'></a> 
+<a id='L186' name='L186'></a>        dnl The file command accepts the -S option since 5.33
+<a id='L187' name='L187'></a>        AC_MSG_CHECKING([for -S option to file command])
+<a id='L188' name='L188'></a>        AC_CACHE_VAL(mc_cv_file_S, [
+<a id='L189' name='L189'></a>            file -S . &gt; /dev/null 2&gt;&amp;1
+<a id='L190' name='L190'></a>            if test $? = 0; then
+<a id='L191' name='L191'></a>                mc_cv_file_S=yes
+<a id='L192' name='L192'></a>            else
+<a id='L193' name='L193'></a>                mc_cv_file_S=no
+<a id='L194' name='L194'></a>            fi
+<a id='L195' name='L195'></a>        ])
+<a id='L196' name='L196'></a>        AC_MSG_RESULT([$mc_cv_file_S])
+<a id='L197' name='L197'></a> 
+<a id='L198' name='L198'></a>        if test x$mc_cv_file_S = xyes; then
+<a id='L199' name='L199'></a>            AC_DEFINE(FILE_S, "-S ", [Define if file command accepts the -S option])
+<a id='L200' name='L200'></a>        else
+<a id='L201' name='L201'></a>            AC_DEFINE(FILE_S, "", [Define if file command accepts the -S option])
+<a id='L202' name='L202'></a>        fi
+<a id='L203' name='L203'></a>    fi
+<a id='L204' name='L204'></a>fi
+<a id='L205' name='L205'></a> 
+<a id='L206' name='L206'></a>dnl Only list browsers here that can be run in background (i.e. with `&amp;')
+<a id='L207' name='L207'></a>AC_CHECK_PROGS(X11_WWW, [gnome-moz-remote mozilla firefox konqueror opera])
+<a id='L208' name='L208'></a> 
+<a id='L209' name='L209'></a> 
+<a id='L210' name='L210'></a>dnl ############################################################################
+<a id='L211' name='L211'></a>dnl Check for other tools
+<a id='L212' name='L212'></a>dnl ############################################################################
+<a id='L213' name='L213'></a> 
+<a id='L214' name='L214'></a>AC_CHECK_TOOL(AR, ar, ar)
+<a id='L215' name='L215'></a>mc_UNIT_TESTS
+<a id='L216' name='L216'></a> 
+<a id='L217' name='L217'></a> 
+<a id='L218' name='L218'></a>dnl ############################################################################
+<a id='L219' name='L219'></a>dnl Check for main libraries
+<a id='L220' name='L220'></a>dnl ############################################################################
+<a id='L221' name='L221'></a> 
+<a id='L222' name='L222'></a>mc_CHECK_GLIB
+<a id='L223' name='L223'></a>mc_G_MODULE_SUPPORTED
+<a id='L224' name='L224'></a>mc_WITH_SCREEN
+<a id='L225' name='L225'></a>mc_CHECK_SEARCH_TYPE
+<a id='L226' name='L226'></a>dnl X11 support. Used to read keyboard modifiers when running under X11.
+<a id='L227' name='L227'></a>mc_WITH_X
+<a id='L228' name='L228'></a> 
+<a id='L229' name='L229'></a> 
+<a id='L230' name='L230'></a>dnl ############################################################################
+<a id='L231' name='L231'></a>dnl Check for header files
+<a id='L232' name='L232'></a>dnl ############################################################################
+<a id='L233' name='L233'></a> 
+<a id='L234' name='L234'></a>AC_CHECK_HEADERS([string.h memory.h limits.h malloc.h \
+<a id='L235' name='L235'></a>        utime.h sys/statfs.h sys/vfs.h \
+<a id='L236' name='L236'></a>        sys/select.h sys/ioctl.h stropts.h arpa/inet.h \
+<a id='L237' name='L237'></a>        sys/socket.h])
+<a id='L238' name='L238'></a>dnl This macro is redefined in m4.include/gnulib/sys_types_h.m4
+<a id='L239' name='L239'></a>dnl   to work around a buggy version in autoconf &lt;= 2.69.
+<a id='L240' name='L240'></a>AC_HEADER_MAJOR
+<a id='L241' name='L241'></a> 
+<a id='L242' name='L242'></a> 
+<a id='L243' name='L243'></a>dnl ############################################################################
+<a id='L244' name='L244'></a>dnl Check for types
+<a id='L245' name='L245'></a>dnl ############################################################################
+<a id='L246' name='L246'></a> 
+<a id='L247' name='L247'></a>dnl Check largefile before type sizeof checks
+<a id='L248' name='L248'></a>AC_SYS_LARGEFILE
+<a id='L249' name='L249'></a> 
+<a id='L250' name='L250'></a>AC_CHECK_SIZEOF(long)
+<a id='L251' name='L251'></a>AC_TYPE_UINTMAX_T
+<a id='L252' name='L252'></a>AC_CHECK_SIZEOF(uintmax_t)
+<a id='L253' name='L253'></a>AC_TYPE_OFF_T
+<a id='L254' name='L254'></a>AC_CHECK_SIZEOF(off_t)
+<a id='L255' name='L255'></a>AC_TYPE_MODE_T
+<a id='L256' name='L256'></a>gl_PROMOTED_TYPE_MODE_T
+<a id='L257' name='L257'></a>AC_TYPE_PID_T
+<a id='L258' name='L258'></a>AC_TYPE_UID_T
+<a id='L259' name='L259'></a>AC_CHECK_TYPE([major_t], [], [AC_DEFINE([major_t], [int], [Type of major device numbers.])])
+<a id='L260' name='L260'></a>AC_CHECK_TYPE([minor_t], [], [AC_DEFINE([minor_t], [int], [Type of minor device numbers.])])
+<a id='L261' name='L261'></a> 
+<a id='L262' name='L262'></a>AC_STRUCT_ST_BLOCKS
+<a id='L263' name='L263'></a>AC_CHECK_MEMBERS([struct stat.st_blksize, struct stat.st_rdev, struct stat.st_mtim])
+<a id='L264' name='L264'></a>gl_STAT_SIZE
+<a id='L265' name='L265'></a> 
+<a id='L266' name='L266'></a>AH_TEMPLATE([sig_atomic_t],
+<a id='L267' name='L267'></a>            [/* Define to `int' if &lt;signal.h&gt; doesn't define.])
+<a id='L268' name='L268'></a>AH_TEMPLATE([SIG_ATOMIC_VOLATILE_T],
+<a id='L269' name='L269'></a>            [Some systems declare sig_atomic_t as volatile, some others -- no.
+<a id='L270' name='L270'></a>             This define will have value `sig_atomic_t' or
+<a id='L271' name='L271'></a>             `volatile sig_atomic_t' accordingly.])
+<a id='L272' name='L272'></a> 
+<a id='L273' name='L273'></a>AC_MSG_CHECKING(for sig_atomic_t in signal.h)
+<a id='L274' name='L274'></a>AC_EGREP_HEADER(sig_atomic_t,signal.h,
+<a id='L275' name='L275'></a>  [
+<a id='L276' name='L276'></a>    ac_cv_type_sig_atomic_t=yes;
+<a id='L277' name='L277'></a>    AC_EGREP_HEADER(volatile.*sig_atomic_t,
+<a id='L278' name='L278'></a>                    signal.h,
+<a id='L279' name='L279'></a>                    [
+<a id='L280' name='L280'></a>                        is_sig_atomic_t_volatile=yes;
+<a id='L281' name='L281'></a>                        AC_MSG_RESULT([yes, volatile])
+<a id='L282' name='L282'></a>                    ],
+<a id='L283' name='L283'></a>                    [
+<a id='L284' name='L284'></a>                        is_sig_atomic_t_volatile=no;
+<a id='L285' name='L285'></a>                        AC_MSG_RESULT([yes, non volatile])
+<a id='L286' name='L286'></a>                    ])
+<a id='L287' name='L287'></a>  ],
+<a id='L288' name='L288'></a>  [
+<a id='L289' name='L289'></a>    AC_MSG_RESULT(no)
+<a id='L290' name='L290'></a>    AC_CHECK_TYPE(sig_atomic_t, int)
+<a id='L291' name='L291'></a>    is_sig_atomic_t_volatile=no
+<a id='L292' name='L292'></a>  ])
+<a id='L293' name='L293'></a>if test $is_sig_atomic_t_volatile = 'yes'
+<a id='L294' name='L294'></a>then
+<a id='L295' name='L295'></a>    AC_DEFINE(SIG_ATOMIC_VOLATILE_T, sig_atomic_t)
+<a id='L296' name='L296'></a>else
+<a id='L297' name='L297'></a>    AC_DEFINE(SIG_ATOMIC_VOLATILE_T, [volatile sig_atomic_t])
+<a id='L298' name='L298'></a>fi
+<a id='L299' name='L299'></a> 
+<a id='L300' name='L300'></a> 
+<a id='L301' name='L301'></a>dnl ############################################################################
+<a id='L302' name='L302'></a>dnl Check for functions
+<a id='L303' name='L303'></a>dnl ############################################################################
+<a id='L304' name='L304'></a> 
+<a id='L305' name='L305'></a>AC_CHECK_FUNCS([\
+<a id='L306' name='L306'></a>        strverscmp \
+<a id='L307' name='L307'></a>        strncasecmp \
+<a id='L308' name='L308'></a>        realpath
+<a id='L309' name='L309'></a>])
+<a id='L310' name='L310'></a> 
+<a id='L311' name='L311'></a>dnl getpt is a GNU Extension (glibc 2.1.x)
+<a id='L312' name='L312'></a>AC_CHECK_FUNCS(posix_openpt, , [AC_CHECK_FUNCS(getpt)])
+<a id='L313' name='L313'></a>AC_CHECK_FUNCS(grantpt, , [AC_CHECK_LIB(pt, grantpt)])
+<a id='L314' name='L314'></a> 
+<a id='L315' name='L315'></a>dnl replacing lstat with statlstat on sco makes it more portable between
+<a id='L316' name='L316'></a>dnl sco clones
+<a id='L317' name='L317'></a>AC_CHECK_FUNCS(statlstat)
+<a id='L318' name='L318'></a> 
+<a id='L319' name='L319'></a>dnl Overriding mmap support.  This has to be before AC_FUNC_MMAP is used.
+<a id='L320' name='L320'></a>dnl We use only part of the functionality of mmap, so on AIX,
+<a id='L321' name='L321'></a>dnl it's possible to use mmap, even if it doesn't pass the autoconf test.
+<a id='L322' name='L322'></a>AC_ARG_WITH([mmap],
+<a id='L323' name='L323'></a>        AS_HELP_STRING([--with-mmap], [Use the mmap call @&lt;:@yes if found@:&gt;@]))
+<a id='L324' name='L324'></a>if test x$with_mmap != xno; then
+<a id='L325' name='L325'></a>    if test x$with_mmap = x; then
+<a id='L326' name='L326'></a>        AC_FUNC_MMAP
+<a id='L327' name='L327'></a>    else
+<a id='L328' name='L328'></a>        AC_DEFINE(HAVE_MMAP, 1)
+<a id='L329' name='L329'></a>    fi
+<a id='L330' name='L330'></a>fi
+<a id='L331' name='L331'></a> 
+<a id='L332' name='L332'></a>mc_GET_FS_INFO
+<a id='L333' name='L333'></a> 
+<a id='L334' name='L334'></a> 
+<a id='L335' name='L335'></a>dnl ############################################################################
+<a id='L336' name='L336'></a>dnl Internationalization
+<a id='L337' name='L337'></a>dnl ############################################################################
+<a id='L338' name='L338'></a> 
+<a id='L339' name='L339'></a>AC_CHECK_FUNCS([setlocale])
+<a id='L340' name='L340'></a> 
+<a id='L341' name='L341'></a>AM_GNU_GETTEXT([external], [need-ngettext])
+<a id='L342' name='L342'></a>AM_GNU_GETTEXT_VERSION([0.18.2])
+<a id='L343' name='L343'></a> 
+<a id='L344' name='L344'></a>mc_I18N
+<a id='L345' name='L345'></a> 
+<a id='L346' name='L346'></a>dnl ############################################################################
+<a id='L347' name='L347'></a>dnl OS specific stuff
+<a id='L348' name='L348'></a>dnl ############################################################################
+<a id='L349' name='L349'></a> 
+<a id='L350' name='L350'></a>case $host_os in
+<a id='L351' name='L351'></a>*os400)
+<a id='L352' name='L352'></a>    AC_PATH_PROG([PERL], [perl], [/QOpenSys/pkgs/bin/perl])
+<a id='L353' name='L353'></a>    AC_PATH_PROG([PERL_FOR_BUILD], [perl], [/QOpenSys/pkgs/bin/perl])
+<a id='L354' name='L354'></a>    AC_PATH_PROG([PYTHON], [python], [/QOpenSys/pkgs/bin/python2])
+<a id='L355' name='L355'></a>    AC_PATH_PROG([RUBY], [ruby], [/QOpenSys/pkgs/bin/ruby])
+<a id='L356' name='L356'></a>    ;;
+<a id='L357' name='L357'></a>*)
+<a id='L358' name='L358'></a>    AC_PATH_PROG([PERL], [perl], [/usr/bin/perl])
+<a id='L359' name='L359'></a>    AC_PATH_PROG([PERL_FOR_BUILD], [perl], [/usr/bin/perl])
+<a id='L360' name='L360'></a>    AC_PATH_PROG([PYTHON], [python], [/usr/bin/python])
+<a id='L361' name='L361'></a>    AC_PATH_PROG([RUBY], [ruby], [/usr/bin/ruby])
+<a id='L362' name='L362'></a>esac
+<a id='L363' name='L363'></a> 
+<a id='L364' name='L364'></a>case $host_os in
+<a id='L365' name='L365'></a>aux*)
+<a id='L366' name='L366'></a>    # A/UX
+<a id='L367' name='L367'></a>    LIBS="$LIBS -lposix"
+<a id='L368' name='L368'></a>    AC_DEFINE(_POSIX_SOURCE)
+<a id='L369' name='L369'></a>    ;;
+<a id='L370' name='L370'></a>esac
+<a id='L371' name='L371'></a> 
+<a id='L372' name='L372'></a>dnl If running under AIX, AC_AIX does not tell us that
+<a id='L373' name='L373'></a>AC_MSG_CHECKING([for AIX defines])
+<a id='L374' name='L374'></a>AC_EGREP_CPP([yes],
+<a id='L375' name='L375'></a>    [
+<a id='L376' name='L376'></a>        #if defined(AIX) || defined(_AIX) || defined(__aix__) || defined(aix)
+<a id='L377' name='L377'></a>        yes
+<a id='L378' name='L378'></a>        #endif
+<a id='L379' name='L379'></a>    ],
+<a id='L380' name='L380'></a>    [
+<a id='L381' name='L381'></a>        AC_DEFINE(IS_AIX, 1, [Define if compiling for AIX])
+<a id='L382' name='L382'></a>        AC_MSG_RESULT(yes)
+<a id='L383' name='L383'></a>    ],
+<a id='L384' name='L384'></a>    [
+<a id='L385' name='L385'></a>        AC_MSG_RESULT(no)
+<a id='L386' name='L386'></a>    ])
+<a id='L387' name='L387'></a> 
+<a id='L388' name='L388'></a>dnl utimensat is supported since glibc 2.6 and specified in POSIX.1-2008
+<a id='L389' name='L389'></a>dnl utimensat() causes different timespec structures to cause failures on IBM i and AIX
+<a id='L390' name='L390'></a>case $host_os in
+<a id='L391' name='L391'></a>*os400 | aix*)
+<a id='L392' name='L392'></a>    ;;
+<a id='L393' name='L393'></a>*)
+<a id='L394' name='L394'></a>    AC_CHECK_FUNCS([utimensat])
+<a id='L395' name='L395'></a>    ;;
+<a id='L396' name='L396'></a>esac
+<a id='L397' name='L397'></a> 
+<a id='L398' name='L398'></a>case $host_os in
+<a id='L399' name='L399'></a>*os400)
+<a id='L400' name='L400'></a>    AC_DEFINE([PTY_ZEROREAD], [1], [read(1) can return 0 for a non-closed fd])
+<a id='L401' name='L401'></a>esac
+<a id='L402' name='L402'></a> 
+<a id='L403' name='L403'></a>dnl Check linux/fs.h for FICLONE to support BTRFS's file clone operation
+<a id='L404' name='L404'></a>case $host_os in
+<a id='L405' name='L405'></a>linux*)
+<a id='L406' name='L406'></a>    AC_CHECK_HEADERS([linux/fs.h])
+<a id='L407' name='L407'></a>esac
+<a id='L408' name='L408'></a> 
+<a id='L409' name='L409'></a>dnl Check if the OS is supported by the console saver.
+<a id='L410' name='L410'></a>cons_saver=""
+<a id='L411' name='L411'></a>case $host_os in
+<a id='L412' name='L412'></a>linux*)
+<a id='L413' name='L413'></a>    cons_saver=yes
+<a id='L414' name='L414'></a>esac
+<a id='L415' name='L415'></a> 
+<a id='L416' name='L416'></a>dnl Check for gpm mouse support (Linux only)
+<a id='L417' name='L417'></a>mouse_lib="xterm only"
+<a id='L418' name='L418'></a>AC_ARG_WITH([gpm-mouse],
+<a id='L419' name='L419'></a>    AS_HELP_STRING([--with-gpm-mouse], [Compile with gpm mouse support (Linux only) @&lt;:@yes if found@:&gt;@]))
+<a id='L420' name='L420'></a> 
+<a id='L421' name='L421'></a>case $host_os in
+<a id='L422' name='L422'></a>linux*)
+<a id='L423' name='L423'></a>    if test x$with_gpm_mouse != xno; then
+<a id='L424' name='L424'></a>        AC_CHECK_LIB(gpm, Gpm_Repeat,
+<a id='L425' name='L425'></a>            [AC_DEFINE(HAVE_LIBGPM, 1,
+<a id='L426' name='L426'></a>                       [Define to enable gpm mouse support on Linux])
+<a id='L427' name='L427'></a>            mouse_lib="gpm and xterm"
+<a id='L428' name='L428'></a>            MCLIBS="$MCLIBS -lgpm"],
+<a id='L429' name='L429'></a>            if test "x$with_gpm_mouse" = "xyes"; then
+<a id='L430' name='L430'></a>                [AC_MSG_ERROR([libgpm is missing or older than 0.18])]
+<a id='L431' name='L431'></a>            else
+<a id='L432' name='L432'></a>                [AC_MSG_WARN([libgpm is missing or older than 0.18])]
+<a id='L433' name='L433'></a>            fi
+<a id='L434' name='L434'></a>        )
+<a id='L435' name='L435'></a>    fi
+<a id='L436' name='L436'></a>    ;;
+<a id='L437' name='L437'></a>esac
+<a id='L438' name='L438'></a> 
+<a id='L439' name='L439'></a> 
+<a id='L440' name='L440'></a>dnl ############################################################################
+<a id='L441' name='L441'></a>dnl libmc
+<a id='L442' name='L442'></a>dnl ############################################################################
+<a id='L443' name='L443'></a> 
+<a id='L444' name='L444'></a>LIBMC_VERSION="0.0.1"
+<a id='L445' name='L445'></a>LIBMC_RELEASE="1"
+<a id='L446' name='L446'></a>AC_SUBST(LIBMC_VERSION)
+<a id='L447' name='L447'></a>AC_SUBST(LIBMC_RELEASE)
+<a id='L448' name='L448'></a> 
+<a id='L449' name='L449'></a>AC_ARG_ENABLE([mclib],
+<a id='L450' name='L450'></a>        [AS_HELP_STRING([--enable-mclib], [Compile shared library libmc.so @&lt;:@no@:&gt;@])],
+<a id='L451' name='L451'></a>        [
+<a id='L452' name='L452'></a>            if test "x$enableval" = "xno" ; then
+<a id='L453' name='L453'></a>                enable_mclib=no
+<a id='L454' name='L454'></a>            else
+<a id='L455' name='L455'></a>                if test "x$enable_shared" = "xno" ; then
+<a id='L456' name='L456'></a>                    AC_MSG_WARN([Build of shared library is disabled. Specify --enable-shared first])
+<a id='L457' name='L457'></a>                    enable_mclib=no
+<a id='L458' name='L458'></a>                else
+<a id='L459' name='L459'></a>                    enable_mclib=yes
+<a id='L460' name='L460'></a>                fi
+<a id='L461' name='L461'></a>            fi
+<a id='L462' name='L462'></a>        ],
+<a id='L463' name='L463'></a>        [enable_mclib=no])
+<a id='L464' name='L464'></a> 
+<a id='L465' name='L465'></a>AM_CONDITIONAL([ENABLE_MCLIB], [test x$enable_mclib = xyes])
+<a id='L466' name='L466'></a> 
+<a id='L467' name='L467'></a> 
+<a id='L468' name='L468'></a>dnl ############################################################################
+<a id='L469' name='L469'></a>dnl MC options
+<a id='L470' name='L470'></a>dnl ############################################################################
+<a id='L471' name='L471'></a> 
+<a id='L472' name='L472'></a>mc_ASSERT
+<a id='L473' name='L473'></a> 
+<a id='L474' name='L474'></a>mc_WITH_INTERNAL_EDIT
+<a id='L475' name='L475'></a> 
+<a id='L476' name='L476'></a>dnl Diff viewer support.
+<a id='L477' name='L477'></a>AC_ARG_WITH([diff_viewer],
+<a id='L478' name='L478'></a>    AS_HELP_STRING([--with-diff-viewer], [Compile with diff viewer @&lt;:@yes@:&gt;@]))
+<a id='L479' name='L479'></a> 
+<a id='L480' name='L480'></a>if test x$with_diff_viewer != xno; then
+<a id='L481' name='L481'></a>        AC_DEFINE(USE_DIFF_VIEW, 1, [Define to enable diff viewer])
+<a id='L482' name='L482'></a>        use_diff=yes
+<a id='L483' name='L483'></a>        diff_msg="yes"
+<a id='L484' name='L484'></a>        AC_MSG_NOTICE([using diff viewer])
+<a id='L485' name='L485'></a>else
+<a id='L486' name='L486'></a>        diff_msg="no"
+<a id='L487' name='L487'></a>fi
+<a id='L488' name='L488'></a> 
+<a id='L489' name='L489'></a>mc_SUBSHELL
+<a id='L490' name='L490'></a>mc_BACKGROUND
+<a id='L491' name='L491'></a>mc_EXT2FS_ATTR
+<a id='L492' name='L492'></a>mc_VFS_CHECKS
+<a id='L493' name='L493'></a> 
+<a id='L494' name='L494'></a>dnl ############################################################################
+<a id='L495' name='L495'></a>dnl Directories
+<a id='L496' name='L496'></a>dnl ############################################################################
+<a id='L497' name='L497'></a> 
+<a id='L498' name='L498'></a>dnl ${prefix} and ${exec_prefix} are undefined here if --prefix is not used in command line
+<a id='L499' name='L499'></a>dnl Let define ${prefix} and ${exec_prefix}
+<a id='L500' name='L500'></a>test "x$prefix" = "xNONE" &amp;&amp; prefix="$ac_default_prefix"
+<a id='L501' name='L501'></a>test "x$exec_prefix" = "xNONE" &amp;&amp; exec_prefix="${prefix}"
+<a id='L502' name='L502'></a> 
+<a id='L503' name='L503'></a>if test x${libexecdir} = x'${exec_prefix}/libexec'; then
+<a id='L504' name='L504'></a>    EXTHELPERSDIR=${prefix}/libexec/${PACKAGE}/ext.d
+<a id='L505' name='L505'></a>elif test x${libexecdir} = x'${exec_prefix}/lib'; then
+<a id='L506' name='L506'></a>    EXTHELPERSDIR=${prefix}/lib/${PACKAGE}/ext.d
+<a id='L507' name='L507'></a>else
+<a id='L508' name='L508'></a>    EXTHELPERSDIR=${libexecdir}/${PACKAGE}/ext.d
+<a id='L509' name='L509'></a>fi
+<a id='L510' name='L510'></a>AC_SUBST(EXTHELPERSDIR)
+<a id='L511' name='L511'></a> 
+<a id='L512' name='L512'></a> 
+<a id='L513' name='L513'></a>dnl ############################################################################
+<a id='L514' name='L514'></a>dnl Documentation
+<a id='L515' name='L515'></a>dnl ############################################################################
+<a id='L516' name='L516'></a> 
+<a id='L517' name='L517'></a>MAN_DATE="$(LC_ALL=C date "+%B %Y")"
+<a id='L518' name='L518'></a>AC_SUBST(MAN_DATE)
+<a id='L519' name='L519'></a> 
+<a id='L520' name='L520'></a>dnl Determine which help translations we want to install.
+<a id='L521' name='L521'></a>ALL_DOC_LINGUAS="es hu it pl ru sr"
+<a id='L522' name='L522'></a> 
+<a id='L523' name='L523'></a>DOC_LINGUAS=
+<a id='L524' name='L524'></a>if test "x$USE_NLS" = xyes; then
+<a id='L525' name='L525'></a>    if test -z "$LINGUAS"; then
+<a id='L526' name='L526'></a>        langs="`grep -v '^#' $srcdir/po/LINGUAS`"
+<a id='L527' name='L527'></a>    else
+<a id='L528' name='L528'></a>        langs="$LINGUAS"
+<a id='L529' name='L529'></a>    fi
+<a id='L530' name='L530'></a>else
+<a id='L531' name='L531'></a>    langs=
+<a id='L532' name='L532'></a>fi
+<a id='L533' name='L533'></a> 
+<a id='L534' name='L534'></a>for h_lang in $ALL_DOC_LINGUAS; do
+<a id='L535' name='L535'></a>    for lang in $langs; do
+<a id='L536' name='L536'></a>        if test "$lang" = "$h_lang"; then
+<a id='L537' name='L537'></a>            DOC_LINGUAS="$DOC_LINGUAS $lang"
+<a id='L538' name='L538'></a>            break
+<a id='L539' name='L539'></a>        fi
+<a id='L540' name='L540'></a>    done
+<a id='L541' name='L541'></a>done
+<a id='L542' name='L542'></a>AC_SUBST(DOC_LINGUAS)
+<a id='L543' name='L543'></a> 
+<a id='L544' name='L544'></a>DX_HTML_FEATURE(ON)
+<a id='L545' name='L545'></a>DX_CHM_FEATURE(OFF)
+<a id='L546' name='L546'></a>DX_CHI_FEATURE(OFF)
+<a id='L547' name='L547'></a>DX_MAN_FEATURE(OFF)
+<a id='L548' name='L548'></a>DX_RTF_FEATURE(OFF)
+<a id='L549' name='L549'></a>DX_XML_FEATURE(OFF)
+<a id='L550' name='L550'></a>DX_PDF_FEATURE(OFF)
+<a id='L551' name='L551'></a>DX_PS_FEATURE(OFF)
+<a id='L552' name='L552'></a>DX_INIT_DOXYGEN(mc,doxygen.cfg,devel)
+<a id='L553' name='L553'></a> 
+<a id='L554' name='L554'></a> 
+<a id='L555' name='L555'></a>dnl ############################################################################
+<a id='L556' name='L556'></a>dnl Configure results
+<a id='L557' name='L557'></a>dnl ############################################################################
+<a id='L558' name='L558'></a> 
+<a id='L559' name='L559'></a>CFLAGS="$mc_configured_cflags $CFLAGS_OPTS $CFLAGS"
+<a id='L560' name='L560'></a> 
+<a id='L561' name='L561'></a>AC_SUBST(MCLIBS)
+<a id='L562' name='L562'></a>AC_SUBST(CFLAGS)
+<a id='L563' name='L563'></a>AC_SUBST(CPPFLAGS)
+<a id='L564' name='L564'></a>AC_SUBST(LDFLAGS)
+<a id='L565' name='L565'></a>AC_SUBST(LIBS)
+<a id='L566' name='L566'></a> 
+<a id='L567' name='L567'></a>AM_CONDITIONAL(USE_NLS, [test x"$USE_NLS" = xyes])
+<a id='L568' name='L568'></a>AM_CONDITIONAL(USE_MAINTAINER_MODE, [test x"$USE_MAINTAINER_MODE" = xyes])
+<a id='L569' name='L569'></a>AM_CONDITIONAL(USE_SCREEN_SLANG, [test x"$with_screen" = xslang])
+<a id='L570' name='L570'></a>AM_CONDITIONAL(USE_INTERNAL_EDIT, [test x"$use_internal_edit" = xyes ])
+<a id='L571' name='L571'></a>AM_CONDITIONAL(USE_ASPELL, [test x"$enable_aspell" = xyes ])
+<a id='L572' name='L572'></a>AM_CONDITIONAL(USE_DIFF, [test -n "$use_diff"])
+<a id='L573' name='L573'></a>AM_CONDITIONAL(CHARSET, [test -n "$have_charset"])
+<a id='L574' name='L574'></a>AM_CONDITIONAL(CONS_SAVER, [test -n "$cons_saver"])
+<a id='L575' name='L575'></a>dnl Clarify do we really need GModule
+<a id='L576' name='L576'></a>AM_CONDITIONAL([HAVE_GMODULE], [test -n "$g_module_supported" &amp;&amp; \
+<a id='L577' name='L577'></a>                                test x"$textmode_x11_support" = x"yes" -o x"$enable_aspell" = x"yes"])
+<a id='L578' name='L578'></a> 
+<a id='L579' name='L579'></a>AC_ARG_ENABLE([configure-args],
+<a id='L580' name='L580'></a>    AS_HELP_STRING([--enable-configure-args], [Embed ./configure arguments into binaries]))
+<a id='L581' name='L581'></a>if test "x$enable_configure_args" != xno; then
+<a id='L582' name='L582'></a>    AC_DEFINE([ENABLE_CONFIGURE_ARGS], 1, [Define to enable showing configure arguments in help])
+<a id='L583' name='L583'></a>    AC_DEFINE_UNQUOTED([MC_CONFIGURE_ARGS], ["$ac_configure_args"], [MC configure arguments])
+<a id='L584' name='L584'></a>fi
+<a id='L585' name='L585'></a> 
+<a id='L586' name='L586'></a> 
+<a id='L587' name='L587'></a>AC_CONFIG_FILES(
+<a id='L588' name='L588'></a>[
+<a id='L589' name='L589'></a>src/man2hlp/man2hlp
+<a id='L590' name='L590'></a>],
+<a id='L591' name='L591'></a>[
+<a id='L592' name='L592'></a>chmod +x src/man2hlp/man2hlp
+<a id='L593' name='L593'></a>])
+<a id='L594' name='L594'></a> 
+<a id='L595' name='L595'></a>AC_CONFIG_FILES([
+<a id='L596' name='L596'></a>Makefile
+<a id='L597' name='L597'></a> 
+<a id='L598' name='L598'></a>contrib/Makefile
+<a id='L599' name='L599'></a> 
+<a id='L600' name='L600'></a>misc/Makefile
+<a id='L601' name='L601'></a>misc/mc.charsets
+<a id='L602' name='L602'></a>misc/mc.menu
+<a id='L603' name='L603'></a>misc/mcedit.menu
+<a id='L604' name='L604'></a>misc/skins/Makefile
+<a id='L605' name='L605'></a>misc/ext.d/Makefile
+<a id='L606' name='L606'></a>misc/ext.d/doc.sh
+<a id='L607' name='L607'></a>misc/ext.d/misc.sh
+<a id='L608' name='L608'></a>misc/ext.d/text.sh
+<a id='L609' name='L609'></a>misc/ext.d/web.sh
+<a id='L610' name='L610'></a>misc/macros.d/Makefile
+<a id='L611' name='L611'></a>misc/mc.ext.ini
+<a id='L612' name='L612'></a> 
+<a id='L613' name='L613'></a>src/Makefile
+<a id='L614' name='L614'></a>src/consaver/Makefile
+<a id='L615' name='L615'></a>src/editor/Makefile
+<a id='L616' name='L616'></a>src/man2hlp/Makefile
+<a id='L617' name='L617'></a>src/subshell/Makefile
+<a id='L618' name='L618'></a>src/viewer/Makefile
+<a id='L619' name='L619'></a>src/diffviewer/Makefile
+<a id='L620' name='L620'></a>src/filemanager/Makefile
+<a id='L621' name='L621'></a> 
+<a id='L622' name='L622'></a>src/vfs/Makefile
+<a id='L623' name='L623'></a> 
+<a id='L624' name='L624'></a>src/vfs/cpio/Makefile
+<a id='L625' name='L625'></a> 
+<a id='L626' name='L626'></a>src/vfs/extfs/Makefile
+<a id='L627' name='L627'></a>src/vfs/extfs/helpers/Makefile
+<a id='L628' name='L628'></a>src/vfs/extfs/helpers/a+
+<a id='L629' name='L629'></a>src/vfs/extfs/helpers/apt+
+<a id='L630' name='L630'></a>src/vfs/extfs/helpers/audio
+<a id='L631' name='L631'></a>src/vfs/extfs/helpers/deb
+<a id='L632' name='L632'></a>src/vfs/extfs/helpers/deba
+<a id='L633' name='L633'></a>src/vfs/extfs/helpers/debd
+<a id='L634' name='L634'></a>src/vfs/extfs/helpers/dpkg+
+<a id='L635' name='L635'></a>src/vfs/extfs/helpers/iso9660
+<a id='L636' name='L636'></a>src/vfs/extfs/helpers/hp48+
+<a id='L637' name='L637'></a>src/vfs/extfs/helpers/lslR
+<a id='L638' name='L638'></a>src/vfs/extfs/helpers/mailfs
+<a id='L639' name='L639'></a>src/vfs/extfs/helpers/patchfs
+<a id='L640' name='L640'></a>src/vfs/extfs/helpers/rpms+
+<a id='L641' name='L641'></a>src/vfs/extfs/helpers/s3+
+<a id='L642' name='L642'></a>src/vfs/extfs/helpers/uace
+<a id='L643' name='L643'></a>src/vfs/extfs/helpers/ualz
+<a id='L644' name='L644'></a>src/vfs/extfs/helpers/uar
+<a id='L645' name='L645'></a>src/vfs/extfs/helpers/uarc
+<a id='L646' name='L646'></a>src/vfs/extfs/helpers/uarj
+<a id='L647' name='L647'></a>src/vfs/extfs/helpers/ucab
+<a id='L648' name='L648'></a>src/vfs/extfs/helpers/uha
+<a id='L649' name='L649'></a>src/vfs/extfs/helpers/ulha
+<a id='L650' name='L650'></a>src/vfs/extfs/helpers/ulib
+<a id='L651' name='L651'></a>src/vfs/extfs/helpers/unar
+<a id='L652' name='L652'></a>src/vfs/extfs/helpers/urar
+<a id='L653' name='L653'></a>src/vfs/extfs/helpers/uwim
+<a id='L654' name='L654'></a>src/vfs/extfs/helpers/uzip
+<a id='L655' name='L655'></a>src/vfs/extfs/helpers/uzoo
+<a id='L656' name='L656'></a> 
+<a id='L657' name='L657'></a>src/vfs/shell/Makefile
+<a id='L658' name='L658'></a>src/vfs/shell/helpers/Makefile
+<a id='L659' name='L659'></a> 
+<a id='L660' name='L660'></a>src/vfs/ftpfs/Makefile
+<a id='L661' name='L661'></a> 
+<a id='L662' name='L662'></a>src/vfs/sftpfs/Makefile
+<a id='L663' name='L663'></a> 
+<a id='L664' name='L664'></a>src/vfs/local/Makefile
+<a id='L665' name='L665'></a> 
+<a id='L666' name='L666'></a>src/vfs/sfs/Makefile
+<a id='L667' name='L667'></a> 
+<a id='L668' name='L668'></a>src/vfs/tar/Makefile
+<a id='L669' name='L669'></a> 
+<a id='L670' name='L670'></a>src/vfs/undelfs/Makefile
+<a id='L671' name='L671'></a> 
+<a id='L672' name='L672'></a>lib/Makefile
+<a id='L673' name='L673'></a>lib/event/Makefile
+<a id='L674' name='L674'></a>lib/filehighlight/Makefile
+<a id='L675' name='L675'></a>lib/mcconfig/Makefile
+<a id='L676' name='L676'></a>lib/search/Makefile
+<a id='L677' name='L677'></a>lib/skin/Makefile
+<a id='L678' name='L678'></a>lib/strutil/Makefile
+<a id='L679' name='L679'></a>lib/tty/Makefile
+<a id='L680' name='L680'></a> 
+<a id='L681' name='L681'></a>lib/vfs/Makefile
+<a id='L682' name='L682'></a> 
+<a id='L683' name='L683'></a>lib/widget/Makefile
+<a id='L684' name='L684'></a> 
+<a id='L685' name='L685'></a>misc/syntax/Makefile
+<a id='L686' name='L686'></a> 
+<a id='L687' name='L687'></a>doc/Makefile
+<a id='L688' name='L688'></a> 
+<a id='L689' name='L689'></a>doc/hints/Makefile
+<a id='L690' name='L690'></a>doc/hints/l10n/Makefile
+<a id='L691' name='L691'></a> 
+<a id='L692' name='L692'></a>doc/man/Makefile
+<a id='L693' name='L693'></a>doc/man/es/Makefile
+<a id='L694' name='L694'></a>doc/man/hu/Makefile
+<a id='L695' name='L695'></a>doc/man/it/Makefile
+<a id='L696' name='L696'></a>doc/man/pl/Makefile
+<a id='L697' name='L697'></a>doc/man/ru/Makefile
+<a id='L698' name='L698'></a>doc/man/sr/Makefile
+<a id='L699' name='L699'></a> 
+<a id='L700' name='L700'></a>doc/hlp/Makefile
+<a id='L701' name='L701'></a>doc/hlp/es/Makefile
+<a id='L702' name='L702'></a>doc/hlp/hu/Makefile
+<a id='L703' name='L703'></a>doc/hlp/it/Makefile
+<a id='L704' name='L704'></a>doc/hlp/pl/Makefile
+<a id='L705' name='L705'></a>doc/hlp/ru/Makefile
+<a id='L706' name='L706'></a>doc/hlp/sr/Makefile
+<a id='L707' name='L707'></a> 
+<a id='L708' name='L708'></a>po/Makefile.in
+<a id='L709' name='L709'></a>])
+<a id='L710' name='L710'></a> 
+<a id='L711' name='L711'></a>dnl https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable/30932102#30932102
+<a id='L712' name='L712'></a>AC_CONFIG_FILES(
+<a id='L713' name='L713'></a>[misc/syntax/Syntax], [${SED-sed} -e "s%\${prefix}%$PREFIX%" misc/syntax/Syntax &gt; misc/syntax/Syntax.tmp &amp;&amp; \
+<a id='L714' name='L714'></a>  mv -f misc/syntax/Syntax.tmp misc/syntax/Syntax], [export PREFIX=$prefix]
+<a id='L715' name='L715'></a>)
+<a id='L716' name='L716'></a> 
+<a id='L717' name='L717'></a>AC_CONFIG_FILES([
+<a id='L718' name='L718'></a>tests/Makefile
+<a id='L719' name='L719'></a>tests/lib/Makefile
+<a id='L720' name='L720'></a>tests/lib/mcconfig/Makefile
+<a id='L721' name='L721'></a>tests/lib/search/Makefile
+<a id='L722' name='L722'></a>tests/lib/strutil/Makefile
+<a id='L723' name='L723'></a>tests/lib/vfs/Makefile
+<a id='L724' name='L724'></a>tests/lib/widget/Makefile
+<a id='L725' name='L725'></a>tests/src/Makefile
+<a id='L726' name='L726'></a>tests/src/filemanager/Makefile
+<a id='L727' name='L727'></a>tests/src/editor/Makefile
+<a id='L728' name='L728'></a>tests/src/editor/test-data.txt
+<a id='L729' name='L729'></a>tests/src/vfs/Makefile
+<a id='L730' name='L730'></a>tests/src/vfs/extfs/Makefile
+<a id='L731' name='L731'></a>tests/src/vfs/extfs/helpers-list/Makefile
+<a id='L732' name='L732'></a>tests/src/vfs/extfs/helpers-list/data/config.sh
+<a id='L733' name='L733'></a>tests/src/vfs/extfs/helpers-list/misc/Makefile
+<a id='L734' name='L734'></a>tests/src/vfs/ftpfs/Makefile
+<a id='L735' name='L735'></a>])
+<a id='L736' name='L736'></a> 
+<a id='L737' name='L737'></a>AC_OUTPUT
+<a id='L738' name='L738'></a> 
+<a id='L739' name='L739'></a>AC_MSG_NOTICE([
+<a id='L740' name='L740'></a> 
+<a id='L741' name='L741'></a>Configuration:
+<a id='L742' name='L742'></a> 
+<a id='L743' name='L743'></a>  Source code location:           ${srcdir}
+<a id='L744' name='L744'></a>  Compiler:                       ${CC}
+<a id='L745' name='L745'></a>  Compiler flags:                 ${CFLAGS}
+<a id='L746' name='L746'></a>  Assertions:                     ${enable_assert}
+<a id='L747' name='L747'></a>  Unit tests:                     ${tests_msg}
+<a id='L748' name='L748'></a>  File system:                    ${vfs_type}
+<a id='L749' name='L749'></a>                                  ${vfs_flags}
+<a id='L750' name='L750'></a>  Screen library:                 ${screen_msg}
+<a id='L751' name='L751'></a>  Mouse support:                  ${mouse_lib}
+<a id='L752' name='L752'></a>  X11 events support:             ${textmode_x11_support}
+<a id='L753' name='L753'></a>  With subshell support:          ${subshell}
+<a id='L754' name='L754'></a>  With background operations:     ${enable_background}
+<a id='L755' name='L755'></a>  With ext2fs attributes support: ${ext2fs_attr_msg}
+<a id='L756' name='L756'></a>  Internal editor:                ${edit_msg}
+<a id='L757' name='L757'></a>  Diff viewer:                    ${diff_msg}
+<a id='L758' name='L758'></a>  Support for charset:            ${charset_msg}
+<a id='L759' name='L759'></a>  Search type:                    ${SEARCH_TYPE}
+<a id='L760' name='L760'></a>])
+<a id='L761' name='L761'></a> 
+<a id='L762' name='L762'></a>dnl option checking is disable by default due to AC_CONFIG_SUBDIRS
+<a id='L763' name='L763'></a>dnl we enable it back for top-level ./configure
+<a id='L764' name='L764'></a>if test -n "$ac_unrecognized_opts"; then
+<a id='L765' name='L765'></a>  case $enable_option_checking in
+<a id='L766' name='L766'></a>    fatal) AC_MSG_ERROR([unrecognized options: $ac_unrecognized_opts]) ;;
+<a id='L767' name='L767'></a>    *)     AC_MSG_WARN( [unrecognized options: $ac_unrecognized_opts]) ;;
+<a id='L768' name='L768'></a>  esac
+<a id='L769' name='L769'></a>fi
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+769 configure.ac'  /> */</em>
+</body>
+</html>

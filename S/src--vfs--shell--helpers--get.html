@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/shell/helpers/get</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--shell.html'>shell</a>/<a href='../files/src--vfs--shell--helpers.html'>helpers</a>/get</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--shell.html'>shell</a>/<a href='../files/src--vfs--shell--helpers.html'>helpers</a>/get</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/shell/helpers/get'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>LC_TIME=C
+<a id='L2' name='L2'></a>export LC_TIME
+<a id='L3' name='L3'></a>shell_get_perl ()
+<a id='L4' name='L4'></a>{
+<a id='L5' name='L5'></a>FILENAME=$1
+<a id='L6' name='L6'></a>OFFSET=$2
+<a id='L7' name='L7'></a>perl -e '
+<a id='L8' name='L8'></a>use strict;
+<a id='L9' name='L9'></a>use POSIX;
+<a id='L10' name='L10'></a>use Fcntl;
+<a id='L11' name='L11'></a>my $filename = $ARGV[0];
+<a id='L12' name='L12'></a>my $pos = $ARGV[1];
+<a id='L13' name='L13'></a>my $content;
+<a id='L14' name='L14'></a>my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = lstat("$filename");
+<a id='L15' name='L15'></a>my $n;
+<a id='L16' name='L16'></a>if (open IFILE,$filename) {
+<a id='L17' name='L17'></a>    if ($size&lt;$pos) {
+<a id='L18' name='L18'></a>        printf("0\n");
+<a id='L19' name='L19'></a>    } else {
+<a id='L20' name='L20'></a>        $size-=$pos;
+<a id='L21' name='L21'></a>        printf("$size\n");
+<a id='L22' name='L22'></a>    }
+<a id='L23' name='L23'></a>    printf("### 100\n");
+<a id='L24' name='L24'></a>    seek (IFILE, $pos, 0);
+<a id='L25' name='L25'></a>    while ($n = read(IFILE,$content,$blksize)!= 0) {
+<a id='L26' name='L26'></a>        print $content;
+<a id='L27' name='L27'></a>    }
+<a id='L28' name='L28'></a>    close IFILE;
+<a id='L29' name='L29'></a>    printf("### 200\n");
+<a id='L30' name='L30'></a>} else {
+<a id='L31' name='L31'></a>    printf("### 500\n");
+<a id='L32' name='L32'></a>}
+<a id='L33' name='L33'></a>exit 0
+<a id='L34' name='L34'></a>' "${FILENAME}" $OFFSET
+<a id='L35' name='L35'></a>}
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>shell_get_tail ()
+<a id='L38' name='L38'></a>{
+<a id='L39' name='L39'></a>FILENAME=$1
+<a id='L40' name='L40'></a>OFFSET=$2
+<a id='L41' name='L41'></a>LC_TIME=C
+<a id='L42' name='L42'></a>export LC_TIME
+<a id='L43' name='L43'></a>if dd if="${FILENAME}" of=/dev/null bs=1 count=1 2&gt;/dev/null ; then
+<a id='L44' name='L44'></a>    file_size=`ls -ln "${FILENAME}" 2&gt;/dev/null | (
+<a id='L45' name='L45'></a>       read p l u g s r
+<a id='L46' name='L46'></a>       echo $s
+<a id='L47' name='L47'></a>    )`
+<a id='L48' name='L48'></a>    if [ $OFFSET -gt 0 ]; then
+<a id='L49' name='L49'></a>        file_size=`expr $file_size - $OFFSET`
+<a id='L50' name='L50'></a>        OFFSET=`expr $OFFSET + 1`
+<a id='L51' name='L51'></a>    fi
+<a id='L52' name='L52'></a>    if [ $file_size -gt 0 ]; then
+<a id='L53' name='L53'></a>        echo $file_size
+<a id='L54' name='L54'></a>    else
+<a id='L55' name='L55'></a>        echo 0
+<a id='L56' name='L56'></a>    fi
+<a id='L57' name='L57'></a>    echo "### 100"
+<a id='L58' name='L58'></a>    if [ $OFFSET -gt 0 ]; then
+<a id='L59' name='L59'></a>        tail -c +${OFFSET} "${FILENAME}"
+<a id='L60' name='L60'></a>    else
+<a id='L61' name='L61'></a>        cat "${FILENAME}"
+<a id='L62' name='L62'></a>    fi
+<a id='L63' name='L63'></a>    echo "### 200"
+<a id='L64' name='L64'></a>else
+<a id='L65' name='L65'></a>    echo "### 500"
+<a id='L66' name='L66'></a>fi
+<a id='L67' name='L67'></a>}
+<a id='L68' name='L68'></a> 
+<a id='L69' name='L69'></a>shell_get_dd ()
+<a id='L70' name='L70'></a>{
+<a id='L71' name='L71'></a>FILENAME=$1
+<a id='L72' name='L72'></a>OFFSET=$2
+<a id='L73' name='L73'></a>LC_TIME=C
+<a id='L74' name='L74'></a>export LC_TIME
+<a id='L75' name='L75'></a>if dd if="${FILENAME}" of=/dev/null bs=1 count=1 2&gt;/dev/null ; then
+<a id='L76' name='L76'></a>    file_size=`ls -ln "${FILENAME}" 2&gt;/dev/null | (
+<a id='L77' name='L77'></a>       read p l u g s r
+<a id='L78' name='L78'></a>       echo $s
+<a id='L79' name='L79'></a>    )`
+<a id='L80' name='L80'></a>    file_size=`expr $file_size - $OFFSET`
+<a id='L81' name='L81'></a>    if [ $file_size -gt 0 ]; then
+<a id='L82' name='L82'></a>        echo $file_size
+<a id='L83' name='L83'></a>    else
+<a id='L84' name='L84'></a>        echo 0
+<a id='L85' name='L85'></a>    fi
+<a id='L86' name='L86'></a>    echo "### 100"
+<a id='L87' name='L87'></a>    if [ $OFFSET -gt 0 ]; then
+<a id='L88' name='L88'></a>        dd skip=$OFFSET ibs=1 if="${FILENAME}" 2&gt;/dev/null
+<a id='L89' name='L89'></a>    else
+<a id='L90' name='L90'></a>        cat "${FILENAME}"
+<a id='L91' name='L91'></a>    fi
+<a id='L92' name='L92'></a>    echo "### 200"
+<a id='L93' name='L93'></a>else
+<a id='L94' name='L94'></a>    echo "### 500"
+<a id='L95' name='L95'></a>fi
+<a id='L96' name='L96'></a>}
+<a id='L97' name='L97'></a> 
+<a id='L98' name='L98'></a>if [ -n "${SHELL_HAVE_PERL}" ]; then
+<a id='L99' name='L99'></a>    shell_get_perl "/${SHELL_FILENAME}" ${SHELL_START_OFFSET}
+<a id='L100' name='L100'></a>elif [ -n "${SHELL_HAVE_TAIL}" ]; then
+<a id='L101' name='L101'></a>    shell_get_tail "/${SHELL_FILENAME}" ${SHELL_START_OFFSET}
+<a id='L102' name='L102'></a>else
+<a id='L103' name='L103'></a>    shell_get_dd "/${SHELL_FILENAME}" ${SHELL_START_OFFSET}
+<a id='L104' name='L104'></a>fi
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+104 src/vfs/shell/helpers/get'  /> */</em>
+</body>
+</html>

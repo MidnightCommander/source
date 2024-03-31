@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/widget/mouse.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L62'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L218'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--widget.html'>widget</a>/mouse.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--widget.html'>widget</a>/mouse.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L62'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L218'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/widget/mouse.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L62' title='Defined at 62.'>init_mouse_event</a></li>
+<li><a href='#L85' title='Defined at 85.'>mouse_translate_event</a></li>
+<li><a href='#L176' title='Defined at 176.'>mouse_process_event</a></li>
+<li><a href='#L218' title='Defined at 218.'>mouse_handle_event</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Widgets for the Midnight Commander</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2016-2024</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Authors:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Human beings.</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'></em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'></em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='comment'>/** \file mouse.c</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> *  \brief Header: High-level mouse API</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> */</em>
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> "<a href='../I/mouse.h.html'>lib/widget/mouse.h</a>"
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>/**</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'> * Constructs a mouse event structure.</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'> *</em>
+<a id='L54' name='L54'></a>  54 <em class='comment'> * It receives a Gpm_Event event and translates it into a higher level protocol.</em>
+<a id='L55' name='L55'></a>  55 <em class='comment'> *</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'> * Tip: for details on the C mouse API, see MC's lib/tty/mouse.h,</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'> * or GPM's excellent 'info' manual:</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'> *</em>
+<a id='L59' name='L59'></a>  59 <em class='comment'> *    http://www.fifi.org/cgi-bin/info2www?(gpm)Event+Types</em>
+<a id='L60' name='L60'></a>  60 <em class='comment'> */</em>
+<a id='L61' name='L61'></a>  61 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L62' name='L62'></a>  62 <a href='../S/lib--widget--mouse.c.html#L155' title='Referred from 155 in lib/widget/mouse.c.'>init_mouse_event</a> (<a href='../S/lib--widget--mouse.h.html#L52' title='Defined at 52 in lib/widget/mouse.h.'>mouse_event_t</a> * <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>, <a href='../S/lib--widget--mouse.h.html#L33' title='Defined at 33 in lib/widget/mouse.h.'>mouse_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <strong class='reserved'>const</strong> <a href='../D/Gpm_Event.html' title='Multiple defined in 2 places.'>Gpm_Event</a> * <a href='../Y/global_gpm.html' title='Multiple used in 5 places.'>global_gpm</a>,
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L85'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L218'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+62 lib/widget/mouse.c'  /> */</em>
+<a id='L63' name='L63'></a>  63                   <strong class='reserved'>const</strong> <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>)
+<a id='L64' name='L64'></a>  64 <em class='brace'>{</em>
+<a id='L65' name='L65'></a>  65     <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>;
+<a id='L66' name='L66'></a>  66     <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> = <a href='../Y/global_gpm.html' title='Multiple used in 5 places.'>global_gpm</a>-&gt;<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> - <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>.<a href='../Y/x.html' title='Multiple used in 691 places.'>x</a> - 1;   <em class='comment'>/* '-1' because Gpm_Event is 1-based. */</em>
+<a id='L67' name='L67'></a>  67     <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> = <a href='../Y/global_gpm.html' title='Multiple used in 5 places.'>global_gpm</a>-&gt;<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> - <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/rect.html' title='Multiple used in 404 places.'>rect</a>.<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a> - 1;
+<a id='L68' name='L68'></a>  68     <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/count.html' title='Multiple used in 176 places.'>count</a> = <a href='../Y/global_gpm.html' title='Multiple used in 5 places.'>global_gpm</a>-&gt;<a href='../Y/type.html' title='Multiple used in 275 places.'>type</a> &amp; (<a href='../S/lib--tty--mouse.h.html#L53' title='Defined at 53 in lib/tty/mouse.h.'>GPM_SINGLE</a> | <a href='../S/lib--tty--mouse.h.html#L54' title='Defined at 54 in lib/tty/mouse.h.'>GPM_DOUBLE</a> | <a href='../S/lib--tty--mouse.h.html#L55' title='Defined at 55 in lib/tty/mouse.h.'>GPM_TRIPLE</a>);
+<a id='L69' name='L69'></a>  69     <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/buttons.html' title='Multiple used in 21 places.'>buttons</a> = <a href='../Y/global_gpm.html' title='Multiple used in 5 places.'>global_gpm</a>-&gt;<a href='../Y/buttons.html' title='Multiple used in 21 places.'>buttons</a>;
+<a id='L70' name='L70'></a>  70     <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>.<a href='../Y/abort.html' title='Multiple used in 16 places.'>abort</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L71' name='L71'></a>  71     <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>.<a href='../Y/repeat.html' title='Multiple used in 8 places.'>repeat</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L72' name='L72'></a>  72 <em class='brace'>}</em>
+<a id='L73' name='L73'></a>  73 
+<a id='L74' name='L74'></a>  74 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L75' name='L75'></a>  75 
+<a id='L76' name='L76'></a>  76 <em class='comment'>/**</em>
+<a id='L77' name='L77'></a>  77 <em class='comment'> * Translate GPM event to high-level event,</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'> *</em>
+<a id='L79' name='L79'></a>  79 <em class='comment'> * @param w Widget object</em>
+<a id='L80' name='L80'></a>  80 <em class='comment'> * @param event GPM event</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'> *</em>
+<a id='L82' name='L82'></a>  82 <em class='comment'> * @return high level mouse event</em>
+<a id='L83' name='L83'></a>  83 <em class='comment'> */</em>
+<a id='L84' name='L84'></a>  84 <strong class='reserved'>static</strong> <a href='../S/lib--widget--mouse.h.html#L52' title='Defined at 52 in lib/widget/mouse.h.'>mouse_event_t</a>
+<a id='L85' name='L85'></a>  85 <a href='../S/lib--widget--mouse.c.html#L222' title='Referred from 222 in lib/widget/mouse.c.'>mouse_translate_event</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../D/Gpm_Event.html' title='Multiple defined in 2 places.'>Gpm_Event</a> * <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>)
+     <em class='comment'>/* <a href='#L62'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L176'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L62'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L218'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+85 lib/widget/mouse.c'  /> */</em>
+<a id='L86' name='L86'></a>  86 <em class='brace'>{</em>
+<a id='L87' name='L87'></a>  87     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/in_widget.html' title='Multiple used in 4 places.'>in_widget</a>;
+<a id='L88' name='L88'></a>  88     <a href='../S/lib--widget--mouse.h.html#L33' title='Defined at 33 in lib/widget/mouse.h.'>mouse_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../S/lib--widget--mouse.h.html#L25' title='Defined at 25 in lib/widget/mouse.h.'>MSG_MOUSE_NONE</a>;
+<a id='L89' name='L89'></a>  89     <a href='../S/lib--widget--mouse.h.html#L52' title='Defined at 52 in lib/widget/mouse.h.'>mouse_event_t</a> <a href='../Y/local.html' title='Multiple used in 40 places.'>local</a>;
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <em class='comment'>/*</em>
+<a id='L92' name='L92'></a>  92 <em class='comment'>     * Very special widgets may want to control area outside their bounds.</em>
+<a id='L93' name='L93'></a>  93 <em class='comment'>     * For such widgets you will have to turn on the 'forced_capture' flag.</em>
+<a id='L94' name='L94'></a>  94 <em class='comment'>     * You'll also need, in your mouse handler, to inform the system of</em>
+<a id='L95' name='L95'></a>  95 <em class='comment'>     * events you want to pass on by setting 'event-&gt;result.abort' to TRUE.</em>
+<a id='L96' name='L96'></a>  96 <em class='comment'>     */</em>
+<a id='L97' name='L97'></a>  97     <a href='../Y/in_widget.html' title='Multiple used in 4 places.'>in_widget</a> = <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/forced_capture.html' title='Multiple used in 7 places.'>forced_capture</a> || <a href='../S/lib--widget--widget-common.c.html#L897' title='Defined at 897 in lib/widget/widget-common.c.'>mouse_global_in_widget</a> (<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>, <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>if</strong> ((<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/type.html' title='Multiple used in 275 places.'>type</a> &amp; <a href='../S/lib--tty--mouse.h.html#L49' title='Defined at 49 in lib/tty/mouse.h.'>GPM_DOWN</a>) != 0)
+<a id='L100' name='L100'></a> 100     <em class='brace'>{</em>
+<a id='L101' name='L101'></a> 101         <strong class='reserved'>if</strong> (<a href='../Y/in_widget.html' title='Multiple used in 4 places.'>in_widget</a>)
+<a id='L102' name='L102'></a> 102         <em class='brace'>{</em>
+<a id='L103' name='L103'></a> 103             <strong class='reserved'>if</strong> ((<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/buttons.html' title='Multiple used in 21 places.'>buttons</a> &amp; <a href='../S/lib--tty--mouse.h.html#L37' title='Defined at 37 in lib/tty/mouse.h.'>GPM_B_UP</a>) != 0)
+<a id='L104' name='L104'></a> 104                 <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../S/lib--widget--mouse.h.html#L31' title='Defined at 31 in lib/widget/mouse.h.'>MSG_MOUSE_SCROLL_UP</a>;
+<a id='L105' name='L105'></a> 105             <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> ((<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/buttons.html' title='Multiple used in 21 places.'>buttons</a> &amp; <a href='../S/lib--tty--mouse.h.html#L33' title='Defined at 33 in lib/tty/mouse.h.'>GPM_B_DOWN</a>) != 0)
+<a id='L106' name='L106'></a> 106                 <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../S/lib--widget--mouse.h.html#L32' title='Defined at 32 in lib/widget/mouse.h.'>MSG_MOUSE_SCROLL_DOWN</a>;
+<a id='L107' name='L107'></a> 107             <strong class='reserved'>else</strong>
+<a id='L108' name='L108'></a> 108             <em class='brace'>{</em>
+<a id='L109' name='L109'></a> 109                 <em class='comment'>/* Handle normal buttons: anything but the mouse wheel's.</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'>                 *</em>
+<a id='L111' name='L111'></a> 111 <em class='comment'>                 * (Note that turning on capturing for the mouse wheel</em>
+<a id='L112' name='L112'></a> 112 <em class='comment'>                 * buttons doesn't make sense as they don't generate a</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'>                 * mouse_up event, which means we'd never get uncaptured.)</em>
+<a id='L114' name='L114'></a> 114 <em class='comment'>                 */</em>
+<a id='L115' name='L115'></a> 115                 <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/capture.html' title='Multiple used in 8 places.'>capture</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
+<a id='L116' name='L116'></a> 116                 <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../S/lib--widget--mouse.h.html#L26' title='Defined at 26 in lib/widget/mouse.h.'>MSG_MOUSE_DOWN</a>;
+<a id='L117' name='L117'></a> 117 
+<a id='L118' name='L118'></a> 118                 <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/last_buttons_down.html' title='Multiple used in 4 places.'>last_buttons_down</a> = <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/buttons.html' title='Multiple used in 21 places.'>buttons</a>;
+<a id='L119' name='L119'></a> 119             <em class='brace'>}</em>
+<a id='L120' name='L120'></a> 120         <em class='brace'>}</em>
+<a id='L121' name='L121'></a> 121     <em class='brace'>}</em>
+<a id='L122' name='L122'></a> 122     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> ((<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/type.html' title='Multiple used in 275 places.'>type</a> &amp; <a href='../S/lib--tty--mouse.h.html#L50' title='Defined at 50 in lib/tty/mouse.h.'>GPM_UP</a>) != 0)
+<a id='L123' name='L123'></a> 123     <em class='brace'>{</em>
+<a id='L124' name='L124'></a> 124         <em class='comment'>/* We trigger the mouse_up event even when !in_widget. That's</em>
+<a id='L125' name='L125'></a> 125 <em class='comment'>         * because, for example, a paint application should stop drawing</em>
+<a id='L126' name='L126'></a> 126 <em class='comment'>         * lines when the button is released even outside the canvas. */</em>
+<a id='L127' name='L127'></a> 127         <strong class='reserved'>if</strong> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/capture.html' title='Multiple used in 8 places.'>capture</a>)
+<a id='L128' name='L128'></a> 128         <em class='brace'>{</em>
+<a id='L129' name='L129'></a> 129             <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/capture.html' title='Multiple used in 8 places.'>capture</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L130' name='L130'></a> 130             <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../S/lib--widget--mouse.h.html#L27' title='Defined at 27 in lib/widget/mouse.h.'>MSG_MOUSE_UP</a>;
+<a id='L131' name='L131'></a> 131 
+<a id='L132' name='L132'></a> 132             <em class='comment'>/*</em>
+<a id='L133' name='L133'></a> 133 <em class='comment'>             * When using xterm, event-&gt;buttons reports the buttons' state</em>
+<a id='L134' name='L134'></a> 134 <em class='comment'>             * after the event occurred (meaning that event-&gt;buttons is zero,</em>
+<a id='L135' name='L135'></a> 135 <em class='comment'>             * because the mouse button is now released). When using GPM,</em>
+<a id='L136' name='L136'></a> 136 <em class='comment'>             * however, that field reports the button(s) that was released.</em>
+<a id='L137' name='L137'></a> 137 <em class='comment'>             *</em>
+<a id='L138' name='L138'></a> 138 <em class='comment'>             * The following makes xterm behave effectively like GPM:</em>
+<a id='L139' name='L139'></a> 139 <em class='comment'>             */</em>
+<a id='L140' name='L140'></a> 140             <strong class='reserved'>if</strong> (<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/buttons.html' title='Multiple used in 21 places.'>buttons</a> == 0)
+<a id='L141' name='L141'></a> 141                 <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/buttons.html' title='Multiple used in 21 places.'>buttons</a> = <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/last_buttons_down.html' title='Multiple used in 4 places.'>last_buttons_down</a>;
+<a id='L142' name='L142'></a> 142         <em class='brace'>}</em>
+<a id='L143' name='L143'></a> 143     <em class='brace'>}</em>
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> ((<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/type.html' title='Multiple used in 275 places.'>type</a> &amp; <a href='../S/lib--tty--mouse.h.html#L48' title='Defined at 48 in lib/tty/mouse.h.'>GPM_DRAG</a>) != 0)
+<a id='L145' name='L145'></a> 145     <em class='brace'>{</em>
+<a id='L146' name='L146'></a> 146         <strong class='reserved'>if</strong> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/capture.html' title='Multiple used in 8 places.'>capture</a>)
+<a id='L147' name='L147'></a> 147             <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../S/lib--widget--mouse.h.html#L29' title='Defined at 29 in lib/widget/mouse.h.'>MSG_MOUSE_DRAG</a>;
+<a id='L148' name='L148'></a> 148     <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> ((<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/type.html' title='Multiple used in 275 places.'>type</a> &amp; <a href='../S/lib--tty--mouse.h.html#L47' title='Defined at 47 in lib/tty/mouse.h.'>GPM_MOVE</a>) != 0)
+<a id='L150' name='L150'></a> 150     <em class='brace'>{</em>
+<a id='L151' name='L151'></a> 151         <strong class='reserved'>if</strong> (<a href='../Y/in_widget.html' title='Multiple used in 4 places.'>in_widget</a>)
+<a id='L152' name='L152'></a> 152             <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> = <a href='../S/lib--widget--mouse.h.html#L30' title='Defined at 30 in lib/widget/mouse.h.'>MSG_MOUSE_MOVE</a>;
+<a id='L153' name='L153'></a> 153     <em class='brace'>}</em>
+<a id='L154' name='L154'></a> 154 
+<a id='L155' name='L155'></a> 155     <a href='../S/lib--widget--mouse.c.html#L62' title='Defined at 62 in lib/widget/mouse.c.'>init_mouse_event</a> (&amp;<a href='../Y/local.html' title='Multiple used in 40 places.'>local</a>, <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>, <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>);
+<a id='L156' name='L156'></a> 156 
+<a id='L157' name='L157'></a> 157     <strong class='reserved'>return</strong> <a href='../Y/local.html' title='Multiple used in 40 places.'>local</a>;
+<a id='L158' name='L158'></a> 158 <em class='brace'>}</em>
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162 <em class='comment'>/**</em>
+<a id='L163' name='L163'></a> 163 <em class='comment'> * Call widget mouse handler to process high-level mouse event.</em>
+<a id='L164' name='L164'></a> 164 <em class='comment'> *</em>
+<a id='L165' name='L165'></a> 165 <em class='comment'> * Besides sending to the widget the event itself, this function may also</em>
+<a id='L166' name='L166'></a> 166 <em class='comment'> * send one or more pseudo events. Currently, MSG_MOUSE_CLICK is the only</em>
+<a id='L167' name='L167'></a> 167 <em class='comment'> * pseudo event in existence but in the future (e.g., with the introduction</em>
+<a id='L168' name='L168'></a> 168 <em class='comment'> * of a drag-drop API) there may be more.</em>
+<a id='L169' name='L169'></a> 169 <em class='comment'> *</em>
+<a id='L170' name='L170'></a> 170 <em class='comment'> * @param w Widget object</em>
+<a id='L171' name='L171'></a> 171 <em class='comment'> * @param event high level mouse event</em>
+<a id='L172' name='L172'></a> 172 <em class='comment'> *</em>
+<a id='L173' name='L173'></a> 173 <em class='comment'> * @return result of mouse event handling</em>
+<a id='L174' name='L174'></a> 174 <em class='comment'> */</em>
+<a id='L175' name='L175'></a> 175 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L176' name='L176'></a> 176 <a href='../S/lib--widget--mouse.c.html#L224' title='Referred from 224 in lib/widget/mouse.c.'>mouse_process_event</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--mouse.h.html#L52' title='Defined at 52 in lib/widget/mouse.h.'>mouse_event_t</a> * <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>)
+     <em class='comment'>/* <a href='#L85'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L218'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L62'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L218'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+176 lib/widget/mouse.c'  /> */</em>
+<a id='L177' name='L177'></a> 177 <em class='brace'>{</em>
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>int</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../S/lib--tty--mouse.h.html#L66' title='Defined at 66 in lib/tty/mouse.h.'>MOU_UNHANDLED</a>;
+<a id='L179' name='L179'></a> 179 
+<a id='L180' name='L180'></a> 180     <strong class='reserved'>if</strong> (<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> != <a href='../S/lib--widget--mouse.h.html#L25' title='Defined at 25 in lib/widget/mouse.h.'>MSG_MOUSE_NONE</a>)
+<a id='L181' name='L181'></a> 181     <em class='brace'>{</em>
+<a id='L182' name='L182'></a> 182         <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse_callback.html' title='Multiple used in 18 places.'>mouse_callback</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>);
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184         <em class='comment'>/* If a widget aborts a MSG_MOUSE_DOWN, we uncapture it so it</em>
+<a id='L185' name='L185'></a> 185 <em class='comment'>         * doesn't steal events from other widgets. */</em>
+<a id='L186' name='L186'></a> 186         <strong class='reserved'>if</strong> (<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> == <a href='../S/lib--widget--mouse.h.html#L26' title='Defined at 26 in lib/widget/mouse.h.'>MSG_MOUSE_DOWN</a> &amp;&amp; <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>.<a href='../Y/abort.html' title='Multiple used in 16 places.'>abort</a>)
+<a id='L187' name='L187'></a> 187             <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/capture.html' title='Multiple used in 8 places.'>capture</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189         <em class='comment'>/* Upon releasing the mouse button: if the mouse hasn't been dragged</em>
+<a id='L190' name='L190'></a> 190 <em class='comment'>         * since the MSG_MOUSE_DOWN, we also trigger a click. */</em>
+<a id='L191' name='L191'></a> 191         <strong class='reserved'>if</strong> (<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a> == <a href='../S/lib--widget--mouse.h.html#L27' title='Defined at 27 in lib/widget/mouse.h.'>MSG_MOUSE_UP</a> &amp;&amp; <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/last_msg.html' title='Multiple used in 4 places.'>last_msg</a> == <a href='../S/lib--widget--mouse.h.html#L26' title='Defined at 26 in lib/widget/mouse.h.'>MSG_MOUSE_DOWN</a>)
+<a id='L192' name='L192'></a> 192             <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse_callback.html' title='Multiple used in 18 places.'>mouse_callback</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--mouse.h.html#L28' title='Defined at 28 in lib/widget/mouse.h.'>MSG_MOUSE_CLICK</a>, <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>);
+<a id='L193' name='L193'></a> 193 
+<a id='L194' name='L194'></a> 194         <em class='comment'>/* Record the current event type for the benefit of the next event. */</em>
+<a id='L195' name='L195'></a> 195         <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/mouse.html' title='Multiple used in 20 places.'>mouse</a>.<a href='../Y/last_msg.html' title='Multiple used in 4 places.'>last_msg</a> = <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>;
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197         <strong class='reserved'>if</strong> (!<a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>.<a href='../Y/abort.html' title='Multiple used in 16 places.'>abort</a>)
+<a id='L198' name='L198'></a> 198             <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a> = <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>-&gt;<a href='../Y/result.html' title='Multiple used in 780 places.'>result</a>.<a href='../Y/repeat.html' title='Multiple used in 8 places.'>repeat</a> ? <a href='../S/lib--tty--mouse.h.html#L68' title='Defined at 68 in lib/tty/mouse.h.'>MOU_REPEAT</a> : <a href='../S/lib--tty--mouse.h.html#L67' title='Defined at 67 in lib/tty/mouse.h.'>MOU_NORMAL</a>;
+<a id='L199' name='L199'></a> 199     <em class='brace'>}</em>
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 881 places.'>ret</a>;
+<a id='L202' name='L202'></a> 202 <em class='brace'>}</em>
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L206' name='L206'></a> 206 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L207' name='L207'></a> 207 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209 <em class='comment'>/**</em>
+<a id='L210' name='L210'></a> 210 <em class='comment'> * Translate GPM event to high-level event and process it</em>
+<a id='L211' name='L211'></a> 211 <em class='comment'> *</em>
+<a id='L212' name='L212'></a> 212 <em class='comment'> * @param w Widget object</em>
+<a id='L213' name='L213'></a> 213 <em class='comment'> * @param event GPM event</em>
+<a id='L214' name='L214'></a> 214 <em class='comment'> *</em>
+<a id='L215' name='L215'></a> 215 <em class='comment'> * @return result of mouse event handling</em>
+<a id='L216' name='L216'></a> 216 <em class='comment'> */</em>
+<a id='L217' name='L217'></a> 217 <strong class='reserved'>int</strong>
+<a id='L218' name='L218'></a> 218 <a href='../R/mouse_handle_event.html' title='Multiple referred from 4 places.'>mouse_handle_event</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../D/Gpm_Event.html' title='Multiple defined in 2 places.'>Gpm_Event</a> * <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>)
+     <em class='comment'>/* <a href='#L176'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L62'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+218 lib/widget/mouse.c'  /> */</em>
+<a id='L219' name='L219'></a> 219 <em class='brace'>{</em>
+<a id='L220' name='L220'></a> 220     <a href='../S/lib--widget--mouse.h.html#L52' title='Defined at 52 in lib/widget/mouse.h.'>mouse_event_t</a> <a href='../Y/me.html' title='Multiple used in 789 places.'>me</a>;
+<a id='L221' name='L221'></a> 221 
+<a id='L222' name='L222'></a> 222     <a href='../Y/me.html' title='Multiple used in 789 places.'>me</a> = <a href='../S/lib--widget--mouse.c.html#L85' title='Defined at 85 in lib/widget/mouse.c.'>mouse_translate_event</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/event.html' title='Multiple used in 186 places.'>event</a>);
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224     <strong class='reserved'>return</strong> <a href='../S/lib--widget--mouse.c.html#L176' title='Defined at 176 in lib/widget/mouse.c.'>mouse_process_event</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, &amp;<a href='../Y/me.html' title='Multiple used in 789 places.'>me</a>);
+<a id='L225' name='L225'></a> 225 <em class='brace'>}</em>
+<a id='L226' name='L226'></a> 226 
+<a id='L227' name='L227'></a> 227 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L62'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L218'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+227 lib/widget/mouse.c'  /> */</em>
+</body>
+</html>

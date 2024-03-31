@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/deba.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/deba.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/deba.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/deba.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># 1999 (c) Piotr Roszatycki &lt;dexter@debian.org&gt;
+<a id='L4' name='L4'></a># This software is under GNU license
+<a id='L5' name='L5'></a># last modification: 1999-12-08
+<a id='L6' name='L6'></a>#
+<a id='L7' name='L7'></a># deba
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>sub quote {
+<a id='L10' name='L10'></a>    $_ = shift(@_);
+<a id='L11' name='L11'></a>    s/([^\w\/.+-])/\\$1/g;
+<a id='L12' name='L12'></a>    return($_);
+<a id='L13' name='L13'></a>}
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>sub list
+<a id='L16' name='L16'></a>{
+<a id='L17' name='L17'></a>       my($qarchive)=@_;
+<a id='L18' name='L18'></a>       $qarchive = quote($qarchive);
+<a id='L19' name='L19'></a>       chop($date=`LC_ALL=C date "+%m-%d-%Y %H:%M"`);
+<a id='L20' name='L20'></a>       chop($info_size=`apt-cache show $qarchive | wc -c`);
+<a id='L21' name='L21'></a>       $install_size=length($pressinstall);
+<a id='L22' name='L22'></a>       $upgrade_size=length($pressupgrade);
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>       print "-r--r--r--   1 root     root     $info_size $date INFO\n";
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>       chop($debd = `dpkg -s $qarchive | grep -i ^Version | sed 's/^version: //i'`);
+<a id='L27' name='L27'></a>       chop($deba = `apt-cache show $qarchive | grep -i ^Version | sed 's/^version: //i'`);
+<a id='L28' name='L28'></a>       if( ! $debd ) {
+<a id='L29' name='L29'></a>           print "-r-xr--r--   1 root     root     $install_size $date INSTALL\n";
+<a id='L30' name='L30'></a>       } elsif( $debd ne $deba ) {
+<a id='L31' name='L31'></a>           print "-r-xr--r--   1 root     root     $upgrade_size $date UPGRADE\n";
+<a id='L32' name='L32'></a>       }
+<a id='L33' name='L33'></a>}
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>sub copyout
+<a id='L36' name='L36'></a>{
+<a id='L37' name='L37'></a>       my($archive,$filename,$destfile)=@_;
+<a id='L38' name='L38'></a>       my $qarchive = quote($archive);
+<a id='L39' name='L39'></a>       my $qdestfile = quote($destfile);
+<a id='L40' name='L40'></a>       if($filename eq "INFO") {
+<a id='L41' name='L41'></a>           system("apt-cache show $qarchive &gt; $qdestfile");
+<a id='L42' name='L42'></a>        } elsif($filename eq "INSTALL")        {
+<a id='L43' name='L43'></a>           if ( open(FILEOUT, "&gt; $destfile") ) {
+<a id='L44' name='L44'></a>               print FILEOUT $pressinstall;
+<a id='L45' name='L45'></a>               close FILEOUT;
+<a id='L46' name='L46'></a>               system("chmod a+x $qdestfile");
+<a id='L47' name='L47'></a>           }
+<a id='L48' name='L48'></a>       } elsif($filename eq "UPGRADE") {
+<a id='L49' name='L49'></a>           if ( open(FILEOUT, "&gt;, $destfile") ) {
+<a id='L50' name='L50'></a>               print FILEOUT $pressupgrade;
+<a id='L51' name='L51'></a>               close FILEOUT;
+<a id='L52' name='L52'></a>               system("chmod a+x $qdestfile");
+<a id='L53' name='L53'></a>           }
+<a id='L54' name='L54'></a>       } else {
+<a id='L55' name='L55'></a>           die "extfs: $filename: No such file or directory\n";
+<a id='L56' name='L56'></a>       }
+<a id='L57' name='L57'></a>}
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>sub run
+<a id='L60' name='L60'></a>{
+<a id='L61' name='L61'></a>       my($archive,$filename)=@_;
+<a id='L62' name='L62'></a>       my $qarchive = quote($archive);
+<a id='L63' name='L63'></a>       if($filename eq "INSTALL") {
+<a id='L64' name='L64'></a>           system("apt-get install $qarchive");
+<a id='L65' name='L65'></a>       } elsif($filename eq "UPGRADE") {
+<a id='L66' name='L66'></a>           system("apt-get install $qarchive");
+<a id='L67' name='L67'></a>       } else {
+<a id='L68' name='L68'></a>           die "extfs: $filename: Permission denied\n";
+<a id='L69' name='L69'></a>       }
+<a id='L70' name='L70'></a>}
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>$pressinstall=&lt;&lt;EOInstall;
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>                                WARNING
+<a id='L75' name='L75'></a>  Don\'t use this method if you are not willing to install this package...
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a>This is not a real file. It is a way to install the package you are browsing.
+<a id='L78' name='L78'></a> 
+<a id='L79' name='L79'></a>To install this package go back to the panel and press Enter on this file.
+<a id='L80' name='L80'></a> 
+<a id='L81' name='L81'></a>EOInstall
+<a id='L82' name='L82'></a> 
+<a id='L83' name='L83'></a>$pressupgrade=&lt;&lt;EOInstall;
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>                                WARNING
+<a id='L86' name='L86'></a>  Don\'t use this method if you are not willing to upgrade this package...
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a>This is not a real file. It is a way to upgrade the package you are browsing.
+<a id='L89' name='L89'></a> 
+<a id='L90' name='L90'></a>To upgrade this package go back to the panel and press Enter on this file.
+<a id='L91' name='L91'></a> 
+<a id='L92' name='L92'></a>EOInstall
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a> 
+<a id='L95' name='L95'></a>umask 077;
+<a id='L96' name='L96'></a> 
+<a id='L97' name='L97'></a>chop($name = `if [ -f "$ARGV[1]" ]; then cat $ARGV[1]; else echo $ARGV[1]; fi`);
+<a id='L98' name='L98'></a>$name =~ s%.*/([0-9a-z.-]*)_.*%$1%;
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>exit 1 unless $name;
+<a id='L101' name='L101'></a> 
+<a id='L102' name='L102'></a>if($ARGV[0] eq "list") { &amp;list($name); exit 0; }
+<a id='L103' name='L103'></a>elsif($ARGV[0] eq "copyout") { &amp;copyout($name,$ARGV[2],$ARGV[3]); exit 0; }
+<a id='L104' name='L104'></a>elsif($ARGV[0] eq "run") { &amp;run($name,$ARGV[2]); exit 0; }
+<a id='L105' name='L105'></a> 
+<a id='L106' name='L106'></a>exit 1;
+<a id='L107' name='L107'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+107 src/vfs/extfs/helpers/deba.in'  /> */</em>
+</body>
+</html>

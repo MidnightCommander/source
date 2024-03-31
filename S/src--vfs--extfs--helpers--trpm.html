@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/trpm</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/trpm</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/trpm</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/trpm'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Browse contents of an installed RPM package.
+<a id='L4' name='L4'></a># This filesystem works on the entries of the "rpms" filesystem.
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># Written by Erik Troan (ewt@redhat.com) 1996
+<a id='L7' name='L7'></a>#            Jakub Jelinek (jj@sunsite.mff.cuni.cz) 1996
+<a id='L8' name='L8'></a>#            Tomasz K³oczko (kloczek@rudy.mif.pg.gda.pl) 1997
+<a id='L9' name='L9'></a># minor changes by Wojtek Pilorz (wpilorz@bdk.lublin.pl) 1997
+<a id='L10' name='L10'></a># minor changes by Michele Marziani (marziani@fe.infn.it) 1997
+<a id='L11' name='L11'></a># slight changes to put rpm to Trpm by Balazs Nagy (julian7@kva.hu) 1998
+<a id='L12' name='L12'></a># locale bugfix by Michal Svec (rebel@penguin.cz) 2000
+<a id='L13' name='L13'></a># (C) 1996 The Free Software Foundation.
+<a id='L14' name='L14'></a>#
+<a id='L15' name='L15'></a>#
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a># override any locale for dates
+<a id='L18' name='L18'></a>unset LC_ALL
+<a id='L19' name='L19'></a>LC_TIME=C
+<a id='L20' name='L20'></a>export LC_TIME
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a>if rpm --nosignature --version &gt;/dev/null 2&gt;&amp;1; then
+<a id='L23' name='L23'></a>  RPM="rpm --nosignature"
+<a id='L24' name='L24'></a>else
+<a id='L25' name='L25'></a>  RPM="rpm"
+<a id='L26' name='L26'></a>fi
+<a id='L27' name='L27'></a> 
+<a id='L28' name='L28'></a>mcrpmfs_list ()
+<a id='L29' name='L29'></a>{
+<a id='L30' name='L30'></a>    # set MCFASTRPM_DFLT to 1 for faster rpm files handling by default, to 0 for
+<a id='L31' name='L31'></a>    # slower handling
+<a id='L32' name='L32'></a>    MCFASTRPM_DFLT=0
+<a id='L33' name='L33'></a>    if test -z "$MCFASTRPM"; then
+<a id='L34' name='L34'></a>      MCFASTRPM=$MCFASTRPM_DFLT
+<a id='L35' name='L35'></a>    fi
+<a id='L36' name='L36'></a>    FILEPREF="-r--r--r--   1 root     root    "
+<a id='L37' name='L37'></a>    DESC=`$RPM -qi -- "$1"`
+<a id='L38' name='L38'></a>    DATE=`$RPM -q --qf "%{BUILDTIME:date}" -- "$1" | cut -c 5-11,21-24`
+<a id='L39' name='L39'></a>    HEADERSIZE=`echo "$DESC" | wc -c`
+<a id='L40' name='L40'></a>    echo "-r--r--r--   1 root     root  $HEADERSIZE $DATE HEADER"
+<a id='L41' name='L41'></a>    echo "-r-xr-xr-x   1 root     root    40 $DATE UNINSTALL"
+<a id='L42' name='L42'></a>    echo "dr-xr-xr-x   3 root     root     0 $DATE INFO"
+<a id='L43' name='L43'></a>    echo "$FILEPREF 0 $DATE INFO/NAME-VERSION-RELEASE"
+<a id='L44' name='L44'></a>    echo "$FILEPREF 0 $DATE INFO/GROUP"
+<a id='L45' name='L45'></a>    echo "$FILEPREF 0 $DATE INFO/BUILDHOST"
+<a id='L46' name='L46'></a>    echo "$FILEPREF 0 $DATE INFO/SOURCERPM"
+<a id='L47' name='L47'></a>    if test "$MCFASTRPM" = 0 ; then
+<a id='L48' name='L48'></a>     test "`$RPM -q --qf \"%{DISTRIBUTION}\" -- "$1"`" = "(none)" ||
+<a id='L49' name='L49'></a>         echo "$FILEPREF 0 $DATE INFO/DISTRIBUTION"
+<a id='L50' name='L50'></a>     test "`$RPM -q --qf \"%{VENDOR}\" -- "$1"`" = "(none)" ||
+<a id='L51' name='L51'></a>         echo "$FILEPREF 0 $DATE INFO/VENDOR"
+<a id='L52' name='L52'></a>     test "`$RPM -q --qf \"%{DESCRIPTION}\" -- "$1"`" = "(none)" ||
+<a id='L53' name='L53'></a>         echo "$FILEPREF 0 $DATE INFO/DESCRIPTION"
+<a id='L54' name='L54'></a>     test "`$RPM -q --qf \"%{SUMMARY}\" -- "$1"`" = "(none)" ||
+<a id='L55' name='L55'></a>         echo "$FILEPREF 0 $DATE INFO/SUMMARY"
+<a id='L56' name='L56'></a>     if test "`$RPM -q --qf \"%{RPMTAG_PREIN}%{RPMTAG_POSTIN}%{RPMTAG_PREUN}%{RPMTAG_POSTUN}%{VERIFYSCRIPT}\" -- "$1"`" != "(none)(none)(none)(none)(none)"; then
+<a id='L57' name='L57'></a>        echo "dr-xr-xr-x   1 root     root     0 $DATE INFO/SCRIPTS"
+<a id='L58' name='L58'></a>        test "`$RPM -q --qf \"%{RPMTAG_PREIN}\" -- "$1"`" = '(none)' ||
+<a id='L59' name='L59'></a>           echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PREIN"
+<a id='L60' name='L60'></a>        test "`$RPM -q --qf \"%{RPMTAG_POSTIN}\" -- "$1"`" = '(none)' ||
+<a id='L61' name='L61'></a>           echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTIN"
+<a id='L62' name='L62'></a>        test "`$RPM -q --qf \"%{RPMTAG_PREUN}\" -- "$1"`" = '(none)' ||
+<a id='L63' name='L63'></a>           echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PREUN"
+<a id='L64' name='L64'></a>        test "`$RPM -q --qf \"%{RPMTAG_POSTUN}\" -- "$1"`" = '(none)' ||
+<a id='L65' name='L65'></a>           echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTUN"
+<a id='L66' name='L66'></a>        test "`$RPM -q --qf \"%{VERIFYSCRIPT}\" -- "$1"`" = '(none)' ||
+<a id='L67' name='L67'></a>           echo "$FILEPREF 0 $DATE INFO/SCRIPTS/VERIFYSCRIPT"
+<a id='L68' name='L68'></a>        echo "$FILEPREF 0 $DATE INFO/SCRIPTS/ALL"
+<a id='L69' name='L69'></a>     fi
+<a id='L70' name='L70'></a>    else
+<a id='L71' name='L71'></a>     echo "$FILEPREF 0 $DATE INFO/DISTRIBUTION"
+<a id='L72' name='L72'></a>     echo "$FILEPREF 0 $DATE INFO/VENDOR"
+<a id='L73' name='L73'></a>     echo "$FILEPREF 0 $DATE INFO/DESCRIPTION"
+<a id='L74' name='L74'></a>     echo "$FILEPREF 0 $DATE INFO/SUMMARY"
+<a id='L75' name='L75'></a>     echo "dr-xr-xr-x   1 root     root     0 $DATE INFO/SCRIPTS"
+<a id='L76' name='L76'></a>     echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PREIN"
+<a id='L77' name='L77'></a>     echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTIN"
+<a id='L78' name='L78'></a>     echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PREUN"
+<a id='L79' name='L79'></a>     echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTUN"
+<a id='L80' name='L80'></a>     echo "$FILEPREF 0 $DATE INFO/SCRIPTS/VERIFYSCRIPT"
+<a id='L81' name='L81'></a>     echo "$FILEPREF 0 $DATE INFO/SCRIPTS/ALL"
+<a id='L82' name='L82'></a>    fi
+<a id='L83' name='L83'></a>    if test "$MCFASTRPM" = 0 ; then
+<a id='L84' name='L84'></a>     test "`$RPM -q --qf \"%{PACKAGER}\" -- "$1"`" = "(none)" ||
+<a id='L85' name='L85'></a>         echo "$FILEPREF 0 $DATE INFO/PACKAGER"
+<a id='L86' name='L86'></a>     test "`$RPM -q --qf \"%{URL}\" -- "$1"`" = "(none)" ||
+<a id='L87' name='L87'></a>         echo "$FILEPREF 0 $DATE INFO/URL"
+<a id='L88' name='L88'></a>     test "`$RPM -q --qf \"%{EPOCH}\" -- "$1"`" = "(none)" ||
+<a id='L89' name='L89'></a>         echo "$FILEPREF 0 $DATE INFO/EPOCH"
+<a id='L90' name='L90'></a>     test "`$RPM -q --qf \"%{LICENSE}\" -- "$1"`" = "(none)" ||
+<a id='L91' name='L91'></a>         echo "$FILEPREF 0 $DATE INFO/LICENSE"
+<a id='L92' name='L92'></a>    else
+<a id='L93' name='L93'></a>         echo "$FILEPREF 0 $DATE INFO/PACKAGER"
+<a id='L94' name='L94'></a>         echo "$FILEPREF 0 $DATE INFO/URL"
+<a id='L95' name='L95'></a>         echo "$FILEPREF 0 $DATE INFO/EPOCH"
+<a id='L96' name='L96'></a>         echo "$FILEPREF 0 $DATE INFO/LICENSE"
+<a id='L97' name='L97'></a>    fi
+<a id='L98' name='L98'></a>    echo "$FILEPREF 0 $DATE INFO/BUILDTIME"
+<a id='L99' name='L99'></a>    echo "$FILEPREF 0 $DATE INFO/RPMVERSION"
+<a id='L100' name='L100'></a>    echo "$FILEPREF 0 $DATE INFO/OS"
+<a id='L101' name='L101'></a>    echo "$FILEPREF 0 $DATE INFO/SIZE"
+<a id='L102' name='L102'></a>    if test "$MCFASTRPM" != 0 ; then
+<a id='L103' name='L103'></a>    $RPM -q --qf "[%{REQUIRENAME}\n]" -- "$1" | grep "(none)" &gt; /dev/null ||
+<a id='L104' name='L104'></a>        echo "$FILEPREF 0 $DATE INFO/REQUIRENAME"
+<a id='L105' name='L105'></a>    $RPM -q --qf "[%{OBSOLETES}\n]" -- "$1" | grep "(none)" &gt; /dev/null ||
+<a id='L106' name='L106'></a>        echo "$FILEPREF 0 $DATE INFO/OBSOLETES"
+<a id='L107' name='L107'></a>    $RPM -q --qf "[%{PROVIDES}\n]" -- "$1" | grep "(none)" &gt; /dev/null ||
+<a id='L108' name='L108'></a>        echo "$FILEPREF 0 $DATE INFO/PROVIDES"
+<a id='L109' name='L109'></a>    $RPM -q --qf "[%{CONFLICTS}\n]" -- "$1" | grep "(none)" &gt; /dev/null ||
+<a id='L110' name='L110'></a>        echo "$FILEPREF 0 $DATE INFO/CONFLICTS"
+<a id='L111' name='L111'></a>    test "`$RPM -q --qf \"%{CHANGELOGTEXT}\" -- "$1"`" = "(none)" ||
+<a id='L112' name='L112'></a>       echo "$FILEPREF 0 $DATE INFO/CHANGELOG"
+<a id='L113' name='L113'></a>    else 
+<a id='L114' name='L114'></a>        echo "$FILEPREF 0 $DATE INFO/REQUIRENAME"
+<a id='L115' name='L115'></a>        echo "$FILEPREF 0 $DATE INFO/OBSOLETES"
+<a id='L116' name='L116'></a>        echo "$FILEPREF 0 $DATE INFO/PROVIDES"
+<a id='L117' name='L117'></a>        echo "$FILEPREF 0 $DATE INFO/CONFLICTS"
+<a id='L118' name='L118'></a>        echo "$FILEPREF 0 $DATE INFO/CHANGELOG"
+<a id='L119' name='L119'></a>    fi
+<a id='L120' name='L120'></a> 
+<a id='L121' name='L121'></a>    $RPM -qlv -- "$1" | grep '^[A-Za-z0-9-]'
+<a id='L122' name='L122'></a>}
+<a id='L123' name='L123'></a> 
+<a id='L124' name='L124'></a>mcrpmfs_copyout ()
+<a id='L125' name='L125'></a>{
+<a id='L126' name='L126'></a>    case "$2" in
+<a id='L127' name='L127'></a>        HEADER) $RPM -qi -- "$1" &gt; "$3"; exit 0;;
+<a id='L128' name='L128'></a>        UNINSTALL) echo "# Run this to uninstall this RPM package" &gt; "$3"; exit 0;;
+<a id='L129' name='L129'></a>        INFO/NAME-VERSION-RELEASE)      $RPM -q --qf "%{NAME}-%{VERSION}-%{RELEASE}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L130' name='L130'></a>        INFO/RELEASE)           $RPM -q --qf "%{RELEASE}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L131' name='L131'></a>        INFO/GROUP)             $RPM -q --qf "%{GROUP}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L132' name='L132'></a>        INFO/DISTRIBUTION)      $RPM -q --qf "%{DISTRIBUTION}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L133' name='L133'></a>        INFO/VENDOR)            $RPM -q --qf "%{VENDOR}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L134' name='L134'></a>        INFO/BUILDHOST)         $RPM -q --qf "%{BUILDHOST}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L135' name='L135'></a>        INFO/SOURCERPM)         $RPM -q --qf "%{SOURCERPM}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L136' name='L136'></a>        INFO/DESCRIPTION)       $RPM -q --qf "%{DESCRIPTION}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L137' name='L137'></a>        INFO/PACKAGER)          $RPM -q --qf "%{PACKAGER}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L138' name='L138'></a>        INFO/URL)               $RPM -q --qf "%{URL}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L139' name='L139'></a>        INFO/BUILDTIME)         $RPM -q --qf "%{BUILDTIME:date}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L140' name='L140'></a>        INFO/EPOCH)             $RPM -q --qf "%{EPOCH}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L141' name='L141'></a>        INFO/LICENSE)           $RPM -q --qf "%{LICENSE}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L142' name='L142'></a>        INFO/RPMVERSION)        $RPM -q --qf "%{RPMVERSION}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L143' name='L143'></a>        INFO/REQUIRENAME)       $RPM -q --qf "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" -- "$1" &gt; "$3"; exit 0;;
+<a id='L144' name='L144'></a>        INFO/OBSOLETES)         $RPM -q --qf "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" -- "$1" &gt; "$3"; exit 0;;
+<a id='L145' name='L145'></a>        INFO/PROVIDES)          $RPM -q --qf "[%{PROVIDES}\n]" -- "$1" &gt; "$3"; exit 0;;
+<a id='L146' name='L146'></a>        INFO/CONFLICTS)         $RPM -q --qf "[%{CONFLICTS}\n]" -- "$1" &gt; "$3"; exit 0;;
+<a id='L147' name='L147'></a>        INFO/SCRIPTS/PREIN)     $RPM -q --qf "%{RPMTAG_PREIN}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L148' name='L148'></a>        INFO/SCRIPTS/POSTIN)    $RPM -q --qf "%{RPMTAG_POSTIN}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L149' name='L149'></a>        INFO/SCRIPTS/PREUN)     $RPM -q --qf "%{RPMTAG_PREUN}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L150' name='L150'></a>        INFO/SCRIPTS/POSTUN)    $RPM -q --qf "%{RPMTAG_POSTUN}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L151' name='L151'></a>        INFO/SCRIPTS/VERIFYSCRIPT)      $RPM -q --qf "%{VERIFYSCRIPT}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L152' name='L152'></a>        INFO/SCRIPTS/ALL)               $RPM -q --scripts -- "$1" &gt; "$3"; exit 0;;
+<a id='L153' name='L153'></a>        INFO/SUMMARY)           $RPM -q --qf "%{SUMMARY}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L154' name='L154'></a>        INFO/OS)                $RPM -q --qf "%{OS}\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L155' name='L155'></a>        INFO/CHANGELOG)         $RPM -q --qf "[* %{CHANGELOGTIME:date} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L156' name='L156'></a>        INFO/SIZE)              $RPM -q --qf "%{SIZE} bytes\n" -- "$1" &gt; "$3"; exit 0;;
+<a id='L157' name='L157'></a>        *)
+<a id='L158' name='L158'></a>            cp "/$2" "$3"
+<a id='L159' name='L159'></a>    esac
+<a id='L160' name='L160'></a>}
+<a id='L161' name='L161'></a> 
+<a id='L162' name='L162'></a>mcrpmfs_run ()
+<a id='L163' name='L163'></a>{
+<a id='L164' name='L164'></a>    case "$2" in
+<a id='L165' name='L165'></a>        UNINSTALL) echo "Uninstalling $1"; rpm -e -- "$1"; exit 0;;
+<a id='L166' name='L166'></a>    esac
+<a id='L167' name='L167'></a>}
+<a id='L168' name='L168'></a> 
+<a id='L169' name='L169'></a>name=`sed 's/.*\///;s/\.trpm$//' "$2"`
+<a id='L170' name='L170'></a> 
+<a id='L171' name='L171'></a>case "$1" in
+<a id='L172' name='L172'></a>  list) mcrpmfs_list "$name"; exit 0;;
+<a id='L173' name='L173'></a>  copyout) mcrpmfs_copyout "$name" "$3" "$4"; exit 0;;
+<a id='L174' name='L174'></a>  run) mcrpmfs_run "$name" "$3"; exit 1;;
+<a id='L175' name='L175'></a>esac
+<a id='L176' name='L176'></a>exit 1
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+176 src/vfs/extfs/helpers/trpm'  /> */</em>
+</body>
+</html>

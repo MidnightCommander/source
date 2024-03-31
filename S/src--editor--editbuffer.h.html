@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/editor/editbuffer.h</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L72'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L110'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--editor.html'>editor</a>/editbuffer.h</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--editor.html'>editor</a>/editbuffer.h</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L72'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L110'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/editor/editbuffer.h'  /> */</em>
+<hr />
+<h2 class='header'><a href='../J/editbuffer.h.html' title='Multiple included from 2 places.'>INCLUDED FROM</a></h2>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L72' title='Defined at 72.'>edit_buffer_get_current_byte</a></li>
+<li><a href='#L80' title='Defined at 80.'>edit_buffer_get_previous_byte</a></li>
+<li><a href='#L95' title='Defined at 95.'>edit_buffer_get_current_bol</a></li>
+<li><a href='#L110' title='Defined at 110.'>edit_buffer_get_current_eol</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/** \file</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'> *  \brief Header: text keep buffer for WEdit</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'> */</em>
+<a id='L4' name='L4'></a>   4 
+<a id='L5' name='L5'></a>   5 <em class='sharp'>#ifndef</em> <a href='../S/src--editor--editbuffer.h.html#L6' title='Defined at 6 in src/editor/editbuffer.h.'>MC__EDIT_BUFFER_H</a>
+<a id='L6' name='L6'></a>   6 <em class='sharp'>#define</em> <a href='../S/src--editor--editbuffer.h.html#L5' title='Referred from 5 in src/editor/editbuffer.h.'>MC__EDIT_BUFFER_H</a>
+<a id='L7' name='L7'></a>   7 
+<a id='L8' name='L8'></a>   8 <em class='comment'>/*** typedefs(not structures) and defined constants **********************************************/</em>
+<a id='L9' name='L9'></a>   9 
+<a id='L10' name='L10'></a>  10 <em class='comment'>/*** enums ***************************************************************************************/</em>
+<a id='L11' name='L11'></a>  11 
+<a id='L12' name='L12'></a>  12 <em class='comment'>/*** structures declarations (and typedefs of structures)*****************************************/</em>
+<a id='L13' name='L13'></a>  13 
+<a id='L14' name='L14'></a>  14 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong> edit_buffer_struct
+<a id='L15' name='L15'></a>  15 <em class='brace'>{</em>
+<a id='L16' name='L16'></a>  16     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/curs1.html' title='Multiple used in 160 places.'>curs1</a>;                <em class='comment'>/* position of the cursor from the beginning of the file. */</em>
+<a id='L17' name='L17'></a>  17     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/curs2.html' title='Multiple used in 18 places.'>curs2</a>;                <em class='comment'>/* position from the end of the file */</em>
+<a id='L18' name='L18'></a>  18     <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/b1.html' title='Multiple used in 38 places.'>b1</a>;              <em class='comment'>/* all data up to curs1 */</em>
+<a id='L19' name='L19'></a>  19     <a href='../Y/GPtrArray.html' title='Multiple used in 76 places.'>GPtrArray</a> *<a href='../Y/b2.html' title='Multiple used in 32 places.'>b2</a>;              <em class='comment'>/* all data from end of file down to curs2 */</em>
+<a id='L20' name='L20'></a>  20     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>;                 <em class='comment'>/* file size */</em>
+<a id='L21' name='L21'></a>  21     <strong class='reserved'>long</strong> <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>;                 <em class='comment'>/* total lines in the file */</em>
+<a id='L22' name='L22'></a>  22     <strong class='reserved'>long</strong> <a href='../Y/curs_line.html' title='Multiple used in 54 places.'>curs_line</a>;             <em class='comment'>/* line number of the cursor. */</em>
+<a id='L23' name='L23'></a>  23 <em class='brace'>}</em> <a href='../R/edit_buffer_t.html' title='Multiple referred from 57 places.'>edit_buffer_t</a>;
+<a id='L24' name='L24'></a>  24 
+<a id='L25' name='L25'></a>  25 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong> edit_buffer_read_file_status_msg_struct
+<a id='L26' name='L26'></a>  26 <em class='brace'>{</em>
+<a id='L27' name='L27'></a>  27     <a href='../D/simple_status_msg_t.html' title='Multiple defined in 2 places.'>simple_status_msg_t</a> <a href='../Y/status_msg.html' title='Multiple used in 5 places.'>status_msg</a>;     <em class='comment'>/* base class */</em>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/first.html' title='Multiple used in 45 places.'>first</a>;
+<a id='L30' name='L30'></a>  30     <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> *<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>;
+<a id='L31' name='L31'></a>  31     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/loaded.html' title='Multiple used in 23 places.'>loaded</a>;
+<a id='L32' name='L32'></a>  32 <em class='brace'>}</em> <a href='../R/edit_buffer_read_file_status_msg_t.html' title='Multiple referred from 4 places.'>edit_buffer_read_file_status_msg_t</a>;
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='comment'>/*** global variables defined in .c file *********************************************************/</em>
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='comment'>/*** declarations of public functions ************************************************************/</em>
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <strong class='reserved'>void</strong> <a href='../S/src--editor--editbuffer.c.html#L147' title='Defined at 147 in src/editor/editbuffer.c.'>edit_buffer_init</a> (<a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>);
+<a id='L39' name='L39'></a>  39 <strong class='reserved'>void</strong> <a href='../S/src--editor--editbuffer.c.html#L167' title='Defined at 167 in src/editor/editbuffer.c.'>edit_buffer_clean</a> (<a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>);
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <strong class='reserved'>int</strong> <a href='../S/src--editor--editbuffer.c.html#L187' title='Defined at 187 in src/editor/editbuffer.c.'>edit_buffer_get_byte</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>);
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#ifdef</em> <a href='../S/tests--lib--vfs--tempdir.c.html#L31' title='Defined at 31 in tests/lib/vfs/tempdir.c.'>HAVE_CHARSET</a>
+<a id='L43' name='L43'></a>  43 <strong class='reserved'>int</strong> <a href='../S/src--editor--editbuffer.c.html#L212' title='Defined at 212 in src/editor/editbuffer.c.'>edit_buffer_get_utf</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>, <strong class='reserved'>int</strong> *<a href='../Y/char_length.html' title='Multiple used in 70 places.'>char_length</a>);
+<a id='L44' name='L44'></a>  44 <strong class='reserved'>int</strong> <a href='../S/src--editor--editbuffer.c.html#L275' title='Defined at 275 in src/editor/editbuffer.c.'>edit_buffer_get_prev_utf</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 70 places.'>byte_index</a>, <strong class='reserved'>int</strong> *<a href='../Y/char_length.html' title='Multiple used in 70 places.'>char_length</a>);
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#endif</em>
+<a id='L46' name='L46'></a>  46 <strong class='reserved'>long</strong> <a href='../S/src--editor--editbuffer.c.html#L326' title='Defined at 326 in src/editor/editbuffer.c.'>edit_buffer_count_lines</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/first.html' title='Multiple used in 45 places.'>first</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/last.html' title='Multiple used in 31 places.'>last</a>);
+<a id='L47' name='L47'></a>  47 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--editor--editbuffer.c.html#L351' title='Defined at 351 in src/editor/editbuffer.c.'>edit_buffer_get_bol</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/current.html' title='Multiple used in 573 places.'>current</a>);
+<a id='L48' name='L48'></a>  48 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--editor--editbuffer.c.html#L373' title='Defined at 373 in src/editor/editbuffer.c.'>edit_buffer_get_eol</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/current.html' title='Multiple used in 573 places.'>current</a>);
+<a id='L49' name='L49'></a>  49 <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../S/src--editor--editbuffer.c.html#L397' title='Defined at 397 in src/editor/editbuffer.c.'>edit_buffer_get_word_from_pos</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/start_pos.html' title='Multiple used in 17 places.'>start_pos</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> * <a href='../S/src--editor--etags.c.html#L202' title='Defined at 202 in src/editor/etags.c.'>start</a>,
+<a id='L50' name='L50'></a>  50                                         <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> * <a href='../Y/cut.html' title='Multiple used in 3 places.'>cut</a>);
+<a id='L51' name='L51'></a>  51 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--editor--editbuffer.c.html#L443' title='Defined at 443 in src/editor/editbuffer.c.'>edit_buffer_find_word_start</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> * <a href='../S/src--editor--format.c.html#L301' title='Defined at 301 in src/editor/format.c.'>word_start</a>,
+<a id='L52' name='L52'></a>  52                                       <a href='../Y/gsize.html' title='Multiple used in 172 places.'>gsize</a> * <a href='../Y/word_len.html' title='Multiple used in 30 places.'>word_len</a>);
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <strong class='reserved'>void</strong> <a href='../S/src--editor--editbuffer.c.html#L492' title='Defined at 492 in src/editor/editbuffer.c.'>edit_buffer_insert</a> (<a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <strong class='reserved'>int</strong> <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>);
+<a id='L55' name='L55'></a>  55 <strong class='reserved'>void</strong> <a href='../S/src--editor--editbuffer.c.html#L524' title='Defined at 524 in src/editor/editbuffer.c.'>edit_buffer_insert_ahead</a> (<a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <strong class='reserved'>int</strong> <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>);
+<a id='L56' name='L56'></a>  56 <strong class='reserved'>int</strong> <a href='../S/src--editor--editbuffer.c.html#L556' title='Defined at 556 in src/editor/editbuffer.c.'>edit_buffer_delete</a> (<a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>);
+<a id='L57' name='L57'></a>  57 <strong class='reserved'>int</strong> <a href='../S/src--editor--editbuffer.c.html#L596' title='Defined at 596 in src/editor/editbuffer.c.'>edit_buffer_backspace</a> (<a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>);
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--editor--editbuffer.c.html#L641' title='Defined at 641 in src/editor/editbuffer.c.'>edit_buffer_get_forward_offset</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/current.html' title='Multiple used in 573 places.'>current</a>, <strong class='reserved'>long</strong> <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>,
+<a id='L60' name='L60'></a>  60                                       <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/upto.html' title='Multiple used in 12 places.'>upto</a>);
+<a id='L61' name='L61'></a>  61 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--editor--editbuffer.c.html#L673' title='Defined at 673 in src/editor/editbuffer.c.'>edit_buffer_get_backward_offset</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/current.html' title='Multiple used in 573 places.'>current</a>, <strong class='reserved'>long</strong> <a href='../Y/lines.html' title='Multiple used in 404 places.'>lines</a>);
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--editor--editbuffer.c.html#L696' title='Defined at 696 in src/editor/editbuffer.c.'>edit_buffer_read_file</a> (<a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <strong class='reserved'>int</strong> <a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>,
+<a id='L64' name='L64'></a>  64                              <a href='../S/src--editor--editbuffer.h.html#L32' title='Defined at 32 in src/editor/editbuffer.h.'>edit_buffer_read_file_status_msg_t</a> * <a href='../Y/sm.html' title='Multiple used in 110 places.'>sm</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> * <a href='../Y/aborted.html' title='Multiple used in 8 places.'>aborted</a>);
+<a id='L65' name='L65'></a>  65 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--editor--editbuffer.c.html#L810' title='Defined at 810 in src/editor/editbuffer.c.'>edit_buffer_write_file</a> (<a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <strong class='reserved'>int</strong> <a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a>);
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <strong class='reserved'>int</strong> <a href='../S/src--editor--editbuffer.c.html#L884' title='Defined at 884 in src/editor/editbuffer.c.'>edit_buffer_calc_percent</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a>);
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <em class='comment'>/*** inline functions ****************************************************************************/</em>
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <strong class='reserved'>int</strong>
+<a id='L72' name='L72'></a>  72 <a href='../R/edit_buffer_get_current_byte.html' title='Multiple referred from 22 places.'>edit_buffer_get_current_byte</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L80'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L110'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+72 src/editor/editbuffer.h'  /> */</em>
+<a id='L73' name='L73'></a>  73 <em class='brace'>{</em>
+<a id='L74' name='L74'></a>  74     <strong class='reserved'>return</strong> <a href='../S/src--editor--editbuffer.c.html#L187' title='Defined at 187 in src/editor/editbuffer.c.'>edit_buffer_get_byte</a> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>-&gt;<a href='../Y/curs1.html' title='Multiple used in 160 places.'>curs1</a>);
+<a id='L75' name='L75'></a>  75 <em class='brace'>}</em>
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L78' name='L78'></a>  78 
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <strong class='reserved'>int</strong>
+<a id='L80' name='L80'></a>  80 <a href='../R/edit_buffer_get_previous_byte.html' title='Multiple referred from 8 places.'>edit_buffer_get_previous_byte</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>)
+     <em class='comment'>/* <a href='#L72'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L95'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L72'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L110'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+80 src/editor/editbuffer.h'  /> */</em>
+<a id='L81' name='L81'></a>  81 <em class='brace'>{</em>
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>return</strong> <a href='../S/src--editor--editbuffer.c.html#L187' title='Defined at 187 in src/editor/editbuffer.c.'>edit_buffer_get_byte</a> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>-&gt;<a href='../Y/curs1.html' title='Multiple used in 160 places.'>curs1</a> - 1);
+<a id='L83' name='L83'></a>  83 <em class='brace'>}</em>
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L86' name='L86'></a>  86 <em class='comment'>/**</em>
+<a id='L87' name='L87'></a>  87 <em class='comment'> * Get "begin-of-line" offset of current line</em>
+<a id='L88' name='L88'></a>  88 <em class='comment'> *</em>
+<a id='L89' name='L89'></a>  89 <em class='comment'> * @param buf editor buffer</em>
+<a id='L90' name='L90'></a>  90 <em class='comment'> *</em>
+<a id='L91' name='L91'></a>  91 <em class='comment'> * @return index of first char of current line</em>
+<a id='L92' name='L92'></a>  92 <em class='comment'> */</em>
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a>
+<a id='L95' name='L95'></a>  95 <a href='../R/edit_buffer_get_current_bol.html' title='Multiple referred from 22 places.'>edit_buffer_get_current_bol</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>)
+     <em class='comment'>/* <a href='#L80'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L110'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L72'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L110'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+95 src/editor/editbuffer.h'  /> */</em>
+<a id='L96' name='L96'></a>  96 <em class='brace'>{</em>
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>return</strong> <a href='../S/src--editor--editbuffer.c.html#L351' title='Defined at 351 in src/editor/editbuffer.c.'>edit_buffer_get_bol</a> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>-&gt;<a href='../Y/curs1.html' title='Multiple used in 160 places.'>curs1</a>);
+<a id='L98' name='L98'></a>  98 <em class='brace'>}</em>
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L101' name='L101'></a> 101 <em class='comment'>/**</em>
+<a id='L102' name='L102'></a> 102 <em class='comment'> * Get "end-of-line" offset of current line</em>
+<a id='L103' name='L103'></a> 103 <em class='comment'> *</em>
+<a id='L104' name='L104'></a> 104 <em class='comment'> * @param buf editor buffer</em>
+<a id='L105' name='L105'></a> 105 <em class='comment'> *</em>
+<a id='L106' name='L106'></a> 106 <em class='comment'> * @return index of first char of current line + 1</em>
+<a id='L107' name='L107'></a> 107 <em class='comment'> */</em>
+<a id='L108' name='L108'></a> 108 
+<a id='L109' name='L109'></a> 109 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a>
+<a id='L110' name='L110'></a> 110 <a href='../R/edit_buffer_get_current_eol.html' title='Multiple referred from 6 places.'>edit_buffer_get_current_eol</a> (<strong class='reserved'>const</strong> <a href='../S/src--editor--editbuffer.h.html#L23' title='Defined at 23 in src/editor/editbuffer.h.'>edit_buffer_t</a> * <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>)
+     <em class='comment'>/* <a href='#L95'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L72'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+110 src/editor/editbuffer.h'  /> */</em>
+<a id='L111' name='L111'></a> 111 <em class='brace'>{</em>
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>return</strong> <a href='../S/src--editor--editbuffer.c.html#L373' title='Defined at 373 in src/editor/editbuffer.c.'>edit_buffer_get_eol</a> (<a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>, <a href='../Y/buf.html' title='Multiple used in 651 places.'>buf</a>-&gt;<a href='../Y/curs1.html' title='Multiple used in 160 places.'>curs1</a>);
+<a id='L113' name='L113'></a> 113 <em class='brace'>}</em>
+<a id='L114' name='L114'></a> 114 
+<a id='L115' name='L115'></a> 115 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117 <em class='sharp'>#endif</em> <em class='comment'>/* MC__EDIT_BUFFER_H */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L72'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L110'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+117 src/editor/editbuffer.h'  /> */</em>
+</body>
+</html>

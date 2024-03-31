@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>contrib/README.xterm</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/contrib.html'>contrib</a>/README.xterm</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/contrib.html'>contrib</a>/README.xterm</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 contrib/README.xterm'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>                     Solving keyboard related problems
+<a id='L2' name='L2'></a>                               with XTERM
+<a id='L3' name='L3'></a>                        and GNU Midnight Commander
+<a id='L4' name='L4'></a>                       (and other programs as well).
+<a id='L5' name='L5'></a> 
+<a id='L6' name='L6'></a>Xterm brings a handful of problems with input keys and their translations.
+<a id='L7' name='L7'></a>Some of these problems include xterm's failure to make a difference between
+<a id='L8' name='L8'></a>shifted and not shifted function keys (many keyboards do not have more than
+<a id='L9' name='L9'></a>10 or 12 function keys, so it is useful to generate higher function keys (11
+<a id='L10' name='L10'></a>- 20) by pressing Shift and function key - 10 (e.g. Shift+F3 is F13). Xterm
+<a id='L11' name='L11'></a>also doesn't send Alt+character and Meta+character as something other than
+<a id='L12' name='L12'></a>plain character. Also, home key does not work on most systems. And keypad
+<a id='L13' name='L13'></a>operator characters (+, -, /, *) send different sequences than normal +, -,
+<a id='L14' name='L14'></a>/, * (or sometimes do not send anything).
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>Please note that if you want to use the Alt key on an XTerm, you have to
+<a id='L17' name='L17'></a>make sure you use:
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>XTerm*eightBitInput: false
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>Otherwise, you will just get accented keys.
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a>Fortunately this can be solved, since xterm is written on top of the 
+<a id='L24' name='L24'></a>X Toolkit Intrinsics, which has a built-in feature of event translation
+<a id='L25' name='L25'></a>tables that can be specified using X resources. This doesn't apply to rxvt,
+<a id='L26' name='L26'></a>where the only solution to this problem would be patching rxvt's sources and
+<a id='L27' name='L27'></a>recompiling. So from now on, we are speaking only about xterm (and its
+<a id='L28' name='L28'></a>modifications, like color_xterm and ansi_xterm).
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>Xterm brings two new Xt widgets (if you don't know what they are it doesn't
+<a id='L31' name='L31'></a>matter), vt100 and tek4014 (these are used for the terminal display in vt100
+<a id='L32' name='L32'></a>and tektronics mode). The translation table is specified in
+<a id='L33' name='L33'></a>*vt100.translations and *tek4014.translations resources.
+<a id='L34' name='L34'></a>You can see a sample in xterm.ad file in this directory. 
+<a id='L35' name='L35'></a> 
+<a id='L36' name='L36'></a>If you want to install these translations, bear in mind that you have to
+<a id='L37' name='L37'></a>keep your terminfo and termcap in sync with these. So if you install
+<a id='L38' name='L38'></a>xterm.ad, you have to install xterm.ti and xterm.tcap (or do necessary
+<a id='L39' name='L39'></a>changes yourself).
+<a id='L40' name='L40'></a> 
+<a id='L41' name='L41'></a>xterm.ad has to be loaded into the Xrm (X resource manager), either by xterm
+<a id='L42' name='L42'></a>itself or by xrdb utility. There are many places you may want to install it
+<a id='L43' name='L43'></a>to; the decision is yours. Preferably it should go to your personal
+<a id='L44' name='L44'></a>$HOME/.Xdefaults file (if you have any). This file is automatically loaded
+<a id='L45' name='L45'></a>using xrdb whenever you start the X server (it is done by startx and openwin
+<a id='L46' name='L46'></a>scripts). Another possibility is to put this into
+<a id='L47' name='L47'></a>$X11ROOT/lib/X11/app-defaults/XTerm or wherever your app-defaults file of
+<a id='L48' name='L48'></a>xterm is and whatever is its name (sometimes it will have to be XTerm-ansi,
+<a id='L49' name='L49'></a>XTerm-color etc.) Or you can put this anywhere and call 
+<a id='L50' name='L50'></a>          xrdb xterm.ad
+<a id='L51' name='L51'></a>from any script you run on X11 startup.
+<a id='L52' name='L52'></a> 
+<a id='L53' name='L53'></a>xterm.ti (terminfo database source) is installed by running `tic xterm.ti'.
+<a id='L54' name='L54'></a>tic will compile it and place it into your TERMINFO directory.
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a>xterm.tcap is the xterm (and xterm-color) termcap entry. It is based on the
+<a id='L57' name='L57'></a>newest termcap database from http://www.ccil.org/~esr/ncurses.html, but
+<a id='L58' name='L58'></a>contains a bunch of changes to make all the above mentioned keys work. Even
+<a id='L59' name='L59'></a>if mc is compiled so that it uses terminfo, you need to install the termcap
+<a id='L60' name='L60'></a>entry so that other programs which use termcap will behave correctly. You
+<a id='L61' name='L61'></a>have to edit your /etc/termcap and replace xterm and xterm-color entries
+<a id='L62' name='L62'></a>with those from xterm.tcap.
+<a id='L63' name='L63'></a> 
+<a id='L64' name='L64'></a>The xterm.ad translation table contains many items (some of them may be
+<a id='L65' name='L65'></a>unnecessary) but are included only to make it work on all different xterms
+<a id='L66' name='L66'></a>(xterm terminfo and termcap databases have different sequences for the same
+<a id='L67' name='L67'></a>keys in every different database, so xterm.ad works as a standard to make
+<a id='L68' name='L68'></a>xterm.ti and termcap happy). If you find that xterm works well even if you
+<a id='L69' name='L69'></a>delete some lines from the translations, feel free to do it.
+<a id='L70' name='L70'></a> 
+<a id='L71' name='L71'></a>By default,  Alt+character keys received by mc are generated in xterm.ad by
+<a id='L72' name='L72'></a>Alt modifier plus the key. On some systems, you may want to change this to
+<a id='L73' name='L73'></a>the Meta modifier (e.g. if the Alt modifier is missing). You do it by
+<a id='L74' name='L74'></a>replacing a letter s at the beginning of table lines with letter m.
+<a id='L75' name='L75'></a> 
+<a id='L76' name='L76'></a>And what you might want to know, if you are going to change anything, is:
+<a id='L77' name='L77'></a>Each line looks like
+<a id='L78' name='L78'></a>        modifiers&lt;Key&gt;keyname: string("something") \n\
+<a id='L79' name='L79'></a>where modifiers can be:
+<a id='L80' name='L80'></a>a for alt
+<a id='L81' name='L81'></a>m for meta
+<a id='L82' name='L82'></a>c for control
+<a id='L83' name='L83'></a>button1 (2, 3) for mouse buttons.
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>  The string is generated whenever the named key is pressed while the
+<a id='L86' name='L86'></a>modifiers are in a state matching the specification.  Naming a modifier
+<a id='L87' name='L87'></a>specifies that the modifier must be pressed.  A ~ in front of a modifier
+<a id='L88' name='L88'></a>name specifies that the modifier must NOT be pressed.  If the set of
+<a id='L89' name='L89'></a>modifiers is preceded by !, unmentioned modifiers must not be
+<a id='L90' name='L90'></a>pressed; otherwise their state is ignored.
+<a id='L91' name='L91'></a> 
+<a id='L92' name='L92'></a>After &lt;Key&gt; you specify a name of the key (if you don't know a canonical
+<a id='L93' name='L93'></a>name of any key, see $X11ROOT/include/X11/keysymdef.h (keynames are the
+<a id='L94' name='L94'></a>names there without leading XK_). Then there can be any sequence of string
+<a id='L95' name='L95'></a>statements which send the string to the tty line, as if the user typed that
+<a id='L96' name='L96'></a>sequence of characters. If it has the form string(0xXX), where X's are
+<a id='L97' name='L97'></a>hexadecimal digits, then the ascii character of that value is sent rather
+<a id='L98' name='L98'></a>than 0xXX.
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>This is a subset of all the translation table features. If you want a
+<a id='L101' name='L101'></a>complete reference, see xterm(1) and X Toolkit Intrinsics manual Appendix B.
+<a id='L102' name='L102'></a> 
+<a id='L103' name='L103'></a>Please, if you find any problems or errors in this stuff, let me know by
+<a id='L104' name='L104'></a>e-mail to 
+<a id='L105' name='L105'></a>mc-devel@lists.midnight-commander.org.
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+109 contrib/README.xterm'  /> */</em>
+</body>
+</html>

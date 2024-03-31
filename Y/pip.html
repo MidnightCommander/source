@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>pip</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L600'>pip</a>               600 src/vfs/extfs/extfs.c extfs_read_archive (mc_pipe_t * pip, struct extfs_super_t *archive, GError ** error)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L610'>pip</a>               610 src/vfs/extfs/extfs.c         pip-&gt;out.len = MC_PIPE_BUFSIZE;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L611'>pip</a>               611 src/vfs/extfs/extfs.c         pip-&gt;err.len = MC_PIPE_BUFSIZE;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L613'>pip</a>               613 src/vfs/extfs/extfs.c         mc_pread (pip, error);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L618'>pip</a>               618 src/vfs/extfs/extfs.c         if (pip-&gt;err.len &gt; 0)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L622'>pip</a>               622 src/vfs/extfs/extfs.c                 err_msg = g_string_new_len (pip-&gt;err.buf, pip-&gt;err.len);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L627'>pip</a>               627 src/vfs/extfs/extfs.c                 g_string_append_len (err_msg, pip-&gt;err.buf, pip-&gt;err.len);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L631'>pip</a>               631 src/vfs/extfs/extfs.c         if (pip-&gt;out.len == MC_PIPE_STREAM_EOF)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L634'>pip</a>               634 src/vfs/extfs/extfs.c         if (pip-&gt;out.len == 0)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L637'>pip</a>               637 src/vfs/extfs/extfs.c         if (pip-&gt;out.len == MC_PIPE_ERROR_READ)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L640'>pip</a>               640 src/vfs/extfs/extfs.c         while (ret != -1 &amp;&amp; (buffer = mc_pstream_get_string (&amp;pip-&gt;out)) != NULL)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L728'>pip</a>               728 src/vfs/extfs/extfs.c     mc_pipe_t *pip;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L731'>pip</a>               731 src/vfs/extfs/extfs.c     pip = extfs_open_archive (fstype, name, archive, &amp;error);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L735'>pip</a>               735 src/vfs/extfs/extfs.c     if (pip == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L746'>pip</a>               746 src/vfs/extfs/extfs.c         result = extfs_read_archive (pip, a, &amp;error);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L757'>pip</a>               757 src/vfs/extfs/extfs.c         mc_pclose (pip, NULL);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L924'>pip</a>               924 src/vfs/extfs/extfs.c     mc_pipe_t *pip;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L974'>pip</a>               974 src/vfs/extfs/extfs.c     pip = mc_popen (cmd, FALSE, TRUE, &amp;error);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L977'>pip</a>               977 src/vfs/extfs/extfs.c     if (pip == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L984'>pip</a>               984 src/vfs/extfs/extfs.c     pip-&gt;err.null_term = TRUE;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L986'>pip</a>               986 src/vfs/extfs/extfs.c     mc_pread (pip, &amp;error);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L993'>pip</a>               993 src/vfs/extfs/extfs.c     else if (pip-&gt;err.len &gt; 0)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L994'>pip</a>               994 src/vfs/extfs/extfs.c         message (D_ERROR, MSG_ERROR, _("EXTFS virtual file system:\n%s"), pip-&gt;err.buf);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L996'>pip</a>               996 src/vfs/extfs/extfs.c     mc_pclose (pip, NULL);</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L146'>pip</a>               146 src/vfs/sfs/sfs.c     mc_pipe_t *pip;</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L226'>pip</a>               226 src/vfs/sfs/sfs.c     pip = mc_popen (pad, FALSE, TRUE, &amp;error);</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L227'>pip</a>               227 src/vfs/sfs/sfs.c     if (pip == NULL)</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L234'>pip</a>               234 src/vfs/sfs/sfs.c     pip-&gt;err.null_term = TRUE;</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L236'>pip</a>               236 src/vfs/sfs/sfs.c     mc_pread (pip, &amp;error);</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L241'>pip</a>               241 src/vfs/sfs/sfs.c         mc_pclose (pip, NULL);</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L245'>pip</a>               245 src/vfs/sfs/sfs.c     if (pip-&gt;err.len &gt; 0)</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L246'>pip</a>               246 src/vfs/sfs/sfs.c         message (D_ERROR, MSG_ERROR, _("SFS virtual file system:\n%s"), pip-&gt;err.buf);</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L248'>pip</a>               248 src/vfs/sfs/sfs.c     mc_pclose (pip, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--utilunix__mc_pstream_get_string.c.html#L284'>pip</a>               284 tests/lib/utilunix__mc_pstream_get_string.c     mc_pipe_t *pip;</span>
+<span class='curline'><a href='../S/tests--lib--utilunix__mc_pstream_get_string.c.html#L309'>pip</a>               309 tests/lib/utilunix__mc_pstream_get_string.c     pip = test_mc_popen ();</span>
+<span class='curline'><a href='../S/tests--lib--utilunix__mc_pstream_get_string.c.html#L315'>pip</a>               315 tests/lib/utilunix__mc_pstream_get_string.c         test_mc_pread (pip);</span>
+<span class='curline'><a href='../S/tests--lib--utilunix__mc_pstream_get_string.c.html#L317'>pip</a>               317 tests/lib/utilunix__mc_pstream_get_string.c         if (pip-&gt;out.len == MC_PIPE_STREAM_EOF)</span>
+<span class='curline'><a href='../S/tests--lib--utilunix__mc_pstream_get_string.c.html#L320'>pip</a>               320 tests/lib/utilunix__mc_pstream_get_string.c         while ((line = mc_pstream_get_string (&amp;pip-&gt;out)) != NULL)</span>
+</pre>
+</body>
+</html>

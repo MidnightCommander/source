@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/filemanager/command.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.5.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L84'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L249'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--filemanager.html'>filemanager</a>/command.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--filemanager.html'>filemanager</a>/command.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L84'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L249'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/filemanager/command.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L84' title='Defined at 84.'>enter</a></li>
+<li><a href='#L186' title='Defined at 186.'>command_callback</a></li>
+<li><a href='#L206' title='Defined at 206.'>command_new</a></li>
+<li><a href='#L230' title='Defined at 230.'>command_set_default_colors</a></li>
+<li><a href='#L249' title='Defined at 249.'>command_insert</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Command line widget.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   This widget is derived from the WInput widget, it's used to cope</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   with all the magic of the command input line, we depend on some</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   help from the program's callback.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Copyright (C) 1995-2024</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   Written by:</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   Slava Zanko &lt;slavazanko@gmail.com&gt;, 2013</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2011-2022</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'></em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'></em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'></em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L25' name='L25'></a>  25 <em class='comment'></em>
+<a id='L26' name='L26'></a>  26 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'>   along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'> */</em>
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='comment'>/** \file command.c</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'> *  \brief Source: command line widget</em>
+<a id='L32' name='L32'></a>  32 <em class='comment'> */</em>
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> &lt;stdlib.h&gt;
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> &lt;string.h&gt;
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#include</em> "<a href='lib--vfs--vfs.h.html'>lib/vfs/vfs.h</a>"        <em class='comment'>/* vfs_current_is_local() */</em>
+<a id='L41' name='L41'></a>  41 <em class='sharp'>#include</em> "<a href='lib--skin.h.html'>lib/skin.h</a>"           <em class='comment'>/* DEFAULT_COLOR */</em>
+<a id='L42' name='L42'></a>  42 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"           <em class='comment'>/* whitespace() */</em>
+<a id='L43' name='L43'></a>  43 <em class='sharp'>#include</em> "<a href='lib--widget.h.html'>lib/widget.h</a>"
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='sharp'>#include</em> "<a href='src--setup.h.html'>src/setup.h</a>"          <em class='comment'>/* quit */</em>
+<a id='L46' name='L46'></a>  46 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_SUBSHELL.html' title='Multiple used in 39 places.'>ENABLE_SUBSHELL</a>
+<a id='L47' name='L47'></a>  47 <em class='sharp'>#include</em> "<a href='src--subshell--subshell.h.html'>src/subshell/subshell.h</a>"
+<a id='L48' name='L48'></a>  48 <em class='sharp'>#endif</em>
+<a id='L49' name='L49'></a>  49 <em class='sharp'>#include</em> "<a href='src--execute.h.html'>src/execute.h</a>"        <em class='comment'>/* shell_execute() */</em>
+<a id='L50' name='L50'></a>  50 <em class='sharp'>#include</em> "<a href='src--usermenu.h.html'>src/usermenu.h</a>"       <em class='comment'>/* expand_format() */</em>
+<a id='L51' name='L51'></a>  51 
+<a id='L52' name='L52'></a>  52 <em class='sharp'>#include</em> "<a href='src--filemanager--filemanager.h.html'>filemanager.h</a>"        <em class='comment'>/* quiet_quit_cmd(), layout.h */</em>
+<a id='L53' name='L53'></a>  53 <em class='sharp'>#include</em> "<a href='src--filemanager--cd.h.html'>cd.h</a>"                 <em class='comment'>/* cd_to() */</em>
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='sharp'>#include</em> "<a href='src--filemanager--command.h.html'>command.h</a>"
+<a id='L56' name='L56'></a>  56 
+<a id='L57' name='L57'></a>  57 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L58' name='L58'></a>  58 
+<a id='L59' name='L59'></a>  59 <em class='comment'>/* This holds the command line */</em>
+<a id='L60' name='L60'></a>  60 <a href='../S/lib--widget--input.h.html#L73' title='Defined at 73 in lib/widget/input.h.'>WInput</a> *<a href='../Y/cmdline.html' title='Multiple used in 39 places.'>cmdline</a>;
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L69' name='L69'></a>  69 
+<a id='L70' name='L70'></a>  70 <em class='comment'>/* Color styles command line */</em>
+<a id='L71' name='L71'></a>  71 <strong class='reserved'>static</strong> <a href='../Y/input_colors_t.html' title='Multiple used in 4 places.'>input_colors_t</a> <a href='../Y/command_colors.html' title='Multiple used in 6 places.'>command_colors</a>;
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L74' name='L74'></a>  74 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L75' name='L75'></a>  75 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 <em class='comment'>/** Handle Enter on the command line</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'> *</em>
+<a id='L79' name='L79'></a>  79 <em class='comment'> * @param lc_cmdline string for handling</em>
+<a id='L80' name='L80'></a>  80 <em class='comment'> * @return MSG_HANDLED on success else MSG_NOT_HANDLED</em>
+<a id='L81' name='L81'></a>  81 <em class='comment'> */</em>
+<a id='L82' name='L82'></a>  82 
+<a id='L83' name='L83'></a>  83 <strong class='reserved'>static</strong> <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a>
+<a id='L84' name='L84'></a>  84 <a href='../S/src--filemanager--command.c.html#L193' title='Referred from 193 in src/filemanager/command.c.'>enter</a> (<a href='../S/lib--widget--input.h.html#L73' title='Defined at 73 in lib/widget/input.h.'>WInput</a> * <a href='../Y/lc_cmdline.html' title='Multiple used in 5 places.'>lc_cmdline</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L186'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L249'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+84 src/filemanager/command.c'  /> */</em>
+<a id='L85' name='L85'></a>  85 <em class='brace'>{</em>
+<a id='L86' name='L86'></a>  86     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>;
+<a id='L87' name='L87'></a>  87 
+<a id='L88' name='L88'></a>  88     <strong class='reserved'>if</strong> (!<a href='../Y/command_prompt.html' title='Multiple used in 22 places.'>command_prompt</a>)
+<a id='L89' name='L89'></a>  89         <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L64' title='Defined at 64 in lib/widget/widget-common.h.'>MSG_HANDLED</a>;
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a> = <a href='../S/lib--widget--input.h.html#L132' title='Defined at 132 in lib/widget/input.h.'>input_get_ctext</a> (<a href='../Y/lc_cmdline.html' title='Multiple used in 5 places.'>lc_cmdline</a>);
+<a id='L92' name='L92'></a>  92 
+<a id='L93' name='L93'></a>  93     <em class='comment'>/* Any initial whitespace should be removed at this point */</em>
+<a id='L94' name='L94'></a>  94     <strong class='reserved'>while</strong> (<a href='../S/lib--util.h.html#L31' title='Defined at 31 in lib/util.h.'>whiteness</a> (*<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>))
+<a id='L95' name='L95'></a>  95         <a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>++;
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97     <strong class='reserved'>if</strong> (*<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a> == '\0')
+<a id='L98' name='L98'></a>  98         <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L64' title='Defined at 64 in lib/widget/widget-common.h.'>MSG_HANDLED</a>;
+<a id='L99' name='L99'></a>  99 
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>if</strong> (<a href='../Y/strncmp.html' title='Multiple used in 110 places.'>strncmp</a> (<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>, "cd", 2) == 0 &amp;&amp; (<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>[2] == '\0' || <a href='../S/lib--util.h.html#L30' title='Defined at 30 in lib/util.h.'>whitespace</a> (<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>[2])))
+<a id='L101' name='L101'></a> 101     <em class='brace'>{</em>
+<a id='L102' name='L102'></a> 102         <a href='../S/src--filemanager--cd.c.html#L223' title='Defined at 223 in src/filemanager/cd.c.'>cd_to</a> (<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a> + 2);
+<a id='L103' name='L103'></a> 103         <a href='../S/lib--widget--input.c.html#L1311' title='Defined at 1311 in lib/widget/input.c.'>input_clean</a> (<a href='../Y/lc_cmdline.html' title='Multiple used in 5 places.'>lc_cmdline</a>);
+<a id='L104' name='L104'></a> 104         <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L64' title='Defined at 64 in lib/widget/widget-common.h.'>MSG_HANDLED</a>;
+<a id='L105' name='L105'></a> 105     <em class='brace'>}</em>
+<a id='L106' name='L106'></a> 106     <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/strcmp.html' title='Multiple used in 218 places.'>strcmp</a> (<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>, "exit") == 0)
+<a id='L107' name='L107'></a> 107     <em class='brace'>{</em>
+<a id='L108' name='L108'></a> 108         <a href='../S/lib--widget--input.c.html#L1135' title='Defined at 1135 in lib/widget/input.c.'>input_assign_text</a> (<a href='../Y/lc_cmdline.html' title='Multiple used in 5 places.'>lc_cmdline</a>, "");
+<a id='L109' name='L109'></a> 109         <strong class='reserved'>if</strong> (!<a href='../S/src--filemanager--filemanager.c.html#L1785' title='Defined at 1785 in src/filemanager/filemanager.c.'>quiet_quit_cmd</a> ())
+<a id='L110' name='L110'></a> 110             <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L63' title='Defined at 63 in lib/widget/widget-common.h.'>MSG_NOT_HANDLED</a>;
+<a id='L111' name='L111'></a> 111     <em class='brace'>}</em>
+<a id='L112' name='L112'></a> 112     <strong class='reserved'>else</strong>
+<a id='L113' name='L113'></a> 113     <em class='brace'>{</em>
+<a id='L114' name='L114'></a> 114         <a href='../Y/GString.html' title='Multiple used in 302 places.'>GString</a> *<a href='../Y/command.html' title='Multiple used in 269 places.'>command</a>;
+<a id='L115' name='L115'></a> 115         <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>;
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117         <strong class='reserved'>if</strong> (!<a href='../S/lib--vfs--vfs.c.html#L443' title='Defined at 443 in lib/vfs/vfs.c.'>vfs_current_is_local</a> ())
+<a id='L118' name='L118'></a> 118         <em class='brace'>{</em>
+<a id='L119' name='L119'></a> 119             <a href='../D/message.html' title='Multiple defined in 5 places.'>message</a> (<a href='../S/lib--widget--wtools.h.html#L31' title='Defined at 31 in lib/widget/wtools.h.'>D_ERROR</a>, <a href='../S/lib--widget--wtools.h.html#L14' title='Defined at 14 in lib/widget/wtools.h.'>MSG_ERROR</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("Cannot execute commands on non-local filesystems"));
+<a id='L120' name='L120'></a> 120             <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L63' title='Defined at 63 in lib/widget/widget-common.h.'>MSG_NOT_HANDLED</a>;
+<a id='L121' name='L121'></a> 121         <em class='brace'>}</em>
+<a id='L122' name='L122'></a> 122 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_SUBSHELL.html' title='Multiple used in 39 places.'>ENABLE_SUBSHELL</a>
+<a id='L123' name='L123'></a> 123         <em class='comment'>/* Check this early before we clean command line</em>
+<a id='L124' name='L124'></a> 124 <em class='comment'>         * (will be checked again by shell_execute) */</em>
+<a id='L125' name='L125'></a> 125         <strong class='reserved'>if</strong> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/tty.html' title='Multiple used in 192 places.'>tty</a>.<a href='../Y/use_subshell.html' title='Multiple used in 43 places.'>use_subshell</a> &amp;&amp; <a href='../Y/subshell_state.html' title='Multiple used in 24 places.'>subshell_state</a> != <a href='../S/src--subshell--subshell.h.html#L16' title='Defined at 16 in src/subshell/subshell.h.'>INACTIVE</a>)
+<a id='L126' name='L126'></a> 126         <em class='brace'>{</em>
+<a id='L127' name='L127'></a> 127             <a href='../D/message.html' title='Multiple defined in 5 places.'>message</a> (<a href='../S/lib--widget--wtools.h.html#L31' title='Defined at 31 in lib/widget/wtools.h.'>D_ERROR</a>, <a href='../S/lib--widget--wtools.h.html#L14' title='Defined at 14 in lib/widget/wtools.h.'>MSG_ERROR</a>, <a href='../D/_.html' title='Multiple defined in 2 places.'>_</a>("The shell is already running a command"));
+<a id='L128' name='L128'></a> 128             <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L63' title='Defined at 63 in lib/widget/widget-common.h.'>MSG_NOT_HANDLED</a>;
+<a id='L129' name='L129'></a> 129         <em class='brace'>}</em>
+<a id='L130' name='L130'></a> 130 <em class='sharp'>#endif</em>
+<a id='L131' name='L131'></a> 131         <a href='../Y/command.html' title='Multiple used in 269 places.'>command</a> = <a href='../Y/g_string_sized_new.html' title='Multiple used in 59 places.'>g_string_sized_new</a> (32);
+<a id='L132' name='L132'></a> 132 
+<a id='L133' name='L133'></a> 133         <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a> = 0; <a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>] != '\0'; <a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>++)
+<a id='L134' name='L134'></a> 134         <em class='brace'>{</em>
+<a id='L135' name='L135'></a> 135             <strong class='reserved'>if</strong> (<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>] != '%')
+<a id='L136' name='L136'></a> 136                 <a href='../Y/g_string_append_c.html' title='Multiple used in 114 places.'>g_string_append_c</a> (<a href='../Y/command.html' title='Multiple used in 269 places.'>command</a>, <a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>[<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>]);
+<a id='L137' name='L137'></a> 137             <strong class='reserved'>else</strong>
+<a id='L138' name='L138'></a> 138             <em class='brace'>{</em>
+<a id='L139' name='L139'></a> 139                 <strong class='reserved'>char</strong> *<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>;
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141                 <a href='../Y/s.html' title='Multiple used in 793 places.'>s</a> = <a href='../S/src--usermenu.c.html#L761' title='Defined at 761 in src/usermenu.c.'>expand_format</a> (<a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>, <a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>[++<a href='../Y/i.html' title='Multiple used in 1965 places.'>i</a>], <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L142' name='L142'></a> 142                 <strong class='reserved'>if</strong> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L143' name='L143'></a> 143                 <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144                     <a href='../Y/g_string_append.html' title='Multiple used in 105 places.'>g_string_append</a> (<a href='../Y/command.html' title='Multiple used in 269 places.'>command</a>, <a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>);
+<a id='L145' name='L145'></a> 145                     <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>);
+<a id='L146' name='L146'></a> 146                 <em class='brace'>}</em>
+<a id='L147' name='L147'></a> 147             <em class='brace'>}</em>
+<a id='L148' name='L148'></a> 148         <em class='brace'>}</em>
+<a id='L149' name='L149'></a> 149 
+<a id='L150' name='L150'></a> 150         <a href='../S/lib--widget--input.c.html#L1311' title='Defined at 1311 in lib/widget/input.c.'>input_clean</a> (<a href='../Y/lc_cmdline.html' title='Multiple used in 5 places.'>lc_cmdline</a>);
+<a id='L151' name='L151'></a> 151         <a href='../S/src--execute.c.html#L424' title='Defined at 424 in src/execute.c.'>shell_execute</a> (<a href='../Y/command.html' title='Multiple used in 269 places.'>command</a>-&gt;<a href='../Y/str.html' title='Multiple used in 682 places.'>str</a>, 0);
+<a id='L152' name='L152'></a> 152         <a href='../Y/g_string_free.html' title='Multiple used in 182 places.'>g_string_free</a> (<a href='../Y/command.html' title='Multiple used in 269 places.'>command</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L153' name='L153'></a> 153 
+<a id='L154' name='L154'></a> 154 <em class='sharp'>#ifdef</em> <a href='../Y/ENABLE_SUBSHELL.html' title='Multiple used in 39 places.'>ENABLE_SUBSHELL</a>
+<a id='L155' name='L155'></a> 155         <strong class='reserved'>if</strong> ((<a href='../Y/quit.html' title='Multiple used in 17 places.'>quit</a> &amp; <a href='../S/lib--global.h.html#L140' title='Defined at 140 in lib/global.h.'>SUBSHELL_EXIT</a>) != 0)
+<a id='L156' name='L156'></a> 156         <em class='brace'>{</em>
+<a id='L157' name='L157'></a> 157             <strong class='reserved'>if</strong> (<a href='../S/src--filemanager--filemanager.c.html#L1785' title='Defined at 1785 in src/filemanager/filemanager.c.'>quiet_quit_cmd</a> ())
+<a id='L158' name='L158'></a> 158                 <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L64' title='Defined at 64 in lib/widget/widget-common.h.'>MSG_HANDLED</a>;
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160             <a href='../Y/quit.html' title='Multiple used in 17 places.'>quit</a> = 0;
+<a id='L161' name='L161'></a> 161             <em class='comment'>/* restart subshell */</em>
+<a id='L162' name='L162'></a> 162             <strong class='reserved'>if</strong> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/tty.html' title='Multiple used in 192 places.'>tty</a>.<a href='../Y/use_subshell.html' title='Multiple used in 43 places.'>use_subshell</a>)
+<a id='L163' name='L163'></a> 163                 <a href='../S/src--subshell--common.c.html#L1313' title='Defined at 1313 in src/subshell/common.c.'>init_subshell</a> ();
+<a id='L164' name='L164'></a> 164         <em class='brace'>}</em>
+<a id='L165' name='L165'></a> 165 
+<a id='L166' name='L166'></a> 166         <strong class='reserved'>if</strong> (<a href='../Y/mc_global.html' title='Multiple used in 644 places.'>mc_global</a>.<a href='../Y/tty.html' title='Multiple used in 192 places.'>tty</a>.<a href='../Y/use_subshell.html' title='Multiple used in 43 places.'>use_subshell</a>)
+<a id='L167' name='L167'></a> 167             <a href='../S/src--filemanager--layout.c.html#L1487' title='Defined at 1487 in src/filemanager/layout.c.'>do_load_prompt</a> ();
+<a id='L168' name='L168'></a> 168 <em class='sharp'>#endif</em>
+<a id='L169' name='L169'></a> 169     <em class='brace'>}</em>
+<a id='L170' name='L170'></a> 170     <strong class='reserved'>return</strong> <a href='../S/lib--widget--widget-common.h.html#L64' title='Defined at 64 in lib/widget/widget-common.h.'>MSG_HANDLED</a>;
+<a id='L171' name='L171'></a> 171 <em class='brace'>}</em>
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L174' name='L174'></a> 174 
+<a id='L175' name='L175'></a> 175 <em class='comment'>/**</em>
+<a id='L176' name='L176'></a> 176 <em class='comment'> * Default command line callback</em>
+<a id='L177' name='L177'></a> 177 <em class='comment'> *</em>
+<a id='L178' name='L178'></a> 178 <em class='comment'> * @param w Widget object</em>
+<a id='L179' name='L179'></a> 179 <em class='comment'> * @param msg message for handling</em>
+<a id='L180' name='L180'></a> 180 <em class='comment'> * @param parm extra parameter such as key code</em>
+<a id='L181' name='L181'></a> 181 <em class='comment'> *</em>
+<a id='L182' name='L182'></a> 182 <em class='comment'> * @return MSG_NOT_HANDLED on fail else MSG_HANDLED</em>
+<a id='L183' name='L183'></a> 183 <em class='comment'> */</em>
+<a id='L184' name='L184'></a> 184 
+<a id='L185' name='L185'></a> 185 <strong class='reserved'>static</strong> <a href='../S/lib--widget--widget-common.h.html#L65' title='Defined at 65 in lib/widget/widget-common.h.'>cb_ret_t</a>
+<a id='L186' name='L186'></a> 186 <a href='../S/src--filemanager--command.c.html#L219' title='Referred from 219 in src/filemanager/command.c.'>command_callback</a> (<a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> * <a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../S/lib--widget--widget-common.h.html#L52' title='Defined at 52 in lib/widget/widget-common.h.'>widget_msg_t</a> <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <strong class='reserved'>int</strong> <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>, <strong class='reserved'>void</strong> *<a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>)
+     <em class='comment'>/* <a href='#L84'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L206'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L84'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L249'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+186 src/filemanager/command.c'  /> */</em>
+<a id='L187' name='L187'></a> 187 <em class='brace'>{</em>
+<a id='L188' name='L188'></a> 188     <strong class='reserved'>switch</strong> (<a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>)
+<a id='L189' name='L189'></a> 189     <em class='brace'>{</em>
+<a id='L190' name='L190'></a> 190     <strong class='reserved'>case</strong> <a href='../S/lib--widget--widget-common.h.html#L38' title='Defined at 38 in lib/widget/widget-common.h.'>MSG_KEY</a>:
+<a id='L191' name='L191'></a> 191         <em class='comment'>/* Special case: we handle the enter key */</em>
+<a id='L192' name='L192'></a> 192         <strong class='reserved'>if</strong> (<a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a> == '\n')
+<a id='L193' name='L193'></a> 193             <strong class='reserved'>return</strong> <a href='../S/src--filemanager--command.c.html#L84' title='Defined at 84 in src/filemanager/command.c.'>enter</a> (<a href='../S/lib--widget--input.h.html#L13' title='Defined at 13 in lib/widget/input.h.'>INPUT</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>));
+<a id='L194' name='L194'></a> 194         <a href='../D/MC_FALLTHROUGH.html' title='Multiple defined in 2 places.'>MC_FALLTHROUGH</a>;
+<a id='L195' name='L195'></a> 195 
+<a id='L196' name='L196'></a> 196     <strong class='reserved'>default</strong>:
+<a id='L197' name='L197'></a> 197         <strong class='reserved'>return</strong> <a href='../S/lib--widget--input.c.html#L1004' title='Defined at 1004 in lib/widget/input.c.'>input_callback</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../Y/sender.html' title='Multiple used in 173 places.'>sender</a>, <a href='../Y/msg.html' title='Multiple used in 369 places.'>msg</a>, <a href='../Y/parm.html' title='Multiple used in 220 places.'>parm</a>, <a href='../Y/data.html' title='Multiple used in 890 places.'>data</a>);
+<a id='L198' name='L198'></a> 198     <em class='brace'>}</em>
+<a id='L199' name='L199'></a> 199 <em class='brace'>}</em>
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L202' name='L202'></a> 202 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L203' name='L203'></a> 203 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205 <a href='../S/lib--widget--input.h.html#L73' title='Defined at 73 in lib/widget/input.h.'>WInput</a> *
+<a id='L206' name='L206'></a> 206 <a href='../R/command_new.html' title='Multiple referred from 2 places.'>command_new</a> (<strong class='reserved'>int</strong> <a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <strong class='reserved'>int</strong> <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>, <strong class='reserved'>int</strong> <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>)
+     <em class='comment'>/* <a href='#L186'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L230'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L84'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L249'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+206 src/filemanager/command.c'  /> */</em>
+<a id='L207' name='L207'></a> 207 <em class='brace'>{</em>
+<a id='L208' name='L208'></a> 208     <a href='../S/lib--widget--input.h.html#L73' title='Defined at 73 in lib/widget/input.h.'>WInput</a> *<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>;
+<a id='L209' name='L209'></a> 209     <a href='../D/Widget.html' title='Multiple defined in 2 places.'>Widget</a> *<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>;
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a> = <a href='../S/lib--widget--input.c.html#L952' title='Defined at 952 in lib/widget/input.c.'>input_new</a> (<a href='../Y/y.html' title='Multiple used in 624 places.'>y</a>, <a href='../Y/x.html' title='Multiple used in 691 places.'>x</a>, <a href='../Y/command_colors.html' title='Multiple used in 6 places.'>command_colors</a>, <a href='../Y/cols.html' title='Multiple used in 484 places.'>cols</a>, "", "cmdline",
+<a id='L212' name='L212'></a> 212                      <a href='../S/lib--widget--input.h.html#L33' title='Defined at 33 in lib/widget/input.h.'>INPUT_COMPLETE_FILENAMES</a> | <a href='../S/lib--widget--input.h.html#L36' title='Defined at 36 in lib/widget/input.h.'>INPUT_COMPLETE_VARIABLES</a> | <a href='../S/lib--widget--input.h.html#L37' title='Defined at 37 in lib/widget/input.h.'>INPUT_COMPLETE_USERNAMES</a>
+<a id='L213' name='L213'></a> 213                      | <a href='../S/lib--widget--input.h.html#L34' title='Defined at 34 in lib/widget/input.h.'>INPUT_COMPLETE_HOSTNAMES</a> | <a href='../S/lib--widget--input.h.html#L38' title='Defined at 38 in lib/widget/input.h.'>INPUT_COMPLETE_CD</a> | <a href='../S/lib--widget--input.h.html#L35' title='Defined at 35 in lib/widget/input.h.'>INPUT_COMPLETE_COMMANDS</a> |
+<a id='L214' name='L214'></a> 214                      <a href='../S/lib--widget--input.h.html#L39' title='Defined at 39 in lib/widget/input.h.'>INPUT_COMPLETE_SHELL_ESC</a>);
+<a id='L215' name='L215'></a> 215     <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a> = <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>);
+<a id='L216' name='L216'></a> 216     <em class='comment'>/* Don't set WOP_SELECTABLE up, otherwise panels will be unselected */</em>
+<a id='L217' name='L217'></a> 217     <a href='../S/lib--widget--widget-common.c.html#L384' title='Defined at 384 in lib/widget/widget-common.c.'>widget_set_options</a> (<a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>, <a href='../S/lib--widget--widget-common.h.html#L75' title='Defined at 75 in lib/widget/widget-common.h.'>WOP_SELECTABLE</a>, <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>);
+<a id='L218' name='L218'></a> 218     <em class='comment'>/* Add our hooks */</em>
+<a id='L219' name='L219'></a> 219     <a href='../Y/w.html' title='Multiple used in 1370 places.'>w</a>-&gt;<a href='../Y/callback.html' title='Multiple used in 80 places.'>callback</a> = <a href='../S/src--filemanager--command.c.html#L186' title='Defined at 186 in src/filemanager/command.c.'>command_callback</a>;
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221     <strong class='reserved'>return</strong> <a href='../Y/cmd.html' title='Multiple used in 101 places.'>cmd</a>;
+<a id='L222' name='L222'></a> 222 <em class='brace'>}</em>
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L225' name='L225'></a> 225 <em class='comment'>/**</em>
+<a id='L226' name='L226'></a> 226 <em class='comment'> * Set colors for the command line.</em>
+<a id='L227' name='L227'></a> 227 <em class='comment'> */</em>
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229 <strong class='reserved'>void</strong>
+<a id='L230' name='L230'></a> 230 <a href='../R/command_set_default_colors.html' title='Multiple referred from 3 places.'>command_set_default_colors</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L206'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L249'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L84'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L249'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+230 src/filemanager/command.c'  /> */</em>
+<a id='L231' name='L231'></a> 231 <em class='brace'>{</em>
+<a id='L232' name='L232'></a> 232     <a href='../Y/command_colors.html' title='Multiple used in 6 places.'>command_colors</a>[<a href='../S/lib--widget--input.h.html#L22' title='Defined at 22 in lib/widget/input.h.'>WINPUTC_MAIN</a>] = <a href='../S/lib--skin.h.html#L16' title='Defined at 16 in lib/skin.h.'>DEFAULT_COLOR</a>;
+<a id='L233' name='L233'></a> 233     <a href='../Y/command_colors.html' title='Multiple used in 6 places.'>command_colors</a>[<a href='../S/lib--widget--input.h.html#L23' title='Defined at 23 in lib/widget/input.h.'>WINPUTC_MARK</a>] = <a href='../S/lib--skin.h.html#L23' title='Defined at 23 in lib/skin.h.'>COMMAND_MARK_COLOR</a>;
+<a id='L234' name='L234'></a> 234     <a href='../Y/command_colors.html' title='Multiple used in 6 places.'>command_colors</a>[<a href='../S/lib--widget--input.h.html#L24' title='Defined at 24 in lib/widget/input.h.'>WINPUTC_UNCHANGED</a>] = <a href='../S/lib--skin.h.html#L16' title='Defined at 16 in lib/skin.h.'>DEFAULT_COLOR</a>;
+<a id='L235' name='L235'></a> 235     <a href='../Y/command_colors.html' title='Multiple used in 6 places.'>command_colors</a>[<a href='../S/lib--widget--input.h.html#L25' title='Defined at 25 in lib/widget/input.h.'>WINPUTC_HISTORY</a>] = <a href='../S/lib--skin.h.html#L69' title='Defined at 69 in lib/skin.h.'>COMMAND_HISTORY_COLOR</a>;
+<a id='L236' name='L236'></a> 236 <em class='brace'>}</em>
+<a id='L237' name='L237'></a> 237 
+<a id='L238' name='L238'></a> 238 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L239' name='L239'></a> 239 <em class='comment'>/**</em>
+<a id='L240' name='L240'></a> 240 <em class='comment'> * Insert quoted text in input line.  The function is meant for the</em>
+<a id='L241' name='L241'></a> 241 <em class='comment'> * command line, so the percent sign is quoted as well.</em>
+<a id='L242' name='L242'></a> 242 <em class='comment'> *</em>
+<a id='L243' name='L243'></a> 243 <em class='comment'> * @param in WInput object</em>
+<a id='L244' name='L244'></a> 244 <em class='comment'> * @param text string for insertion</em>
+<a id='L245' name='L245'></a> 245 <em class='comment'> * @param insert_extra_space add extra space</em>
+<a id='L246' name='L246'></a> 246 <em class='comment'> */</em>
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248 <strong class='reserved'>void</strong>
+<a id='L249' name='L249'></a> 249 <a href='../R/command_insert.html' title='Multiple referred from 7 places.'>command_insert</a> (<a href='../S/lib--widget--input.h.html#L73' title='Defined at 73 in lib/widget/input.h.'>WInput</a> * <a href='../Y/in.html' title='Multiple used in 450 places.'>in</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/insert_extra_space.html' title='Multiple used in 6 places.'>insert_extra_space</a>)
+     <em class='comment'>/* <a href='#L230'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L84'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+249 src/filemanager/command.c'  /> */</em>
+<a id='L250' name='L250'></a> 250 <em class='brace'>{</em>
+<a id='L251' name='L251'></a> 251     <strong class='reserved'>char</strong> *<a href='../Y/quoted_text.html' title='Multiple used in 8 places.'>quoted_text</a>;
+<a id='L252' name='L252'></a> 252 
+<a id='L253' name='L253'></a> 253     <a href='../Y/quoted_text.html' title='Multiple used in 8 places.'>quoted_text</a> = <a href='../S/lib--util.c.html#L255' title='Defined at 255 in lib/util.c.'>name_quote</a> (<a href='../Y/text.html' title='Multiple used in 951 places.'>text</a>, <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>);
+<a id='L254' name='L254'></a> 254     <strong class='reserved'>if</strong> (<a href='../Y/quoted_text.html' title='Multiple used in 8 places.'>quoted_text</a> != <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>)
+<a id='L255' name='L255'></a> 255     <em class='brace'>{</em>
+<a id='L256' name='L256'></a> 256         <a href='../S/lib--widget--input.c.html#L1153' title='Defined at 1153 in lib/widget/input.c.'>input_insert</a> (<a href='../Y/in.html' title='Multiple used in 450 places.'>in</a>, <a href='../Y/quoted_text.html' title='Multiple used in 8 places.'>quoted_text</a>, <a href='../Y/insert_extra_space.html' title='Multiple used in 6 places.'>insert_extra_space</a>);
+<a id='L257' name='L257'></a> 257         <a href='../Y/g_free.html' title='Multiple used in 1142 places.'>g_free</a> (<a href='../Y/quoted_text.html' title='Multiple used in 8 places.'>quoted_text</a>);
+<a id='L258' name='L258'></a> 258     <em class='brace'>}</em>
+<a id='L259' name='L259'></a> 259 <em class='brace'>}</em>
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L84'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L249'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+261 src/filemanager/command.c'  /> */</em>
+</body>
+</html>
