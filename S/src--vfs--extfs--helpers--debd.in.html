@@ -3,7 +3,7 @@
 <head>
 <title>src/vfs/extfs/helpers/debd.in</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -145,30 +145,30 @@
 <a id='L120' name='L120'></a>       $select_size=length($pressselect);
 <a id='L121' name='L121'></a>       $unselect_size=length($pressunselect);
 <a id='L122' name='L122'></a> 
-<a id='L123' name='L123'></a>       print "dr-xr-xr-x   1 root     root     0 $date CONTENTS\n";
-<a id='L124' name='L124'></a>       print "dr-xr-xr-x   1 root     root     0 $date DEBIAN\n";
-<a id='L125' name='L125'></a>       print "-r--r--r--   1 root     root     $info_size $date INFO\n";
-<a id='L126' name='L126'></a>       print "-r-xr--r--   1 root     root     $purge_size $date DPKG-PURGE\n";
+<a id='L123' name='L123'></a>       print "dr-xr-xr-x   1 0        0        0 $date CONTENTS\n";
+<a id='L124' name='L124'></a>       print "dr-xr-xr-x   1 0        0        0 $date DEBIAN\n";
+<a id='L125' name='L125'></a>       print "-r--r--r--   1 0        0        $info_size $date INFO\n";
+<a id='L126' name='L126'></a>       print "-r-xr--r--   1 0        0        $purge_size $date DPKG-PURGE\n";
 <a id='L127' name='L127'></a> 
 <a id='L128' name='L128'></a>       chop($status = `dpkg -s $qarchive | grep ^Status`);
 <a id='L129' name='L129'></a>       if( $status =~ /deinstall/ ) {
-<a id='L130' name='L130'></a>           print "-r-xr--r--   1 root     root     $select_size $date DPKG-SELECT\n";
+<a id='L130' name='L130'></a>           print "-r-xr--r--   1 0        0        $select_size $date DPKG-SELECT\n";
 <a id='L131' name='L131'></a>       } elsif( $status =~ /install/ ) {
-<a id='L132' name='L132'></a>           print "-r-xr--r--   1 root     root     $unselect_size $date DPKG-UNSELECT\n";
+<a id='L132' name='L132'></a>           print "-r-xr--r--   1 0        0        $unselect_size $date DPKG-UNSELECT\n";
 <a id='L133' name='L133'></a>       } 
 <a id='L134' name='L134'></a>       if( $status !~ /config-files/ ) {
 <a id='L135' name='L135'></a>           if ( -x "/usr/bin/dpkg-repack" ) {
-<a id='L136' name='L136'></a>               print "-r-xr--r--   1 root     root     $repack_size $date DPKG-REPACK\n";
+<a id='L136' name='L136'></a>               print "-r-xr--r--   1 0        0        $repack_size $date DPKG-REPACK\n";
 <a id='L137' name='L137'></a>           }
-<a id='L138' name='L138'></a>           print "-r-xr--r--   1 root     root     $remove_size $date DPKG-REMOVE\n";
+<a id='L138' name='L138'></a>           print "-r-xr--r--   1 0        0        $remove_size $date DPKG-REMOVE\n";
 <a id='L139' name='L139'></a>           if ( -x "/usr/bin/apt-get" ) {
-<a id='L140' name='L140'></a>               print "-r-xr--r--   1 root     root     $remove_size $date APT-REMOVE\n";
-<a id='L141' name='L141'></a>               print "-r-xr--r--   1 root     root     $reinstall_size $date APT-REINSTALL\n";
-<a id='L142' name='L142'></a>               print "-r-xr--r--   1 root     root     $purge_size $date APT-PURGE\n";
+<a id='L140' name='L140'></a>               print "-r-xr--r--   1 0        0        $remove_size $date APT-REMOVE\n";
+<a id='L141' name='L141'></a>               print "-r-xr--r--   1 0        0        $reinstall_size $date APT-REINSTALL\n";
+<a id='L142' name='L142'></a>               print "-r-xr--r--   1 0        0        $purge_size $date APT-PURGE\n";
 <a id='L143' name='L143'></a>           }
 <a id='L144' name='L144'></a>       }
 <a id='L145' name='L145'></a>       if( -x "/usr/bin/dpkg-reconfigure" &amp;&amp; -x "/var/lib/dpkg/info/$archive.config" ) {
-<a id='L146' name='L146'></a>           print "-r-xr--r--   1 root     root     $reconfigure_size $date DPKG-RECONFIGURE\n";
+<a id='L146' name='L146'></a>           print "-r-xr--r--   1 0        0        $reconfigure_size $date DPKG-RECONFIGURE\n";
 <a id='L147' name='L147'></a>       }
 <a id='L148' name='L148'></a> 
 <a id='L149' name='L149'></a> 

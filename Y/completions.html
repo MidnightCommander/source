@@ -3,27 +3,31 @@
 <head>
 <title>completions</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
 <body>
 <pre>
 <span class='curline'><a href='../S/lib--widget--input.c.html#L977'>completions</a>       977 lib/widget/input.c     in-&gt;completions = NULL;</span>
-<span class='curline'><a href='../S/lib--widget--input.h.html#L61'>completions</a>        61 lib/widget/input.h     char **completions;         /* possible completions array */</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1212'>completions</a>      1212 lib/widget/input_complete.c     if (in-&gt;completions != NULL &amp;&amp; str_offset_to_pos (in-&gt;buffer-&gt;str, in-&gt;point) != end)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1215'>completions</a>      1215 lib/widget/input_complete.c     if (in-&gt;completions == NULL)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1218'>completions</a>      1218 lib/widget/input_complete.c     if (in-&gt;completions == NULL)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1223'>completions</a>      1223 lib/widget/input_complete.c             || ((what_to_do &amp; DO_QUERY) != 0 &amp;&amp; in-&gt;completions[1] == NULL))</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1225'>completions</a>      1225 lib/widget/input_complete.c             char *lc_complete = in-&gt;completions[0];</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1227'>completions</a>      1227 lib/widget/input_complete.c             if (!insert_text (in, lc_complete, -1) || in-&gt;completions[1] != NULL)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1233'>completions</a>      1233 lib/widget/input_complete.c         if ((what_to_do &amp; DO_QUERY) != 0 &amp;&amp; in-&gt;completions != NULL &amp;&amp; in-&gt;completions[1] != NULL)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1242'>completions</a>      1242 lib/widget/input_complete.c             for (p = in-&gt;completions + 1; *p != NULL; count++, p++)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1284'>completions</a>      1284 lib/widget/input_complete.c             for (p = in-&gt;completions + 1; *p != NULL; p++)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1444'>completions</a>      1444 lib/widget/input_complete.c     in-&gt;completions = try_complete (in-&gt;buffer-&gt;str, &amp;start, &amp;end, in-&gt;completion_flags);</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1458'>completions</a>      1458 lib/widget/input_complete.c     if (in-&gt;completions != NULL)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1477'>completions</a>      1477 lib/widget/input_complete.c     g_strfreev (in-&gt;completions);</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1478'>completions</a>      1478 lib/widget/input_complete.c     in-&gt;completions = NULL;</span>
+<span class='curline'><a href='../S/lib--widget--input.h.html#L61'>completions</a>        61 lib/widget/input.h     GPtrArray *completions;     /* possible completions array */</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1171'>completions</a>      1171 lib/widget/input_complete.c     if (in-&gt;completions != NULL &amp;&amp; str_offset_to_pos (in-&gt;buffer-&gt;str, in-&gt;point) != end)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1174'>completions</a>      1174 lib/widget/input_complete.c     if (in-&gt;completions == NULL)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1177'>completions</a>      1177 lib/widget/input_complete.c     if (in-&gt;completions == NULL)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1182'>completions</a>      1182 lib/widget/input_complete.c             || ((what_to_do &amp; DO_QUERY) != 0 &amp;&amp; in-&gt;completions-&gt;len == 1))</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1186'>completions</a>      1186 lib/widget/input_complete.c             lc_complete = g_ptr_array_index (in-&gt;completions, 0);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1187'>completions</a>      1187 lib/widget/input_complete.c             if (!insert_text (in, lc_complete, -1) || in-&gt;completions-&gt;len &gt; 1)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1193'>completions</a>      1193 lib/widget/input_complete.c         if ((what_to_do &amp; DO_QUERY) != 0 &amp;&amp; in-&gt;completions != NULL &amp;&amp; in-&gt;completions-&gt;len &gt; 1)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1205'>completions</a>      1205 lib/widget/input_complete.c             for (k = 1; k &lt; in-&gt;completions-&gt;len; k++)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1207'>completions</a>      1207 lib/widget/input_complete.c                 q = g_ptr_array_index (in-&gt;completions, k);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1212'>completions</a>      1212 lib/widget/input_complete.c             count = in-&gt;completions-&gt;len - 1;</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1248'>completions</a>      1248 lib/widget/input_complete.c             for (k = 1; k &lt; in-&gt;completions-&gt;len; k++)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1250'>completions</a>      1250 lib/widget/input_complete.c                 q = g_ptr_array_index (in-&gt;completions, k);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1412'>completions</a>      1412 lib/widget/input_complete.c     in-&gt;completions = try_complete (in-&gt;buffer-&gt;str, &amp;start, &amp;end, in-&gt;completion_flags);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1426'>completions</a>      1426 lib/widget/input_complete.c     if (in-&gt;completions != NULL)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1445'>completions</a>      1445 lib/widget/input_complete.c     if (in-&gt;completions != NULL)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1447'>completions</a>      1447 lib/widget/input_complete.c         g_ptr_array_free (in-&gt;completions, TRUE);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1448'>completions</a>      1448 lib/widget/input_complete.c         in-&gt;completions = NULL;</span>
 </pre>
 </body>
 </html>

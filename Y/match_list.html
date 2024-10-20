@@ -3,30 +3,27 @@
 <head>
 <title>match_list</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
 <body>
 <pre>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L723'>match_list</a>        723 lib/widget/input_complete.c     char **match_list;</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L730'>match_list</a>        730 lib/widget/input_complete.c     match_list = g_new (char *, match_list_size + 1);</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L731'>match_list</a>        731 lib/widget/input_complete.c     match_list[1] = NULL;</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L738'>match_list</a>        738 lib/widget/input_complete.c             match_list = (char **) g_renew (char *, match_list, match_list_size + 1);</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L740'>match_list</a>        740 lib/widget/input_complete.c         match_list[++matches] = string;</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L741'>match_list</a>        741 lib/widget/input_complete.c         match_list[matches + 1] = NULL;</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L747'>match_list</a>        747 lib/widget/input_complete.c         MC_PTR_FREE (match_list);       /* There were no matches. */</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L753'>match_list</a>        753 lib/widget/input_complete.c             match_list[0] = match_list[1];</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L754'>match_list</a>        754 lib/widget/input_complete.c             match_list[1] = NULL;</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L762'>match_list</a>        762 lib/widget/input_complete.c             qsort (match_list + 1, matches, sizeof (char *), match_compare);</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L774'>match_list</a>        774 lib/widget/input_complete.c                 for (si = match_list[i], sj = match_list[j]; si[0] != '\0' &amp;&amp; sj[0] != '\0';)</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L791'>match_list</a>        791 lib/widget/input_complete.c                     g_free (match_list[j]);</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L797'>match_list</a>        797 lib/widget/input_complete.c                 else if (low &gt; si - match_list[i])</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L798'>match_list</a>        798 lib/widget/input_complete.c                     low = si - match_list[i];</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L800'>match_list</a>        800 lib/widget/input_complete.c                     match_list[i + 1] = match_list[j];</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L805'>match_list</a>        805 lib/widget/input_complete.c             match_list[matches + 1] = NULL;</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L806'>match_list</a>        806 lib/widget/input_complete.c             match_list[0] = g_strndup (match_list[1], low);</span>
-<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L810'>match_list</a>        810 lib/widget/input_complete.c     return match_list;</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L700'>match_list</a>        700 lib/widget/input_complete.c     GPtrArray *match_list;</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L703'>match_list</a>        703 lib/widget/input_complete.c     match_list = g_ptr_array_new_with_free_func (g_free);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L705'>match_list</a>        705 lib/widget/input_complete.c     while ((string = entry_function (text, match_list-&gt;len, flags)) != NULL)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L706'>match_list</a>        706 lib/widget/input_complete.c         g_ptr_array_add (match_list, string);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L710'>match_list</a>        710 lib/widget/input_complete.c     if (match_list-&gt;len == 0)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L713'>match_list</a>        713 lib/widget/input_complete.c         g_ptr_array_free (match_list, TRUE);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L719'>match_list</a>        719 lib/widget/input_complete.c     if (match_list-&gt;len &gt; 1)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L724'>match_list</a>        724 lib/widget/input_complete.c         g_ptr_array_sort (match_list, match_compare);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L729'>match_list</a>        729 lib/widget/input_complete.c         for (i = 0, j = 1; j &lt; match_list-&gt;len;)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L733'>match_list</a>        733 lib/widget/input_complete.c             si = g_ptr_array_index (match_list, i);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L734'>match_list</a>        734 lib/widget/input_complete.c             sj = g_ptr_array_index (match_list, j);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L754'>match_list</a>        754 lib/widget/input_complete.c                 g_ptr_array_remove_index (match_list, j);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L765'>match_list</a>        765 lib/widget/input_complete.c         string = g_ptr_array_index (match_list, 0);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L766'>match_list</a>        766 lib/widget/input_complete.c         g_ptr_array_insert (match_list, 0, g_strndup (string, low));</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L769'>match_list</a>        769 lib/widget/input_complete.c     return match_list;</span>
 </pre>
 </body>
 </html>

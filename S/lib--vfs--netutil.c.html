@@ -3,15 +3,15 @@
 <head>
 <title>lib/vfs/netutil.c</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
 <body>
 <!-- beginning of fixed guide -->
 <div id='guide'><ul>
-<li><a href='#L55'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
-<li><a href='#L66'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#L56'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L67'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
 <li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
 <li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
 <li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
@@ -20,13 +20,13 @@
 </ul></div>
 <!-- end of fixed guide -->
 <a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--vfs.html'>vfs</a>/netutil.c</h2>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L55'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L66'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/vfs/netutil.c'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L67'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/vfs/netutil.c'  /> */</em>
 <hr />
 <h2 class='header'>DEFINITIONS</h2>
 This source file includes following definitions.
 <ol>
-<li><a href='#L55' title='Defined at 55.'>sig_pipe</a></li>
-<li><a href='#L66' title='Defined at 66.'>tcp_init</a></li>
+<li><a href='#L56' title='Defined at 56.'>sig_pipe</a></li>
+<li><a href='#L67' title='Defined at 67.'>tcp_init</a></li>
 </ol>
 <hr />
 <pre>
@@ -64,60 +64,61 @@ This source file includes following definitions.
 <a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> &lt;string.h&gt;             <em class='comment'>/* memset() */</em>
 <a id='L33' name='L33'></a>  33 
 <a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "<a href='lib--global.h.html'>lib/global.h</a>"
-<a id='L35' name='L35'></a>  35 
-<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> "<a href='lib--vfs--netutil.h.html'>netutil.h</a>"
-<a id='L37' name='L37'></a>  37 
-<a id='L38' name='L38'></a>  38 <em class='comment'>/*** global variables ****************************************************************************/</em>
-<a id='L39' name='L39'></a>  39 
-<a id='L40' name='L40'></a>  40 <a href='../Y/SIG_ATOMIC_VOLATILE_T.html' title='Multiple used in 4 places.'>SIG_ATOMIC_VOLATILE_T</a> <a href='../Y/got_sigpipe.html' title='Multiple used in 6 places.'>got_sigpipe</a> = 0;
-<a id='L41' name='L41'></a>  41 
-<a id='L42' name='L42'></a>  42 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
-<a id='L43' name='L43'></a>  43 
-<a id='L44' name='L44'></a>  44 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
-<a id='L45' name='L45'></a>  45 
-<a id='L46' name='L46'></a>  46 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
-<a id='L47' name='L47'></a>  47 
-<a id='L48' name='L48'></a>  48 <em class='comment'>/*** file scope variables ************************************************************************/</em>
-<a id='L49' name='L49'></a>  49 
-<a id='L50' name='L50'></a>  50 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
-<a id='L51' name='L51'></a>  51 <em class='comment'>/*** file scope functions ************************************************************************/</em>
-<a id='L52' name='L52'></a>  52 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
-<a id='L53' name='L53'></a>  53 
-<a id='L54' name='L54'></a>  54 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
-<a id='L55' name='L55'></a>  55 <a href='../S/lib--vfs--netutil.c.html#L76' title='Referred from 76 in lib/vfs/netutil.c.'>sig_pipe</a> (<strong class='reserved'>int</strong> <a href='../Y/unused.html' title='Multiple used in 7 places.'>unused</a>)
-     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L66'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L66'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+55 lib/vfs/netutil.c'  /> */</em>
-<a id='L56' name='L56'></a>  56 <em class='brace'>{</em>
-<a id='L57' name='L57'></a>  57     (<strong class='reserved'>void</strong>) <a href='../Y/unused.html' title='Multiple used in 7 places.'>unused</a>;
-<a id='L58' name='L58'></a>  58     <a href='../Y/got_sigpipe.html' title='Multiple used in 6 places.'>got_sigpipe</a> = 1;
-<a id='L59' name='L59'></a>  59 <em class='brace'>}</em>
-<a id='L60' name='L60'></a>  60 
-<a id='L61' name='L61'></a>  61 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
-<a id='L62' name='L62'></a>  62 <em class='comment'>/*** public functions ****************************************************************************/</em>
-<a id='L63' name='L63'></a>  63 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
-<a id='L64' name='L64'></a>  64 
-<a id='L65' name='L65'></a>  65 <strong class='reserved'>void</strong>
-<a id='L66' name='L66'></a>  66 <a href='../R/tcp_init.html' title='Multiple referred from 4 places.'>tcp_init</a> (<strong class='reserved'>void</strong>)
-     <em class='comment'>/* <a href='#L55'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L55'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+66 lib/vfs/netutil.c'  /> */</em>
-<a id='L67' name='L67'></a>  67 <em class='brace'>{</em>
-<a id='L68' name='L68'></a>  68     <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/initialized.html' title='Multiple used in 9 places.'>initialized</a> = <a href='../Y/FALSE.html' title='Multiple used in 1681 places.'>FALSE</a>;
-<a id='L69' name='L69'></a>  69     <strong class='reserved'>struct</strong> <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> <a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>;
-<a id='L70' name='L70'></a>  70 
-<a id='L71' name='L71'></a>  71     <strong class='reserved'>if</strong> (<a href='../Y/initialized.html' title='Multiple used in 9 places.'>initialized</a>)
-<a id='L72' name='L72'></a>  72         <strong class='reserved'>return</strong>;
-<a id='L73' name='L73'></a>  73 
-<a id='L74' name='L74'></a>  74     <a href='../Y/got_sigpipe.html' title='Multiple used in 6 places.'>got_sigpipe</a> = 0;
-<a id='L75' name='L75'></a>  75     <a href='../Y/memset.html' title='Multiple used in 73 places.'>memset</a> (&amp;<a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>, 0, <strong class='reserved'>sizeof</strong> (<a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>));
-<a id='L76' name='L76'></a>  76     <a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>.<a href='../Y/sa_handler.html' title='Multiple used in 8 places.'>sa_handler</a> = <a href='../S/lib--vfs--netutil.c.html#L55' title='Defined at 55 in lib/vfs/netutil.c.'>sig_pipe</a>;
-<a id='L77' name='L77'></a>  77     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L45' title='Defined at 45 in tests/lib/utilunix__my_system-common.c.'>sigemptyset</a> (&amp;<a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>.<a href='../Y/sa_mask.html' title='Multiple used in 7 places.'>sa_mask</a>);
-<a id='L78' name='L78'></a>  78     <a href='../S/tests--lib--utilunix__my_system-common.c.html#L64' title='Defined at 64 in tests/lib/utilunix__my_system-common.c.'>sigaction</a> (SIGPIPE, &amp;<a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>, <a href='../Y/NULL.html' title='Multiple used in 5331 places.'>NULL</a>);
-<a id='L79' name='L79'></a>  79 
-<a id='L80' name='L80'></a>  80     <a href='../Y/initialized.html' title='Multiple used in 9 places.'>initialized</a> = <a href='../Y/TRUE.html' title='Multiple used in 1935 places.'>TRUE</a>;
-<a id='L81' name='L81'></a>  81 <em class='brace'>}</em>
-<a id='L82' name='L82'></a>  82 
-<a id='L83' name='L83'></a>  83 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"
+<a id='L36' name='L36'></a>  36 
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> "<a href='lib--vfs--netutil.h.html'>netutil.h</a>"
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <a href='../Y/SIG_ATOMIC_VOLATILE_T.html' title='Multiple used in 4 places.'>SIG_ATOMIC_VOLATILE_T</a> <a href='../Y/got_sigpipe.html' title='Multiple used in 6 places.'>got_sigpipe</a> = 0;
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L53' name='L53'></a>  53 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L56' name='L56'></a>  56 <a href='../S/lib--vfs--netutil.c.html#L77' title='Referred from 77 in lib/vfs/netutil.c.'>sig_pipe</a> (<strong class='reserved'>int</strong> <a href='../Y/unused.html' title='Multiple used in 7 places.'>unused</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L67'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L67'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+56 lib/vfs/netutil.c'  /> */</em>
+<a id='L57' name='L57'></a>  57 <em class='brace'>{</em>
+<a id='L58' name='L58'></a>  58     (<strong class='reserved'>void</strong>) <a href='../Y/unused.html' title='Multiple used in 7 places.'>unused</a>;
+<a id='L59' name='L59'></a>  59     <a href='../Y/got_sigpipe.html' title='Multiple used in 6 places.'>got_sigpipe</a> = 1;
+<a id='L60' name='L60'></a>  60 <em class='brace'>}</em>
+<a id='L61' name='L61'></a>  61 
+<a id='L62' name='L62'></a>  62 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L63' name='L63'></a>  63 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L64' name='L64'></a>  64 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L65' name='L65'></a>  65 
+<a id='L66' name='L66'></a>  66 <strong class='reserved'>void</strong>
+<a id='L67' name='L67'></a>  67 <a href='../R/tcp_init.html' title='Multiple referred from 4 places.'>tcp_init</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L56'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+67 lib/vfs/netutil.c'  /> */</em>
+<a id='L68' name='L68'></a>  68 <em class='brace'>{</em>
+<a id='L69' name='L69'></a>  69     <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../Y/initialized.html' title='Multiple used in 9 places.'>initialized</a> = <a href='../Y/FALSE.html' title='Multiple used in 1687 places.'>FALSE</a>;
+<a id='L70' name='L70'></a>  70     <strong class='reserved'>struct</strong> <a href='../Y/sigaction.html' title='Multiple used in 26 places.'>sigaction</a> <a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>;
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72     <strong class='reserved'>if</strong> (<a href='../Y/initialized.html' title='Multiple used in 9 places.'>initialized</a>)
+<a id='L73' name='L73'></a>  73         <strong class='reserved'>return</strong>;
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75     <a href='../Y/got_sigpipe.html' title='Multiple used in 6 places.'>got_sigpipe</a> = 0;
+<a id='L76' name='L76'></a>  76     <a href='../Y/memset.html' title='Multiple used in 73 places.'>memset</a> (&amp;<a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>, 0, <strong class='reserved'>sizeof</strong> (<a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>));
+<a id='L77' name='L77'></a>  77     <a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>.<a href='../Y/sa_handler.html' title='Multiple used in 8 places.'>sa_handler</a> = <a href='../S/lib--vfs--netutil.c.html#L56' title='Defined at 56 in lib/vfs/netutil.c.'>sig_pipe</a>;
+<a id='L78' name='L78'></a>  78     <a href='../D/sigemptyset.html' title='Multiple defined in 2 places.'>sigemptyset</a> (&amp;<a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>.<a href='../Y/sa_mask.html' title='Multiple used in 7 places.'>sa_mask</a>);
+<a id='L79' name='L79'></a>  79     <a href='../D/my_sigaction.html' title='Multiple defined in 2 places.'>my_sigaction</a> (SIGPIPE, &amp;<a href='../Y/sa.html' title='Multiple used in 19 places.'>sa</a>, <a href='../Y/NULL.html' title='Multiple used in 5384 places.'>NULL</a>);
+<a id='L80' name='L80'></a>  80 
+<a id='L81' name='L81'></a>  81     <a href='../Y/initialized.html' title='Multiple used in 9 places.'>initialized</a> = <a href='../Y/TRUE.html' title='Multiple used in 1937 places.'>TRUE</a>;
+<a id='L82' name='L82'></a>  82 <em class='brace'>}</em>
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
 </pre>
 <hr />
 <a id='BOTTOM' name='BOTTOM'></a>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L55'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L66'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+83 lib/vfs/netutil.c'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L67'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+84 lib/vfs/netutil.c'  /> */</em>
 </body>
 </html>

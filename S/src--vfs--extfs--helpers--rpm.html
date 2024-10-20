@@ -3,7 +3,7 @@
 <head>
 <title>src/vfs/extfs/helpers/rpm</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -94,287 +94,289 @@
 <a id='L69' name='L69'></a>RPM_QUERY_FMT="$RPM -qp --qf"
 <a id='L70' name='L70'></a>RPM2CPIO="rpm2cpio"
 <a id='L71' name='L71'></a> 
-<a id='L72' name='L72'></a>SED="sed"
-<a id='L73' name='L73'></a> 
-<a id='L74' name='L74'></a>param=$1; shift
-<a id='L75' name='L75'></a>rpm_filename=$1; shift
-<a id='L76' name='L76'></a> 
-<a id='L77' name='L77'></a>FILEPREF="-r--r--r--   1 root     root    "
+<a id='L72' name='L72'></a># Prefer `gsed` on Solaris due to complex regex
+<a id='L73' name='L73'></a>SED=`command -v gsed 2&gt;/dev/null` \
+<a id='L74' name='L74'></a>    || SED=`command -v sed 2&gt;/dev/null`
+<a id='L75' name='L75'></a> 
+<a id='L76' name='L76'></a>param=$1; shift
+<a id='L77' name='L77'></a>rpm_filename=$1; shift
 <a id='L78' name='L78'></a> 
-<a id='L79' name='L79'></a>mcrpmfs_getDesription()
-<a id='L80' name='L80'></a>{
-<a id='L81' name='L81'></a>    $RPM -qip "${rpm_filename}"
-<a id='L82' name='L82'></a>}
-<a id='L83' name='L83'></a> 
-<a id='L84' name='L84'></a>mcrpmfs_getAllNeededTags()
-<a id='L85' name='L85'></a>{
-<a id='L86' name='L86'></a>    $RPM_QUERY_FMT \
-<a id='L87' name='L87'></a>"|NAME=%{NAME}"\
-<a id='L88' name='L88'></a>"|VERSION=%{VERSION}"\
-<a id='L89' name='L89'></a>"|RELEASE=%{RELEASE}"\
-<a id='L90' name='L90'></a>"|DISTRIBUTION=%{DISTRIBUTION}"\
-<a id='L91' name='L91'></a>"|VENDOR=%{VENDOR}"\
-<a id='L92' name='L92'></a>"|DESCRIPTION=%{DESCRIPTION}"\
-<a id='L93' name='L93'></a>"|SUMMARY=%{SUMMARY}"\
-<a id='L94' name='L94'></a>"|URL=%{URL}"\
-<a id='L95' name='L95'></a>"|EPOCH=%{EPOCH}"\
-<a id='L96' name='L96'></a>"|LICENSE=%{LICENSE}"\
-<a id='L97' name='L97'></a>"|REQUIRES=%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}"\
-<a id='L98' name='L98'></a>"|OBSOLETES=%{OBSOLETES}"\
-<a id='L99' name='L99'></a>"|PROVIDES=%{PROVIDES} %{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}"\
-<a id='L100' name='L100'></a>"|CONFLICTS=%{CONFLICTS}"\
-<a id='L101' name='L101'></a>"|PACKAGER=%{PACKAGER}" \
-<a id='L102' name='L102'></a>    "${rpm_filename}" \
-<a id='L103' name='L103'></a>    | tr '\n' ' '  # The newlines in DESCRIPTION mess with the sed script in mcrpmfs_getOneTag().
-<a id='L104' name='L104'></a>}
-<a id='L105' name='L105'></a> 
-<a id='L106' name='L106'></a>mcrpmfs_getRawOneTag()
-<a id='L107' name='L107'></a>{
-<a id='L108' name='L108'></a>    $RPM_QUERY_FMT "$1" "${rpm_filename}"
-<a id='L109' name='L109'></a>}
-<a id='L110' name='L110'></a> 
-<a id='L111' name='L111'></a>mcrpmfs_getOneTag()
-<a id='L112' name='L112'></a>{
-<a id='L113' name='L113'></a>    # 'echo' can't be used for arbitrary data (see commit message).
-<a id='L114' name='L114'></a>    printf "%s" "$AllTAGS" | $SED "s/.*|${1}=//" | cut -d '|' -f 1
-<a id='L115' name='L115'></a>}
-<a id='L116' name='L116'></a> 
-<a id='L117' name='L117'></a>mcrpmfs_printOneMetaInfo()
-<a id='L118' name='L118'></a>{
-<a id='L119' name='L119'></a>    if test "$3" = "raw"; then
-<a id='L120' name='L120'></a>        metaInfo=`mcrpmfs_getRawOneTag "%{$2}"`
-<a id='L121' name='L121'></a>    else
-<a id='L122' name='L122'></a>        metaInfo=`mcrpmfs_getOneTag "$2"`
-<a id='L123' name='L123'></a>    fi
-<a id='L124' name='L124'></a> 
-<a id='L125' name='L125'></a>    if test -n "${metaInfo}"  -a "${metaInfo}" != "(none)"; then
-<a id='L126' name='L126'></a>        echo "${FILEPREF} 0 ${DATE} ${1}"
-<a id='L127' name='L127'></a>        return 0
-<a id='L128' name='L128'></a>    fi
-<a id='L129' name='L129'></a>    return 1
-<a id='L130' name='L130'></a>}
-<a id='L131' name='L131'></a> 
-<a id='L132' name='L132'></a>mcrpmfs_list_fastRPM ()
-<a id='L133' name='L133'></a>{
-<a id='L134' name='L134'></a>    echo "$FILEPREF 0 $DATE INFO/DISTRIBUTION"
-<a id='L135' name='L135'></a>    echo "$FILEPREF 0 $DATE INFO/VENDOR"
-<a id='L136' name='L136'></a>    echo "$FILEPREF 0 $DATE INFO/DESCRIPTION"
-<a id='L137' name='L137'></a>    echo "$FILEPREF 0 $DATE INFO/SUMMARY"
-<a id='L138' name='L138'></a>    echo "dr-xr-xr-x   1 root     root     0 $DATE INFO/SCRIPTS"
-<a id='L139' name='L139'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PRETRANS"
-<a id='L140' name='L140'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTTRANS"
-<a id='L141' name='L141'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PREIN"
-<a id='L142' name='L142'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTIN"
-<a id='L143' name='L143'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PREUN"
-<a id='L144' name='L144'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTUN"
-<a id='L145' name='L145'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/VERIFYSCRIPT"
-<a id='L146' name='L146'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/TRIGGERSCRIPTS"
-<a id='L147' name='L147'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/ALL"
-<a id='L148' name='L148'></a>    echo "$FILEPREF 0 $DATE INFO/PACKAGER"
-<a id='L149' name='L149'></a>    echo "$FILEPREF 0 $DATE INFO/URL"
-<a id='L150' name='L150'></a>    echo "$FILEPREF 0 $DATE INFO/EPOCH"
-<a id='L151' name='L151'></a>    echo "$FILEPREF 0 $DATE INFO/LICENSE"
-<a id='L152' name='L152'></a>    echo "$FILEPREF 0 $DATE INFO/REQUIRES"
-<a id='L153' name='L153'></a>    echo "$FILEPREF 0 $DATE INFO/OBSOLETES"
-<a id='L154' name='L154'></a>    echo "$FILEPREF 0 $DATE INFO/PROVIDES"
-<a id='L155' name='L155'></a>    echo "$FILEPREF 0 $DATE INFO/ENHANCES"
-<a id='L156' name='L156'></a>    echo "$FILEPREF 0 $DATE INFO/SUGGESTS"
-<a id='L157' name='L157'></a>    echo "$FILEPREF 0 $DATE INFO/RECOMMENDS"
-<a id='L158' name='L158'></a>    echo "$FILEPREF 0 $DATE INFO/SUPPLEMENTS"
-<a id='L159' name='L159'></a>    echo "$FILEPREF 0 $DATE INFO/CONFLICTS"
-<a id='L160' name='L160'></a>    echo "$FILEPREF 0 $DATE INFO/CHANGELOG"
-<a id='L161' name='L161'></a>}
-<a id='L162' name='L162'></a> 
-<a id='L163' name='L163'></a>mcrpmfs_list_fullRPM ()
-<a id='L164' name='L164'></a>{
-<a id='L165' name='L165'></a>    mcrpmfs_printOneMetaInfo "INFO/DISTRIBUTION" "DISTRIBUTION"
-<a id='L166' name='L166'></a>    mcrpmfs_printOneMetaInfo "INFO/VENDOR" "VENDOR"
-<a id='L167' name='L167'></a>    mcrpmfs_printOneMetaInfo "INFO/DESCRIPTION" "DESCRIPTION"
-<a id='L168' name='L168'></a>    mcrpmfs_printOneMetaInfo "INFO/SUMMARY" "SUMMARY"
-<a id='L169' name='L169'></a> 
-<a id='L170' name='L170'></a>    if test "`mcrpmfs_getRawOneTag \"%{RPMTAG_PRETRANS}%{RPMTAG_POSTTRANS}%{RPMTAG_PREIN}%{RPMTAG_POSTIN}%{RPMTAG_PREUN}%{RPMTAG_POSTUN}%{VERIFYSCRIPT}%{TRIGGERSCRIPTS}\"`" != "(none)(none)(none)(none)(none)(none)(none)(none)"; then
-<a id='L171' name='L171'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PRETRANS" "RPMTAG_PRETRANS" "raw"
-<a id='L172' name='L172'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTTRANS" "RPMTAG_POSTTRANS" "raw"
-<a id='L173' name='L173'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PREIN" "RPMTAG_PREIN" "raw"
-<a id='L174' name='L174'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTIN" "RPMTAG_POSTIN" "raw"
-<a id='L175' name='L175'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PREUN" "RPMTAG_PREUN" "raw"
-<a id='L176' name='L176'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTUN" "RPMTAG_POSTUN" "raw"
-<a id='L177' name='L177'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/VERIFYSCRIPT" "VERIFYSCRIPT" "raw"
-<a id='L178' name='L178'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/TRIGGERSCRIPTS" "TRIGGERSCRIPTS" "raw"
-<a id='L179' name='L179'></a>        echo "$FILEPREF 0 $DATE INFO/SCRIPTS/ALL"
-<a id='L180' name='L180'></a>    fi
-<a id='L181' name='L181'></a> 
-<a id='L182' name='L182'></a>    if test "`mcrpmfs_getRawOneTag \"%{RPMTAG_PRETRANSPROG}%{RPMTAG_POSTTRANSPROG}%{RPMTAG_PREINPROG}%{RPMTAG_POSTINPROG}%{RPMTAG_PREUNPROG}%{RPMTAG_POSTUNPROG}%{VERIFYSCRIPTPROG}%{TRIGGERSCRIPTPROG}\"`" != "(none)(none)(none)(none)(none)(none)(none)(none)"; then
-<a id='L183' name='L183'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PRETRANSPROG" "RPMTAG_PRETRANSPROG" "raw"
-<a id='L184' name='L184'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTTRANSPROG" "RPMTAG_POSTTRANSPROG" "raw"
-<a id='L185' name='L185'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PREINPROG" "RPMTAG_PREINPROG" "raw"
-<a id='L186' name='L186'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTINPROG" "RPMTAG_POSTINPROG" "raw"
-<a id='L187' name='L187'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PREUNPROG" "RPMTAG_PREUNPROG" "raw"
-<a id='L188' name='L188'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTUNPROG" "RPMTAG_POSTUNPROG" "raw"
-<a id='L189' name='L189'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/VERIFYSCRIPTPROG" "VERIFYSCRIPTPROG" "raw"
-<a id='L190' name='L190'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/TRIGGERSCRIPTPROG" "TRIGGERSCRIPTPROG" "raw"
-<a id='L191' name='L191'></a>    fi
-<a id='L192' name='L192'></a> 
-<a id='L193' name='L193'></a>    mcrpmfs_printOneMetaInfo "INFO/PACKAGER" "PACKAGER"
-<a id='L194' name='L194'></a>    mcrpmfs_printOneMetaInfo "INFO/URL" "URL"
-<a id='L195' name='L195'></a>    mcrpmfs_printOneMetaInfo "INFO/EPOCH" "EPOCH"
-<a id='L196' name='L196'></a>    mcrpmfs_printOneMetaInfo "INFO/LICENSE" "LICENSE"
-<a id='L197' name='L197'></a> 
-<a id='L198' name='L198'></a>    mcrpmfs_printOneMetaInfo "INFO/REQUIRES" "REQUIRES"
-<a id='L199' name='L199'></a>    mcrpmfs_printOneMetaInfo "INFO/OBSOLETES" "OBSOLETES"
-<a id='L200' name='L200'></a>    mcrpmfs_printOneMetaInfo "INFO/PROVIDES" "PROVIDES"
-<a id='L201' name='L201'></a>    mcrpmfs_printOneMetaInfo "INFO/CONFLICTS" "CONFLICTS"
-<a id='L202' name='L202'></a>    mcrpmfs_printOneMetaInfo "INFO/CHANGELOG" "CHANGELOGTEXT" "raw"
-<a id='L203' name='L203'></a>}
-<a id='L204' name='L204'></a> 
-<a id='L205' name='L205'></a>mcrpmfs_list ()
-<a id='L206' name='L206'></a>{
-<a id='L207' name='L207'></a>    # set MCFASTRPM_DFLT to 1 for faster rpm files handling by default, to 0 for
-<a id='L208' name='L208'></a>    # slower handling
-<a id='L209' name='L209'></a>    MCFASTRPM_DFLT=0
-<a id='L210' name='L210'></a>    if test -z "$MCFASTRPM"; then
-<a id='L211' name='L211'></a>      MCFASTRPM=$MCFASTRPM_DFLT
-<a id='L212' name='L212'></a>    fi
-<a id='L213' name='L213'></a> 
-<a id='L214' name='L214'></a>    DESC=`mcrpmfs_getDesription 2&gt;/dev/null` || {
-<a id='L215' name='L215'></a>        echo "$FILEPREF 0 "`date +"%b %d %H:%M"`" ERROR"
-<a id='L216' name='L216'></a>        exit 1
-<a id='L217' name='L217'></a>    }
-<a id='L218' name='L218'></a>    DATE=`mcrpmfs_getRawOneTag "%{BUILDTIME:date}\n" | cut -c 5-11,21-24`
-<a id='L219' name='L219'></a>    PAYLOAD=`mcrpmfs_getRawOneTag "%{PAYLOADFORMAT}\n" | sed s/ustar/tar/`
-<a id='L220' name='L220'></a> 
-<a id='L221' name='L221'></a>    HEADERSIZE=`printf '%s\n' "$DESC" | wc -c`  # 'echo' can't be used for arbitrary data (see commit message).
-<a id='L222' name='L222'></a>    printf '%s %s %s HEADER\n' "${FILEPREF}"  "${HEADERSIZE}" "${DATE}"
-<a id='L223' name='L223'></a>    echo "-r-xr-xr-x   1 root     root    0 $DATE INSTALL"
-<a id='L224' name='L224'></a>    case "${rpm_filename}" in
-<a id='L225' name='L225'></a>        *.src.rpm)
-<a id='L226' name='L226'></a>            echo "-r-xr-xr-x   1 root     root    0 $DATE REBUILD"
-<a id='L227' name='L227'></a>        ;;
-<a id='L228' name='L228'></a>        *)
-<a id='L229' name='L229'></a>            echo "-r-xr-xr-x   1 root     root    0 $DATE UPGRADE"
-<a id='L230' name='L230'></a>        ;;
-<a id='L231' name='L231'></a>    esac
-<a id='L232' name='L232'></a> 
-<a id='L233' name='L233'></a>    echo "dr-xr-xr-x   3 root     root     0 $DATE INFO"
-<a id='L234' name='L234'></a>    if [ `mcrpmfs_getRawOneTag "%{EPOCH}"` = "(none)" ]; then
-<a id='L235' name='L235'></a>        echo "$FILEPREF 0 $DATE INFO/NAME-VERSION-RELEASE"
-<a id='L236' name='L236'></a>    else
-<a id='L237' name='L237'></a>        echo "$FILEPREF 0 $DATE INFO/NAME-EPOCH:VERSION-RELEASE"
-<a id='L238' name='L238'></a>    fi
-<a id='L239' name='L239'></a>    echo "$FILEPREF 0 $DATE INFO/GROUP"
-<a id='L240' name='L240'></a>    echo "$FILEPREF 0 $DATE INFO/BUILDHOST"
-<a id='L241' name='L241'></a>    echo "$FILEPREF 0 $DATE INFO/SOURCERPM"
-<a id='L242' name='L242'></a>    echo "$FILEPREF 0 $DATE INFO/BUILDTIME"
-<a id='L243' name='L243'></a>    echo "$FILEPREF 0 $DATE INFO/RPMVERSION"
-<a id='L244' name='L244'></a>    echo "$FILEPREF 0 $DATE INFO/OS"
-<a id='L245' name='L245'></a>    echo "$FILEPREF 0 $DATE INFO/SIZE"
-<a id='L246' name='L246'></a> 
-<a id='L247' name='L247'></a>    if test "$MCFASTRPM" = 0 ; then
-<a id='L248' name='L248'></a>        mcrpmfs_list_fullRPM
-<a id='L249' name='L249'></a>    else
-<a id='L250' name='L250'></a>        mcrpmfs_list_fastRPM
-<a id='L251' name='L251'></a>    fi
-<a id='L252' name='L252'></a> 
-<a id='L253' name='L253'></a>    echo "$FILEPREF 0 $DATE CONTENTS.$PAYLOAD"
-<a id='L254' name='L254'></a>}
-<a id='L255' name='L255'></a> 
-<a id='L256' name='L256'></a>mcrpmfs_copyout ()
-<a id='L257' name='L257'></a>{
-<a id='L258' name='L258'></a>    case "$1" in
-<a id='L259' name='L259'></a>        HEADER) mcrpmfs_getDesription &gt; "$2"; exit 0;;
-<a id='L260' name='L260'></a>        INSTALL)
-<a id='L261' name='L261'></a>            echo "# Run this to install this RPM package" &gt; "$2"
-<a id='L262' name='L262'></a>            exit 0
-<a id='L263' name='L263'></a>        ;;
-<a id='L264' name='L264'></a>        UPGRADE)
-<a id='L265' name='L265'></a>            echo "# Run this to upgrade this RPM package" &gt; "$2"
-<a id='L266' name='L266'></a>            exit 0
-<a id='L267' name='L267'></a>        ;;
-<a id='L268' name='L268'></a>        REBUILD)
-<a id='L269' name='L269'></a>            echo "# Run this to rebuild this RPM package" &gt; "$2"
-<a id='L270' name='L270'></a>            exit 0
-<a id='L271' name='L271'></a>        ;;
-<a id='L272' name='L272'></a>        ERROR) mcrpmfs_getDesription &gt; /dev/null 2&gt; "$2"; exit 0;;
-<a id='L273' name='L273'></a>        INFO/NAME-VERSION-RELEASE)
-<a id='L274' name='L274'></a>            echo `mcrpmfs_getOneTag "NAME"`-`mcrpmfs_getOneTag "VERSION"`-`mcrpmfs_getOneTag "RELEASE"` &gt; "$2"
-<a id='L275' name='L275'></a>            exit 0
-<a id='L276' name='L276'></a>        ;;
-<a id='L277' name='L277'></a>        INFO/NAME-EPOCH:VERSION-RELEASE)
-<a id='L278' name='L278'></a>            echo `mcrpmfs_getOneTag "NAME"`-`mcrpmfs_getOneTag "EPOCH"`:`mcrpmfs_getOneTag "VERSION"`-`mcrpmfs_getOneTag "RELEASE"` &gt; "$2"
-<a id='L279' name='L279'></a>            exit 0
-<a id='L280' name='L280'></a>        ;;
-<a id='L281' name='L281'></a>        INFO/RELEASE)           mcrpmfs_getOneTag "RELEASE" &gt; "$2"; exit 0;;
-<a id='L282' name='L282'></a>        INFO/GROUP)             mcrpmfs_getRawOneTag "%{GROUP}\n" &gt; "$2"; exit 0;;
-<a id='L283' name='L283'></a>        INFO/DISTRIBUTION)      mcrpmfs_getOneTag "DISTRIBUTION" &gt; "$2"; exit 0;;
-<a id='L284' name='L284'></a>        INFO/VENDOR)            mcrpmfs_getOneTag "VENDOR" &gt; "$2"; exit 0;;
-<a id='L285' name='L285'></a>        INFO/BUILDHOST)         mcrpmfs_getRawOneTag "%{BUILDHOST}\n" &gt; "$2"; exit 0;;
-<a id='L286' name='L286'></a>        INFO/SOURCERPM)         mcrpmfs_getRawOneTag "%{SOURCERPM}\n" &gt; "$2"; exit 0;;
-<a id='L287' name='L287'></a>        INFO/DESCRIPTION)       mcrpmfs_getRawOneTag "%{DESCRIPTION}\n" &gt; "$2"; exit 0;;
-<a id='L288' name='L288'></a>        INFO/PACKAGER)          mcrpmfs_getOneTag "PACKAGER" &gt; "$2"; exit 0;;
-<a id='L289' name='L289'></a>        INFO/URL)               mcrpmfs_getOneTag "URL" &gt;"$2"; exit 0;;
-<a id='L290' name='L290'></a>        INFO/BUILDTIME)         mcrpmfs_getRawOneTag "%{BUILDTIME:date}\n" &gt;"$2"; exit 0;;
-<a id='L291' name='L291'></a>        INFO/EPOCH)             mcrpmfs_getOneTag "EPOCH" &gt;"$2"; exit 0;;
-<a id='L292' name='L292'></a>        INFO/LICENSE)           mcrpmfs_getOneTag "LICENSE" &gt;"$2"; exit 0;;
-<a id='L293' name='L293'></a>        INFO/RPMVERSION)        mcrpmfs_getRawOneTag "%{RPMVERSION}\n" &gt;"$2"; exit 0;;
-<a id='L294' name='L294'></a>        INFO/REQUIRES)          mcrpmfs_getRawOneTag "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" &gt;"$2"; exit 0;;
-<a id='L295' name='L295'></a>        INFO/ENHANCES)          mcrpmfs_getRawOneTag "[%|ENHANCESFLAGS:depflag_strong?{}:{%{ENHANCESNAME} %{ENHANCESFLAGS:depflags} %{ENHANCESVERSION}\n}|]" "$f" &gt;"$3"; exit 0;;
-<a id='L296' name='L296'></a>        INFO/SUGGESTS)          mcrpmfs_getRawOneTag "[%|SUGGESTSFLAGS:depflag_strong?{}:{%{SUGGESTSNAME} %{SUGGESTSFLAGS:depflags} %{SUGGESTSVERSION}\n}|]" "$f" &gt;"$3"; exit 0;;
-<a id='L297' name='L297'></a>        INFO/RECOMMENDS)        mcrpmfs_getRawOneTag "[%|SUGGESTSFLAGS:depflag_strong?{%{SUGGESTSNAME} %{SUGGESTSFLAGS:depflags} %{SUGGESTSVERSION}\n}|]" "$f" &gt;"$3"; exit 0;;
-<a id='L298' name='L298'></a>        INFO/SUPPLEMENTS)       mcrpmfs_getRawOneTag "[%|ENHANCESFLAGS:depflag_strong?{%{ENHANCESNAME} %{ENHANCESFLAGS:depflags} %{ENHANCESVERSION}\n}|]" "$f" &gt;"$3"; exit 0;;
-<a id='L299' name='L299'></a>        INFO/PROVIDES)          mcrpmfs_getRawOneTag "[%{PROVIDES} %{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}\n]" &gt;"$2"; exit 0;;
-<a id='L300' name='L300'></a>        INFO/SCRIPTS/PRETRANS)  mcrpmfs_getRawOneTag "%{RPMTAG_PRETRANS}\n" &gt;"$2"; exit 0;;
-<a id='L301' name='L301'></a>        INFO/SCRIPTS/PRETRANSPROG)      mcrpmfs_getRawOneTag "%{RPMTAG_PRETRANSPROG}\n" &gt;"$2"; exit 0;;
-<a id='L302' name='L302'></a>        INFO/SCRIPTS/POSTTRANS) mcrpmfs_getRawOneTag "%{RPMTAG_POSTTRANS}\n" &gt;"$2"; exit 0;;
-<a id='L303' name='L303'></a>        INFO/SCRIPTS/POSTTRANSPROG)     mcrpmfs_getRawOneTag "%{RPMTAG_POSTTRANSPROG}\n" &gt;"$2"; exit 0;;
-<a id='L304' name='L304'></a>        INFO/SCRIPTS/PREIN)     mcrpmfs_getRawOneTag "%{RPMTAG_PREIN}\n" &gt;"$2"; exit 0;;
-<a id='L305' name='L305'></a>        INFO/SCRIPTS/PREINPROG) mcrpmfs_getRawOneTag "%{RPMTAG_PREINPROG}\n" &gt;"$2"; exit 0;;
-<a id='L306' name='L306'></a>        INFO/SCRIPTS/POSTIN)    mcrpmfs_getRawOneTag "%{RPMTAG_POSTIN}\n" &gt;"$2"; exit 0;;
-<a id='L307' name='L307'></a>        INFO/SCRIPTS/POSTINPROG)        mcrpmfs_getRawOneTag "%{RPMTAG_POSTINPROG}\n" &gt;"$2"; exit 0;;
-<a id='L308' name='L308'></a>        INFO/SCRIPTS/PREUN)     mcrpmfs_getRawOneTag "%{RPMTAG_PREUN}\n" &gt;"$2"; exit 0;;
-<a id='L309' name='L309'></a>        INFO/SCRIPTS/PREUNPROG) mcrpmfs_getRawOneTag "%{RPMTAG_PREUNPROG}\n" &gt;"$2"; exit 0;;
-<a id='L310' name='L310'></a>        INFO/SCRIPTS/POSTUN)    mcrpmfs_getRawOneTag "%{RPMTAG_POSTUN}\n" &gt;"$2"; exit 0;;
-<a id='L311' name='L311'></a>        INFO/SCRIPTS/POSTUNPROG)        mcrpmfs_getRawOneTag "%{RPMTAG_POSTUNPROG}\n" &gt;"$2"; exit 0;;
-<a id='L312' name='L312'></a>        INFO/SCRIPTS/VERIFYSCRIPT)      mcrpmfs_getRawOneTag "%{VERIFYSCRIPT}\n" &gt; "$2"; exit 0;;
-<a id='L313' name='L313'></a>        INFO/SCRIPTS/VERIFYSCRIPTPROG)  mcrpmfs_getRawOneTag "%{VERIFYSCRIPTPROG}\n" &gt; "$2"; exit 0;;
-<a id='L314' name='L314'></a>        INFO/SCRIPTS/TRIGGERSCRIPTS)    $RPM -qp --triggers "${rpm_filename}" &gt; "$2"; exit 0;;
-<a id='L315' name='L315'></a>        INFO/SCRIPTS/TRIGGERSCRIPTPROG) mcrpmfs_getRawOneTag "%{TRIGGERSCRIPTPROG}\n" &gt; "$2"; exit 0;;
-<a id='L316' name='L316'></a>        INFO/SCRIPTS/ALL)               $RPM -qp --scripts "${rpm_filename}" &gt; "$2"; exit 0;;
-<a id='L317' name='L317'></a>        INFO/SUMMARY)           mcrpmfs_getRawOneTag "%{SUMMARY}\n" &gt; "$2"; exit 0;;
-<a id='L318' name='L318'></a>        INFO/OS)                mcrpmfs_getRawOneTag "%{OS}\n" &gt; "$2"; exit 0;;
-<a id='L319' name='L319'></a>        INFO/CHANGELOG)         mcrpmfs_getRawOneTag "[* %{CHANGELOGTIME:date} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]\n" &gt; "$2"; exit 0;;
-<a id='L320' name='L320'></a>        INFO/SIZE)              mcrpmfs_getRawOneTag "%{SIZE} bytes\n" &gt; "$2"; exit 0;;
-<a id='L321' name='L321'></a>        INFO/OBSOLETES)         mcrpmfs_getRawOneTag "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" &gt; "$2"; exit 0;;
-<a id='L322' name='L322'></a>        INFO/CONFLICTS)         mcrpmfs_getRawOneTag "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" &gt;"$2"; exit 0;;
-<a id='L323' name='L323'></a>        CONTENTS.*)             $RPM2CPIO "${rpm_filename}" &gt; "$2"; exit 0;;
-<a id='L324' name='L324'></a>        *)
-<a id='L325' name='L325'></a>            ;;
-<a id='L326' name='L326'></a>    esac
-<a id='L327' name='L327'></a>}
-<a id='L328' name='L328'></a> 
-<a id='L329' name='L329'></a>mcrpmfs_run ()
-<a id='L330' name='L330'></a>{
-<a id='L331' name='L331'></a>    case "$1" in
-<a id='L332' name='L332'></a>        INSTALL) echo "Installing \"${rpm_filename}\""; $RPM -ivh "${rpm_filename}"; exit 0;;
-<a id='L333' name='L333'></a>        UPGRADE) echo "Upgrading \"${rpm_filename}\""; $RPM -Uvh "${rpm_filename}"; exit 0;;
-<a id='L334' name='L334'></a>        REBUILD) echo "Rebuilding \"${rpm_filename}\""; $RPMBUILD --rebuild "${rpm_filename}"; exit 0;;
-<a id='L335' name='L335'></a>    esac
-<a id='L336' name='L336'></a>}
-<a id='L337' name='L337'></a> 
-<a id='L338' name='L338'></a># Let the test framework override functions and variables.
-<a id='L339' name='L339'></a>[ -n "$MC_TEST_RPM_REWRITE" ] &amp;&amp; . "$MC_TEST_RPM_REWRITE"
-<a id='L340' name='L340'></a> 
-<a id='L341' name='L341'></a>AllTAGS=`mcrpmfs_getAllNeededTags "$1"`
+<a id='L79' name='L79'></a>FILEPREF="-r--r--r--   1 0        0       "
+<a id='L80' name='L80'></a> 
+<a id='L81' name='L81'></a>mcrpmfs_getDesription()
+<a id='L82' name='L82'></a>{
+<a id='L83' name='L83'></a>    $RPM -qip "${rpm_filename}"
+<a id='L84' name='L84'></a>}
+<a id='L85' name='L85'></a> 
+<a id='L86' name='L86'></a>mcrpmfs_getAllNeededTags()
+<a id='L87' name='L87'></a>{
+<a id='L88' name='L88'></a>    $RPM_QUERY_FMT \
+<a id='L89' name='L89'></a>"|NAME=%{NAME}"\
+<a id='L90' name='L90'></a>"|VERSION=%{VERSION}"\
+<a id='L91' name='L91'></a>"|RELEASE=%{RELEASE}"\
+<a id='L92' name='L92'></a>"|DISTRIBUTION=%{DISTRIBUTION}"\
+<a id='L93' name='L93'></a>"|VENDOR=%{VENDOR}"\
+<a id='L94' name='L94'></a>"|DESCRIPTION=%{DESCRIPTION}"\
+<a id='L95' name='L95'></a>"|SUMMARY=%{SUMMARY}"\
+<a id='L96' name='L96'></a>"|URL=%{URL}"\
+<a id='L97' name='L97'></a>"|EPOCH=%{EPOCH}"\
+<a id='L98' name='L98'></a>"|LICENSE=%{LICENSE}"\
+<a id='L99' name='L99'></a>"|REQUIRES=%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}"\
+<a id='L100' name='L100'></a>"|OBSOLETES=%{OBSOLETES}"\
+<a id='L101' name='L101'></a>"|PROVIDES=%{PROVIDES} %{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}"\
+<a id='L102' name='L102'></a>"|CONFLICTS=%{CONFLICTS}"\
+<a id='L103' name='L103'></a>"|PACKAGER=%{PACKAGER}" \
+<a id='L104' name='L104'></a>    "${rpm_filename}" \
+<a id='L105' name='L105'></a>    | tr '\n' ' '  # The newlines in DESCRIPTION mess with the sed script in mcrpmfs_getOneTag().
+<a id='L106' name='L106'></a>}
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a>mcrpmfs_getRawOneTag()
+<a id='L109' name='L109'></a>{
+<a id='L110' name='L110'></a>    $RPM_QUERY_FMT "$1" "${rpm_filename}"
+<a id='L111' name='L111'></a>}
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a>mcrpmfs_getOneTag()
+<a id='L114' name='L114'></a>{
+<a id='L115' name='L115'></a>    # 'echo' can't be used for arbitrary data (see commit message).
+<a id='L116' name='L116'></a>    printf "%s" "$AllTAGS" | $SED "s/.*|${1}=//" | cut -d '|' -f 1
+<a id='L117' name='L117'></a>}
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>mcrpmfs_printOneMetaInfo()
+<a id='L120' name='L120'></a>{
+<a id='L121' name='L121'></a>    if test "$3" = "raw"; then
+<a id='L122' name='L122'></a>        metaInfo=`mcrpmfs_getRawOneTag "%{$2}"`
+<a id='L123' name='L123'></a>    else
+<a id='L124' name='L124'></a>        metaInfo=`mcrpmfs_getOneTag "$2"`
+<a id='L125' name='L125'></a>    fi
+<a id='L126' name='L126'></a> 
+<a id='L127' name='L127'></a>    if test -n "${metaInfo}"  -a "${metaInfo}" != "(none)"; then
+<a id='L128' name='L128'></a>        echo "${FILEPREF} 0 ${DATE} ${1}"
+<a id='L129' name='L129'></a>        return 0
+<a id='L130' name='L130'></a>    fi
+<a id='L131' name='L131'></a>    return 1
+<a id='L132' name='L132'></a>}
+<a id='L133' name='L133'></a> 
+<a id='L134' name='L134'></a>mcrpmfs_list_fastRPM ()
+<a id='L135' name='L135'></a>{
+<a id='L136' name='L136'></a>    echo "$FILEPREF 0 $DATE INFO/DISTRIBUTION"
+<a id='L137' name='L137'></a>    echo "$FILEPREF 0 $DATE INFO/VENDOR"
+<a id='L138' name='L138'></a>    echo "$FILEPREF 0 $DATE INFO/DESCRIPTION"
+<a id='L139' name='L139'></a>    echo "$FILEPREF 0 $DATE INFO/SUMMARY"
+<a id='L140' name='L140'></a>    echo "dr-xr-xr-x   1 0        0        0 $DATE INFO/SCRIPTS"
+<a id='L141' name='L141'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PRETRANS"
+<a id='L142' name='L142'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTTRANS"
+<a id='L143' name='L143'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PREIN"
+<a id='L144' name='L144'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTIN"
+<a id='L145' name='L145'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/PREUN"
+<a id='L146' name='L146'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/POSTUN"
+<a id='L147' name='L147'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/VERIFYSCRIPT"
+<a id='L148' name='L148'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/TRIGGERSCRIPTS"
+<a id='L149' name='L149'></a>    echo "$FILEPREF 0 $DATE INFO/SCRIPTS/ALL"
+<a id='L150' name='L150'></a>    echo "$FILEPREF 0 $DATE INFO/PACKAGER"
+<a id='L151' name='L151'></a>    echo "$FILEPREF 0 $DATE INFO/URL"
+<a id='L152' name='L152'></a>    echo "$FILEPREF 0 $DATE INFO/EPOCH"
+<a id='L153' name='L153'></a>    echo "$FILEPREF 0 $DATE INFO/LICENSE"
+<a id='L154' name='L154'></a>    echo "$FILEPREF 0 $DATE INFO/REQUIRES"
+<a id='L155' name='L155'></a>    echo "$FILEPREF 0 $DATE INFO/OBSOLETES"
+<a id='L156' name='L156'></a>    echo "$FILEPREF 0 $DATE INFO/PROVIDES"
+<a id='L157' name='L157'></a>    echo "$FILEPREF 0 $DATE INFO/ENHANCES"
+<a id='L158' name='L158'></a>    echo "$FILEPREF 0 $DATE INFO/SUGGESTS"
+<a id='L159' name='L159'></a>    echo "$FILEPREF 0 $DATE INFO/RECOMMENDS"
+<a id='L160' name='L160'></a>    echo "$FILEPREF 0 $DATE INFO/SUPPLEMENTS"
+<a id='L161' name='L161'></a>    echo "$FILEPREF 0 $DATE INFO/CONFLICTS"
+<a id='L162' name='L162'></a>    echo "$FILEPREF 0 $DATE INFO/CHANGELOG"
+<a id='L163' name='L163'></a>}
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a>mcrpmfs_list_fullRPM ()
+<a id='L166' name='L166'></a>{
+<a id='L167' name='L167'></a>    mcrpmfs_printOneMetaInfo "INFO/DISTRIBUTION" "DISTRIBUTION"
+<a id='L168' name='L168'></a>    mcrpmfs_printOneMetaInfo "INFO/VENDOR" "VENDOR"
+<a id='L169' name='L169'></a>    mcrpmfs_printOneMetaInfo "INFO/DESCRIPTION" "DESCRIPTION"
+<a id='L170' name='L170'></a>    mcrpmfs_printOneMetaInfo "INFO/SUMMARY" "SUMMARY"
+<a id='L171' name='L171'></a> 
+<a id='L172' name='L172'></a>    if test "`mcrpmfs_getRawOneTag \"%{RPMTAG_PRETRANS}%{RPMTAG_POSTTRANS}%{RPMTAG_PREIN}%{RPMTAG_POSTIN}%{RPMTAG_PREUN}%{RPMTAG_POSTUN}%{VERIFYSCRIPT}%{TRIGGERSCRIPTS}\"`" != "(none)(none)(none)(none)(none)(none)(none)(none)"; then
+<a id='L173' name='L173'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PRETRANS" "RPMTAG_PRETRANS" "raw"
+<a id='L174' name='L174'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTTRANS" "RPMTAG_POSTTRANS" "raw"
+<a id='L175' name='L175'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PREIN" "RPMTAG_PREIN" "raw"
+<a id='L176' name='L176'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTIN" "RPMTAG_POSTIN" "raw"
+<a id='L177' name='L177'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PREUN" "RPMTAG_PREUN" "raw"
+<a id='L178' name='L178'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTUN" "RPMTAG_POSTUN" "raw"
+<a id='L179' name='L179'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/VERIFYSCRIPT" "VERIFYSCRIPT" "raw"
+<a id='L180' name='L180'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/TRIGGERSCRIPTS" "TRIGGERSCRIPTS" "raw"
+<a id='L181' name='L181'></a>        echo "$FILEPREF 0 $DATE INFO/SCRIPTS/ALL"
+<a id='L182' name='L182'></a>    fi
+<a id='L183' name='L183'></a> 
+<a id='L184' name='L184'></a>    if test "`mcrpmfs_getRawOneTag \"%{RPMTAG_PRETRANSPROG}%{RPMTAG_POSTTRANSPROG}%{RPMTAG_PREINPROG}%{RPMTAG_POSTINPROG}%{RPMTAG_PREUNPROG}%{RPMTAG_POSTUNPROG}%{VERIFYSCRIPTPROG}%{TRIGGERSCRIPTPROG}\"`" != "(none)(none)(none)(none)(none)(none)(none)(none)"; then
+<a id='L185' name='L185'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PRETRANSPROG" "RPMTAG_PRETRANSPROG" "raw"
+<a id='L186' name='L186'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTTRANSPROG" "RPMTAG_POSTTRANSPROG" "raw"
+<a id='L187' name='L187'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PREINPROG" "RPMTAG_PREINPROG" "raw"
+<a id='L188' name='L188'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTINPROG" "RPMTAG_POSTINPROG" "raw"
+<a id='L189' name='L189'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/PREUNPROG" "RPMTAG_PREUNPROG" "raw"
+<a id='L190' name='L190'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/POSTUNPROG" "RPMTAG_POSTUNPROG" "raw"
+<a id='L191' name='L191'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/VERIFYSCRIPTPROG" "VERIFYSCRIPTPROG" "raw"
+<a id='L192' name='L192'></a>        mcrpmfs_printOneMetaInfo "INFO/SCRIPTS/TRIGGERSCRIPTPROG" "TRIGGERSCRIPTPROG" "raw"
+<a id='L193' name='L193'></a>    fi
+<a id='L194' name='L194'></a> 
+<a id='L195' name='L195'></a>    mcrpmfs_printOneMetaInfo "INFO/PACKAGER" "PACKAGER"
+<a id='L196' name='L196'></a>    mcrpmfs_printOneMetaInfo "INFO/URL" "URL"
+<a id='L197' name='L197'></a>    mcrpmfs_printOneMetaInfo "INFO/EPOCH" "EPOCH"
+<a id='L198' name='L198'></a>    mcrpmfs_printOneMetaInfo "INFO/LICENSE" "LICENSE"
+<a id='L199' name='L199'></a> 
+<a id='L200' name='L200'></a>    mcrpmfs_printOneMetaInfo "INFO/REQUIRES" "REQUIRES"
+<a id='L201' name='L201'></a>    mcrpmfs_printOneMetaInfo "INFO/OBSOLETES" "OBSOLETES"
+<a id='L202' name='L202'></a>    mcrpmfs_printOneMetaInfo "INFO/PROVIDES" "PROVIDES"
+<a id='L203' name='L203'></a>    mcrpmfs_printOneMetaInfo "INFO/CONFLICTS" "CONFLICTS"
+<a id='L204' name='L204'></a>    mcrpmfs_printOneMetaInfo "INFO/CHANGELOG" "CHANGELOGTEXT" "raw"
+<a id='L205' name='L205'></a>}
+<a id='L206' name='L206'></a> 
+<a id='L207' name='L207'></a>mcrpmfs_list ()
+<a id='L208' name='L208'></a>{
+<a id='L209' name='L209'></a>    # set MCFASTRPM_DFLT to 1 for faster rpm files handling by default, to 0 for
+<a id='L210' name='L210'></a>    # slower handling
+<a id='L211' name='L211'></a>    MCFASTRPM_DFLT=0
+<a id='L212' name='L212'></a>    if test -z "$MCFASTRPM"; then
+<a id='L213' name='L213'></a>      MCFASTRPM=$MCFASTRPM_DFLT
+<a id='L214' name='L214'></a>    fi
+<a id='L215' name='L215'></a> 
+<a id='L216' name='L216'></a>    DESC=`mcrpmfs_getDesription 2&gt;/dev/null` || {
+<a id='L217' name='L217'></a>        echo "$FILEPREF 0 "`date +"%b %d %H:%M"`" ERROR"
+<a id='L218' name='L218'></a>        exit 1
+<a id='L219' name='L219'></a>    }
+<a id='L220' name='L220'></a>    DATE=`mcrpmfs_getRawOneTag "%{BUILDTIME:date}\n" | cut -c 5-11,21-24`
+<a id='L221' name='L221'></a>    PAYLOAD=`mcrpmfs_getRawOneTag "%{PAYLOADFORMAT}\n" | sed s/ustar/tar/`
+<a id='L222' name='L222'></a> 
+<a id='L223' name='L223'></a>    HEADERSIZE=`printf '%s\n' "$DESC" | wc -c`  # 'echo' can't be used for arbitrary data (see commit message).
+<a id='L224' name='L224'></a>    printf '%s %s %s HEADER\n' "${FILEPREF}"  "${HEADERSIZE}" "${DATE}"
+<a id='L225' name='L225'></a>    echo "-r-xr-xr-x   1 0        0       0 $DATE INSTALL"
+<a id='L226' name='L226'></a>    case "${rpm_filename}" in
+<a id='L227' name='L227'></a>        *.src.rpm)
+<a id='L228' name='L228'></a>            echo "-r-xr-xr-x   1 0        0       0 $DATE REBUILD"
+<a id='L229' name='L229'></a>        ;;
+<a id='L230' name='L230'></a>        *)
+<a id='L231' name='L231'></a>            echo "-r-xr-xr-x   1 0        0       0 $DATE UPGRADE"
+<a id='L232' name='L232'></a>        ;;
+<a id='L233' name='L233'></a>    esac
+<a id='L234' name='L234'></a> 
+<a id='L235' name='L235'></a>    echo "dr-xr-xr-x   3 0        0        0 $DATE INFO"
+<a id='L236' name='L236'></a>    if [ `mcrpmfs_getRawOneTag "%{EPOCH}"` = "(none)" ]; then
+<a id='L237' name='L237'></a>        echo "$FILEPREF 0 $DATE INFO/NAME-VERSION-RELEASE"
+<a id='L238' name='L238'></a>    else
+<a id='L239' name='L239'></a>        echo "$FILEPREF 0 $DATE INFO/NAME-EPOCH:VERSION-RELEASE"
+<a id='L240' name='L240'></a>    fi
+<a id='L241' name='L241'></a>    echo "$FILEPREF 0 $DATE INFO/GROUP"
+<a id='L242' name='L242'></a>    echo "$FILEPREF 0 $DATE INFO/BUILDHOST"
+<a id='L243' name='L243'></a>    echo "$FILEPREF 0 $DATE INFO/SOURCERPM"
+<a id='L244' name='L244'></a>    echo "$FILEPREF 0 $DATE INFO/BUILDTIME"
+<a id='L245' name='L245'></a>    echo "$FILEPREF 0 $DATE INFO/RPMVERSION"
+<a id='L246' name='L246'></a>    echo "$FILEPREF 0 $DATE INFO/OS"
+<a id='L247' name='L247'></a>    echo "$FILEPREF 0 $DATE INFO/SIZE"
+<a id='L248' name='L248'></a> 
+<a id='L249' name='L249'></a>    if test "$MCFASTRPM" = 0 ; then
+<a id='L250' name='L250'></a>        mcrpmfs_list_fullRPM
+<a id='L251' name='L251'></a>    else
+<a id='L252' name='L252'></a>        mcrpmfs_list_fastRPM
+<a id='L253' name='L253'></a>    fi
+<a id='L254' name='L254'></a> 
+<a id='L255' name='L255'></a>    echo "$FILEPREF 0 $DATE CONTENTS.$PAYLOAD"
+<a id='L256' name='L256'></a>}
+<a id='L257' name='L257'></a> 
+<a id='L258' name='L258'></a>mcrpmfs_copyout ()
+<a id='L259' name='L259'></a>{
+<a id='L260' name='L260'></a>    case "$1" in
+<a id='L261' name='L261'></a>        HEADER) mcrpmfs_getDesription &gt; "$2"; exit 0;;
+<a id='L262' name='L262'></a>        INSTALL)
+<a id='L263' name='L263'></a>            echo "# Run this to install this RPM package" &gt; "$2"
+<a id='L264' name='L264'></a>            exit 0
+<a id='L265' name='L265'></a>        ;;
+<a id='L266' name='L266'></a>        UPGRADE)
+<a id='L267' name='L267'></a>            echo "# Run this to upgrade this RPM package" &gt; "$2"
+<a id='L268' name='L268'></a>            exit 0
+<a id='L269' name='L269'></a>        ;;
+<a id='L270' name='L270'></a>        REBUILD)
+<a id='L271' name='L271'></a>            echo "# Run this to rebuild this RPM package" &gt; "$2"
+<a id='L272' name='L272'></a>            exit 0
+<a id='L273' name='L273'></a>        ;;
+<a id='L274' name='L274'></a>        ERROR) mcrpmfs_getDesription &gt; /dev/null 2&gt; "$2"; exit 0;;
+<a id='L275' name='L275'></a>        INFO/NAME-VERSION-RELEASE)
+<a id='L276' name='L276'></a>            echo `mcrpmfs_getOneTag "NAME"`-`mcrpmfs_getOneTag "VERSION"`-`mcrpmfs_getOneTag "RELEASE"` &gt; "$2"
+<a id='L277' name='L277'></a>            exit 0
+<a id='L278' name='L278'></a>        ;;
+<a id='L279' name='L279'></a>        INFO/NAME-EPOCH:VERSION-RELEASE)
+<a id='L280' name='L280'></a>            echo `mcrpmfs_getOneTag "NAME"`-`mcrpmfs_getOneTag "EPOCH"`:`mcrpmfs_getOneTag "VERSION"`-`mcrpmfs_getOneTag "RELEASE"` &gt; "$2"
+<a id='L281' name='L281'></a>            exit 0
+<a id='L282' name='L282'></a>        ;;
+<a id='L283' name='L283'></a>        INFO/RELEASE)           mcrpmfs_getOneTag "RELEASE" &gt; "$2"; exit 0;;
+<a id='L284' name='L284'></a>        INFO/GROUP)             mcrpmfs_getRawOneTag "%{GROUP}\n" &gt; "$2"; exit 0;;
+<a id='L285' name='L285'></a>        INFO/DISTRIBUTION)      mcrpmfs_getOneTag "DISTRIBUTION" &gt; "$2"; exit 0;;
+<a id='L286' name='L286'></a>        INFO/VENDOR)            mcrpmfs_getOneTag "VENDOR" &gt; "$2"; exit 0;;
+<a id='L287' name='L287'></a>        INFO/BUILDHOST)         mcrpmfs_getRawOneTag "%{BUILDHOST}\n" &gt; "$2"; exit 0;;
+<a id='L288' name='L288'></a>        INFO/SOURCERPM)         mcrpmfs_getRawOneTag "%{SOURCERPM}\n" &gt; "$2"; exit 0;;
+<a id='L289' name='L289'></a>        INFO/DESCRIPTION)       mcrpmfs_getRawOneTag "%{DESCRIPTION}\n" &gt; "$2"; exit 0;;
+<a id='L290' name='L290'></a>        INFO/PACKAGER)          mcrpmfs_getOneTag "PACKAGER" &gt; "$2"; exit 0;;
+<a id='L291' name='L291'></a>        INFO/URL)               mcrpmfs_getOneTag "URL" &gt;"$2"; exit 0;;
+<a id='L292' name='L292'></a>        INFO/BUILDTIME)         mcrpmfs_getRawOneTag "%{BUILDTIME:date}\n" &gt;"$2"; exit 0;;
+<a id='L293' name='L293'></a>        INFO/EPOCH)             mcrpmfs_getOneTag "EPOCH" &gt;"$2"; exit 0;;
+<a id='L294' name='L294'></a>        INFO/LICENSE)           mcrpmfs_getOneTag "LICENSE" &gt;"$2"; exit 0;;
+<a id='L295' name='L295'></a>        INFO/RPMVERSION)        mcrpmfs_getRawOneTag "%{RPMVERSION}\n" &gt;"$2"; exit 0;;
+<a id='L296' name='L296'></a>        INFO/REQUIRES)          mcrpmfs_getRawOneTag "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" &gt;"$2"; exit 0;;
+<a id='L297' name='L297'></a>        INFO/ENHANCES)          mcrpmfs_getRawOneTag "[%|ENHANCESFLAGS:depflag_strong?{}:{%{ENHANCESNAME} %{ENHANCESFLAGS:depflags} %{ENHANCESVERSION}\n}|]" "$f" &gt;"$3"; exit 0;;
+<a id='L298' name='L298'></a>        INFO/SUGGESTS)          mcrpmfs_getRawOneTag "[%|SUGGESTSFLAGS:depflag_strong?{}:{%{SUGGESTSNAME} %{SUGGESTSFLAGS:depflags} %{SUGGESTSVERSION}\n}|]" "$f" &gt;"$3"; exit 0;;
+<a id='L299' name='L299'></a>        INFO/RECOMMENDS)        mcrpmfs_getRawOneTag "[%|SUGGESTSFLAGS:depflag_strong?{%{SUGGESTSNAME} %{SUGGESTSFLAGS:depflags} %{SUGGESTSVERSION}\n}|]" "$f" &gt;"$3"; exit 0;;
+<a id='L300' name='L300'></a>        INFO/SUPPLEMENTS)       mcrpmfs_getRawOneTag "[%|ENHANCESFLAGS:depflag_strong?{%{ENHANCESNAME} %{ENHANCESFLAGS:depflags} %{ENHANCESVERSION}\n}|]" "$f" &gt;"$3"; exit 0;;
+<a id='L301' name='L301'></a>        INFO/PROVIDES)          mcrpmfs_getRawOneTag "[%{PROVIDES} %{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}\n]" &gt;"$2"; exit 0;;
+<a id='L302' name='L302'></a>        INFO/SCRIPTS/PRETRANS)  mcrpmfs_getRawOneTag "%{RPMTAG_PRETRANS}\n" &gt;"$2"; exit 0;;
+<a id='L303' name='L303'></a>        INFO/SCRIPTS/PRETRANSPROG)      mcrpmfs_getRawOneTag "%{RPMTAG_PRETRANSPROG}\n" &gt;"$2"; exit 0;;
+<a id='L304' name='L304'></a>        INFO/SCRIPTS/POSTTRANS) mcrpmfs_getRawOneTag "%{RPMTAG_POSTTRANS}\n" &gt;"$2"; exit 0;;
+<a id='L305' name='L305'></a>        INFO/SCRIPTS/POSTTRANSPROG)     mcrpmfs_getRawOneTag "%{RPMTAG_POSTTRANSPROG}\n" &gt;"$2"; exit 0;;
+<a id='L306' name='L306'></a>        INFO/SCRIPTS/PREIN)     mcrpmfs_getRawOneTag "%{RPMTAG_PREIN}\n" &gt;"$2"; exit 0;;
+<a id='L307' name='L307'></a>        INFO/SCRIPTS/PREINPROG) mcrpmfs_getRawOneTag "%{RPMTAG_PREINPROG}\n" &gt;"$2"; exit 0;;
+<a id='L308' name='L308'></a>        INFO/SCRIPTS/POSTIN)    mcrpmfs_getRawOneTag "%{RPMTAG_POSTIN}\n" &gt;"$2"; exit 0;;
+<a id='L309' name='L309'></a>        INFO/SCRIPTS/POSTINPROG)        mcrpmfs_getRawOneTag "%{RPMTAG_POSTINPROG}\n" &gt;"$2"; exit 0;;
+<a id='L310' name='L310'></a>        INFO/SCRIPTS/PREUN)     mcrpmfs_getRawOneTag "%{RPMTAG_PREUN}\n" &gt;"$2"; exit 0;;
+<a id='L311' name='L311'></a>        INFO/SCRIPTS/PREUNPROG) mcrpmfs_getRawOneTag "%{RPMTAG_PREUNPROG}\n" &gt;"$2"; exit 0;;
+<a id='L312' name='L312'></a>        INFO/SCRIPTS/POSTUN)    mcrpmfs_getRawOneTag "%{RPMTAG_POSTUN}\n" &gt;"$2"; exit 0;;
+<a id='L313' name='L313'></a>        INFO/SCRIPTS/POSTUNPROG)        mcrpmfs_getRawOneTag "%{RPMTAG_POSTUNPROG}\n" &gt;"$2"; exit 0;;
+<a id='L314' name='L314'></a>        INFO/SCRIPTS/VERIFYSCRIPT)      mcrpmfs_getRawOneTag "%{VERIFYSCRIPT}\n" &gt; "$2"; exit 0;;
+<a id='L315' name='L315'></a>        INFO/SCRIPTS/VERIFYSCRIPTPROG)  mcrpmfs_getRawOneTag "%{VERIFYSCRIPTPROG}\n" &gt; "$2"; exit 0;;
+<a id='L316' name='L316'></a>        INFO/SCRIPTS/TRIGGERSCRIPTS)    $RPM -qp --triggers "${rpm_filename}" &gt; "$2"; exit 0;;
+<a id='L317' name='L317'></a>        INFO/SCRIPTS/TRIGGERSCRIPTPROG) mcrpmfs_getRawOneTag "%{TRIGGERSCRIPTPROG}\n" &gt; "$2"; exit 0;;
+<a id='L318' name='L318'></a>        INFO/SCRIPTS/ALL)               $RPM -qp --scripts "${rpm_filename}" &gt; "$2"; exit 0;;
+<a id='L319' name='L319'></a>        INFO/SUMMARY)           mcrpmfs_getRawOneTag "%{SUMMARY}\n" &gt; "$2"; exit 0;;
+<a id='L320' name='L320'></a>        INFO/OS)                mcrpmfs_getRawOneTag "%{OS}\n" &gt; "$2"; exit 0;;
+<a id='L321' name='L321'></a>        INFO/CHANGELOG)         mcrpmfs_getRawOneTag "[* %{CHANGELOGTIME:date} %{CHANGELOGNAME}\n%{CHANGELOGTEXT}\n\n]\n" &gt; "$2"; exit 0;;
+<a id='L322' name='L322'></a>        INFO/SIZE)              mcrpmfs_getRawOneTag "%{SIZE} bytes\n" &gt; "$2"; exit 0;;
+<a id='L323' name='L323'></a>        INFO/OBSOLETES)         mcrpmfs_getRawOneTag "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" &gt; "$2"; exit 0;;
+<a id='L324' name='L324'></a>        INFO/CONFLICTS)         mcrpmfs_getRawOneTag "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" &gt;"$2"; exit 0;;
+<a id='L325' name='L325'></a>        CONTENTS.*)             $RPM2CPIO "${rpm_filename}" &gt; "$2"; exit 0;;
+<a id='L326' name='L326'></a>        *)
+<a id='L327' name='L327'></a>            ;;
+<a id='L328' name='L328'></a>    esac
+<a id='L329' name='L329'></a>}
+<a id='L330' name='L330'></a> 
+<a id='L331' name='L331'></a>mcrpmfs_run ()
+<a id='L332' name='L332'></a>{
+<a id='L333' name='L333'></a>    case "$1" in
+<a id='L334' name='L334'></a>        INSTALL) echo "Installing \"${rpm_filename}\""; $RPM -ivh "${rpm_filename}"; exit 0;;
+<a id='L335' name='L335'></a>        UPGRADE) echo "Upgrading \"${rpm_filename}\""; $RPM -Uvh "${rpm_filename}"; exit 0;;
+<a id='L336' name='L336'></a>        REBUILD) echo "Rebuilding \"${rpm_filename}\""; $RPMBUILD --rebuild "${rpm_filename}"; exit 0;;
+<a id='L337' name='L337'></a>    esac
+<a id='L338' name='L338'></a>}
+<a id='L339' name='L339'></a> 
+<a id='L340' name='L340'></a># Let the test framework override functions and variables.
+<a id='L341' name='L341'></a>[ -n "$MC_TEST_RPM_REWRITE" ] &amp;&amp; . "$MC_TEST_RPM_REWRITE"
 <a id='L342' name='L342'></a> 
-<a id='L343' name='L343'></a>umask 077
-<a id='L344' name='L344'></a>case "${param}" in
-<a id='L345' name='L345'></a>  list) mcrpmfs_list; exit 0;;
-<a id='L346' name='L346'></a>  copyout) mcrpmfs_copyout "$1" "$2"; exit 0;;
-<a id='L347' name='L347'></a>  run) mcrpmfs_run "$1"; exit 1;;
-<a id='L348' name='L348'></a>esac
-<a id='L349' name='L349'></a>exit 1
+<a id='L343' name='L343'></a>AllTAGS=`mcrpmfs_getAllNeededTags "$1"`
+<a id='L344' name='L344'></a> 
+<a id='L345' name='L345'></a>umask 077
+<a id='L346' name='L346'></a>case "${param}" in
+<a id='L347' name='L347'></a>  list) mcrpmfs_list; exit 0;;
+<a id='L348' name='L348'></a>  copyout) mcrpmfs_copyout "$1" "$2"; exit 0;;
+<a id='L349' name='L349'></a>  run) mcrpmfs_run "$1"; exit 1;;
+<a id='L350' name='L350'></a>esac
+<a id='L351' name='L351'></a>exit 1
 </pre>
 <hr />
 <a id='BOTTOM' name='BOTTOM'></a>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+349 src/vfs/extfs/helpers/rpm'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+351 src/vfs/extfs/helpers/rpm'  /> */</em>
 </body>
 </html>

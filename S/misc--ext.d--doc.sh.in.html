@@ -3,7 +3,7 @@
 <head>
 <title>misc/ext.d/doc.sh.in</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -50,9 +50,9 @@
 <a id='L25' name='L25'></a>}
 <a id='L26' name='L26'></a> 
 <a id='L27' name='L27'></a>get_ooffice_executable() {
-<a id='L28' name='L28'></a>    if which loffice &gt;/dev/null 2&gt;&amp;1; then
+<a id='L28' name='L28'></a>    if command -v loffice &gt;/dev/null 2&gt;&amp;1; then
 <a id='L29' name='L29'></a>        echo "loffice"
-<a id='L30' name='L30'></a>    elif which ooffice &gt;/dev/null 2&gt;&amp;1; then
+<a id='L30' name='L30'></a>    elif command -v ooffice &gt;/dev/null 2&gt;&amp;1; then
 <a id='L31' name='L31'></a>        echo "ooffice"
 <a id='L32' name='L32'></a>    else
 <a id='L33' name='L33'></a>        echo -n
@@ -77,35 +77,35 @@
 <a id='L52' name='L52'></a>        fi
 <a id='L53' name='L53'></a>        ;;
 <a id='L54' name='L54'></a>    msdoc)
-<a id='L55' name='L55'></a>        if which wvHtml &gt;/dev/null 2&gt;&amp;1; then
+<a id='L55' name='L55'></a>        if command -v wvHtml &gt;/dev/null 2&gt;&amp;1; then
 <a id='L56' name='L56'></a>            tmp=`mktemp -d ${TMPDIR:-/tmp}/%p.XXXXXX`
 <a id='L57' name='L57'></a>            wvHtml "${MC_EXT_FILENAME}" --targetdir="$tmp" page.html
 <a id='L58' name='L58'></a>            elinks -dump "$tmp/page.html"
 <a id='L59' name='L59'></a>            rm -rf "$tmp"
-<a id='L60' name='L60'></a>        elif which antiword &gt;/dev/null 2&gt;&amp;1; then
+<a id='L60' name='L60'></a>        elif command -v antiword &gt;/dev/null 2&gt;&amp;1; then
 <a id='L61' name='L61'></a>            antiword -t "${MC_EXT_FILENAME}"
-<a id='L62' name='L62'></a>        elif which catdoc &gt;/dev/null 2&gt;&amp;1; then
+<a id='L62' name='L62'></a>        elif command -v catdoc &gt;/dev/null 2&gt;&amp;1; then
 <a id='L63' name='L63'></a>            catdoc -w "${MC_EXT_FILENAME}"
-<a id='L64' name='L64'></a>        elif which word2x &gt;/dev/null 2&gt;&amp;1; then
+<a id='L64' name='L64'></a>        elif command -v word2x &gt;/dev/null 2&gt;&amp;1; then
 <a id='L65' name='L65'></a>            word2x -f text "${MC_EXT_FILENAME}" -
 <a id='L66' name='L66'></a>        else
 <a id='L67' name='L67'></a>            strings "${MC_EXT_FILENAME}"
 <a id='L68' name='L68'></a>        fi
 <a id='L69' name='L69'></a>        ;;
 <a id='L70' name='L70'></a>    msxls)
-<a id='L71' name='L71'></a>        if which xlhtml &gt;/dev/null 2&gt;&amp;1; then
+<a id='L71' name='L71'></a>        if command -v xlhtml &gt;/dev/null 2&gt;&amp;1; then
 <a id='L72' name='L72'></a>            tmp=`mktemp -d ${TMPDIR:-/tmp}/%p.XXXXXX`
 <a id='L73' name='L73'></a>            xlhtml -a "${MC_EXT_FILENAME}" &gt; "$tmp/page.html"
 <a id='L74' name='L74'></a>            elinks -dump "$tmp/page.html"
 <a id='L75' name='L75'></a>            rm -rf "$tmp"
-<a id='L76' name='L76'></a>        elif which xls2csv &gt;/dev/null 2&gt;&amp;1; then
+<a id='L76' name='L76'></a>        elif command -v xls2csv &gt;/dev/null 2&gt;&amp;1; then
 <a id='L77' name='L77'></a>            xls2csv "${MC_EXT_FILENAME}"
 <a id='L78' name='L78'></a>        else
 <a id='L79' name='L79'></a>            strings "${MC_EXT_FILENAME}"
 <a id='L80' name='L80'></a>        fi
 <a id='L81' name='L81'></a>        ;;
 <a id='L82' name='L82'></a>    dvi)
-<a id='L83' name='L83'></a>        which dvi2tty &gt;/dev/null 2&gt;&amp;1 &amp;&amp; \
+<a id='L83' name='L83'></a>        command -v dvi2tty &gt;/dev/null 2&gt;&amp;1 &amp;&amp; \
 <a id='L84' name='L84'></a>            dvi2tty "${MC_EXT_FILENAME}" || \
 <a id='L85' name='L85'></a>            catdvi "${MC_EXT_FILENAME}"
 <a id='L86' name='L86'></a>        ;;

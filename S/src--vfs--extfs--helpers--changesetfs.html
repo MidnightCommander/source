@@ -3,7 +3,7 @@
 <head>
 <title>src/vfs/extfs/helpers/changesetfs</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -82,7 +82,7 @@
 <a id='L57' name='L57'></a>    [ -z "$GIT_DIR" ] &amp;&amp; GIT_DIR=$WORK_DIR
 <a id='L58' name='L58'></a> 
 <a id='L59' name='L59'></a>    filecommit=`git  --git-dir="$GIT_DIR" show --raw --pretty=tformat:%h "$chset" -- "$fname"| \
-<a id='L60' name='L60'></a>        tail -n1 | \
+<a id='L60' name='L60'></a>        tail -1 | \
 <a id='L61' name='L61'></a>        sed 's@^::[0-9]*\s*[0-9]*\s*[0-9]*\s*@@' | \
 <a id='L62' name='L62'></a>        sed 's@^:[0-9]*\s*[0-9]*\s*@@' | \
 <a id='L63' name='L63'></a>        cut -d'.' -f 1`
@@ -123,8 +123,8 @@
 <a id='L98' name='L98'></a>tmp_file=$1; shift
 <a id='L99' name='L99'></a> 
 <a id='L100' name='L100'></a>WORK_DIR=`head -n1 $tmp_file`
-<a id='L101' name='L101'></a>fname=`tail -n2 $tmp_file | head -n1`
-<a id='L102' name='L102'></a>VCS_type=`tail -n1 $tmp_file`
+<a id='L101' name='L101'></a>fname=`tail -2 $tmp_file | head -n1`
+<a id='L102' name='L102'></a>VCS_type=`tail -1 $tmp_file`
 <a id='L103' name='L103'></a> 
 <a id='L104' name='L104'></a>case "$command" in
 <a id='L105' name='L105'></a>  list) changesetfs_list "$VCS_type" "$WORK_DIR" "$fname" ;;

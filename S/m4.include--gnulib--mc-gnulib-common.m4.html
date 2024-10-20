@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/gnulib/mc-gnulib-common.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/<a href='../files/m4.include--gnulib.html'>gnulib</a>/mc-gnulib-common.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/<a href='../files/m4.include--gnulib.html'>gnulib</a>/mc-gnulib-common.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/gnulib/mc-gnulib-common.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># gnulib-common.m4
+<a id='L2' name='L2'></a># serial 101
+<a id='L3' name='L3'></a>dnl Copyright (C) 2007-2024 Free Software Foundation, Inc.
+<a id='L4' name='L4'></a>dnl This file is free software; the Free Software Foundation
+<a id='L5' name='L5'></a>dnl gives unlimited permission to copy and/or distribute it,
+<a id='L6' name='L6'></a>dnl with or without modifications, as long as this notice is preserved.
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a>AC_PREREQ([2.62])
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a># gl_CONDITIONAL(conditional, condition)
+<a id='L12' name='L12'></a># is like AM_CONDITIONAL(conditional, condition), except that it does not
+<a id='L13' name='L13'></a># produce an error
+<a id='L14' name='L14'></a>#   configure: error: conditional "..." was never defined.
+<a id='L15' name='L15'></a>#   Usually this means the macro was only invoked conditionally.
+<a id='L16' name='L16'></a># when only invoked conditionally. Instead, in that case, both the _TRUE
+<a id='L17' name='L17'></a># and the _FALSE case are disabled.
+<a id='L18' name='L18'></a>AC_DEFUN([gl_CONDITIONAL],
+<a id='L19' name='L19'></a>[
+<a id='L20' name='L20'></a>  pushdef([AC_CONFIG_COMMANDS_PRE], [:])dnl
+<a id='L21' name='L21'></a>  AM_CONDITIONAL([$1], [$2])
+<a id='L22' name='L22'></a>  popdef([AC_CONFIG_COMMANDS_PRE])dnl
+<a id='L23' name='L23'></a>  if test -z "${[$1]_TRUE}" &amp;&amp; test -z "${[$1]_FALSE}"; then
+<a id='L24' name='L24'></a>    [$1]_TRUE='#'
+<a id='L25' name='L25'></a>    [$1]_FALSE='#'
+<a id='L26' name='L26'></a>  fi
+<a id='L27' name='L27'></a>])
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>dnl gl_CONDITIONAL_HEADER([foo.h])
+<a id='L30' name='L30'></a>dnl takes a shell variable GL_GENERATE_FOO_H (with value true or false) as input
+<a id='L31' name='L31'></a>dnl and produces
+<a id='L32' name='L32'></a>dnl   - an AC_SUBSTed variable FOO_H that is either a file name or empty, based
+<a id='L33' name='L33'></a>dnl     on whether GL_GENERATE_FOO_H is true or false,
+<a id='L34' name='L34'></a>dnl   - an Automake conditional GL_GENERATE_FOO_H that evaluates to the value of
+<a id='L35' name='L35'></a>dnl     the shell variable GL_GENERATE_FOO_H.
+<a id='L36' name='L36'></a>AC_DEFUN([gl_CONDITIONAL_HEADER],
+<a id='L37' name='L37'></a>[
+<a id='L38' name='L38'></a>  m4_pushdef([gl_header_name], AS_TR_SH(m4_toupper($1)))
+<a id='L39' name='L39'></a>  m4_pushdef([gl_generate_var], [GL_GENERATE_]AS_TR_SH(m4_toupper($1)))
+<a id='L40' name='L40'></a>  m4_pushdef([gl_generate_cond], [GL_GENERATE_]AS_TR_SH(m4_toupper($1)))
+<a id='L41' name='L41'></a>  case "$gl_generate_var" in
+<a id='L42' name='L42'></a>    false) gl_header_name='' ;;
+<a id='L43' name='L43'></a>    true)
+<a id='L44' name='L44'></a>      dnl It is OK to use a .h file in lib/ from within tests/, but not vice
+<a id='L45' name='L45'></a>      dnl versa.
+<a id='L46' name='L46'></a>      if test -z "$gl_header_name"; then
+<a id='L47' name='L47'></a>        gl_header_name="${gl_source_base_prefix}$1"
+<a id='L48' name='L48'></a>      fi
+<a id='L49' name='L49'></a>      ;;
+<a id='L50' name='L50'></a>    *) echo "*** gl_generate_var is not set correctly" 1&gt;&amp;2; exit 1 ;;
+<a id='L51' name='L51'></a>  esac
+<a id='L52' name='L52'></a>  AC_SUBST(gl_header_name)
+<a id='L53' name='L53'></a>  gl_CONDITIONAL(gl_generate_cond, [$gl_generate_var])
+<a id='L54' name='L54'></a>  m4_popdef([gl_generate_cond])
+<a id='L55' name='L55'></a>  m4_popdef([gl_generate_var])
+<a id='L56' name='L56'></a>  m4_popdef([gl_header_name])
+<a id='L57' name='L57'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+57 m4.include/gnulib/mc-gnulib-common.m4'  /> */</em>
+</body>
+</html>

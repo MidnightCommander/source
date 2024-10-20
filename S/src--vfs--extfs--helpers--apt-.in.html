@@ -3,7 +3,7 @@
 <head>
 <title>src/vfs/extfs/helpers/apt+.in</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -145,23 +145,23 @@
 <a id='L120' name='L120'></a>    chop($stats = `apt-cache stats 2&gt;/dev/null`);
 <a id='L121' name='L121'></a>    chop($config = `apt-config dump 2&gt;&amp;1`);
 <a id='L122' name='L122'></a>    $sz = length($check);
-<a id='L123' name='L123'></a>    print "-r--r--r-- 1 root root $sz $DATE CHECK\n";
+<a id='L123' name='L123'></a>    print "-r--r--r-- 1 0    0    $sz $DATE CHECK\n";
 <a id='L124' name='L124'></a>    $sz = length($available);
-<a id='L125' name='L125'></a>    print "-r--r--r-- 1 root root $sz $DATE AVAILABLE\n";
+<a id='L125' name='L125'></a>    print "-r--r--r-- 1 0    0    $sz $DATE AVAILABLE\n";
 <a id='L126' name='L126'></a>    $sz = length($stats);
-<a id='L127' name='L127'></a>    print "-r--r--r-- 1 root root $sz $DATE STATS\n";
+<a id='L127' name='L127'></a>    print "-r--r--r-- 1 0    0    $sz $DATE STATS\n";
 <a id='L128' name='L128'></a>    $sz = length($config);
-<a id='L129' name='L129'></a>    print "-r--r--r-- 1 root root $sz $DATE CONFIG\n";
+<a id='L129' name='L129'></a>    print "-r--r--r-- 1 0    0    $sz $DATE CONFIG\n";
 <a id='L130' name='L130'></a>    $sz = length($pressupdate);
-<a id='L131' name='L131'></a>    print "-r-xr--r-- 1 root root $sz $DATE UPDATE\n";
+<a id='L131' name='L131'></a>    print "-r-xr--r-- 1 0    0    $sz $DATE UPDATE\n";
 <a id='L132' name='L132'></a>    $sz = length($pressupgrade);
-<a id='L133' name='L133'></a>    print "-r-xr--r-- 1 root root $sz $DATE UPGRADE\n";
-<a id='L134' name='L134'></a>    print "-r-xr--r-- 1 root root $sz $DATE DIST-UPGRADE\n";
+<a id='L133' name='L133'></a>    print "-r-xr--r-- 1 0    0    $sz $DATE UPGRADE\n";
+<a id='L134' name='L134'></a>    print "-r-xr--r-- 1 0    0    $sz $DATE DIST-UPGRADE\n";
 <a id='L135' name='L135'></a> 
 <a id='L136' name='L136'></a>    ls("/etc/apt/sources.list","sources.list");
 <a id='L137' name='L137'></a>    ls('/etc/apt/apt.conf','apt.conf') if (-f '/etc/apt/apt.conf');
 <a id='L138' name='L138'></a> 
-<a id='L139' name='L139'></a>    print "drwxr-xr-x 1 root root 0 $DATE all\n";
+<a id='L139' name='L139'></a>    print "drwxr-xr-x 1 0    0    0 $DATE all\n";
 <a id='L140' name='L140'></a> 
 <a id='L141' name='L141'></a>   if ( open(PIPEIN, "find /var/cache/apt/archives -type f |") ) {
 <a id='L142' name='L142'></a>       while(&lt;PIPEIN&gt;) {
@@ -204,18 +204,18 @@
 <a id='L179' name='L179'></a>           my $sub = $dn;
 <a id='L180' name='L180'></a>           while( $sub =~ s!^(.*)/[^/]*$!$1! ) {
 <a id='L181' name='L181'></a>               unless( $sects{$sub} ) {
-<a id='L182' name='L182'></a>                   print "drwxr-xr-x 1 root root 0 $DATE $sub/\n";
+<a id='L182' name='L182'></a>                   print "drwxr-xr-x 1 0    0    0 $DATE $sub/\n";
 <a id='L183' name='L183'></a>                   $sects{$sub} = 1;
 <a id='L184' name='L184'></a>               }
 <a id='L185' name='L185'></a>           }
-<a id='L186' name='L186'></a>           print "drwxr-xr-x 1 root root 0 $DATE $dn/\n";
+<a id='L186' name='L186'></a>           print "drwxr-xr-x 1 0    0    0 $DATE $dn/\n";
 <a id='L187' name='L187'></a>           $sects{$dn} = 1;
 <a id='L188' name='L188'></a>       }
 <a id='L189' name='L189'></a>       $sz = $debd{$pkg}{'status'} =~ /config-files/ ? 0 : $debd{$pkg}{'installed-size'} * 1024;
 <a id='L190' name='L190'></a>       @stat = stat("/var/lib/dpkg/info/".$debd{$pkg}{package}.".list");
 <a id='L191' name='L191'></a>       $bt = bt($stat[9]);
-<a id='L192' name='L192'></a>       print "-rw-r--r-- 1 root root $sz $bt $dn/$fn.debd\n";
-<a id='L193' name='L193'></a>       print "lrwxrwxrwx 1 root root $sz $bt all/$fn.debd -&gt; ../$dn/$fn.debd\n";
+<a id='L192' name='L192'></a>       print "-rw-r--r-- 1 0    0    $sz $bt $dn/$fn.debd\n";
+<a id='L193' name='L193'></a>       print "lrwxrwxrwx 1 0    0    $sz $bt all/$fn.debd -&gt; ../$dn/$fn.debd\n";
 <a id='L194' name='L194'></a>    }
 <a id='L195' name='L195'></a> 
 <a id='L196' name='L196'></a>    open STAT, "apt-cache dumpavail |"
@@ -244,16 +244,16 @@
 <a id='L219' name='L219'></a>           my $sub = $dn;
 <a id='L220' name='L220'></a>           while( $sub =~ s!^(.*)/[^/]*$!$1! ) {
 <a id='L221' name='L221'></a>               unless( $sects{$sub} ) {
-<a id='L222' name='L222'></a>                   print "drwxr-xr-x 1 root root 0 $DATE $sub/\n";
+<a id='L222' name='L222'></a>                   print "drwxr-xr-x 1 0    0    0 $DATE $sub/\n";
 <a id='L223' name='L223'></a>                   $sects{$sub} = 1;
 <a id='L224' name='L224'></a>               }
 <a id='L225' name='L225'></a>           }
-<a id='L226' name='L226'></a>           print "drwxr-xr-x 1 root root 0 $DATE $dn/\n";
+<a id='L226' name='L226'></a>           print "drwxr-xr-x 1 0    0    0 $DATE $dn/\n";
 <a id='L227' name='L227'></a>           $sects{$dn} = 1;
 <a id='L228' name='L228'></a>       }
 <a id='L229' name='L229'></a>       $sz = $deba{$pkg}{'status'} =~ /config-files/ ? 0 : $deba{$pkg}{'installed-size'} * 1024;
-<a id='L230' name='L230'></a>       print "-rw-r--r-- 1 root root $sz $DATE $dn/$fn.deba\n";
-<a id='L231' name='L231'></a>       print "lrwxrwxrwx 1 root root $sz $DATE all/$fn.deba -&gt; ../$dn/$fn.deba\n";
+<a id='L230' name='L230'></a>       print "-rw-r--r-- 1 0    0    $sz $DATE $dn/$fn.deba\n";
+<a id='L231' name='L231'></a>       print "lrwxrwxrwx 1 0    0    $sz $DATE all/$fn.deba -&gt; ../$dn/$fn.deba\n";
 <a id='L232' name='L232'></a>    }
 <a id='L233' name='L233'></a>}
 <a id='L234' name='L234'></a> 

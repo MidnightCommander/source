@@ -3,7 +3,7 @@
 <head>
 <title>m4.include/ax_check_compile_flag.m4</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -59,26 +59,36 @@
 <a id='L34' name='L34'></a>#   and this notice are preserved.  This file is offered as-is, without any
 <a id='L35' name='L35'></a>#   warranty.
 <a id='L36' name='L36'></a> 
-<a id='L37' name='L37'></a>#serial 6
+<a id='L37' name='L37'></a>#serial 11
 <a id='L38' name='L38'></a> 
 <a id='L39' name='L39'></a>AC_DEFUN([AX_CHECK_COMPILE_FLAG],
 <a id='L40' name='L40'></a>[AC_PREREQ(2.64)dnl for _AC_LANG_PREFIX and AS_VAR_IF
 <a id='L41' name='L41'></a>AS_VAR_PUSHDEF([CACHEVAR],[ax_cv_check_[]_AC_LANG_ABBREV[]flags_$4_$1])dnl
-<a id='L42' name='L42'></a>AC_CACHE_CHECK([whether _AC_LANG compiler accepts $1], CACHEVAR, [
+<a id='L42' name='L42'></a>AC_CACHE_CHECK([whether the _AC_LANG compiler accepts $1], CACHEVAR, [
 <a id='L43' name='L43'></a>  ax_check_save_flags=$[]_AC_LANG_PREFIX[]FLAGS
-<a id='L44' name='L44'></a>  _AC_LANG_PREFIX[]FLAGS="$[]_AC_LANG_PREFIX[]FLAGS $4 $1"
-<a id='L45' name='L45'></a>  AC_COMPILE_IFELSE([m4_default([$5],[AC_LANG_PROGRAM()])],
-<a id='L46' name='L46'></a>    [AS_VAR_SET(CACHEVAR,[yes])],
-<a id='L47' name='L47'></a>    [AS_VAR_SET(CACHEVAR,[no])])
-<a id='L48' name='L48'></a>  _AC_LANG_PREFIX[]FLAGS=$ax_check_save_flags])
-<a id='L49' name='L49'></a>AS_VAR_IF(CACHEVAR,yes,
-<a id='L50' name='L50'></a>  [m4_default([$2], :)],
-<a id='L51' name='L51'></a>  [m4_default([$3], :)])
-<a id='L52' name='L52'></a>AS_VAR_POPDEF([CACHEVAR])dnl
-<a id='L53' name='L53'></a>])dnl AX_CHECK_COMPILE_FLAGS
+<a id='L44' name='L44'></a>  if test x"m4_case(_AC_LANG,
+<a id='L45' name='L45'></a>                     [C], [$GCC],
+<a id='L46' name='L46'></a>                     [C++], [$GXX],
+<a id='L47' name='L47'></a>                     [Fortran], [$GFC],
+<a id='L48' name='L48'></a>                     [Fortran 77], [$G77],
+<a id='L49' name='L49'></a>                     [Objective C], [$GOBJC],
+<a id='L50' name='L50'></a>                     [Objective C++], [$GOBJCXX],
+<a id='L51' name='L51'></a>                     [no])" = xyes ; then
+<a id='L52' name='L52'></a>    add_gnu_werror="-Werror"
+<a id='L53' name='L53'></a>  fi
+<a id='L54' name='L54'></a>  _AC_LANG_PREFIX[]FLAGS="$[]_AC_LANG_PREFIX[]FLAGS $4 $1 $add_gnu_werror"
+<a id='L55' name='L55'></a>  AC_COMPILE_IFELSE([m4_default([$5],[AC_LANG_PROGRAM()])],
+<a id='L56' name='L56'></a>    [AS_VAR_SET(CACHEVAR,[yes])],
+<a id='L57' name='L57'></a>    [AS_VAR_SET(CACHEVAR,[no])])
+<a id='L58' name='L58'></a>  _AC_LANG_PREFIX[]FLAGS=$ax_check_save_flags])
+<a id='L59' name='L59'></a>AS_VAR_IF(CACHEVAR,yes,
+<a id='L60' name='L60'></a>  [m4_default([$2], :)],
+<a id='L61' name='L61'></a>  [m4_default([$3], :)])
+<a id='L62' name='L62'></a>AS_VAR_POPDEF([CACHEVAR])dnl
+<a id='L63' name='L63'></a>])dnl AX_CHECK_COMPILE_FLAGS
 </pre>
 <hr />
 <a id='BOTTOM' name='BOTTOM'></a>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+53 m4.include/ax_check_compile_flag.m4'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+63 m4.include/ax_check_compile_flag.m4'  /> */</em>
 </body>
 </html>

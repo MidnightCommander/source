@@ -3,7 +3,7 @@
 <head>
 <title>src/Makefile.am</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -51,109 +51,116 @@
 <a id='L26' name='L26'></a>AM_CPPFLAGS += -DSAVERDIR=\""$(pkglibexecdir)"\"
 <a id='L27' name='L27'></a>endif
 <a id='L28' name='L28'></a> 
-<a id='L29' name='L29'></a>AM_CPPFLAGS += -I$(top_srcdir) $(GLIB_CFLAGS)
-<a id='L30' name='L30'></a> 
-<a id='L31' name='L31'></a>localedir = $(datadir)/locale
-<a id='L32' name='L32'></a>pkglibexecdir = $(libexecdir)/@PACKAGE@
-<a id='L33' name='L33'></a> 
-<a id='L34' name='L34'></a>bin_PROGRAMS = mc
+<a id='L29' name='L29'></a># required for textconf.c
+<a id='L30' name='L30'></a>if ENABLE_VFS
+<a id='L31' name='L31'></a>if ENABLE_VFS_SFTP
+<a id='L32' name='L32'></a>AM_CPPFLAGS += $(LIBSSH_CFLAGS)
+<a id='L33' name='L33'></a>endif
+<a id='L34' name='L34'></a>endif
 <a id='L35' name='L35'></a> 
-<a id='L36' name='L36'></a>if USE_INTERNAL_EDIT
-<a id='L37' name='L37'></a>EDITLIB = editor/libedit.la
-<a id='L38' name='L38'></a>endif
-<a id='L39' name='L39'></a> 
-<a id='L40' name='L40'></a>if USE_DIFF
-<a id='L41' name='L41'></a>DIFFLIB = diffviewer/libdiffviewer.la
-<a id='L42' name='L42'></a>endif
-<a id='L43' name='L43'></a> 
-<a id='L44' name='L44'></a>if ENABLE_SUBSHELL
-<a id='L45' name='L45'></a>SUBSHELLLIB = subshell/libsubshell.la
-<a id='L46' name='L46'></a>endif
-<a id='L47' name='L47'></a> 
-<a id='L48' name='L48'></a>libinternal_la_LIBADD = \
-<a id='L49' name='L49'></a>        filemanager/libmcfilemanager.la \
-<a id='L50' name='L50'></a>        vfs/libmc-vfs.la \
-<a id='L51' name='L51'></a>        viewer/libmcviewer.la \
-<a id='L52' name='L52'></a>        $(DIFFLIB) $(EDITLIB) $(SUBSHELLLIB)
-<a id='L53' name='L53'></a> 
-<a id='L54' name='L54'></a>mc_LDADD = \
-<a id='L55' name='L55'></a>        libinternal.la
-<a id='L56' name='L56'></a> 
-<a id='L57' name='L57'></a>if ENABLE_MCLIB
-<a id='L58' name='L58'></a>libinternal_la_LIBADD += \
-<a id='L59' name='L59'></a>        $(top_builddir)/lib/libmc.la
-<a id='L60' name='L60'></a>else
-<a id='L61' name='L61'></a>mc_LDADD += \
-<a id='L62' name='L62'></a>        $(top_builddir)/lib/libmc.la
-<a id='L63' name='L63'></a>endif
-<a id='L64' name='L64'></a> 
-<a id='L65' name='L65'></a>SRC_mc_conssaver = \
-<a id='L66' name='L66'></a>        cons.handler.c consaver/cons.saver.h
-<a id='L67' name='L67'></a> 
-<a id='L68' name='L68'></a>mc_SOURCES = \
-<a id='L69' name='L69'></a>        main.c
-<a id='L70' name='L70'></a> 
-<a id='L71' name='L71'></a>libinternal_la_SOURCES = \
-<a id='L72' name='L72'></a>        $(SRC_mc_conssaver) \
-<a id='L73' name='L73'></a>        args.c args.h \
-<a id='L74' name='L74'></a>        clipboard.c clipboard.h \
-<a id='L75' name='L75'></a>        events_init.c events_init.h \
-<a id='L76' name='L76'></a>        execute.c execute.h \
-<a id='L77' name='L77'></a>        file_history.c file_history.h \
-<a id='L78' name='L78'></a>        help.c help.h \
-<a id='L79' name='L79'></a>        history.h \
-<a id='L80' name='L80'></a>        keymap.c keymap.h \
-<a id='L81' name='L81'></a>        learn.c learn.h \
-<a id='L82' name='L82'></a>        setup.c setup.h \
-<a id='L83' name='L83'></a>        textconf.c textconf.h \
-<a id='L84' name='L84'></a>        usermenu.c usermenu.h \
-<a id='L85' name='L85'></a>        util.c util.h
-<a id='L86' name='L86'></a> 
-<a id='L87' name='L87'></a>if CHARSET
-<a id='L88' name='L88'></a>    libinternal_la_SOURCES += selcodepage.c selcodepage.h
-<a id='L89' name='L89'></a>endif
-<a id='L90' name='L90'></a> 
-<a id='L91' name='L91'></a> 
-<a id='L92' name='L92'></a>if ENABLE_BACKGROUND
-<a id='L93' name='L93'></a>    libinternal_la_SOURCES += background.c background.h
-<a id='L94' name='L94'></a>endif
-<a id='L95' name='L95'></a> 
-<a id='L96' name='L96'></a>EXTRA_DIST = $(SRC_maintainer) $(SRC_charset)
+<a id='L36' name='L36'></a>AM_CPPFLAGS += -I$(top_srcdir) $(GLIB_CFLAGS)
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a>localedir = $(datadir)/locale
+<a id='L39' name='L39'></a>pkglibexecdir = $(libexecdir)/@PACKAGE@
+<a id='L40' name='L40'></a> 
+<a id='L41' name='L41'></a>bin_PROGRAMS = mc
+<a id='L42' name='L42'></a> 
+<a id='L43' name='L43'></a>if USE_INTERNAL_EDIT
+<a id='L44' name='L44'></a>EDITLIB = editor/libedit.la
+<a id='L45' name='L45'></a>endif
+<a id='L46' name='L46'></a> 
+<a id='L47' name='L47'></a>if USE_DIFF
+<a id='L48' name='L48'></a>DIFFLIB = diffviewer/libdiffviewer.la
+<a id='L49' name='L49'></a>endif
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>if ENABLE_SUBSHELL
+<a id='L52' name='L52'></a>SUBSHELLLIB = subshell/libsubshell.la
+<a id='L53' name='L53'></a>endif
+<a id='L54' name='L54'></a> 
+<a id='L55' name='L55'></a>libinternal_la_LIBADD = \
+<a id='L56' name='L56'></a>        filemanager/libmcfilemanager.la \
+<a id='L57' name='L57'></a>        vfs/libmc-vfs.la \
+<a id='L58' name='L58'></a>        viewer/libmcviewer.la \
+<a id='L59' name='L59'></a>        $(DIFFLIB) $(EDITLIB) $(SUBSHELLLIB)
+<a id='L60' name='L60'></a> 
+<a id='L61' name='L61'></a>mc_LDADD = \
+<a id='L62' name='L62'></a>        libinternal.la
+<a id='L63' name='L63'></a> 
+<a id='L64' name='L64'></a>if ENABLE_MCLIB
+<a id='L65' name='L65'></a>libinternal_la_LIBADD += \
+<a id='L66' name='L66'></a>        $(top_builddir)/lib/libmc.la
+<a id='L67' name='L67'></a>else
+<a id='L68' name='L68'></a>mc_LDADD += \
+<a id='L69' name='L69'></a>        $(top_builddir)/lib/libmc.la
+<a id='L70' name='L70'></a>endif
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>SRC_mc_conssaver = \
+<a id='L73' name='L73'></a>        cons.handler.c consaver/cons.saver.h
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a>mc_SOURCES = \
+<a id='L76' name='L76'></a>        main.c
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>libinternal_la_SOURCES = \
+<a id='L79' name='L79'></a>        $(SRC_mc_conssaver) \
+<a id='L80' name='L80'></a>        args.c args.h \
+<a id='L81' name='L81'></a>        clipboard.c clipboard.h \
+<a id='L82' name='L82'></a>        events_init.c events_init.h \
+<a id='L83' name='L83'></a>        execute.c execute.h \
+<a id='L84' name='L84'></a>        file_history.c file_history.h \
+<a id='L85' name='L85'></a>        help.c help.h \
+<a id='L86' name='L86'></a>        history.h \
+<a id='L87' name='L87'></a>        keymap.c keymap.h \
+<a id='L88' name='L88'></a>        learn.c learn.h \
+<a id='L89' name='L89'></a>        setup.c setup.h \
+<a id='L90' name='L90'></a>        textconf.c textconf.h \
+<a id='L91' name='L91'></a>        usermenu.c usermenu.h \
+<a id='L92' name='L92'></a>        util.c util.h
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>if CHARSET
+<a id='L95' name='L95'></a>    libinternal_la_SOURCES += selcodepage.c selcodepage.h
+<a id='L96' name='L96'></a>endif
 <a id='L97' name='L97'></a> 
-<a id='L98' name='L98'></a># end of automated testing
-<a id='L99' name='L99'></a> 
-<a id='L100' name='L100'></a>install-exec-hook:
-<a id='L101' name='L101'></a>        $(MAKE) install_mcview
-<a id='L102' name='L102'></a>if USE_INTERNAL_EDIT
-<a id='L103' name='L103'></a>        $(MAKE) install_mcedit
-<a id='L104' name='L104'></a>endif
-<a id='L105' name='L105'></a>if USE_DIFF
-<a id='L106' name='L106'></a>        $(MAKE) install_mcdiff
-<a id='L107' name='L107'></a>endif
-<a id='L108' name='L108'></a> 
-<a id='L109' name='L109'></a>#
-<a id='L110' name='L110'></a># Make relative symlinks, but do the right thing if LN_S is `ln' or `cp'.
-<a id='L111' name='L111'></a>#
-<a id='L112' name='L112'></a>install_mcview:
-<a id='L113' name='L113'></a>        cd $(DESTDIR)$(bindir)/$(binprefix) &amp;&amp; rm -f mcview &amp;&amp; $(LN_S) mc mcview
-<a id='L114' name='L114'></a> 
-<a id='L115' name='L115'></a>install_mcedit:
-<a id='L116' name='L116'></a>        cd $(DESTDIR)$(bindir)/$(binprefix) &amp;&amp; rm -f mcedit &amp;&amp; $(LN_S) mc mcedit
-<a id='L117' name='L117'></a> 
-<a id='L118' name='L118'></a>install_mcdiff:
-<a id='L119' name='L119'></a>        cd $(DESTDIR)$(bindir)/$(binprefix) &amp;&amp; rm -f mcdiff &amp;&amp; $(LN_S) mc mcdiff
-<a id='L120' name='L120'></a> 
-<a id='L121' name='L121'></a>uninstall-hook:
-<a id='L122' name='L122'></a>        rm -f $(DESTDIR)$(bindir)/$(binprefix)/mcview
-<a id='L123' name='L123'></a>if USE_INTERNAL_EDIT
-<a id='L124' name='L124'></a>        rm -f $(DESTDIR)$(bindir)/$(binprefix)/mcedit
-<a id='L125' name='L125'></a>endif
-<a id='L126' name='L126'></a>if USE_DIFF
-<a id='L127' name='L127'></a>        rm -f $(DESTDIR)$(bindir)/$(binprefix)/mcdiff
-<a id='L128' name='L128'></a>endif
+<a id='L98' name='L98'></a> 
+<a id='L99' name='L99'></a>if ENABLE_BACKGROUND
+<a id='L100' name='L100'></a>    libinternal_la_SOURCES += background.c background.h
+<a id='L101' name='L101'></a>endif
+<a id='L102' name='L102'></a> 
+<a id='L103' name='L103'></a>EXTRA_DIST = $(SRC_maintainer) $(SRC_charset)
+<a id='L104' name='L104'></a> 
+<a id='L105' name='L105'></a># end of automated testing
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>install-exec-hook:
+<a id='L108' name='L108'></a>        $(MAKE) install_mcview
+<a id='L109' name='L109'></a>if USE_INTERNAL_EDIT
+<a id='L110' name='L110'></a>        $(MAKE) install_mcedit
+<a id='L111' name='L111'></a>endif
+<a id='L112' name='L112'></a>if USE_DIFF
+<a id='L113' name='L113'></a>        $(MAKE) install_mcdiff
+<a id='L114' name='L114'></a>endif
+<a id='L115' name='L115'></a> 
+<a id='L116' name='L116'></a>#
+<a id='L117' name='L117'></a># Make relative symlinks, but do the right thing if LN_S is `ln' or `cp'.
+<a id='L118' name='L118'></a>#
+<a id='L119' name='L119'></a>install_mcview:
+<a id='L120' name='L120'></a>        cd $(DESTDIR)$(bindir)/$(binprefix) &amp;&amp; rm -f mcview &amp;&amp; $(LN_S) mc mcview
+<a id='L121' name='L121'></a> 
+<a id='L122' name='L122'></a>install_mcedit:
+<a id='L123' name='L123'></a>        cd $(DESTDIR)$(bindir)/$(binprefix) &amp;&amp; rm -f mcedit &amp;&amp; $(LN_S) mc mcedit
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>install_mcdiff:
+<a id='L126' name='L126'></a>        cd $(DESTDIR)$(bindir)/$(binprefix) &amp;&amp; rm -f mcdiff &amp;&amp; $(LN_S) mc mcdiff
+<a id='L127' name='L127'></a> 
+<a id='L128' name='L128'></a>uninstall-hook:
+<a id='L129' name='L129'></a>        rm -f $(DESTDIR)$(bindir)/$(binprefix)/mcview
+<a id='L130' name='L130'></a>if USE_INTERNAL_EDIT
+<a id='L131' name='L131'></a>        rm -f $(DESTDIR)$(bindir)/$(binprefix)/mcedit
+<a id='L132' name='L132'></a>endif
+<a id='L133' name='L133'></a>if USE_DIFF
+<a id='L134' name='L134'></a>        rm -f $(DESTDIR)$(bindir)/$(binprefix)/mcdiff
+<a id='L135' name='L135'></a>endif
 </pre>
 <hr />
 <a id='BOTTOM' name='BOTTOM'></a>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+128 src/Makefile.am'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+135 src/Makefile.am'  /> */</em>
 </body>
 </html>

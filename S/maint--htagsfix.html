@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>maint/htagsfix</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/maint.html'>maint</a>/htagsfix</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/maint.html'>maint</a>/htagsfix</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 maint/htagsfix'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#!/usr/bin/env ruby
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>#
+<a id='L4' name='L4'></a># Fixes htags' output so that files have fixed names. E.g., S/542.html -&gt; D/whatever.c.h.
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># It addresses the following problem:
+<a id='L7' name='L7'></a>#
+<a id='L8' name='L8'></a>#    "Can htags create permanent addresses?"
+<a id='L9' name='L9'></a>#    http://lists.gnu.org/archive/html/help-global/2015-11/msg00002.html
+<a id='L10' name='L10'></a>#
+<a id='L11' name='L11'></a> 
+<a id='L12' name='L12'></a>require 'fileutils'
+<a id='L13' name='L13'></a>require 'pp'
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>Encoding.default_external = "BINARY"
+<a id='L16' name='L16'></a> 
+<a id='L17' name='L17'></a>$base = '.'  # Where the HTML is stored.
+<a id='L18' name='L18'></a>$verbose = false
+<a id='L19' name='L19'></a>$debug = false
+<a id='L20' name='L20'></a>$create_subdirs = false  # Experimental feature. Doesn't really work.
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a># Bonus: highlight the target line.
+<a id='L23' name='L23'></a>$css = "
+<a id='L24' name='L24'></a>a:target {
+<a id='L25' name='L25'></a>  position: absolute;
+<a id='L26' name='L26'></a>  left: 0;
+<a id='L27' name='L27'></a>  height: 1.35em;
+<a id='L28' name='L28'></a>  width: 100%;
+<a id='L29' name='L29'></a>  background: yellow;
+<a id='L30' name='L30'></a>  opacity: .5;
+<a id='L31' name='L31'></a>  z-index: -1000;
+<a id='L32' name='L32'></a>}
+<a id='L33' name='L33'></a>"
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>#
+<a id='L36' name='L36'></a># Computes pretty names for files:
+<a id='L37' name='L37'></a>#
+<a id='L38' name='L38'></a>#    '.../S/456.html' =&gt; 'S/modules/tty.c.html'
+<a id='L39' name='L39'></a>#
+<a id='L40' name='L40'></a>def prettyname(full_path, prefix, kind, nid, ext)
+<a id='L41' name='L41'></a>  gist = nid
+<a id='L42' name='L42'></a>  start = IO.read(full_path, 1024)
+<a id='L43' name='L43'></a>  if start =~ /&lt;title&gt;(.*?)&lt;\/title&gt;/ then
+<a id='L44' name='L44'></a>    gist = $1
+<a id='L45' name='L45'></a>    gist.gsub!(%r{/+$}, '')  # remove trailing '/'s.
+<a id='L46' name='L46'></a>    if not $create_subdirs then
+<a id='L47' name='L47'></a>      gist.gsub!('/', '--')
+<a id='L48' name='L48'></a>    end
+<a id='L49' name='L49'></a>    gist.gsub!(%r{[^a-zA-Z0-9_.,/-]}, '-')  # clean special characters.
+<a id='L50' name='L50'></a>  end
+<a id='L51' name='L51'></a>  return kind + '/' + gist + ext
+<a id='L52' name='L52'></a>end
+<a id='L53' name='L53'></a> 
+<a id='L54' name='L54'></a>class Counter
+<a id='L55' name='L55'></a>  class &lt;&lt; self
+<a id='L56' name='L56'></a>    def init(total)
+<a id='L57' name='L57'></a>      @total = total
+<a id='L58' name='L58'></a>    end
+<a id='L59' name='L59'></a>    def reset()
+<a id='L60' name='L60'></a>      @count = 0
+<a id='L61' name='L61'></a>    end
+<a id='L62' name='L62'></a>    def report()
+<a id='L63' name='L63'></a>      print "[#{@count}/#{@total}]\r"
+<a id='L64' name='L64'></a>      @count += 1
+<a id='L65' name='L65'></a>    end
+<a id='L66' name='L66'></a>    def finish()
+<a id='L67' name='L67'></a>      puts
+<a id='L68' name='L68'></a>    end
+<a id='L69' name='L69'></a>  end
+<a id='L70' name='L70'></a>end
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>#
+<a id='L73' name='L73'></a># Returns a table explaining how to rename the files. E.g.:
+<a id='L74' name='L74'></a>#
+<a id='L75' name='L75'></a># {
+<a id='L76' name='L76'></a>#    'S/456.html' =&gt; 'S/modules/tty.c.html'
+<a id='L77' name='L77'></a>#    ...
+<a id='L78' name='L78'></a># }
+<a id='L79' name='L79'></a>#
+<a id='L80' name='L80'></a>def build_cnv_tbl()
+<a id='L81' name='L81'></a>  Counter.reset()
+<a id='L82' name='L82'></a>  cnv = {}
+<a id='L83' name='L83'></a>  Dir[$base + '/{[A-Z],files}/*.html'].each do |full_path|
+<a id='L84' name='L84'></a>  #p full_path
+<a id='L85' name='L85'></a>    if full_path =~ /(.*)\/((\w+)\/(\d+)(\.\w+))$/ then
+<a id='L86' name='L86'></a>      prefix = $1  # "/home/joe/.../HTML"
+<a id='L87' name='L87'></a>      path = $2    # "S/323.html"
+<a id='L88' name='L88'></a>      kind = $3    # "S"
+<a id='L89' name='L89'></a>      nid = $4     # "323"
+<a id='L90' name='L90'></a>      ext = $5     # ".html"
+<a id='L91' name='L91'></a>      pretty = prettyname(full_path, prefix, kind, nid, ext)
+<a id='L92' name='L92'></a>      cnv[path] = pretty
+<a id='L93' name='L93'></a>    end
+<a id='L94' name='L94'></a>    Counter.report()
+<a id='L95' name='L95'></a>  end
+<a id='L96' name='L96'></a>  Counter.finish()
+<a id='L97' name='L97'></a>  return cnv
+<a id='L98' name='L98'></a>end
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>#
+<a id='L101' name='L101'></a># Make all the substiutions inside the files:
+<a id='L102' name='L102'></a>#
+<a id='L103' name='L103'></a>#   &lt;a href='../S/456.html'&gt;  --&gt;  &lt;a href='../S/modules/tty.c.html'&gt;
+<a id='L104' name='L104'></a>#   ...
+<a id='L105' name='L105'></a>#
+<a id='L106' name='L106'></a>def mksub(cnv)
+<a id='L107' name='L107'></a>  Counter.reset()
+<a id='L108' name='L108'></a>  Dir[$base + '/**/*.html'].each do |path|
+<a id='L109' name='L109'></a>    kind = path[$base.length .. -1][/\w+/]
+<a id='L110' name='L110'></a>    text = IO.read(path)
+<a id='L111' name='L111'></a>    fixed = text.gsub(/(&lt;a href='(?:..\/)?)([^'#]+)/) do |a|
+<a id='L112' name='L112'></a>      prefix = $1
+<a id='L113' name='L113'></a>      target = $2
+<a id='L114' name='L114'></a>      if cnv[target] then
+<a id='L115' name='L115'></a>        target = cnv[target]
+<a id='L116' name='L116'></a>      elsif cnv[kind + '/' + target] then
+<a id='L117' name='L117'></a>        # This is a relative link of the form: href='456.html'
+<a id='L118' name='L118'></a>        if cnv[kind + '/' + target].match /\/(.*)/  # converts "s/whatever.html" to "whatever.html"
+<a id='L119' name='L119'></a>          target = $1
+<a id='L120' name='L120'></a>        end
+<a id='L121' name='L121'></a>      end
+<a id='L122' name='L122'></a>      prefix + target
+<a id='L123' name='L123'></a>    end
+<a id='L124' name='L124'></a> 
+<a id='L125' name='L125'></a>    # Fix a problem in Opera, where empty lines are squashed.
+<a id='L126' name='L126'></a>    fixed.gsub!(%r{(&lt;a id='L\d+' name='L\d+'&gt;&lt;/a&gt;)\n}, "\\1 \n")
+<a id='L127' name='L127'></a> 
+<a id='L128' name='L128'></a>    if text != fixed then
+<a id='L129' name='L129'></a>      IO.write(path, fixed)
+<a id='L130' name='L130'></a>      puts(path + " modified") if $debug
+<a id='L131' name='L131'></a>    end
+<a id='L132' name='L132'></a>    Counter.report()
+<a id='L133' name='L133'></a>  end
+<a id='L134' name='L134'></a>  Counter.finish()
+<a id='L135' name='L135'></a>end
+<a id='L136' name='L136'></a> 
+<a id='L137' name='L137'></a>#
+<a id='L138' name='L138'></a># Rename the files.
+<a id='L139' name='L139'></a>#
+<a id='L140' name='L140'></a>def rename(cnv)
+<a id='L141' name='L141'></a>  Counter.reset()
+<a id='L142' name='L142'></a>  cnv.each do |a, b|
+<a id='L143' name='L143'></a>    src = $base + '/' + a
+<a id='L144' name='L144'></a>    trg = $base + '/' + b
+<a id='L145' name='L145'></a>    if $create_subdirs then
+<a id='L146' name='L146'></a>      FileUtils.mkdir_p(File.dirname(trg))
+<a id='L147' name='L147'></a>    end
+<a id='L148' name='L148'></a>    File.rename(src, trg)
+<a id='L149' name='L149'></a>    Counter.report()
+<a id='L150' name='L150'></a>  end
+<a id='L151' name='L151'></a>  Counter.finish()
+<a id='L152' name='L152'></a>end
+<a id='L153' name='L153'></a> 
+<a id='L154' name='L154'></a>def better_css(css_path)
+<a id='L155' name='L155'></a>  text = IO.read(css_path)
+<a id='L156' name='L156'></a>  IO.write(css_path, text + $css)
+<a id='L157' name='L157'></a>end
+<a id='L158' name='L158'></a> 
+<a id='L159' name='L159'></a>def main()
+<a id='L160' name='L160'></a>  if not File.exists?($base + '/help.html') then
+<a id='L161' name='L161'></a>    $base += '/HTML'
+<a id='L162' name='L162'></a>    if not File.exists?($base + '/help.html') then
+<a id='L163' name='L163'></a>      puts "Error: This doesn't look like htags' output directory."
+<a id='L164' name='L164'></a>      exit(1)
+<a id='L165' name='L165'></a>    end
+<a id='L166' name='L166'></a>  end
+<a id='L167' name='L167'></a>  Counter.init( Dir[$base + '/**/*.html'].length )
+<a id='L168' name='L168'></a>  puts "Figuring out pretty names..."
+<a id='L169' name='L169'></a>  cnv = build_cnv_tbl()
+<a id='L170' name='L170'></a>  pp cnv if $verbose
+<a id='L171' name='L171'></a>  puts "Updating links in files..."
+<a id='L172' name='L172'></a>  mksub(cnv)
+<a id='L173' name='L173'></a>  puts "Renaming files..."
+<a id='L174' name='L174'></a>  rename(cnv)
+<a id='L175' name='L175'></a>  puts "Enhancing the css..."
+<a id='L176' name='L176'></a>  better_css($base + '/style.css')  
+<a id='L177' name='L177'></a>  puts "Done."
+<a id='L178' name='L178'></a>end
+<a id='L179' name='L179'></a> 
+<a id='L180' name='L180'></a>main()
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+180 maint/htagsfix'  /> */</em>
+</body>
+</html>

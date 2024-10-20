@@ -3,7 +3,7 @@
 <head>
 <title>contrib/mc-wrapper.sh.in</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -23,24 +23,29 @@
 <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 contrib/mc-wrapper.sh.in'  /> */</em>
 <hr />
 <pre>
-<a id='L1' name='L1'></a>MC_USER=`whoami`
-<a id='L2' name='L2'></a>MC_PWD_FILE="${TMPDIR-/tmp}/mc-$MC_USER/mc.pwd.$$"
-<a id='L3' name='L3'></a>@bindir@/mc -P "$MC_PWD_FILE" "$@"
-<a id='L4' name='L4'></a> 
-<a id='L5' name='L5'></a>if test -r "$MC_PWD_FILE"; then
-<a id='L6' name='L6'></a>        MC_PWD="`cat "$MC_PWD_FILE"`"
-<a id='L7' name='L7'></a>        if test -n "$MC_PWD" &amp;&amp; test "$MC_PWD" != "$PWD" &amp;&amp; test -d "$MC_PWD"; then
-<a id='L8' name='L8'></a>                cd "$MC_PWD"
-<a id='L9' name='L9'></a>        fi
-<a id='L10' name='L10'></a>        unset MC_PWD
-<a id='L11' name='L11'></a>fi
-<a id='L12' name='L12'></a> 
-<a id='L13' name='L13'></a>rm -f "$MC_PWD_FILE"
-<a id='L14' name='L14'></a>unset MC_PWD_FILE
-<a id='L15' name='L15'></a>unset MC_USER
+<a id='L1' name='L1'></a>if test -n "$MC_TMPDIR"; then
+<a id='L2' name='L2'></a>        MC_PWD_FILE="`mktemp "${MC_TMPDIR}/mc.pwd.XXXXXX"`"
+<a id='L3' name='L3'></a>elif test -n "$TMPDIR"; then
+<a id='L4' name='L4'></a>        MC_PWD_FILE="`mktemp "${TMPDIR}/mc.pwd.XXXXXX"`"
+<a id='L5' name='L5'></a>else
+<a id='L6' name='L6'></a>        MC_PWD_FILE="`mktemp "/tmp/mc.pwd.XXXXXX"`"
+<a id='L7' name='L7'></a>fi
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>@bindir@/mc -P "$MC_PWD_FILE" "$@"
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>if test -r "$MC_PWD_FILE"; then
+<a id='L12' name='L12'></a>        MC_PWD="`cat "$MC_PWD_FILE"`"
+<a id='L13' name='L13'></a>        if test -n "$MC_PWD" &amp;&amp; test "$MC_PWD" != "$PWD" &amp;&amp; test -d "$MC_PWD"; then
+<a id='L14' name='L14'></a>                cd "$MC_PWD" || true
+<a id='L15' name='L15'></a>        fi
+<a id='L16' name='L16'></a>        unset MC_PWD
+<a id='L17' name='L17'></a>fi
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>rm -f "$MC_PWD_FILE"
+<a id='L20' name='L20'></a>unset MC_PWD_FILE
 </pre>
 <hr />
 <a id='BOTTOM' name='BOTTOM'></a>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+15 contrib/mc-wrapper.sh.in'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+20 contrib/mc-wrapper.sh.in'  /> */</em>
 </body>
 </html>

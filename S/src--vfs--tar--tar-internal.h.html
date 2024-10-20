@@ -3,14 +3,14 @@
 <head>
 <title>src/vfs/tar/tar-internal.h</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
 <body>
 <!-- beginning of fixed guide -->
 <div id='guide'><ul>
-<li><a href='#L338'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L340'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
 <li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
 <li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
 <li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
@@ -20,14 +20,14 @@
 </ul></div>
 <!-- end of fixed guide -->
 <a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--tar.html'>tar</a>/tar-internal.h</h2>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L338'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/tar/tar-internal.h'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L340'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/tar/tar-internal.h'  /> */</em>
 <hr />
 <h2 class='header'><a href='../J/tar-internal.h.html' title='Multiple included from 4 places.'>INCLUDED FROM</a></h2>
 <hr />
 <h2 class='header'>DEFINITIONS</h2>
 This source file includes following definitions.
 <ol>
-<li><a href='#L338' title='Defined at 338.'>tar_represent_uintmax</a></li>
+<li><a href='#L340' title='Defined at 340.'>tar_represent_uintmax</a></li>
 </ol>
 <hr />
 <pre>
@@ -40,351 +40,353 @@ This source file includes following definitions.
 <a id='L7' name='L7'></a>   7 <em class='sharp'>#include</em> &lt;sys/stat.h&gt;
 <a id='L8' name='L8'></a>   8 <em class='sharp'>#include</em> &lt;sys/types.h&gt;
 <a id='L9' name='L9'></a>   9 
-<a id='L10' name='L10'></a>  10 <em class='sharp'>#include</em> "<a href='lib--vfs--xdirentry.h.html'>lib/vfs/xdirentry.h</a>"  <em class='comment'>/* vfs_s_super */</em>
-<a id='L11' name='L11'></a>  11 
-<a id='L12' name='L12'></a>  12 <em class='comment'>/*** typedefs(not structures) and defined constants **********************************************/</em>
-<a id='L13' name='L13'></a>  13 
-<a id='L14' name='L14'></a>  14 <em class='comment'>/* tar files are made in basic blocks of this size.  */</em>
-<a id='L15' name='L15'></a>  15 <em class='sharp'>#define</em> <a href='../R/BLOCKSIZE.html' title='Multiple referred from 26 places.'>BLOCKSIZE</a> 512
-<a id='L16' name='L16'></a>  16 
-<a id='L17' name='L17'></a>  17 <em class='sharp'>#define</em> <a href='../R/DEFAULT_BLOCKING.html' title='Multiple referred from 2 places.'>DEFAULT_BLOCKING</a> 20
+<a id='L10' name='L10'></a>  10 <em class='sharp'>#ifdef</em> HAVE_STDCKDINT_H
+<a id='L11' name='L11'></a>  11 <em class='sharp'>#include</em> &lt;stdckdint.h&gt;
+<a id='L12' name='L12'></a>  12 <em class='sharp'>#else</em>
+<a id='L13' name='L13'></a>  13 <em class='sharp'>#include</em> "lib/stdckdint.h"
+<a id='L14' name='L14'></a>  14 <em class='sharp'>#endif</em>
+<a id='L15' name='L15'></a>  15 <em class='sharp'>#include</em> "<a href='lib--intprops.h.html'>lib/intprops.h</a>"
+<a id='L16' name='L16'></a>  16 <em class='sharp'>#include</em> "<a href='lib--idx.h.html'>lib/idx.h</a>"
+<a id='L17' name='L17'></a>  17 <em class='sharp'>#include</em> "<a href='lib--vfs--xdirentry.h.html'>lib/vfs/xdirentry.h</a>"  <em class='comment'>/* vfs_s_super */</em>
 <a id='L18' name='L18'></a>  18 
-<a id='L19' name='L19'></a>  19 <em class='comment'>/* Sparse files are not supported in POSIX ustar format.  For sparse files</em>
-<a id='L20' name='L20'></a>  20 <em class='comment'>   with a POSIX header, a GNU extra header is provided which holds overall</em>
-<a id='L21' name='L21'></a>  21 <em class='comment'>   sparse information and a few sparse descriptors.  When an old GNU header</em>
-<a id='L22' name='L22'></a>  22 <em class='comment'>   replaces both the POSIX header and the GNU extra header, it holds some</em>
-<a id='L23' name='L23'></a>  23 <em class='comment'>   sparse descriptors too.  Whether POSIX or not, if more sparse descriptors</em>
-<a id='L24' name='L24'></a>  24 <em class='comment'>   are still needed, they are put into as many successive sparse headers as</em>
-<a id='L25' name='L25'></a>  25 <em class='comment'>   necessary.  The following constants tell how many sparse descriptors fit</em>
-<a id='L26' name='L26'></a>  26 <em class='comment'>   in each kind of header able to hold them.  */</em>
-<a id='L27' name='L27'></a>  27 
-<a id='L28' name='L28'></a>  28 <em class='sharp'>#define</em> SPARSES_IN_EXTRA_HEADER  16
-<a id='L29' name='L29'></a>  29 <em class='sharp'>#define</em> <a href='../R/SPARSES_IN_OLDGNU_HEADER.html' title='Multiple referred from 2 places.'>SPARSES_IN_OLDGNU_HEADER</a> 4
-<a id='L30' name='L30'></a>  30 <em class='sharp'>#define</em> <a href='../R/SPARSES_IN_SPARSE_HEADER.html' title='Multiple referred from 3 places.'>SPARSES_IN_SPARSE_HEADER</a> 21
-<a id='L31' name='L31'></a>  31 
-<a id='L32' name='L32'></a>  32 <em class='sharp'>#define</em> <a href='../R/SPARSES_IN_STAR_HEADER.html' title='Multiple referred from 2 places.'>SPARSES_IN_STAR_HEADER</a>      4
-<a id='L33' name='L33'></a>  33 <em class='sharp'>#define</em> <a href='../R/SPARSES_IN_STAR_EXT_HEADER.html' title='Multiple referred from 2 places.'>SPARSES_IN_STAR_EXT_HEADER</a> 21
+<a id='L19' name='L19'></a>  19 <em class='comment'>/*** typedefs(not structures) and defined constants **********************************************/</em>
+<a id='L20' name='L20'></a>  20 
+<a id='L21' name='L21'></a>  21 <em class='comment'>/* tar files are made in basic blocks of this size.  */</em>
+<a id='L22' name='L22'></a>  22 <em class='sharp'>#define</em> <a href='../R/BLOCKSIZE.html' title='Multiple referred from 25 places.'>BLOCKSIZE</a> 512
+<a id='L23' name='L23'></a>  23 
+<a id='L24' name='L24'></a>  24 <em class='sharp'>#define</em> <a href='../R/DEFAULT_BLOCKING.html' title='Multiple referred from 2 places.'>DEFAULT_BLOCKING</a> 20
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='comment'>/* Sparse files are not supported in POSIX ustar format.  For sparse files</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'>   with a POSIX header, a GNU extra header is provided which holds overall</em>
+<a id='L28' name='L28'></a>  28 <em class='comment'>   sparse information and a few sparse descriptors.  When an old GNU header</em>
+<a id='L29' name='L29'></a>  29 <em class='comment'>   replaces both the POSIX header and the GNU extra header, it holds some</em>
+<a id='L30' name='L30'></a>  30 <em class='comment'>   sparse descriptors too.  Whether POSIX or not, if more sparse descriptors</em>
+<a id='L31' name='L31'></a>  31 <em class='comment'>   are still needed, they are put into as many successive sparse headers as</em>
+<a id='L32' name='L32'></a>  32 <em class='comment'>   necessary.  The following constants tell how many sparse descriptors fit</em>
+<a id='L33' name='L33'></a>  33 <em class='comment'>   in each kind of header able to hold them.  */</em>
 <a id='L34' name='L34'></a>  34 
-<a id='L35' name='L35'></a>  35 <em class='comment'>/* *BEWARE* *BEWARE* *BEWARE* that the following information is still</em>
-<a id='L36' name='L36'></a>  36 <em class='comment'>   boiling, and may change.  Even if the OLDGNU format description should be</em>
-<a id='L37' name='L37'></a>  37 <em class='comment'>   accurate, the so-called GNU format is not yet fully decided.  It is</em>
-<a id='L38' name='L38'></a>  38 <em class='comment'>   surely meant to use only extensions allowed by POSIX, but the sketch</em>
-<a id='L39' name='L39'></a>  39 <em class='comment'>   below repeats some ugliness from the OLDGNU format, which should rather</em>
-<a id='L40' name='L40'></a>  40 <em class='comment'>   go away.  Sparse files should be saved in such a way that they do *not*</em>
-<a id='L41' name='L41'></a>  41 <em class='comment'>   require two passes at archive creation time.  Huge files get some POSIX</em>
-<a id='L42' name='L42'></a>  42 <em class='comment'>   fields to overflow, alternate solutions have to be sought for this.  */</em>
-<a id='L43' name='L43'></a>  43 
-<a id='L44' name='L44'></a>  44 <em class='comment'>/* This is a dir entry that contains the names of files that were in the</em>
-<a id='L45' name='L45'></a>  45 <em class='comment'>   dir at the time the dump was made.  */</em>
-<a id='L46' name='L46'></a>  46 <em class='sharp'>#define</em> <a href='../R/GNUTYPE_DUMPDIR.html' title='Multiple referred from 3 places.'>GNUTYPE_DUMPDIR</a> 'D'
-<a id='L47' name='L47'></a>  47 
-<a id='L48' name='L48'></a>  48 <em class='comment'>/* Identifies the *next* file on the tape as having a long linkname.  */</em>
-<a id='L49' name='L49'></a>  49 <em class='sharp'>#define</em> <a href='../S/src--vfs--tar--tar.c.html#L637' title='Referred from 637 in src/vfs/tar/tar.c.'>GNUTYPE_LONGLINK</a> 'K'
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#define</em> SPARSES_IN_EXTRA_HEADER  16
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#define</em> <a href='../R/SPARSES_IN_OLDGNU_HEADER.html' title='Multiple referred from 2 places.'>SPARSES_IN_OLDGNU_HEADER</a> 4
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#define</em> <a href='../R/SPARSES_IN_SPARSE_HEADER.html' title='Multiple referred from 3 places.'>SPARSES_IN_SPARSE_HEADER</a> 21
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <em class='sharp'>#define</em> <a href='../R/SPARSES_IN_STAR_HEADER.html' title='Multiple referred from 2 places.'>SPARSES_IN_STAR_HEADER</a>      4
+<a id='L40' name='L40'></a>  40 <em class='sharp'>#define</em> <a href='../R/SPARSES_IN_STAR_EXT_HEADER.html' title='Multiple referred from 2 places.'>SPARSES_IN_STAR_EXT_HEADER</a> 21
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <em class='comment'>/* *BEWARE* *BEWARE* *BEWARE* that the following information is still</em>
+<a id='L43' name='L43'></a>  43 <em class='comment'>   boiling, and may change.  Even if the OLDGNU format description should be</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'>   accurate, the so-called GNU format is not yet fully decided.  It is</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'>   surely meant to use only extensions allowed by POSIX, but the sketch</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'>   below repeats some ugliness from the OLDGNU format, which should rather</em>
+<a id='L47' name='L47'></a>  47 <em class='comment'>   go away.  Sparse files should be saved in such a way that they do *not*</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'>   require two passes at archive creation time.  Huge files get some POSIX</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>   fields to overflow, alternate solutions have to be sought for this.  */</em>
 <a id='L50' name='L50'></a>  50 
-<a id='L51' name='L51'></a>  51 <em class='comment'>/* Identifies the *next* file on the tape as having a long name.  */</em>
-<a id='L52' name='L52'></a>  52 <em class='sharp'>#define</em> <a href='../R/GNUTYPE_LONGNAME.html' title='Multiple referred from 2 places.'>GNUTYPE_LONGNAME</a> 'L'
-<a id='L53' name='L53'></a>  53 
-<a id='L54' name='L54'></a>  54 <em class='comment'>/* Solaris extended header */</em>
-<a id='L55' name='L55'></a>  55 <em class='sharp'>#define</em> <a href='../S/src--vfs--tar--tar.c.html#L701' title='Referred from 701 in src/vfs/tar/tar.c.'>SOLARIS_XHDTYPE</a> 'X'
-<a id='L56' name='L56'></a>  56 
-<a id='L57' name='L57'></a>  57 <em class='sharp'>#define</em> <a href='../R/GNUTYPE_SPARSE.html' title='Multiple referred from 2 places.'>GNUTYPE_SPARSE</a> 'S'
-<a id='L58' name='L58'></a>  58 
-<a id='L59' name='L59'></a>  59 
-<a id='L60' name='L60'></a>  60 <em class='comment'>/* These macros work even on ones'-complement hosts (!).</em>
-<a id='L61' name='L61'></a>  61 <em class='comment'>   The extra casts work around some compiler bugs. */</em>
-<a id='L62' name='L62'></a>  62 <em class='sharp'>#define</em> <a href='../R/TYPE_SIGNED.html' title='Multiple referred from 3 places.'>TYPE_SIGNED</a>(<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) (!((<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) 0 &lt; (<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) (-1)))
-<a id='L63' name='L63'></a>  63 <em class='sharp'>#define</em> <a href='../R/TYPE_MINIMUM.html' title='Multiple referred from 11 places.'>TYPE_MINIMUM</a>(<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) (<a href='../S/src--vfs--tar--tar-internal.h.html#L62' title='Defined at 62 in src/vfs/tar/tar-internal.h.'>TYPE_SIGNED</a> (<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) ? ~(<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) 0 &lt;&lt; (<strong class='reserved'>sizeof</strong> (<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) * <a href='../Y/CHAR_BIT.html' title='Multiple used in 7 places.'>CHAR_BIT</a> - 1) : (<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) 0)
-<a id='L64' name='L64'></a>  64 <em class='sharp'>#define</em> <a href='../R/TYPE_MAXIMUM.html' title='Multiple referred from 18 places.'>TYPE_MAXIMUM</a>(<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) (~(<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>) 0 - <a href='../S/src--vfs--tar--tar-internal.h.html#L63' title='Defined at 63 in src/vfs/tar/tar-internal.h.'>TYPE_MINIMUM</a> (<a href='../Y/t.html' title='Multiple used in 294 places.'>t</a>))
+<a id='L51' name='L51'></a>  51 <em class='comment'>/* This is a dir entry that contains the names of files that were in the</em>
+<a id='L52' name='L52'></a>  52 <em class='comment'>   dir at the time the dump was made.  */</em>
+<a id='L53' name='L53'></a>  53 <em class='sharp'>#define</em> <a href='../R/GNUTYPE_DUMPDIR.html' title='Multiple referred from 3 places.'>GNUTYPE_DUMPDIR</a> 'D'
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='comment'>/* Identifies the *next* file on the tape as having a long linkname.  */</em>
+<a id='L56' name='L56'></a>  56 <em class='sharp'>#define</em> <a href='../S/src--vfs--tar--tar.c.html#L640' title='Referred from 640 in src/vfs/tar/tar.c.'>GNUTYPE_LONGLINK</a> 'K'
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58 <em class='comment'>/* Identifies the *next* file on the tape as having a long name.  */</em>
+<a id='L59' name='L59'></a>  59 <em class='sharp'>#define</em> <a href='../R/GNUTYPE_LONGNAME.html' title='Multiple referred from 2 places.'>GNUTYPE_LONGNAME</a> 'L'
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61 <em class='comment'>/* Solaris extended header */</em>
+<a id='L62' name='L62'></a>  62 <em class='sharp'>#define</em> <a href='../S/src--vfs--tar--tar.c.html#L700' title='Referred from 700 in src/vfs/tar/tar.c.'>SOLARIS_XHDTYPE</a> 'X'
+<a id='L63' name='L63'></a>  63 
+<a id='L64' name='L64'></a>  64 <em class='sharp'>#define</em> <a href='../R/GNUTYPE_SPARSE.html' title='Multiple referred from 2 places.'>GNUTYPE_SPARSE</a> 'S'
 <a id='L65' name='L65'></a>  65 
-<a id='L66' name='L66'></a>  66 <em class='sharp'>#define</em> <a href='../R/OFF_FROM_HEADER.html' title='Multiple referred from 7 places.'>OFF_FROM_HEADER</a>(<a href='../Y/where.html' title='Multiple used in 37 places.'>where</a>) <a href='../S/src--vfs--tar--tar-internal.c.html#L395' title='Defined at 395 in src/vfs/tar/tar-internal.c.'>off_from_header</a> (<a href='../Y/where.html' title='Multiple used in 37 places.'>where</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/where.html' title='Multiple used in 37 places.'>where</a>))
-<a id='L67' name='L67'></a>  67 
-<a id='L68' name='L68'></a>  68 <em class='comment'>/*** enums ***************************************************************************************/</em>
-<a id='L69' name='L69'></a>  69 
-<a id='L70' name='L70'></a>  70 <em class='comment'>/*** structures declarations (and typedefs of structures)*****************************************/</em>
-<a id='L71' name='L71'></a>  71 
-<a id='L72' name='L72'></a>  72 <em class='comment'>/* *INDENT-OFF* */</em>
-<a id='L73' name='L73'></a>  73 
-<a id='L74' name='L74'></a>  74 <em class='comment'>/* POSIX header */</em>
-<a id='L75' name='L75'></a>  75 <strong class='reserved'>struct</strong> <a href='../R/posix_header.html' title='Multiple referred from 3 places.'>posix_header</a>
-<a id='L76' name='L76'></a>  76 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
-<a id='L77' name='L77'></a>  77     <strong class='reserved'>char</strong> <a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>[100];             <em class='comment'>/*   0 */</em>
-<a id='L78' name='L78'></a>  78     <strong class='reserved'>char</strong> <a href='../Y/mode.html' title='Multiple used in 195 places.'>mode</a>[8];               <em class='comment'>/* 100 */</em>
-<a id='L79' name='L79'></a>  79     <strong class='reserved'>char</strong> <a href='../Y/uid.html' title='Multiple used in 32 places.'>uid</a>[8];                <em class='comment'>/* 108 */</em>
-<a id='L80' name='L80'></a>  80     <strong class='reserved'>char</strong> <a href='../Y/gid.html' title='Multiple used in 19 places.'>gid</a>[8];                <em class='comment'>/* 116 */</em>
-<a id='L81' name='L81'></a>  81     <strong class='reserved'>char</strong> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>[12];              <em class='comment'>/* 124 */</em>
-<a id='L82' name='L82'></a>  82     <strong class='reserved'>char</strong> <a href='../Y/mtime.html' title='Multiple used in 35 places.'>mtime</a>[12];             <em class='comment'>/* 136 */</em>
-<a id='L83' name='L83'></a>  83     <strong class='reserved'>char</strong> <a href='../Y/chksum.html' title='Multiple used in 8 places.'>chksum</a>[8];             <em class='comment'>/* 148 */</em>
-<a id='L84' name='L84'></a>  84     <strong class='reserved'>char</strong> <a href='../Y/typeflag.html' title='Multiple used in 22 places.'>typeflag</a>;              <em class='comment'>/* 156 */</em>
-<a id='L85' name='L85'></a>  85     <strong class='reserved'>char</strong> <a href='../Y/linkname.html' title='Multiple used in 97 places.'>linkname</a>[100];         <em class='comment'>/* 157 */</em>
-<a id='L86' name='L86'></a>  86     <strong class='reserved'>char</strong> <a href='../Y/magic.html' title='Multiple used in 44 places.'>magic</a>[6];              <em class='comment'>/* 257 */</em>
-<a id='L87' name='L87'></a>  87     <strong class='reserved'>char</strong> <a href='../Y/version.html' title='Multiple used in 2 places.'>version</a>[2];            <em class='comment'>/* 263 */</em>
-<a id='L88' name='L88'></a>  88     <strong class='reserved'>char</strong> <a href='../Y/uname.html' title='Multiple used in 15 places.'>uname</a>[32];             <em class='comment'>/* 265 */</em>
-<a id='L89' name='L89'></a>  89     <strong class='reserved'>char</strong> <a href='../Y/gname.html' title='Multiple used in 13 places.'>gname</a>[32];             <em class='comment'>/* 297 */</em>
-<a id='L90' name='L90'></a>  90     <strong class='reserved'>char</strong> <a href='../Y/devmajor.html' title='Multiple used in 3 places.'>devmajor</a>[8];           <em class='comment'>/* 329 */</em>
-<a id='L91' name='L91'></a>  91     <strong class='reserved'>char</strong> <a href='../Y/devminor.html' title='Multiple used in 3 places.'>devminor</a>[8];           <em class='comment'>/* 337 */</em>
-<a id='L92' name='L92'></a>  92     <strong class='reserved'>char</strong> <a href='../Y/prefix.html' title='Multiple used in 86 places.'>prefix</a>[155];           <em class='comment'>/* 345 */</em>
-<a id='L93' name='L93'></a>  93                                 <em class='comment'>/* 500 */</em>
-<a id='L94' name='L94'></a>  94 <em class='brace'>}</em>;
-<a id='L95' name='L95'></a>  95 
-<a id='L96' name='L96'></a>  96 <em class='comment'>/* Descriptor for a single file hole */</em>
-<a id='L97' name='L97'></a>  97 <strong class='reserved'>struct</strong> <a href='../R/sparse.html' title='Multiple referred from 5 places.'>sparse</a>
-<a id='L98' name='L98'></a>  98 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
-<a id='L99' name='L99'></a>  99     <em class='comment'>/* cppcheck-suppress unusedStructMember */</em>
-<a id='L100' name='L100'></a> 100     <strong class='reserved'>char</strong> <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a>[12];            <em class='comment'>/*   0 */</em>
-<a id='L101' name='L101'></a> 101     <em class='comment'>/* cppcheck-suppress unusedStructMember */</em>
-<a id='L102' name='L102'></a> 102     <strong class='reserved'>char</strong> <a href='../Y/numbytes.html' title='Multiple used in 15 places.'>numbytes</a>[12];          <em class='comment'>/*  12 */</em>
-<a id='L103' name='L103'></a> 103                                 <em class='comment'>/*  24 */</em>
-<a id='L104' name='L104'></a> 104 <em class='brace'>}</em>;
-<a id='L105' name='L105'></a> 105 
-<a id='L106' name='L106'></a> 106 <em class='comment'>/* Extension header for sparse files, used immediately after the GNU extra</em>
-<a id='L107' name='L107'></a> 107 <em class='comment'>   header, and used only if all sparse information cannot fit into that</em>
-<a id='L108' name='L108'></a> 108 <em class='comment'>   extra header.  There might even be many such extension headers, one after</em>
-<a id='L109' name='L109'></a> 109 <em class='comment'>   the other, until all sparse information has been recorded.  */</em>
-<a id='L110' name='L110'></a> 110 <strong class='reserved'>struct</strong> <a href='../R/sparse_header.html' title='Multiple referred from 3 places.'>sparse_header</a>
-<a id='L111' name='L111'></a> 111 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
-<a id='L112' name='L112'></a> 112     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L97' title='Defined at 97 in src/vfs/tar/tar-internal.h.'>sparse</a> <a href='../Y/sp.html' title='Multiple used in 88 places.'>sp</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L30' title='Defined at 30 in src/vfs/tar/tar-internal.h.'>SPARSES_IN_SPARSE_HEADER</a>];
-<a id='L113' name='L113'></a> 113                                 <em class='comment'>/*   0 */</em>
-<a id='L114' name='L114'></a> 114     <strong class='reserved'>char</strong> <a href='../Y/isextended.html' title='Multiple used in 8 places.'>isextended</a>;            <em class='comment'>/* 504 */</em>
-<a id='L115' name='L115'></a> 115                                 <em class='comment'>/* 505 */</em>
-<a id='L116' name='L116'></a> 116 <em class='brace'>}</em>;
-<a id='L117' name='L117'></a> 117 
-<a id='L118' name='L118'></a> 118 <em class='comment'>/* The old GNU format header conflicts with POSIX format in such a way that</em>
-<a id='L119' name='L119'></a> 119 <em class='comment'>   POSIX archives may fool old GNU tar's, and POSIX tar's might well be</em>
-<a id='L120' name='L120'></a> 120 <em class='comment'>   fooled by old GNU tar archives.  An old GNU format header uses the space</em>
-<a id='L121' name='L121'></a> 121 <em class='comment'>   used by the prefix field in a POSIX header, and cumulates information</em>
-<a id='L122' name='L122'></a> 122 <em class='comment'>   normally found in a GNU extra header.  With an old GNU tar header, we</em>
-<a id='L123' name='L123'></a> 123 <em class='comment'>   never see any POSIX header nor GNU extra header.  Supplementary sparse</em>
-<a id='L124' name='L124'></a> 124 <em class='comment'>   headers are allowed, however.  */</em>
-<a id='L125' name='L125'></a> 125 <strong class='reserved'>struct</strong> <a href='../R/oldgnu_header.html' title='Multiple referred from 6 places.'>oldgnu_header</a>
-<a id='L126' name='L126'></a> 126 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
-<a id='L127' name='L127'></a> 127     <strong class='reserved'>char</strong> unused_pad1[345];      <em class='comment'>/*   0 */</em>
-<a id='L128' name='L128'></a> 128     <strong class='reserved'>char</strong> <a href='../Y/atime.html' title='Multiple used in 23 places.'>atime</a>[12];             <em class='comment'>/* 345 Incr. archive: atime of the file */</em>
-<a id='L129' name='L129'></a> 129     <strong class='reserved'>char</strong> <a href='../Y/ctime.html' title='Multiple used in 12 places.'>ctime</a>[12];             <em class='comment'>/* 357 Incr. archive: ctime of the file */</em>
-<a id='L130' name='L130'></a> 130     <strong class='reserved'>char</strong> <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a>[12];            <em class='comment'>/* 369 Multivolume archive: the offset of start of this volume */</em>
-<a id='L131' name='L131'></a> 131     <strong class='reserved'>char</strong> longnames[4];          <em class='comment'>/* 381 Not used */</em>
-<a id='L132' name='L132'></a> 132     <strong class='reserved'>char</strong> unused_pad2;           <em class='comment'>/* 385 */</em>
-<a id='L133' name='L133'></a> 133     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L97' title='Defined at 97 in src/vfs/tar/tar-internal.h.'>sparse</a> <a href='../Y/sp.html' title='Multiple used in 88 places.'>sp</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L29' title='Defined at 29 in src/vfs/tar/tar-internal.h.'>SPARSES_IN_OLDGNU_HEADER</a>];
-<a id='L134' name='L134'></a> 134                                 <em class='comment'>/* 386 */</em>
-<a id='L135' name='L135'></a> 135     <strong class='reserved'>char</strong> <a href='../Y/isextended.html' title='Multiple used in 8 places.'>isextended</a>;            <em class='comment'>/* 482 Sparse file: Extension sparse header follows */</em>
-<a id='L136' name='L136'></a> 136     <strong class='reserved'>char</strong> <a href='../Y/realsize.html' title='Multiple used in 10 places.'>realsize</a>[12];          <em class='comment'>/* 483 Sparse file: Real size */</em>
-<a id='L137' name='L137'></a> 137                                 <em class='comment'>/* 495 */</em>
-<a id='L138' name='L138'></a> 138 <em class='brace'>}</em>;
-<a id='L139' name='L139'></a> 139 
-<a id='L140' name='L140'></a> 140 <em class='comment'>/* J@"org Schilling star header */</em>
-<a id='L141' name='L141'></a> 141 <strong class='reserved'>struct</strong> <a href='../R/star_header.html' title='Multiple referred from 8 places.'>star_header</a>
-<a id='L142' name='L142'></a> 142 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
-<a id='L143' name='L143'></a> 143     <strong class='reserved'>char</strong> <a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>[100];             <em class='comment'>/*   0 */</em>
-<a id='L144' name='L144'></a> 144     <strong class='reserved'>char</strong> <a href='../Y/mode.html' title='Multiple used in 195 places.'>mode</a>[8];               <em class='comment'>/* 100 */</em>
-<a id='L145' name='L145'></a> 145     <strong class='reserved'>char</strong> <a href='../Y/uid.html' title='Multiple used in 32 places.'>uid</a>[8];                <em class='comment'>/* 108 */</em>
-<a id='L146' name='L146'></a> 146     <strong class='reserved'>char</strong> <a href='../Y/gid.html' title='Multiple used in 19 places.'>gid</a>[8];                <em class='comment'>/* 116 */</em>
-<a id='L147' name='L147'></a> 147     <strong class='reserved'>char</strong> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>[12];              <em class='comment'>/* 124 */</em>
-<a id='L148' name='L148'></a> 148     <strong class='reserved'>char</strong> <a href='../Y/mtime.html' title='Multiple used in 35 places.'>mtime</a>[12];             <em class='comment'>/* 136 */</em>
-<a id='L149' name='L149'></a> 149     <strong class='reserved'>char</strong> <a href='../Y/chksum.html' title='Multiple used in 8 places.'>chksum</a>[8];             <em class='comment'>/* 148 */</em>
-<a id='L150' name='L150'></a> 150     <strong class='reserved'>char</strong> <a href='../Y/typeflag.html' title='Multiple used in 22 places.'>typeflag</a>;              <em class='comment'>/* 156 */</em>
-<a id='L151' name='L151'></a> 151     <strong class='reserved'>char</strong> <a href='../Y/linkname.html' title='Multiple used in 97 places.'>linkname</a>[100];         <em class='comment'>/* 157 */</em>
-<a id='L152' name='L152'></a> 152     <strong class='reserved'>char</strong> <a href='../Y/magic.html' title='Multiple used in 44 places.'>magic</a>[6];              <em class='comment'>/* 257 */</em>
-<a id='L153' name='L153'></a> 153     <strong class='reserved'>char</strong> <a href='../Y/version.html' title='Multiple used in 2 places.'>version</a>[2];            <em class='comment'>/* 263 */</em>
-<a id='L154' name='L154'></a> 154     <strong class='reserved'>char</strong> <a href='../Y/uname.html' title='Multiple used in 15 places.'>uname</a>[32];             <em class='comment'>/* 265 */</em>
-<a id='L155' name='L155'></a> 155     <strong class='reserved'>char</strong> <a href='../Y/gname.html' title='Multiple used in 13 places.'>gname</a>[32];             <em class='comment'>/* 297 */</em>
-<a id='L156' name='L156'></a> 156     <strong class='reserved'>char</strong> <a href='../Y/devmajor.html' title='Multiple used in 3 places.'>devmajor</a>[8];           <em class='comment'>/* 329 */</em>
-<a id='L157' name='L157'></a> 157     <strong class='reserved'>char</strong> <a href='../Y/devminor.html' title='Multiple used in 3 places.'>devminor</a>[8];           <em class='comment'>/* 337 */</em>
-<a id='L158' name='L158'></a> 158     <strong class='reserved'>char</strong> <a href='../Y/prefix.html' title='Multiple used in 86 places.'>prefix</a>[131];           <em class='comment'>/* 345 */</em>
-<a id='L159' name='L159'></a> 159     <strong class='reserved'>char</strong> <a href='../Y/atime.html' title='Multiple used in 23 places.'>atime</a>[12];             <em class='comment'>/* 476 */</em>
-<a id='L160' name='L160'></a> 160     <strong class='reserved'>char</strong> <a href='../Y/ctime.html' title='Multiple used in 12 places.'>ctime</a>[12];             <em class='comment'>/* 488 */</em>
-<a id='L161' name='L161'></a> 161                                 <em class='comment'>/* 500 */</em>
-<a id='L162' name='L162'></a> 162 <em class='brace'>}</em>;
-<a id='L163' name='L163'></a> 163 
-<a id='L164' name='L164'></a> 164 <strong class='reserved'>struct</strong> <a href='../R/star_in_header.html' title='Multiple referred from 5 places.'>star_in_header</a>
-<a id='L165' name='L165'></a> 165 <em class='brace'>{</em>
-<a id='L166' name='L166'></a> 166     <strong class='reserved'>char</strong> fill[345];             <em class='comment'>/*   0  Everything that is before t_prefix */</em>
-<a id='L167' name='L167'></a> 167     <strong class='reserved'>char</strong> <a href='../Y/prefix.html' title='Multiple used in 86 places.'>prefix</a>[1];             <em class='comment'>/* 345  t_name prefix */</em>
-<a id='L168' name='L168'></a> 168     <strong class='reserved'>char</strong> fill2;                 <em class='comment'>/* 346  */</em>
-<a id='L169' name='L169'></a> 169     <strong class='reserved'>char</strong> fill3[8];              <em class='comment'>/* 347  */</em>
-<a id='L170' name='L170'></a> 170     <strong class='reserved'>char</strong> <a href='../Y/isextended.html' title='Multiple used in 8 places.'>isextended</a>;            <em class='comment'>/* 355  */</em>
-<a id='L171' name='L171'></a> 171     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L97' title='Defined at 97 in src/vfs/tar/tar-internal.h.'>sparse</a> <a href='../Y/sp.html' title='Multiple used in 88 places.'>sp</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L32' title='Defined at 32 in src/vfs/tar/tar-internal.h.'>SPARSES_IN_STAR_HEADER</a>]; <em class='comment'>/* 356  */</em>
-<a id='L172' name='L172'></a> 172     <strong class='reserved'>char</strong> <a href='../Y/realsize.html' title='Multiple used in 10 places.'>realsize</a>[12];          <em class='comment'>/* 452  Actual size of the file */</em>
-<a id='L173' name='L173'></a> 173     <strong class='reserved'>char</strong> <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a>[12];            <em class='comment'>/* 464  Offset of multivolume contents */</em>
-<a id='L174' name='L174'></a> 174     <strong class='reserved'>char</strong> <a href='../Y/atime.html' title='Multiple used in 23 places.'>atime</a>[12];             <em class='comment'>/* 476  */</em>
-<a id='L175' name='L175'></a> 175     <strong class='reserved'>char</strong> <a href='../Y/ctime.html' title='Multiple used in 12 places.'>ctime</a>[12];             <em class='comment'>/* 488  */</em>
-<a id='L176' name='L176'></a> 176     <strong class='reserved'>char</strong> mfill[8];              <em class='comment'>/* 500  */</em>
-<a id='L177' name='L177'></a> 177     <strong class='reserved'>char</strong> xmagic[4];             <em class='comment'>/* 508  "tar" */</em>
-<a id='L178' name='L178'></a> 178 <em class='brace'>}</em>;
-<a id='L179' name='L179'></a> 179 
-<a id='L180' name='L180'></a> 180 <strong class='reserved'>struct</strong> <a href='../R/star_ext_header.html' title='Multiple referred from 3 places.'>star_ext_header</a>
-<a id='L181' name='L181'></a> 181 <em class='brace'>{</em>
-<a id='L182' name='L182'></a> 182     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L97' title='Defined at 97 in src/vfs/tar/tar-internal.h.'>sparse</a> <a href='../Y/sp.html' title='Multiple used in 88 places.'>sp</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L33' title='Defined at 33 in src/vfs/tar/tar-internal.h.'>SPARSES_IN_STAR_EXT_HEADER</a>];
-<a id='L183' name='L183'></a> 183     <strong class='reserved'>char</strong> <a href='../Y/isextended.html' title='Multiple used in 8 places.'>isextended</a>;
-<a id='L184' name='L184'></a> 184 <em class='brace'>}</em>;
-<a id='L185' name='L185'></a> 185 
-<a id='L186' name='L186'></a> 186 <em class='comment'>/* *INDENT-ON* */</em>
-<a id='L187' name='L187'></a> 187 
-<a id='L188' name='L188'></a> 188 <em class='comment'>/* tar Header Block, overall structure */</em>
-<a id='L189' name='L189'></a> 189 <strong class='reserved'>union</strong> <a href='../R/block.html' title='Multiple referred from 46 places.'>block</a>
-<a id='L190' name='L190'></a> 190 <em class='brace'>{</em>
-<a id='L191' name='L191'></a> 191     <strong class='reserved'>char</strong> <a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L15' title='Defined at 15 in src/vfs/tar/tar-internal.h.'>BLOCKSIZE</a>];
-<a id='L192' name='L192'></a> 192     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L75' title='Defined at 75 in src/vfs/tar/tar-internal.h.'>posix_header</a> <a href='../Y/header.html' title='Multiple used in 97 places.'>header</a>;
-<a id='L193' name='L193'></a> 193     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L141' title='Defined at 141 in src/vfs/tar/tar-internal.h.'>star_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L141' title='Defined at 141 in src/vfs/tar/tar-internal.h.'>star_header</a>;
-<a id='L194' name='L194'></a> 194     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L125' title='Defined at 125 in src/vfs/tar/tar-internal.h.'>oldgnu_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L125' title='Defined at 125 in src/vfs/tar/tar-internal.h.'>oldgnu_header</a>;
-<a id='L195' name='L195'></a> 195     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L110' title='Defined at 110 in src/vfs/tar/tar-internal.h.'>sparse_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L110' title='Defined at 110 in src/vfs/tar/tar-internal.h.'>sparse_header</a>;
-<a id='L196' name='L196'></a> 196     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L164' title='Defined at 164 in src/vfs/tar/tar-internal.h.'>star_in_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L164' title='Defined at 164 in src/vfs/tar/tar-internal.h.'>star_in_header</a>;
-<a id='L197' name='L197'></a> 197     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L180' title='Defined at 180 in src/vfs/tar/tar-internal.h.'>star_ext_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L180' title='Defined at 180 in src/vfs/tar/tar-internal.h.'>star_ext_header</a>;
-<a id='L198' name='L198'></a> 198 <em class='brace'>}</em>;
-<a id='L199' name='L199'></a> 199 
-<a id='L200' name='L200'></a> 200 <em class='comment'>/* Information about a sparse file */</em>
-<a id='L201' name='L201'></a> 201 <strong class='reserved'>struct</strong> <a href='../R/sp_array.html' title='Multiple referred from 21 places.'>sp_array</a>
-<a id='L202' name='L202'></a> 202 <em class='brace'>{</em>
-<a id='L203' name='L203'></a> 203     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/offset.html' title='Multiple used in 244 places.'>offset</a>;               <em class='comment'>/* chunk offset in file */</em>
-<a id='L204' name='L204'></a> 204     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/numbytes.html' title='Multiple used in 15 places.'>numbytes</a>;             <em class='comment'>/* length of chunk */</em>
-<a id='L205' name='L205'></a> 205     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/arch_offset.html' title='Multiple used in 5 places.'>arch_offset</a>;          <em class='comment'>/* chunk offset in archive */</em>
-<a id='L206' name='L206'></a> 206 <em class='brace'>}</em>;
-<a id='L207' name='L207'></a> 207 
-<a id='L208' name='L208'></a> 208 <strong class='reserved'>enum</strong> <a href='../R/dump_status.html' title='Multiple referred from 2 places.'>dump_status</a>
-<a id='L209' name='L209'></a> 209 <em class='brace'>{</em>
-<a id='L210' name='L210'></a> 210     <a href='../S/src--vfs--tar--tar-sparse.c.html#L774' title='Referred from 774 in src/vfs/tar/tar-sparse.c.'>dump_status_ok</a>,
-<a id='L211' name='L211'></a> 211     <a href='../S/src--vfs--tar--tar-sparse.c.html#L774' title='Referred from 774 in src/vfs/tar/tar-sparse.c.'>dump_status_short</a>,
-<a id='L212' name='L212'></a> 212     dump_status_fail,
-<a id='L213' name='L213'></a> 213     <a href='../S/src--vfs--tar--tar-sparse.c.html#L767' title='Referred from 767 in src/vfs/tar/tar-sparse.c.'>dump_status_not_implemented</a>
-<a id='L214' name='L214'></a> 214 <em class='brace'>}</em>;
-<a id='L215' name='L215'></a> 215 
-<a id='L216' name='L216'></a> 216 <strong class='reserved'>enum</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L233' title='Referred from 233 in src/vfs/tar/tar-internal.h.'>archive_format</a>
-<a id='L217' name='L217'></a> 217 <em class='brace'>{</em>
-<a id='L218' name='L218'></a> 218     <a href='../R/TAR_UNKNOWN.html' title='Multiple referred from 6 places.'>TAR_UNKNOWN</a> = 0,            <em class='comment'>/**&lt; format to be decided later */</em>
-<a id='L219' name='L219'></a> 219     <a href='../R/TAR_V7.html' title='Multiple referred from 2 places.'>TAR_V7</a>,                     <em class='comment'>/**&lt; old V7 tar format */</em>
-<a id='L220' name='L220'></a> 220     <a href='../R/TAR_OLDGNU.html' title='Multiple referred from 5 places.'>TAR_OLDGNU</a>,                 <em class='comment'>/**&lt; GNU format as per before tar 1.12 */</em>
-<a id='L221' name='L221'></a> 221     <a href='../R/TAR_USTAR.html' title='Multiple referred from 3 places.'>TAR_USTAR</a>,                  <em class='comment'>/**&lt; POSIX.1-1988 (ustar) format */</em>
-<a id='L222' name='L222'></a> 222     <a href='../R/TAR_POSIX.html' title='Multiple referred from 5 places.'>TAR_POSIX</a>,                  <em class='comment'>/**&lt; POSIX.1-2001 format */</em>
-<a id='L223' name='L223'></a> 223     <a href='../R/TAR_STAR.html' title='Multiple referred from 3 places.'>TAR_STAR</a>,                   <em class='comment'>/**&lt; star format defined in 1994 */</em>
-<a id='L224' name='L224'></a> 224     <a href='../R/TAR_GNU.html' title='Multiple referred from 7 places.'>TAR_GNU</a>                     <em class='comment'>/**&lt; almost same as OLDGNU_FORMAT */</em>
-<a id='L225' name='L225'></a> 225 <em class='brace'>}</em>;
-<a id='L226' name='L226'></a> 226 
-<a id='L227' name='L227'></a> 227 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong>
-<a id='L228' name='L228'></a> 228 <em class='brace'>{</em>
-<a id='L229' name='L229'></a> 229     <strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> <a href='../Y/base.html' title='Multiple used in 105 places.'>base</a>;    <em class='comment'>/* base class */</em>
-<a id='L230' name='L230'></a> 230 
-<a id='L231' name='L231'></a> 231     <strong class='reserved'>int</strong> <a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a>;
-<a id='L232' name='L232'></a> 232     <strong class='reserved'>struct</strong> <a href='../Y/stat.html' title='Multiple used in 284 places.'>stat</a> <a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>;
-<a id='L233' name='L233'></a> 233     <strong class='reserved'>enum</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L216' title='Defined at 216 in src/vfs/tar/tar-internal.h.'>archive_format</a> <a href='../Y/type.html' title='Multiple used in 275 places.'>type</a>;   <em class='comment'>/**&lt; type of the archive */</em>
-<a id='L234' name='L234'></a> 234     <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L189' title='Defined at 189 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/record_start.html' title='Multiple used in 13 places.'>record_start</a>;  <em class='comment'>/**&lt; start of record of archive */</em>
-<a id='L235' name='L235'></a> 235 <em class='brace'>}</em> <a href='../R/tar_super_t.html' title='Multiple referred from 38 places.'>tar_super_t</a>;
-<a id='L236' name='L236'></a> 236 
-<a id='L237' name='L237'></a> 237 <strong class='reserved'>struct</strong> <a href='../R/xheader.html' title='Multiple referred from 9 places.'>xheader</a>
-<a id='L238' name='L238'></a> 238 <em class='brace'>{</em>
-<a id='L239' name='L239'></a> 239     <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>;
-<a id='L240' name='L240'></a> 240     <strong class='reserved'>char</strong> *<a href='../Y/buffer.html' title='Multiple used in 994 places.'>buffer</a>;
-<a id='L241' name='L241'></a> 241 <em class='brace'>}</em>;
-<a id='L242' name='L242'></a> 242 
-<a id='L243' name='L243'></a> 243 <strong class='reserved'>struct</strong> <a href='../R/tar_stat_info.html' title='Multiple referred from 57 places.'>tar_stat_info</a>
-<a id='L244' name='L244'></a> 244 <em class='brace'>{</em>
-<a id='L245' name='L245'></a> 245     <strong class='reserved'>char</strong> *<a href='../Y/orig_file_name.html' title='Multiple used in 4 places.'>orig_file_name</a>;       <em class='comment'>/**&lt; name of file read from the archive header */</em>
-<a id='L246' name='L246'></a> 246     <strong class='reserved'>char</strong> *<a href='../Y/file_name.html' title='Multiple used in 77 places.'>file_name</a>;            <em class='comment'>/**&lt; name of file for the current archive entry after being normalized */</em>
-<a id='L247' name='L247'></a> 247     <strong class='reserved'>char</strong> *<a href='../Y/link_name.html' title='Multiple used in 28 places.'>link_name</a>;            <em class='comment'>/**&lt; name of link for the current archive entry  */</em>
-<a id='L248' name='L248'></a> 248 <em class='sharp'>#if</em> 0
-<a id='L249' name='L249'></a> 249     <strong class='reserved'>char</strong> *<a href='../Y/uname.html' title='Multiple used in 15 places.'>uname</a>;                <em class='comment'>/**&lt; user name of owner */</em>
-<a id='L250' name='L250'></a> 250     <strong class='reserved'>char</strong> *<a href='../Y/gname.html' title='Multiple used in 13 places.'>gname</a>;                <em class='comment'>/**&lt; group name of owner */</em>
-<a id='L251' name='L251'></a> 251 <em class='sharp'>#endif</em>
-<a id='L252' name='L252'></a> 252     <strong class='reserved'>struct</strong> <a href='../Y/stat.html' title='Multiple used in 284 places.'>stat</a> <a href='../Y/stat.html' title='Multiple used in 284 places.'>stat</a>;           <em class='comment'>/**&lt; regular filesystem stat */</em>
-<a id='L253' name='L253'></a> 253 
-<a id='L254' name='L254'></a> 254     <em class='comment'>/* stat() doesn't always have access, data modification, and status</em>
-<a id='L255' name='L255'></a> 255 <em class='comment'>       change times in a convenient form, so store them separately.  */</em>
-<a id='L256' name='L256'></a> 256     <strong class='reserved'>struct</strong> <a href='../Y/timespec.html' title='Multiple used in 12 places.'>timespec</a> <a href='../Y/atime.html' title='Multiple used in 23 places.'>atime</a>;
-<a id='L257' name='L257'></a> 257     <strong class='reserved'>struct</strong> <a href='../Y/timespec.html' title='Multiple used in 12 places.'>timespec</a> <a href='../Y/mtime.html' title='Multiple used in 35 places.'>mtime</a>;
-<a id='L258' name='L258'></a> 258     <strong class='reserved'>struct</strong> <a href='../Y/timespec.html' title='Multiple used in 12 places.'>timespec</a> <a href='../Y/ctime.html' title='Multiple used in 12 places.'>ctime</a>;
-<a id='L259' name='L259'></a> 259 
-<a id='L260' name='L260'></a> 260     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/archive_file_size.html' title='Multiple used in 6 places.'>archive_file_size</a>;    <em class='comment'>/**&lt; size of file as stored in the archive.</em>
-<a id='L261' name='L261'></a> 261 <em class='comment'>                                     Equals stat.st_size for non-sparse files */</em>
-<a id='L262' name='L262'></a> 262     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/is_sparse.html' title='Multiple used in 4 places.'>is_sparse</a>;         <em class='comment'>/**&lt; is the file sparse */</em>
-<a id='L263' name='L263'></a> 263 
-<a id='L264' name='L264'></a> 264     <em class='comment'>/* For sparse files */</em>
-<a id='L265' name='L265'></a> 265     <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/sparse_major.html' title='Multiple used in 4 places.'>sparse_major</a>;
-<a id='L266' name='L266'></a> 266     <strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong> <a href='../Y/sparse_minor.html' title='Multiple used in 2 places.'>sparse_minor</a>;
-<a id='L267' name='L267'></a> 267     <a href='../Y/GArray.html' title='Multiple used in 83 places.'>GArray</a> *<a href='../Y/sparse_map.html' title='Multiple used in 28 places.'>sparse_map</a>;         <em class='comment'>/**&lt; array of struct sp_array */</em>
-<a id='L268' name='L268'></a> 268 
-<a id='L269' name='L269'></a> 269     <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/real_size.html' title='Multiple used in 3 places.'>real_size</a>;            <em class='comment'>/**&lt; real size of sparse file */</em>
-<a id='L270' name='L270'></a> 270     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/real_size_set.html' title='Multiple used in 3 places.'>real_size_set</a>;     <em class='comment'>/**&lt; TRUE when GNU.sparse.realsize is set in archived file */</em>
-<a id='L271' name='L271'></a> 271 
-<a id='L272' name='L272'></a> 272     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/sparse_name_done.html' title='Multiple used in 3 places.'>sparse_name_done</a>;  <em class='comment'>/**&lt; TRUE if 'GNU.sparse.name' header was processed pax header parsing.</em>
-<a id='L273' name='L273'></a> 273 <em class='comment'>                                     Following 'path'  header (lower priority) will be ignored. */</em>
-<a id='L274' name='L274'></a> 274 
-<a id='L275' name='L275'></a> 275     <em class='comment'>/* Extended headers */</em>
-<a id='L276' name='L276'></a> 276     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L237' title='Defined at 237 in src/vfs/tar/tar-internal.h.'>xheader</a> <a href='../Y/xhdr.html' title='Multiple used in 28 places.'>xhdr</a>;
-<a id='L277' name='L277'></a> 277 
-<a id='L278' name='L278'></a> 278     <em class='comment'>/* For dumpdirs */</em>
-<a id='L279' name='L279'></a> 279     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/is_dumpdir.html' title='Multiple used in 2 places.'>is_dumpdir</a>;        <em class='comment'>/**&lt; is the member a dumpdir? */</em>
-<a id='L280' name='L280'></a> 280     <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/skipped.html' title='Multiple used in 18 places.'>skipped</a>;           <em class='comment'>/**&lt; the member contents is already read (for GNUTYPE_DUMPDIR) */</em>
-<a id='L281' name='L281'></a> 281     <strong class='reserved'>char</strong> *<a href='../Y/dumpdir.html' title='Multiple used in 4 places.'>dumpdir</a>;              <em class='comment'>/**&lt; contents of the dump directory */</em>
-<a id='L282' name='L282'></a> 282 <em class='brace'>}</em>;
-<a id='L283' name='L283'></a> 283 
-<a id='L284' name='L284'></a> 284 <em class='comment'>/*** global variables defined in .c file *********************************************************/</em>
-<a id='L285' name='L285'></a> 285 
-<a id='L286' name='L286'></a> 286 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/blocking_factor.html' title='Multiple used in 5 places.'>blocking_factor</a>;
-<a id='L287' name='L287'></a> 287 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/record_size.html' title='Multiple used in 10 places.'>record_size</a>;
-<a id='L288' name='L288'></a> 288 
-<a id='L289' name='L289'></a> 289 <strong class='reserved'>extern</strong> <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L189' title='Defined at 189 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/record_end.html' title='Multiple used in 11 places.'>record_end</a>; <em class='comment'>/* last+1 block of archive record */</em>
-<a id='L290' name='L290'></a> 290 <strong class='reserved'>extern</strong> <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L189' title='Defined at 189 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/current_block.html' title='Multiple used in 13 places.'>current_block</a>;      <em class='comment'>/* current block of archive */</em>
-<a id='L291' name='L291'></a> 291 <strong class='reserved'>extern</strong> <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/record_start_block.html' title='Multiple used in 6 places.'>record_start_block</a>;        <em class='comment'>/* block ordinal at record_start */</em>
-<a id='L292' name='L292'></a> 292 
-<a id='L293' name='L293'></a> 293 <strong class='reserved'>extern</strong> <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L189' title='Defined at 189 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/current_header.html' title='Multiple used in 15 places.'>current_header</a>;
-<a id='L294' name='L294'></a> 294 
-<a id='L295' name='L295'></a> 295 <em class='comment'>/* Have we hit EOF yet?  */</em>
-<a id='L296' name='L296'></a> 296 <strong class='reserved'>extern</strong> <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/hit_eof.html' title='Multiple used in 6 places.'>hit_eof</a>;
-<a id='L297' name='L297'></a> 297 
-<a id='L298' name='L298'></a> 298 <strong class='reserved'>extern</strong> <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L243' title='Defined at 243 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> <a href='../Y/current_stat_info.html' title='Multiple used in 59 places.'>current_stat_info</a>;
-<a id='L299' name='L299'></a> 299 
-<a id='L300' name='L300'></a> 300 <em class='comment'>/*** declarations of public functions ************************************************************/</em>
-<a id='L301' name='L301'></a> 301 
-<a id='L302' name='L302'></a> 302 <em class='comment'>/* tar-internal.c */</em>
-<a id='L303' name='L303'></a> 303 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L187' title='Defined at 187 in src/vfs/tar/tar-internal.c.'>is_octal_digit</a> (<strong class='reserved'>char</strong> <a href='../Y/c.html' title='Multiple used in 845 places.'>c</a>);
-<a id='L304' name='L304'></a> 304 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-internal.c.html#L195' title='Defined at 195 in src/vfs/tar/tar-internal.c.'>tar_base64_init</a> (<strong class='reserved'>void</strong>);
-<a id='L305' name='L305'></a> 305 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-internal.c.html#L207' title='Defined at 207 in src/vfs/tar/tar-internal.c.'>tar_assign_string</a> (<strong class='reserved'>char</strong> **<a href='../Y/string.html' title='Multiple used in 72 places.'>string</a>, <strong class='reserved'>char</strong> *<a href='../Y/value.html' title='Multiple used in 187 places.'>value</a>);
-<a id='L306' name='L306'></a> 306 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-internal.c.html#L216' title='Defined at 216 in src/vfs/tar/tar-internal.c.'>tar_assign_string_dup</a> (<strong class='reserved'>char</strong> **<a href='../Y/string.html' title='Multiple used in 72 places.'>string</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/value.html' title='Multiple used in 187 places.'>value</a>);
-<a id='L307' name='L307'></a> 307 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-internal.c.html#L225' title='Defined at 225 in src/vfs/tar/tar-internal.c.'>tar_assign_string_dup_n</a> (<strong class='reserved'>char</strong> **<a href='../Y/string.html' title='Multiple used in 72 places.'>string</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/value.html' title='Multiple used in 187 places.'>value</a>, <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/n.html' title='Multiple used in 252 places.'>n</a>);
-<a id='L308' name='L308'></a> 308 <a href='../Y/intmax_t.html' title='Multiple used in 15 places.'>intmax_t</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L251' title='Defined at 251 in src/vfs/tar/tar-internal.c.'>tar_from_header</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/where0.html' title='Multiple used in 3 places.'>where0</a>, <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/digs.html' title='Multiple used in 3 places.'>digs</a>, <strong class='reserved'>char</strong> <strong class='reserved'>const</strong> *<a href='../Y/type.html' title='Multiple used in 275 places.'>type</a>, <a href='../Y/intmax_t.html' title='Multiple used in 15 places.'>intmax_t</a> <a href='../Y/minval.html' title='Multiple used in 8 places.'>minval</a>,
-<a id='L309' name='L309'></a> 309                           <a href='../Y/uintmax_t.html' title='Multiple used in 111 places.'>uintmax_t</a> <a href='../Y/maxval.html' title='Multiple used in 16 places.'>maxval</a>, <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../Y/octal_only.html' title='Multiple used in 3 places.'>octal_only</a>);
-<a id='L310' name='L310'></a> 310 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L395' title='Defined at 395 in src/vfs/tar/tar-internal.c.'>off_from_header</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 1628 places.'>p</a>, <a href='../Y/size_t.html' title='Multiple used in 684 places.'>size_t</a> <a href='../Y/s.html' title='Multiple used in 793 places.'>s</a>);
-<a id='L311' name='L311'></a> 311 <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L189' title='Defined at 189 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../S/src--vfs--tar--tar-internal.c.html#L409' title='Defined at 409 in src/vfs/tar/tar-internal.c.'>tar_find_next_block</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L235' title='Defined at 235 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 166 places.'>archive</a>);
-<a id='L312' name='L312'></a> 312 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L438' title='Defined at 438 in src/vfs/tar/tar-internal.c.'>tar_set_next_block_after</a> (<strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L189' title='Defined at 189 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../S/src--vfs--tar--tar-internal.h.html#L189' title='Defined at 189 in src/vfs/tar/tar-internal.h.'>block</a>);
-<a id='L313' name='L313'></a> 313 <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L456' title='Defined at 456 in src/vfs/tar/tar-internal.c.'>tar_current_block_ordinal</a> (<strong class='reserved'>const</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L235' title='Defined at 235 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 166 places.'>archive</a>);
-<a id='L314' name='L314'></a> 314 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L467' title='Defined at 467 in src/vfs/tar/tar-internal.c.'>tar_skip_file</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L235' title='Defined at 235 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 166 places.'>archive</a>, <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>);
-<a id='L315' name='L315'></a> 315 
-<a id='L316' name='L316'></a> 316 <em class='comment'>/* tar-sparse.c */</em>
-<a id='L317' name='L317'></a> 317 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-sparse.c.html#L733' title='Defined at 733 in src/vfs/tar/tar-sparse.c.'>tar_sparse_member_p</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L235' title='Defined at 235 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 166 places.'>archive</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L243' title='Defined at 243 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>);
-<a id='L318' name='L318'></a> 318 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-sparse.c.html#L747' title='Defined at 747 in src/vfs/tar/tar-sparse.c.'>tar_sparse_fixup_header</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L235' title='Defined at 235 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 166 places.'>archive</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L243' title='Defined at 243 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>);
-<a id='L319' name='L319'></a> 319 <strong class='reserved'>enum</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L208' title='Defined at 208 in src/vfs/tar/tar-internal.h.'>dump_status</a> <a href='../S/src--vfs--tar--tar-sparse.c.html#L761' title='Defined at 761 in src/vfs/tar/tar-sparse.c.'>tar_sparse_skip_file</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L235' title='Defined at 235 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 166 places.'>archive</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L243' title='Defined at 243 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>);
-<a id='L320' name='L320'></a> 320 
-<a id='L321' name='L321'></a> 321 <em class='comment'>/* tar-xheader.c */</em>
-<a id='L322' name='L322'></a> 322 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-xheader.c.html#L961' title='Defined at 961 in src/vfs/tar/tar-xheader.c.'>tar_xheader_decode</a> (<strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L243' title='Defined at 243 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>);
-<a id='L323' name='L323'></a> 323 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-xheader.c.html#L992' title='Defined at 992 in src/vfs/tar/tar-xheader.c.'>tar_xheader_read</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L235' title='Defined at 235 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 166 places.'>archive</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L237' title='Defined at 237 in src/vfs/tar/tar-internal.h.'>xheader</a> *<a href='../Y/xhdr.html' title='Multiple used in 28 places.'>xhdr</a>, <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L189' title='Defined at 189 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/header.html' title='Multiple used in 97 places.'>header</a>,
-<a id='L324' name='L324'></a> 324                            <a href='../Y/off_t.html' title='Multiple used in 575 places.'>off_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>);
-<a id='L325' name='L325'></a> 325 <a href='../Y/gboolean.html' title='Multiple used in 1910 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-xheader.c.html#L1027' title='Defined at 1027 in src/vfs/tar/tar-xheader.c.'>tar_xheader_decode_global</a> (<strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L237' title='Defined at 237 in src/vfs/tar/tar-internal.h.'>xheader</a> *<a href='../Y/xhdr.html' title='Multiple used in 28 places.'>xhdr</a>);
-<a id='L326' name='L326'></a> 326 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-xheader.c.html#L1045' title='Defined at 1045 in src/vfs/tar/tar-xheader.c.'>tar_xheader_destroy</a> (<strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L237' title='Defined at 237 in src/vfs/tar/tar-internal.h.'>xheader</a> *<a href='../Y/xhdr.html' title='Multiple used in 28 places.'>xhdr</a>);
-<a id='L327' name='L327'></a> 327 
-<a id='L328' name='L328'></a> 328 <em class='comment'>/*** inline functions ****************************************************************************/</em>
+<a id='L66' name='L66'></a>  66 
+<a id='L67' name='L67'></a>  67 <em class='sharp'>#define</em> <a href='../R/OFF_FROM_HEADER.html' title='Multiple referred from 7 places.'>OFF_FROM_HEADER</a>(<a href='../Y/where.html' title='Multiple used in 38 places.'>where</a>) <a href='../S/src--vfs--tar--tar-internal.c.html#L507' title='Defined at 507 in src/vfs/tar/tar-internal.c.'>off_from_header</a> (<a href='../Y/where.html' title='Multiple used in 38 places.'>where</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/where.html' title='Multiple used in 38 places.'>where</a>))
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <em class='comment'>/*** enums ***************************************************************************************/</em>
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 <em class='comment'>/*** structures declarations (and typedefs of structures)*****************************************/</em>
+<a id='L72' name='L72'></a>  72 
+<a id='L73' name='L73'></a>  73 <em class='comment'>/* *INDENT-OFF* */</em>
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 <em class='comment'>/* POSIX header */</em>
+<a id='L76' name='L76'></a>  76 <strong class='reserved'>struct</strong> <a href='../R/posix_header.html' title='Multiple referred from 3 places.'>posix_header</a>
+<a id='L77' name='L77'></a>  77 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
+<a id='L78' name='L78'></a>  78     <strong class='reserved'>char</strong> <a href='../Y/name.html' title='Multiple used in 627 places.'>name</a>[100];             <em class='comment'>/*   0 */</em>
+<a id='L79' name='L79'></a>  79     <strong class='reserved'>char</strong> <a href='../Y/mode.html' title='Multiple used in 195 places.'>mode</a>[8];               <em class='comment'>/* 100 */</em>
+<a id='L80' name='L80'></a>  80     <strong class='reserved'>char</strong> <a href='../Y/uid.html' title='Multiple used in 32 places.'>uid</a>[8];                <em class='comment'>/* 108 */</em>
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>char</strong> <a href='../Y/gid.html' title='Multiple used in 19 places.'>gid</a>[8];                <em class='comment'>/* 116 */</em>
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>char</strong> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>[12];              <em class='comment'>/* 124 */</em>
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>char</strong> <a href='../Y/mtime.html' title='Multiple used in 44 places.'>mtime</a>[12];             <em class='comment'>/* 136 */</em>
+<a id='L84' name='L84'></a>  84     <strong class='reserved'>char</strong> <a href='../Y/chksum.html' title='Multiple used in 8 places.'>chksum</a>[8];             <em class='comment'>/* 148 */</em>
+<a id='L85' name='L85'></a>  85     <strong class='reserved'>char</strong> <a href='../Y/typeflag.html' title='Multiple used in 22 places.'>typeflag</a>;              <em class='comment'>/* 156 */</em>
+<a id='L86' name='L86'></a>  86     <strong class='reserved'>char</strong> <a href='../Y/linkname.html' title='Multiple used in 97 places.'>linkname</a>[100];         <em class='comment'>/* 157 */</em>
+<a id='L87' name='L87'></a>  87     <strong class='reserved'>char</strong> <a href='../Y/magic.html' title='Multiple used in 44 places.'>magic</a>[6];              <em class='comment'>/* 257 */</em>
+<a id='L88' name='L88'></a>  88     <strong class='reserved'>char</strong> <a href='../Y/version.html' title='Multiple used in 2 places.'>version</a>[2];            <em class='comment'>/* 263 */</em>
+<a id='L89' name='L89'></a>  89     <strong class='reserved'>char</strong> <a href='../Y/uname.html' title='Multiple used in 15 places.'>uname</a>[32];             <em class='comment'>/* 265 */</em>
+<a id='L90' name='L90'></a>  90     <strong class='reserved'>char</strong> <a href='../Y/gname.html' title='Multiple used in 13 places.'>gname</a>[32];             <em class='comment'>/* 297 */</em>
+<a id='L91' name='L91'></a>  91     <strong class='reserved'>char</strong> <a href='../Y/devmajor.html' title='Multiple used in 3 places.'>devmajor</a>[8];           <em class='comment'>/* 329 */</em>
+<a id='L92' name='L92'></a>  92     <strong class='reserved'>char</strong> <a href='../Y/devminor.html' title='Multiple used in 3 places.'>devminor</a>[8];           <em class='comment'>/* 337 */</em>
+<a id='L93' name='L93'></a>  93     <strong class='reserved'>char</strong> <a href='../Y/prefix.html' title='Multiple used in 87 places.'>prefix</a>[155];           <em class='comment'>/* 345 */</em>
+<a id='L94' name='L94'></a>  94                                 <em class='comment'>/* 500 */</em>
+<a id='L95' name='L95'></a>  95 <em class='brace'>}</em>;
+<a id='L96' name='L96'></a>  96 
+<a id='L97' name='L97'></a>  97 <em class='comment'>/* Descriptor for a single file hole */</em>
+<a id='L98' name='L98'></a>  98 <strong class='reserved'>struct</strong> <a href='../R/sparse.html' title='Multiple referred from 5 places.'>sparse</a>
+<a id='L99' name='L99'></a>  99 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
+<a id='L100' name='L100'></a> 100     <em class='comment'>/* cppcheck-suppress unusedStructMember */</em>
+<a id='L101' name='L101'></a> 101     <strong class='reserved'>char</strong> <a href='../Y/offset.html' title='Multiple used in 246 places.'>offset</a>[12];            <em class='comment'>/*   0 */</em>
+<a id='L102' name='L102'></a> 102     <em class='comment'>/* cppcheck-suppress unusedStructMember */</em>
+<a id='L103' name='L103'></a> 103     <strong class='reserved'>char</strong> <a href='../Y/numbytes.html' title='Multiple used in 13 places.'>numbytes</a>[12];          <em class='comment'>/*  12 */</em>
+<a id='L104' name='L104'></a> 104                                 <em class='comment'>/*  24 */</em>
+<a id='L105' name='L105'></a> 105 <em class='brace'>}</em>;
+<a id='L106' name='L106'></a> 106 
+<a id='L107' name='L107'></a> 107 <em class='comment'>/* Extension header for sparse files, used immediately after the GNU extra</em>
+<a id='L108' name='L108'></a> 108 <em class='comment'>   header, and used only if all sparse information cannot fit into that</em>
+<a id='L109' name='L109'></a> 109 <em class='comment'>   extra header.  There might even be many such extension headers, one after</em>
+<a id='L110' name='L110'></a> 110 <em class='comment'>   the other, until all sparse information has been recorded.  */</em>
+<a id='L111' name='L111'></a> 111 <strong class='reserved'>struct</strong> <a href='../R/sparse_header.html' title='Multiple referred from 3 places.'>sparse_header</a>
+<a id='L112' name='L112'></a> 112 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L98' title='Defined at 98 in src/vfs/tar/tar-internal.h.'>sparse</a> <a href='../Y/sp.html' title='Multiple used in 85 places.'>sp</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L37' title='Defined at 37 in src/vfs/tar/tar-internal.h.'>SPARSES_IN_SPARSE_HEADER</a>];
+<a id='L114' name='L114'></a> 114                                 <em class='comment'>/*   0 */</em>
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>char</strong> <a href='../Y/isextended.html' title='Multiple used in 8 places.'>isextended</a>;            <em class='comment'>/* 504 */</em>
+<a id='L116' name='L116'></a> 116                                 <em class='comment'>/* 505 */</em>
+<a id='L117' name='L117'></a> 117 <em class='brace'>}</em>;
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119 <em class='comment'>/* The old GNU format header conflicts with POSIX format in such a way that</em>
+<a id='L120' name='L120'></a> 120 <em class='comment'>   POSIX archives may fool old GNU tar's, and POSIX tar's might well be</em>
+<a id='L121' name='L121'></a> 121 <em class='comment'>   fooled by old GNU tar archives.  An old GNU format header uses the space</em>
+<a id='L122' name='L122'></a> 122 <em class='comment'>   used by the prefix field in a POSIX header, and cumulates information</em>
+<a id='L123' name='L123'></a> 123 <em class='comment'>   normally found in a GNU extra header.  With an old GNU tar header, we</em>
+<a id='L124' name='L124'></a> 124 <em class='comment'>   never see any POSIX header nor GNU extra header.  Supplementary sparse</em>
+<a id='L125' name='L125'></a> 125 <em class='comment'>   headers are allowed, however.  */</em>
+<a id='L126' name='L126'></a> 126 <strong class='reserved'>struct</strong> <a href='../R/oldgnu_header.html' title='Multiple referred from 6 places.'>oldgnu_header</a>
+<a id='L127' name='L127'></a> 127 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
+<a id='L128' name='L128'></a> 128     <strong class='reserved'>char</strong> unused_pad1[345];      <em class='comment'>/*   0 */</em>
+<a id='L129' name='L129'></a> 129     <strong class='reserved'>char</strong> <a href='../Y/atime.html' title='Multiple used in 32 places.'>atime</a>[12];             <em class='comment'>/* 345 Incr. archive: atime of the file */</em>
+<a id='L130' name='L130'></a> 130     <strong class='reserved'>char</strong> <a href='../Y/ctime.html' title='Multiple used in 14 places.'>ctime</a>[12];             <em class='comment'>/* 357 Incr. archive: ctime of the file */</em>
+<a id='L131' name='L131'></a> 131     <strong class='reserved'>char</strong> <a href='../Y/offset.html' title='Multiple used in 246 places.'>offset</a>[12];            <em class='comment'>/* 369 Multivolume archive: the offset of start of this volume */</em>
+<a id='L132' name='L132'></a> 132     <strong class='reserved'>char</strong> longnames[4];          <em class='comment'>/* 381 Not used */</em>
+<a id='L133' name='L133'></a> 133     <strong class='reserved'>char</strong> unused_pad2;           <em class='comment'>/* 385 */</em>
+<a id='L134' name='L134'></a> 134     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L98' title='Defined at 98 in src/vfs/tar/tar-internal.h.'>sparse</a> <a href='../Y/sp.html' title='Multiple used in 85 places.'>sp</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L36' title='Defined at 36 in src/vfs/tar/tar-internal.h.'>SPARSES_IN_OLDGNU_HEADER</a>];
+<a id='L135' name='L135'></a> 135                                 <em class='comment'>/* 386 */</em>
+<a id='L136' name='L136'></a> 136     <strong class='reserved'>char</strong> <a href='../Y/isextended.html' title='Multiple used in 8 places.'>isextended</a>;            <em class='comment'>/* 482 Sparse file: Extension sparse header follows */</em>
+<a id='L137' name='L137'></a> 137     <strong class='reserved'>char</strong> <a href='../Y/realsize.html' title='Multiple used in 10 places.'>realsize</a>[12];          <em class='comment'>/* 483 Sparse file: Real size */</em>
+<a id='L138' name='L138'></a> 138                                 <em class='comment'>/* 495 */</em>
+<a id='L139' name='L139'></a> 139 <em class='brace'>}</em>;
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141 <em class='comment'>/* J@"org Schilling star header */</em>
+<a id='L142' name='L142'></a> 142 <strong class='reserved'>struct</strong> <a href='../R/star_header.html' title='Multiple referred from 8 places.'>star_header</a>
+<a id='L143' name='L143'></a> 143 <em class='brace'>{</em>                               <em class='comment'>/* byte offset */</em>
+<a id='L144' name='L144'></a> 144     <strong class='reserved'>char</strong> <a href='../Y/name.html' title='Multiple used in 627 places.'>name</a>[100];             <em class='comment'>/*   0 */</em>
+<a id='L145' name='L145'></a> 145     <strong class='reserved'>char</strong> <a href='../Y/mode.html' title='Multiple used in 195 places.'>mode</a>[8];               <em class='comment'>/* 100 */</em>
+<a id='L146' name='L146'></a> 146     <strong class='reserved'>char</strong> <a href='../Y/uid.html' title='Multiple used in 32 places.'>uid</a>[8];                <em class='comment'>/* 108 */</em>
+<a id='L147' name='L147'></a> 147     <strong class='reserved'>char</strong> <a href='../Y/gid.html' title='Multiple used in 19 places.'>gid</a>[8];                <em class='comment'>/* 116 */</em>
+<a id='L148' name='L148'></a> 148     <strong class='reserved'>char</strong> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>[12];              <em class='comment'>/* 124 */</em>
+<a id='L149' name='L149'></a> 149     <strong class='reserved'>char</strong> <a href='../Y/mtime.html' title='Multiple used in 44 places.'>mtime</a>[12];             <em class='comment'>/* 136 */</em>
+<a id='L150' name='L150'></a> 150     <strong class='reserved'>char</strong> <a href='../Y/chksum.html' title='Multiple used in 8 places.'>chksum</a>[8];             <em class='comment'>/* 148 */</em>
+<a id='L151' name='L151'></a> 151     <strong class='reserved'>char</strong> <a href='../Y/typeflag.html' title='Multiple used in 22 places.'>typeflag</a>;              <em class='comment'>/* 156 */</em>
+<a id='L152' name='L152'></a> 152     <strong class='reserved'>char</strong> <a href='../Y/linkname.html' title='Multiple used in 97 places.'>linkname</a>[100];         <em class='comment'>/* 157 */</em>
+<a id='L153' name='L153'></a> 153     <strong class='reserved'>char</strong> <a href='../Y/magic.html' title='Multiple used in 44 places.'>magic</a>[6];              <em class='comment'>/* 257 */</em>
+<a id='L154' name='L154'></a> 154     <strong class='reserved'>char</strong> <a href='../Y/version.html' title='Multiple used in 2 places.'>version</a>[2];            <em class='comment'>/* 263 */</em>
+<a id='L155' name='L155'></a> 155     <strong class='reserved'>char</strong> <a href='../Y/uname.html' title='Multiple used in 15 places.'>uname</a>[32];             <em class='comment'>/* 265 */</em>
+<a id='L156' name='L156'></a> 156     <strong class='reserved'>char</strong> <a href='../Y/gname.html' title='Multiple used in 13 places.'>gname</a>[32];             <em class='comment'>/* 297 */</em>
+<a id='L157' name='L157'></a> 157     <strong class='reserved'>char</strong> <a href='../Y/devmajor.html' title='Multiple used in 3 places.'>devmajor</a>[8];           <em class='comment'>/* 329 */</em>
+<a id='L158' name='L158'></a> 158     <strong class='reserved'>char</strong> <a href='../Y/devminor.html' title='Multiple used in 3 places.'>devminor</a>[8];           <em class='comment'>/* 337 */</em>
+<a id='L159' name='L159'></a> 159     <strong class='reserved'>char</strong> <a href='../Y/prefix.html' title='Multiple used in 87 places.'>prefix</a>[131];           <em class='comment'>/* 345 */</em>
+<a id='L160' name='L160'></a> 160     <strong class='reserved'>char</strong> <a href='../Y/atime.html' title='Multiple used in 32 places.'>atime</a>[12];             <em class='comment'>/* 476 */</em>
+<a id='L161' name='L161'></a> 161     <strong class='reserved'>char</strong> <a href='../Y/ctime.html' title='Multiple used in 14 places.'>ctime</a>[12];             <em class='comment'>/* 488 */</em>
+<a id='L162' name='L162'></a> 162                                 <em class='comment'>/* 500 */</em>
+<a id='L163' name='L163'></a> 163 <em class='brace'>}</em>;
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165 <strong class='reserved'>struct</strong> <a href='../R/star_in_header.html' title='Multiple referred from 5 places.'>star_in_header</a>
+<a id='L166' name='L166'></a> 166 <em class='brace'>{</em>
+<a id='L167' name='L167'></a> 167     <strong class='reserved'>char</strong> fill[345];             <em class='comment'>/*   0  Everything that is before t_prefix */</em>
+<a id='L168' name='L168'></a> 168     <strong class='reserved'>char</strong> <a href='../Y/prefix.html' title='Multiple used in 87 places.'>prefix</a>[1];             <em class='comment'>/* 345  t_name prefix */</em>
+<a id='L169' name='L169'></a> 169     <strong class='reserved'>char</strong> fill2;                 <em class='comment'>/* 346  */</em>
+<a id='L170' name='L170'></a> 170     <strong class='reserved'>char</strong> fill3[8];              <em class='comment'>/* 347  */</em>
+<a id='L171' name='L171'></a> 171     <strong class='reserved'>char</strong> <a href='../Y/isextended.html' title='Multiple used in 8 places.'>isextended</a>;            <em class='comment'>/* 355  */</em>
+<a id='L172' name='L172'></a> 172     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L98' title='Defined at 98 in src/vfs/tar/tar-internal.h.'>sparse</a> <a href='../Y/sp.html' title='Multiple used in 85 places.'>sp</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L39' title='Defined at 39 in src/vfs/tar/tar-internal.h.'>SPARSES_IN_STAR_HEADER</a>]; <em class='comment'>/* 356  */</em>
+<a id='L173' name='L173'></a> 173     <strong class='reserved'>char</strong> <a href='../Y/realsize.html' title='Multiple used in 10 places.'>realsize</a>[12];          <em class='comment'>/* 452  Actual size of the file */</em>
+<a id='L174' name='L174'></a> 174     <strong class='reserved'>char</strong> <a href='../Y/offset.html' title='Multiple used in 246 places.'>offset</a>[12];            <em class='comment'>/* 464  Offset of multivolume contents */</em>
+<a id='L175' name='L175'></a> 175     <strong class='reserved'>char</strong> <a href='../Y/atime.html' title='Multiple used in 32 places.'>atime</a>[12];             <em class='comment'>/* 476  */</em>
+<a id='L176' name='L176'></a> 176     <strong class='reserved'>char</strong> <a href='../Y/ctime.html' title='Multiple used in 14 places.'>ctime</a>[12];             <em class='comment'>/* 488  */</em>
+<a id='L177' name='L177'></a> 177     <strong class='reserved'>char</strong> mfill[8];              <em class='comment'>/* 500  */</em>
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>char</strong> xmagic[4];             <em class='comment'>/* 508  "tar" */</em>
+<a id='L179' name='L179'></a> 179 <em class='brace'>}</em>;
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181 <strong class='reserved'>struct</strong> <a href='../R/star_ext_header.html' title='Multiple referred from 3 places.'>star_ext_header</a>
+<a id='L182' name='L182'></a> 182 <em class='brace'>{</em>
+<a id='L183' name='L183'></a> 183     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L98' title='Defined at 98 in src/vfs/tar/tar-internal.h.'>sparse</a> <a href='../Y/sp.html' title='Multiple used in 85 places.'>sp</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L40' title='Defined at 40 in src/vfs/tar/tar-internal.h.'>SPARSES_IN_STAR_EXT_HEADER</a>];
+<a id='L184' name='L184'></a> 184     <strong class='reserved'>char</strong> <a href='../Y/isextended.html' title='Multiple used in 8 places.'>isextended</a>;
+<a id='L185' name='L185'></a> 185 <em class='brace'>}</em>;
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187 <em class='comment'>/* *INDENT-ON* */</em>
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189 <em class='comment'>/* tar Header Block, overall structure */</em>
+<a id='L190' name='L190'></a> 190 <strong class='reserved'>union</strong> <a href='../R/block.html' title='Multiple referred from 46 places.'>block</a>
+<a id='L191' name='L191'></a> 191 <em class='brace'>{</em>
+<a id='L192' name='L192'></a> 192     <strong class='reserved'>char</strong> <a href='../Y/buffer.html' title='Multiple used in 987 places.'>buffer</a>[<a href='../S/src--vfs--tar--tar-internal.h.html#L22' title='Defined at 22 in src/vfs/tar/tar-internal.h.'>BLOCKSIZE</a>];
+<a id='L193' name='L193'></a> 193     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L76' title='Defined at 76 in src/vfs/tar/tar-internal.h.'>posix_header</a> <a href='../Y/header.html' title='Multiple used in 98 places.'>header</a>;
+<a id='L194' name='L194'></a> 194     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L142' title='Defined at 142 in src/vfs/tar/tar-internal.h.'>star_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L142' title='Defined at 142 in src/vfs/tar/tar-internal.h.'>star_header</a>;
+<a id='L195' name='L195'></a> 195     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L126' title='Defined at 126 in src/vfs/tar/tar-internal.h.'>oldgnu_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L126' title='Defined at 126 in src/vfs/tar/tar-internal.h.'>oldgnu_header</a>;
+<a id='L196' name='L196'></a> 196     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L111' title='Defined at 111 in src/vfs/tar/tar-internal.h.'>sparse_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L111' title='Defined at 111 in src/vfs/tar/tar-internal.h.'>sparse_header</a>;
+<a id='L197' name='L197'></a> 197     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L165' title='Defined at 165 in src/vfs/tar/tar-internal.h.'>star_in_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L165' title='Defined at 165 in src/vfs/tar/tar-internal.h.'>star_in_header</a>;
+<a id='L198' name='L198'></a> 198     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L181' title='Defined at 181 in src/vfs/tar/tar-internal.h.'>star_ext_header</a> <a href='../S/src--vfs--tar--tar-internal.h.html#L181' title='Defined at 181 in src/vfs/tar/tar-internal.h.'>star_ext_header</a>;
+<a id='L199' name='L199'></a> 199 <em class='brace'>}</em>;
+<a id='L200' name='L200'></a> 200 
+<a id='L201' name='L201'></a> 201 <em class='comment'>/* Information about a sparse file */</em>
+<a id='L202' name='L202'></a> 202 <strong class='reserved'>struct</strong> <a href='../R/sp_array.html' title='Multiple referred from 21 places.'>sp_array</a>
+<a id='L203' name='L203'></a> 203 <em class='brace'>{</em>
+<a id='L204' name='L204'></a> 204     <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../Y/offset.html' title='Multiple used in 246 places.'>offset</a>;               <em class='comment'>/* chunk offset in file */</em>
+<a id='L205' name='L205'></a> 205     <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../Y/numbytes.html' title='Multiple used in 13 places.'>numbytes</a>;             <em class='comment'>/* length of chunk */</em>
+<a id='L206' name='L206'></a> 206     <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../Y/arch_offset.html' title='Multiple used in 5 places.'>arch_offset</a>;          <em class='comment'>/* chunk offset in archive */</em>
+<a id='L207' name='L207'></a> 207 <em class='brace'>}</em>;
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209 <strong class='reserved'>enum</strong> <a href='../R/dump_status.html' title='Multiple referred from 2 places.'>dump_status</a>
+<a id='L210' name='L210'></a> 210 <em class='brace'>{</em>
+<a id='L211' name='L211'></a> 211     <a href='../S/src--vfs--tar--tar-sparse.c.html#L651' title='Referred from 651 in src/vfs/tar/tar-sparse.c.'>dump_status_ok</a>,
+<a id='L212' name='L212'></a> 212     <a href='../S/src--vfs--tar--tar-sparse.c.html#L651' title='Referred from 651 in src/vfs/tar/tar-sparse.c.'>dump_status_short</a>,
+<a id='L213' name='L213'></a> 213     dump_status_fail,
+<a id='L214' name='L214'></a> 214     <a href='../S/src--vfs--tar--tar-sparse.c.html#L644' title='Referred from 644 in src/vfs/tar/tar-sparse.c.'>dump_status_not_implemented</a>
+<a id='L215' name='L215'></a> 215 <em class='brace'>}</em>;
+<a id='L216' name='L216'></a> 216 
+<a id='L217' name='L217'></a> 217 <strong class='reserved'>enum</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L234' title='Referred from 234 in src/vfs/tar/tar-internal.h.'>archive_format</a>
+<a id='L218' name='L218'></a> 218 <em class='brace'>{</em>
+<a id='L219' name='L219'></a> 219     <a href='../R/TAR_UNKNOWN.html' title='Multiple referred from 6 places.'>TAR_UNKNOWN</a> = 0,            <em class='comment'>/**&lt; format to be decided later */</em>
+<a id='L220' name='L220'></a> 220     <a href='../R/TAR_V7.html' title='Multiple referred from 2 places.'>TAR_V7</a>,                     <em class='comment'>/**&lt; old V7 tar format */</em>
+<a id='L221' name='L221'></a> 221     <a href='../R/TAR_OLDGNU.html' title='Multiple referred from 5 places.'>TAR_OLDGNU</a>,                 <em class='comment'>/**&lt; GNU format as per before tar 1.12 */</em>
+<a id='L222' name='L222'></a> 222     <a href='../R/TAR_USTAR.html' title='Multiple referred from 3 places.'>TAR_USTAR</a>,                  <em class='comment'>/**&lt; POSIX.1-1988 (ustar) format */</em>
+<a id='L223' name='L223'></a> 223     <a href='../R/TAR_POSIX.html' title='Multiple referred from 5 places.'>TAR_POSIX</a>,                  <em class='comment'>/**&lt; POSIX.1-2001 format */</em>
+<a id='L224' name='L224'></a> 224     <a href='../R/TAR_STAR.html' title='Multiple referred from 3 places.'>TAR_STAR</a>,                   <em class='comment'>/**&lt; star format defined in 1994 */</em>
+<a id='L225' name='L225'></a> 225     <a href='../R/TAR_GNU.html' title='Multiple referred from 7 places.'>TAR_GNU</a>                     <em class='comment'>/**&lt; almost same as OLDGNU_FORMAT */</em>
+<a id='L226' name='L226'></a> 226 <em class='brace'>}</em>;
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong>
+<a id='L229' name='L229'></a> 229 <em class='brace'>{</em>
+<a id='L230' name='L230'></a> 230     <strong class='reserved'>struct</strong> <a href='../S/lib--vfs--xdirentry.h.html#L60' title='Defined at 60 in lib/vfs/xdirentry.h.'>vfs_s_super</a> <a href='../Y/base.html' title='Multiple used in 92 places.'>base</a>;    <em class='comment'>/* base class */</em>
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232     <strong class='reserved'>int</strong> <a href='../Y/fd.html' title='Multiple used in 252 places.'>fd</a>;
+<a id='L233' name='L233'></a> 233     <strong class='reserved'>struct</strong> <a href='../Y/stat.html' title='Multiple used in 289 places.'>stat</a> <a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>;
+<a id='L234' name='L234'></a> 234     <strong class='reserved'>enum</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L217' title='Defined at 217 in src/vfs/tar/tar-internal.h.'>archive_format</a> <a href='../Y/type.html' title='Multiple used in 275 places.'>type</a>;   <em class='comment'>/**&lt; type of the archive */</em>
+<a id='L235' name='L235'></a> 235     <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L190' title='Defined at 190 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/record_start.html' title='Multiple used in 14 places.'>record_start</a>;  <em class='comment'>/**&lt; start of record of archive */</em>
+<a id='L236' name='L236'></a> 236 <em class='brace'>}</em> <a href='../R/tar_super_t.html' title='Multiple referred from 38 places.'>tar_super_t</a>;
+<a id='L237' name='L237'></a> 237 
+<a id='L238' name='L238'></a> 238 <strong class='reserved'>struct</strong> <a href='../R/xheader.html' title='Multiple referred from 9 places.'>xheader</a>
+<a id='L239' name='L239'></a> 239 <em class='brace'>{</em>
+<a id='L240' name='L240'></a> 240     <a href='../Y/size_t.html' title='Multiple used in 695 places.'>size_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>;
+<a id='L241' name='L241'></a> 241     <strong class='reserved'>char</strong> *<a href='../Y/buffer.html' title='Multiple used in 987 places.'>buffer</a>;
+<a id='L242' name='L242'></a> 242 <em class='brace'>}</em>;
+<a id='L243' name='L243'></a> 243 
+<a id='L244' name='L244'></a> 244 <strong class='reserved'>struct</strong> <a href='../R/tar_stat_info.html' title='Multiple referred from 57 places.'>tar_stat_info</a>
+<a id='L245' name='L245'></a> 245 <em class='brace'>{</em>
+<a id='L246' name='L246'></a> 246     <strong class='reserved'>char</strong> *<a href='../Y/orig_file_name.html' title='Multiple used in 4 places.'>orig_file_name</a>;       <em class='comment'>/**&lt; name of file read from the archive header */</em>
+<a id='L247' name='L247'></a> 247     <strong class='reserved'>char</strong> *<a href='../Y/file_name.html' title='Multiple used in 77 places.'>file_name</a>;            <em class='comment'>/**&lt; name of file for the current archive entry after being normalized */</em>
+<a id='L248' name='L248'></a> 248     <strong class='reserved'>char</strong> *<a href='../Y/link_name.html' title='Multiple used in 28 places.'>link_name</a>;            <em class='comment'>/**&lt; name of link for the current archive entry  */</em>
+<a id='L249' name='L249'></a> 249 <em class='sharp'>#if</em> 0
+<a id='L250' name='L250'></a> 250     <strong class='reserved'>char</strong> *<a href='../Y/uname.html' title='Multiple used in 15 places.'>uname</a>;                <em class='comment'>/**&lt; user name of owner */</em>
+<a id='L251' name='L251'></a> 251     <strong class='reserved'>char</strong> *<a href='../Y/gname.html' title='Multiple used in 13 places.'>gname</a>;                <em class='comment'>/**&lt; group name of owner */</em>
+<a id='L252' name='L252'></a> 252 <em class='sharp'>#endif</em>
+<a id='L253' name='L253'></a> 253     <strong class='reserved'>struct</strong> <a href='../Y/stat.html' title='Multiple used in 289 places.'>stat</a> <a href='../Y/stat.html' title='Multiple used in 289 places.'>stat</a>;           <em class='comment'>/**&lt; regular filesystem stat */</em>
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255     <em class='comment'>/* stat() doesn't always have access, data modification, and status</em>
+<a id='L256' name='L256'></a> 256 <em class='comment'>       change times in a convenient form, so store them separately.  */</em>
+<a id='L257' name='L257'></a> 257     <strong class='reserved'>struct</strong> <a href='../Y/timespec.html' title='Multiple used in 12 places.'>timespec</a> <a href='../Y/atime.html' title='Multiple used in 32 places.'>atime</a>;
+<a id='L258' name='L258'></a> 258     <strong class='reserved'>struct</strong> <a href='../Y/timespec.html' title='Multiple used in 12 places.'>timespec</a> <a href='../Y/mtime.html' title='Multiple used in 44 places.'>mtime</a>;
+<a id='L259' name='L259'></a> 259     <strong class='reserved'>struct</strong> <a href='../Y/timespec.html' title='Multiple used in 12 places.'>timespec</a> <a href='../Y/ctime.html' title='Multiple used in 14 places.'>ctime</a>;
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261     <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../Y/archive_file_size.html' title='Multiple used in 6 places.'>archive_file_size</a>;    <em class='comment'>/**&lt; size of file as stored in the archive.</em>
+<a id='L262' name='L262'></a> 262 <em class='comment'>                                     Equals stat.st_size for non-sparse files */</em>
+<a id='L263' name='L263'></a> 263     <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../Y/is_sparse.html' title='Multiple used in 4 places.'>is_sparse</a>;         <em class='comment'>/**&lt; is the file sparse */</em>
+<a id='L264' name='L264'></a> 264 
+<a id='L265' name='L265'></a> 265     <em class='comment'>/* For sparse files */</em>
+<a id='L266' name='L266'></a> 266     <a href='../Y/intmax_t.html' title='Multiple used in 16 places.'>intmax_t</a> <a href='../Y/sparse_major.html' title='Multiple used in 4 places.'>sparse_major</a>;
+<a id='L267' name='L267'></a> 267     <a href='../Y/intmax_t.html' title='Multiple used in 16 places.'>intmax_t</a> <a href='../Y/sparse_minor.html' title='Multiple used in 2 places.'>sparse_minor</a>;
+<a id='L268' name='L268'></a> 268     <a href='../Y/GArray.html' title='Multiple used in 83 places.'>GArray</a> *<a href='../Y/sparse_map.html' title='Multiple used in 28 places.'>sparse_map</a>;         <em class='comment'>/**&lt; array of struct sp_array */</em>
+<a id='L269' name='L269'></a> 269 
+<a id='L270' name='L270'></a> 270     <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../Y/real_size.html' title='Multiple used in 3 places.'>real_size</a>;            <em class='comment'>/**&lt; real size of sparse file */</em>
+<a id='L271' name='L271'></a> 271     <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../Y/real_size_set.html' title='Multiple used in 3 places.'>real_size_set</a>;     <em class='comment'>/**&lt; TRUE when GNU.sparse.realsize is set in archived file */</em>
+<a id='L272' name='L272'></a> 272 
+<a id='L273' name='L273'></a> 273     <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../Y/sparse_name_done.html' title='Multiple used in 3 places.'>sparse_name_done</a>;  <em class='comment'>/**&lt; TRUE if 'GNU.sparse.name' header was processed pax header parsing.</em>
+<a id='L274' name='L274'></a> 274 <em class='comment'>                                     Following 'path'  header (lower priority) will be ignored. */</em>
+<a id='L275' name='L275'></a> 275 
+<a id='L276' name='L276'></a> 276     <em class='comment'>/* Extended headers */</em>
+<a id='L277' name='L277'></a> 277     <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L238' title='Defined at 238 in src/vfs/tar/tar-internal.h.'>xheader</a> <a href='../Y/xhdr.html' title='Multiple used in 28 places.'>xhdr</a>;
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279     <em class='comment'>/* For dumpdirs */</em>
+<a id='L280' name='L280'></a> 280     <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../Y/is_dumpdir.html' title='Multiple used in 2 places.'>is_dumpdir</a>;        <em class='comment'>/**&lt; is the member a dumpdir? */</em>
+<a id='L281' name='L281'></a> 281     <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../Y/skipped.html' title='Multiple used in 18 places.'>skipped</a>;           <em class='comment'>/**&lt; the member contents is already read (for GNUTYPE_DUMPDIR) */</em>
+<a id='L282' name='L282'></a> 282     <strong class='reserved'>char</strong> *<a href='../Y/dumpdir.html' title='Multiple used in 4 places.'>dumpdir</a>;              <em class='comment'>/**&lt; contents of the dump directory */</em>
+<a id='L283' name='L283'></a> 283 <em class='brace'>}</em>;
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285 <em class='comment'>/*** global variables defined in .c file *********************************************************/</em>
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <a href='../S/lib--idx.h.html#L130' title='Defined at 130 in lib/idx.h.'>idx_t</a> <a href='../Y/blocking_factor.html' title='Multiple used in 6 places.'>blocking_factor</a>;
+<a id='L288' name='L288'></a> 288 <strong class='reserved'>extern</strong> <strong class='reserved'>const</strong> <a href='../S/lib--idx.h.html#L130' title='Defined at 130 in lib/idx.h.'>idx_t</a> <a href='../Y/record_size.html' title='Multiple used in 10 places.'>record_size</a>;
+<a id='L289' name='L289'></a> 289 
+<a id='L290' name='L290'></a> 290 <strong class='reserved'>extern</strong> <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L190' title='Defined at 190 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/record_end.html' title='Multiple used in 12 places.'>record_end</a>; <em class='comment'>/* last+1 block of archive record */</em>
+<a id='L291' name='L291'></a> 291 <strong class='reserved'>extern</strong> <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L190' title='Defined at 190 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/current_block.html' title='Multiple used in 13 places.'>current_block</a>;      <em class='comment'>/* current block of archive */</em>
+<a id='L292' name='L292'></a> 292 <strong class='reserved'>extern</strong> <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../Y/record_start_block.html' title='Multiple used in 6 places.'>record_start_block</a>;        <em class='comment'>/* block ordinal at record_start */</em>
+<a id='L293' name='L293'></a> 293 
+<a id='L294' name='L294'></a> 294 <strong class='reserved'>extern</strong> <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L190' title='Defined at 190 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/current_header.html' title='Multiple used in 15 places.'>current_header</a>;
+<a id='L295' name='L295'></a> 295 
+<a id='L296' name='L296'></a> 296 <em class='comment'>/* Have we hit EOF yet?  */</em>
+<a id='L297' name='L297'></a> 297 <strong class='reserved'>extern</strong> <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../Y/hit_eof.html' title='Multiple used in 6 places.'>hit_eof</a>;
+<a id='L298' name='L298'></a> 298 
+<a id='L299' name='L299'></a> 299 <strong class='reserved'>extern</strong> <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L244' title='Defined at 244 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> <a href='../Y/current_stat_info.html' title='Multiple used in 59 places.'>current_stat_info</a>;
+<a id='L300' name='L300'></a> 300 
+<a id='L301' name='L301'></a> 301 <em class='comment'>/*** declarations of public functions ************************************************************/</em>
+<a id='L302' name='L302'></a> 302 
+<a id='L303' name='L303'></a> 303 <em class='comment'>/* tar-internal.c */</em>
+<a id='L304' name='L304'></a> 304 <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L208' title='Defined at 208 in src/vfs/tar/tar-internal.c.'>is_octal_digit</a> (<strong class='reserved'>char</strong> <a href='../Y/c.html' title='Multiple used in 848 places.'>c</a>);
+<a id='L305' name='L305'></a> 305 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-internal.c.html#L216' title='Defined at 216 in src/vfs/tar/tar-internal.c.'>tar_assign_string</a> (<strong class='reserved'>char</strong> **<a href='../Y/string.html' title='Multiple used in 111 places.'>string</a>, <strong class='reserved'>char</strong> *<a href='../Y/value.html' title='Multiple used in 184 places.'>value</a>);
+<a id='L306' name='L306'></a> 306 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-internal.c.html#L225' title='Defined at 225 in src/vfs/tar/tar-internal.c.'>tar_assign_string_dup</a> (<strong class='reserved'>char</strong> **<a href='../Y/string.html' title='Multiple used in 111 places.'>string</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/value.html' title='Multiple used in 184 places.'>value</a>);
+<a id='L307' name='L307'></a> 307 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-internal.c.html#L234' title='Defined at 234 in src/vfs/tar/tar-internal.c.'>tar_assign_string_dup_n</a> (<strong class='reserved'>char</strong> **<a href='../Y/string.html' title='Multiple used in 111 places.'>string</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/value.html' title='Multiple used in 184 places.'>value</a>, <a href='../Y/size_t.html' title='Multiple used in 695 places.'>size_t</a> <a href='../Y/n.html' title='Multiple used in 248 places.'>n</a>);
+<a id='L308' name='L308'></a> 308 <a href='../Y/intmax_t.html' title='Multiple used in 16 places.'>intmax_t</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L275' title='Defined at 275 in src/vfs/tar/tar-internal.c.'>stoint</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/arg.html' title='Multiple used in 185 places.'>arg</a>, <strong class='reserved'>char</strong> **<a href='../Y/arglim.html' title='Multiple used in 4 places.'>arglim</a>, <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> *<a href='../Y/overflow.html' title='Multiple used in 75 places.'>overflow</a>, <a href='../Y/intmax_t.html' title='Multiple used in 16 places.'>intmax_t</a> <a href='../Y/minval.html' title='Multiple used in 11 places.'>minval</a>,
+<a id='L309' name='L309'></a> 309                  <a href='../Y/uintmax_t.html' title='Multiple used in 112 places.'>uintmax_t</a> <a href='../Y/maxval.html' title='Multiple used in 16 places.'>maxval</a>);
+<a id='L310' name='L310'></a> 310 <a href='../Y/intmax_t.html' title='Multiple used in 16 places.'>intmax_t</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L358' title='Defined at 358 in src/vfs/tar/tar-internal.c.'>tar_from_header</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/where0.html' title='Multiple used in 3 places.'>where0</a>, <a href='../Y/size_t.html' title='Multiple used in 695 places.'>size_t</a> <a href='../Y/digs.html' title='Multiple used in 3 places.'>digs</a>, <strong class='reserved'>char</strong> <strong class='reserved'>const</strong> *<a href='../Y/type.html' title='Multiple used in 275 places.'>type</a>, <a href='../Y/intmax_t.html' title='Multiple used in 16 places.'>intmax_t</a> <a href='../Y/minval.html' title='Multiple used in 11 places.'>minval</a>,
+<a id='L311' name='L311'></a> 311                           <a href='../Y/uintmax_t.html' title='Multiple used in 112 places.'>uintmax_t</a> <a href='../Y/maxval.html' title='Multiple used in 16 places.'>maxval</a>, <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../Y/octal_only.html' title='Multiple used in 3 places.'>octal_only</a>);
+<a id='L312' name='L312'></a> 312 <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L507' title='Defined at 507 in src/vfs/tar/tar-internal.c.'>off_from_header</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/p.html' title='Multiple used in 1631 places.'>p</a>, <a href='../Y/size_t.html' title='Multiple used in 695 places.'>size_t</a> <a href='../Y/s.html' title='Multiple used in 799 places.'>s</a>);
+<a id='L313' name='L313'></a> 313 <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L190' title='Defined at 190 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../S/src--vfs--tar--tar-internal.c.html#L521' title='Defined at 521 in src/vfs/tar/tar-internal.c.'>tar_find_next_block</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L236' title='Defined at 236 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 167 places.'>archive</a>);
+<a id='L314' name='L314'></a> 314 <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L550' title='Defined at 550 in src/vfs/tar/tar-internal.c.'>tar_set_next_block_after</a> (<strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L190' title='Defined at 190 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../S/src--vfs--tar--tar-internal.h.html#L190' title='Defined at 190 in src/vfs/tar/tar-internal.h.'>block</a>);
+<a id='L315' name='L315'></a> 315 <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L568' title='Defined at 568 in src/vfs/tar/tar-internal.c.'>tar_current_block_ordinal</a> (<strong class='reserved'>const</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L236' title='Defined at 236 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 167 places.'>archive</a>);
+<a id='L316' name='L316'></a> 316 <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-internal.c.html#L579' title='Defined at 579 in src/vfs/tar/tar-internal.c.'>tar_skip_file</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L236' title='Defined at 236 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 167 places.'>archive</a>, <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>);
+<a id='L317' name='L317'></a> 317 
+<a id='L318' name='L318'></a> 318 <em class='comment'>/* tar-sparse.c */</em>
+<a id='L319' name='L319'></a> 319 <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-sparse.c.html#L610' title='Defined at 610 in src/vfs/tar/tar-sparse.c.'>tar_sparse_member_p</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L236' title='Defined at 236 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 167 places.'>archive</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L244' title='Defined at 244 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>);
+<a id='L320' name='L320'></a> 320 <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-sparse.c.html#L624' title='Defined at 624 in src/vfs/tar/tar-sparse.c.'>tar_sparse_fixup_header</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L236' title='Defined at 236 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 167 places.'>archive</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L244' title='Defined at 244 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>);
+<a id='L321' name='L321'></a> 321 <strong class='reserved'>enum</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L209' title='Defined at 209 in src/vfs/tar/tar-internal.h.'>dump_status</a> <a href='../S/src--vfs--tar--tar-sparse.c.html#L638' title='Defined at 638 in src/vfs/tar/tar-sparse.c.'>tar_sparse_skip_file</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L236' title='Defined at 236 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 167 places.'>archive</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L244' title='Defined at 244 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>);
+<a id='L322' name='L322'></a> 322 
+<a id='L323' name='L323'></a> 323 <em class='comment'>/* tar-xheader.c */</em>
+<a id='L324' name='L324'></a> 324 <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-xheader.c.html#L871' title='Defined at 871 in src/vfs/tar/tar-xheader.c.'>tar_xheader_decode</a> (<strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L244' title='Defined at 244 in src/vfs/tar/tar-internal.h.'>tar_stat_info</a> *<a href='../Y/st.html' title='Multiple used in 508 places.'>st</a>);
+<a id='L325' name='L325'></a> 325 <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-xheader.c.html#L902' title='Defined at 902 in src/vfs/tar/tar-xheader.c.'>tar_xheader_read</a> (<a href='../S/src--vfs--tar--tar-internal.h.html#L236' title='Defined at 236 in src/vfs/tar/tar-internal.h.'>tar_super_t</a> * <a href='../Y/archive.html' title='Multiple used in 167 places.'>archive</a>, <strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L238' title='Defined at 238 in src/vfs/tar/tar-internal.h.'>xheader</a> *<a href='../Y/xhdr.html' title='Multiple used in 28 places.'>xhdr</a>, <strong class='reserved'>union</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L190' title='Defined at 190 in src/vfs/tar/tar-internal.h.'>block</a> *<a href='../Y/header.html' title='Multiple used in 98 places.'>header</a>,
+<a id='L326' name='L326'></a> 326                            <a href='../Y/off_t.html' title='Multiple used in 577 places.'>off_t</a> <a href='../Y/size.html' title='Multiple used in 396 places.'>size</a>);
+<a id='L327' name='L327'></a> 327 <a href='../Y/gboolean.html' title='Multiple used in 1921 places.'>gboolean</a> <a href='../S/src--vfs--tar--tar-xheader.c.html#L939' title='Defined at 939 in src/vfs/tar/tar-xheader.c.'>tar_xheader_decode_global</a> (<strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L238' title='Defined at 238 in src/vfs/tar/tar-internal.h.'>xheader</a> *<a href='../Y/xhdr.html' title='Multiple used in 28 places.'>xhdr</a>);
+<a id='L328' name='L328'></a> 328 <strong class='reserved'>void</strong> <a href='../S/src--vfs--tar--tar-xheader.c.html#L957' title='Defined at 957 in src/vfs/tar/tar-xheader.c.'>tar_xheader_destroy</a> (<strong class='reserved'>struct</strong> <a href='../S/src--vfs--tar--tar-internal.h.html#L238' title='Defined at 238 in src/vfs/tar/tar-internal.h.'>xheader</a> *<a href='../Y/xhdr.html' title='Multiple used in 28 places.'>xhdr</a>);
 <a id='L329' name='L329'></a> 329 
-<a id='L330' name='L330'></a> 330 <em class='comment'>/**</em>
-<a id='L331' name='L331'></a> 331 <em class='comment'> * Represent @n using a signed integer I such that (uintmax_t) I == @n.</em>
-<a id='L332' name='L332'></a> 332 <em class='comment'>   With a good optimizing compiler, this is equivalent to (intmax_t) i</em>
-<a id='L333' name='L333'></a> 333 <em class='comment'>   and requires zero machine instructions.  */</em>
-<a id='L334' name='L334'></a> 334 <em class='sharp'>#if</em> !(<a href='../Y/UINTMAX_MAX.html' title='Multiple used in 10 places.'>UINTMAX_MAX</a> / 2 &lt;= <a href='../Y/INTMAX_MAX.html' title='Multiple used in 6 places.'>INTMAX_MAX</a>)
-<a id='L335' name='L335'></a> 335 <em class='sharp'>#error</em> "tar_represent_uintmax() returns intmax_t to represent uintmax_t"
-<a id='L336' name='L336'></a> 336 <em class='sharp'>#endif</em>
-<a id='L337' name='L337'></a> 337 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/intmax_t.html' title='Multiple used in 15 places.'>intmax_t</a>
-<a id='L338' name='L338'></a> 338 <a href='../R/tar_represent_uintmax.html' title='Multiple referred from 2 places.'>tar_represent_uintmax</a> (<a href='../Y/uintmax_t.html' title='Multiple used in 111 places.'>uintmax_t</a> <a href='../Y/n.html' title='Multiple used in 252 places.'>n</a>)
-     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+338 src/vfs/tar/tar-internal.h'  /> */</em>
-<a id='L339' name='L339'></a> 339 <em class='brace'>{</em>
-<a id='L340' name='L340'></a> 340     <a href='../Y/intmax_t.html' title='Multiple used in 15 places.'>intmax_t</a> <a href='../Y/nd.html' title='Multiple used in 3 places.'>nd</a>;
-<a id='L341' name='L341'></a> 341 
-<a id='L342' name='L342'></a> 342     <strong class='reserved'>if</strong> (<a href='../Y/n.html' title='Multiple used in 252 places.'>n</a> &lt;= <a href='../Y/INTMAX_MAX.html' title='Multiple used in 6 places.'>INTMAX_MAX</a>)
-<a id='L343' name='L343'></a> 343         <strong class='reserved'>return</strong> <a href='../Y/n.html' title='Multiple used in 252 places.'>n</a>;
-<a id='L344' name='L344'></a> 344 
-<a id='L345' name='L345'></a> 345     <em class='comment'>/* Avoid signed integer overflow on picky platforms. */</em>
-<a id='L346' name='L346'></a> 346     <a href='../Y/nd.html' title='Multiple used in 3 places.'>nd</a> = <a href='../Y/n.html' title='Multiple used in 252 places.'>n</a> - <a href='../Y/INTMAX_MIN.html' title='Multiple used in 4 places.'>INTMAX_MIN</a>;
-<a id='L347' name='L347'></a> 347     <strong class='reserved'>return</strong> <a href='../Y/nd.html' title='Multiple used in 3 places.'>nd</a> + <a href='../Y/INTMAX_MIN.html' title='Multiple used in 4 places.'>INTMAX_MIN</a>;
-<a id='L348' name='L348'></a> 348 <em class='brace'>}</em>
-<a id='L349' name='L349'></a> 349 
-<a id='L350' name='L350'></a> 350 <em class='sharp'>#endif</em> <em class='comment'>/* MC__VFS_TAR_INTERNAL_H */</em>
+<a id='L330' name='L330'></a> 330 <em class='comment'>/*** inline functions ****************************************************************************/</em>
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332 <em class='comment'>/**</em>
+<a id='L333' name='L333'></a> 333 <em class='comment'> * Represent @n using a signed integer I such that (uintmax_t) I == @n.</em>
+<a id='L334' name='L334'></a> 334 <em class='comment'>   With a good optimizing compiler, this is equivalent to (intmax_t) i</em>
+<a id='L335' name='L335'></a> 335 <em class='comment'>   and requires zero machine instructions.  */</em>
+<a id='L336' name='L336'></a> 336 <em class='sharp'>#if</em> !(<a href='../Y/UINTMAX_MAX.html' title='Multiple used in 10 places.'>UINTMAX_MAX</a> / 2 &lt;= <a href='../Y/INTMAX_MAX.html' title='Multiple used in 7 places.'>INTMAX_MAX</a>)
+<a id='L337' name='L337'></a> 337 <em class='sharp'>#error</em> "tar_represent_uintmax() returns intmax_t to represent uintmax_t"
+<a id='L338' name='L338'></a> 338 <em class='sharp'>#endif</em>
+<a id='L339' name='L339'></a> 339 <strong class='reserved'>static</strong> <strong class='reserved'>inline</strong> <a href='../Y/intmax_t.html' title='Multiple used in 16 places.'>intmax_t</a>
+<a id='L340' name='L340'></a> 340 <a href='../R/tar_represent_uintmax.html' title='Multiple referred from 2 places.'>tar_represent_uintmax</a> (<a href='../Y/uintmax_t.html' title='Multiple used in 112 places.'>uintmax_t</a> <a href='../Y/n.html' title='Multiple used in 248 places.'>n</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+340 src/vfs/tar/tar-internal.h'  /> */</em>
+<a id='L341' name='L341'></a> 341 <em class='brace'>{</em>
+<a id='L342' name='L342'></a> 342     <a href='../Y/intmax_t.html' title='Multiple used in 16 places.'>intmax_t</a> <a href='../Y/nd.html' title='Multiple used in 3 places.'>nd</a>;
+<a id='L343' name='L343'></a> 343 
+<a id='L344' name='L344'></a> 344     <strong class='reserved'>if</strong> (<a href='../Y/n.html' title='Multiple used in 248 places.'>n</a> &lt;= <a href='../Y/INTMAX_MAX.html' title='Multiple used in 7 places.'>INTMAX_MAX</a>)
+<a id='L345' name='L345'></a> 345         <strong class='reserved'>return</strong> <a href='../Y/n.html' title='Multiple used in 248 places.'>n</a>;
+<a id='L346' name='L346'></a> 346 
+<a id='L347' name='L347'></a> 347     <em class='comment'>/* Avoid signed integer overflow on picky platforms. */</em>
+<a id='L348' name='L348'></a> 348     <a href='../Y/nd.html' title='Multiple used in 3 places.'>nd</a> = <a href='../Y/n.html' title='Multiple used in 248 places.'>n</a> - <a href='../Y/INTMAX_MIN.html' title='Multiple used in 4 places.'>INTMAX_MIN</a>;
+<a id='L349' name='L349'></a> 349     <strong class='reserved'>return</strong> <a href='../Y/nd.html' title='Multiple used in 3 places.'>nd</a> + <a href='../Y/INTMAX_MIN.html' title='Multiple used in 4 places.'>INTMAX_MIN</a>;
+<a id='L350' name='L350'></a> 350 <em class='brace'>}</em>
+<a id='L351' name='L351'></a> 351 
+<a id='L352' name='L352'></a> 352 <em class='sharp'>#endif</em> <em class='comment'>/* MC__VFS_TAR_INTERNAL_H */</em>
 </pre>
 <hr />
 <a id='BOTTOM' name='BOTTOM'></a>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L338'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+350 src/vfs/tar/tar-internal.h'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L340'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+352 src/vfs/tar/tar-internal.h'  /> */</em>
 </body>
 </html>

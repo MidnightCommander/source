@@ -3,7 +3,7 @@
 <head>
 <title>src/vfs/extfs/helpers/dpkg+.in</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -148,27 +148,27 @@
 <a id='L123' name='L123'></a>    chop($getselections = `dpkg --get-selections 2&gt;/dev/null`);
 <a id='L124' name='L124'></a>    chop($audit = `dpkg --audit 2&gt;/dev/null`);
 <a id='L125' name='L125'></a>    $sz = length($diversions);
-<a id='L126' name='L126'></a>    print "-r--r--r-- 1 root root $sz $DATE DIVERSIONS\n";
+<a id='L126' name='L126'></a>    print "-r--r--r-- 1 0    0    $sz $DATE DIVERSIONS\n";
 <a id='L127' name='L127'></a>    $sz = length($architecture);
-<a id='L128' name='L128'></a>    print "-r--r--r-- 1 root root $sz $DATE ARCHITECTURE\n";
+<a id='L128' name='L128'></a>    print "-r--r--r-- 1 0    0    $sz $DATE ARCHITECTURE\n";
 <a id='L129' name='L129'></a>    $sz = length($list);
-<a id='L130' name='L130'></a>    print "-r--r--r-- 1 root root $sz $DATE LIST\n";
+<a id='L130' name='L130'></a>    print "-r--r--r-- 1 0    0    $sz $DATE LIST\n";
 <a id='L131' name='L131'></a>    $sz = length($getselections);
-<a id='L132' name='L132'></a>    print "-r--r--r-- 1 root root $sz $DATE GET-SELECTIONS\n";
+<a id='L132' name='L132'></a>    print "-r--r--r-- 1 0    0    $sz $DATE GET-SELECTIONS\n";
 <a id='L133' name='L133'></a>    $sz = length($audit);
-<a id='L134' name='L134'></a>    print "-r--r--r-- 1 root root $sz $DATE AUDIT\n";
+<a id='L134' name='L134'></a>    print "-r--r--r-- 1 0    0    $sz $DATE AUDIT\n";
 <a id='L135' name='L135'></a>    $sz = length($pressconfigure);
-<a id='L136' name='L136'></a>    print "-r-xr--r-- 1 root root $sz $DATE CONFIGURE\n";
+<a id='L136' name='L136'></a>    print "-r-xr--r-- 1 0    0    $sz $DATE CONFIGURE\n";
 <a id='L137' name='L137'></a>    $sz = length($pressremove);
-<a id='L138' name='L138'></a>    print "-r-xr--r-- 1 root root $sz $DATE REMOVE\n";
+<a id='L138' name='L138'></a>    print "-r-xr--r-- 1 0    0    $sz $DATE REMOVE\n";
 <a id='L139' name='L139'></a>    $sz = length($pressclearavail);
-<a id='L140' name='L140'></a>    print "-r-xr--r-- 1 root root $sz $DATE CLEAR-AVAIL\n";
+<a id='L140' name='L140'></a>    print "-r-xr--r-- 1 0    0    $sz $DATE CLEAR-AVAIL\n";
 <a id='L141' name='L141'></a>    $sz = length($pressforgetoldunavail);
-<a id='L142' name='L142'></a>    print "-r-xr--r-- 1 root root $sz $DATE FORGET-OLD-UNAVAIL\n";
+<a id='L142' name='L142'></a>    print "-r-xr--r-- 1 0    0    $sz $DATE FORGET-OLD-UNAVAIL\n";
 <a id='L143' name='L143'></a>    ls("/var/lib/dpkg/status","STATUS","-r--r--r--");
 <a id='L144' name='L144'></a>    # ls("/var/lib/dpkg/available","AVAILABLE","-r--r--r--");
 <a id='L145' name='L145'></a> 
-<a id='L146' name='L146'></a>    print "drwxr-xr-x 1 root root 0 $DATE all\n";
+<a id='L146' name='L146'></a>    print "drwxr-xr-x 1 0    0    0 $DATE all\n";
 <a id='L147' name='L147'></a> 
 <a id='L148' name='L148'></a>    open STAT, "/var/lib/dpkg/status"
 <a id='L149' name='L149'></a>       or exit 1;
@@ -196,18 +196,18 @@
 <a id='L171' name='L171'></a>           my $sub = $dn;
 <a id='L172' name='L172'></a>           while( $sub =~ s!^(.*)/[^/]*$!$1! ) {
 <a id='L173' name='L173'></a>               unless( $sects{$sub} ) {
-<a id='L174' name='L174'></a>                   print "drwxr-xr-x 1 root root 0 $DATE $sub/\n";
+<a id='L174' name='L174'></a>                   print "drwxr-xr-x 1 0    0    0 $DATE $sub/\n";
 <a id='L175' name='L175'></a>                   $sects{$sub} = 1;
 <a id='L176' name='L176'></a>               }
 <a id='L177' name='L177'></a>           }
-<a id='L178' name='L178'></a>           print "drwxr-xr-x 1 root root 0 $DATE $dn/\n";
+<a id='L178' name='L178'></a>           print "drwxr-xr-x 1 0    0    0 $DATE $dn/\n";
 <a id='L179' name='L179'></a>           $sects{$dn} = 1;
 <a id='L180' name='L180'></a>       }
 <a id='L181' name='L181'></a>       $sz = $debs{$pkg}{'status'} =~ /config-files/ ? 0 : $debs{$pkg}{'installed-size'} * 1024;
 <a id='L182' name='L182'></a>       @stat = stat("/var/lib/dpkg/info/".$debs{$pkg}{package}.".list");
 <a id='L183' name='L183'></a>       $bt = bt($stat[9]);
-<a id='L184' name='L184'></a>       print "-rw-r--r-- 1 root root $sz $bt $dn/$fn.debd\n";
-<a id='L185' name='L185'></a>       print "lrwxrwxrwx 1 root root $sz $bt all/$fn.debd -&gt; ../$dn/$fn.debd\n";
+<a id='L184' name='L184'></a>       print "-rw-r--r-- 1 0    0    $sz $bt $dn/$fn.debd\n";
+<a id='L185' name='L185'></a>       print "lrwxrwxrwx 1 0    0    $sz $bt all/$fn.debd -&gt; ../$dn/$fn.debd\n";
 <a id='L186' name='L186'></a>    }
 <a id='L187' name='L187'></a>}
 <a id='L188' name='L188'></a> 

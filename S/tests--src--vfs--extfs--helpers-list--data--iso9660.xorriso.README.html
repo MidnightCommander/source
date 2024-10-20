@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tests/src/vfs/extfs/helpers-list/data/iso9660.xorriso.README</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.7' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/tests.html'>tests</a>/<a href='../files/tests--src.html'>src</a>/<a href='../files/tests--src--vfs.html'>vfs</a>/<a href='../files/tests--src--vfs--extfs.html'>extfs</a>/<a href='../files/tests--src--vfs--extfs--helpers-list.html'>helpers-list</a>/<a href='../files/tests--src--vfs--extfs--helpers-list--data.html'>data</a>/iso9660.xorriso.README</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/tests.html'>tests</a>/<a href='../files/tests--src.html'>src</a>/<a href='../files/tests--src--vfs.html'>vfs</a>/<a href='../files/tests--src--vfs--extfs.html'>extfs</a>/<a href='../files/tests--src--vfs--extfs--helpers-list.html'>helpers-list</a>/<a href='../files/tests--src--vfs--extfs--helpers-list--data.html'>data</a>/iso9660.xorriso.README</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 tests/src/vfs/extfs/helpers-list/data/iso9660.xorriso.README'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>Regarding the date formats used in listings, xorriso [1] implements the same
+<a id='L2' name='L2'></a>behavior as `ls` [2]: 'month day year' for recent items (180 days old at max),
+<a id='L3' name='L3'></a>'month day time' for older ones. So, it is important to NOT have any "recent"
+<a id='L4' name='L4'></a>items in the input data for tests. Otherwise, after some time, the test would
+<a id='L5' name='L5'></a>fail, like it happened in ticket #4567.
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a>Sample iso image was created from alpine-standard-3.18.0-x86_64.iso (dated May
+<a id='L8' name='L8'></a>9, 2023) with such script:
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a>    #!/usr/bin/env bash
+<a id='L11' name='L11'></a> 
+<a id='L12' name='L12'></a>    EPOCH='Jan 1 2024'
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>    if ! test -d links; then
+<a id='L15' name='L15'></a>        mkdir "$_"
+<a id='L16' name='L16'></a>        cd "$_"
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>        touch no-quotes "inner'quote" "'side-quotes'"
+<a id='L19' name='L19'></a> 
+<a id='L20' name='L20'></a>        ln -s no-quotes no-quotes-link
+<a id='L21' name='L21'></a>        ln -s no-quotes "inner'quote-link-nq"
+<a id='L22' name='L22'></a>        ln -s no-quotes "'side-quotes-link-nq'"
+<a id='L23' name='L23'></a>        ln -s "inner'quote" "inner'quote-link-iq"
+<a id='L24' name='L24'></a>        ln -s "inner'quote" "'side-quotes-link-iq'"
+<a id='L25' name='L25'></a>        ln -s "'side-quotes'" "inner'quote-link-sq"
+<a id='L26' name='L26'></a>        ln -s "'side-quotes'" "'side-quotes-link-sq'"
+<a id='L27' name='L27'></a> 
+<a id='L28' name='L28'></a>        cd -
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>        find links -exec touch -h -d "$EPOCH" {} +
+<a id='L31' name='L31'></a>    fi
+<a id='L32' name='L32'></a> 
+<a id='L33' name='L33'></a>    args=(
+<a id='L34' name='L34'></a>        -indev alpine-standard-3.18.0-x86_64.iso
+<a id='L35' name='L35'></a>        -outdev sample.iso
+<a id='L36' name='L36'></a>        -boot_image any replay
+<a id='L37' name='L37'></a>        -joliet on
+<a id='L38' name='L38'></a>        -rm_r /apks --
+<a id='L39' name='L39'></a>        -cpr links / --
+<a id='L40' name='L40'></a>        -chown_r 0 /links --
+<a id='L41' name='L41'></a>        -chgrp_r 0 /links --
+<a id='L42' name='L42'></a>    )
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a>    xorriso "${args[@]}"
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>Features:
+<a id='L47' name='L47'></a>- boot catalog file
+<a id='L48' name='L48'></a>- subdirs
+<a id='L49' name='L49'></a>- files with q(') included
+<a id='L50' name='L50'></a>- links with q(') included (name, target, both)
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>The quoted stuff is here because xorriso wraps pathes in single quotes and
+<a id='L53' name='L53'></a>escapes internal quotes, all with misc_funct.c:Text_shellsafe(). We revert it
+<a id='L54' name='L54'></a>back in the helper code.
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a> 
+<a id='L57' name='L57'></a>Sample input was generated like this:
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>    xorriso -dev sample.iso -find / -exec lsdl 2&gt;/dev/null
+<a id='L60' name='L60'></a> 
+<a id='L61' name='L61'></a> 
+<a id='L62' name='L62'></a>[1] misc_funct.c:Ftimetxt()
+<a id='L63' name='L63'></a>[2] ls.c:long_time_format[] (in GNU coreutils)
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+63 tests/src/vfs/extfs/helpers-list/data/iso9660.xorriso.README'  /> */</em>
+</body>
+</html>

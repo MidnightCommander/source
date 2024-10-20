@@ -3,7 +3,7 @@
 <head>
 <title>m4.include/mc-use-termcap.m4</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -30,34 +30,40 @@
 <a id='L5' name='L5'></a>        screen_msg="$screen_msg with termcap database"
 <a id='L6' name='L6'></a>        AC_MSG_NOTICE([using S-Lang screen library with termcap])
 <a id='L7' name='L7'></a>        AC_DEFINE(USE_TERMCAP, 1, [Define to use termcap database])
-<a id='L8' name='L8'></a>        AC_CHECK_LIB(termcap, tgoto, [MCLIBS="$MCLIBS -ltermcap"], , [$LIBS])
-<a id='L9' name='L9'></a>])
-<a id='L10' name='L10'></a> 
-<a id='L11' name='L11'></a>dnl
-<a id='L12' name='L12'></a>dnl Check if the installed S-Lang library uses termcap
-<a id='L13' name='L13'></a>dnl
-<a id='L14' name='L14'></a>AC_DEFUN([mc_SLANG_TERMCAP], [
-<a id='L15' name='L15'></a>    unset ac_cv_lib_termcap_tgoto
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>        ac_save_LIBS="$LIBS"
+<a id='L10' name='L10'></a>        AC_SEARCH_LIBS([tgoto], [termcap xcurses curses],
+<a id='L11' name='L11'></a>            [MCLIBS="$MCLIBS $ac_cv_search_tgoto"],
+<a id='L12' name='L12'></a>            [AC_MSG_ERROR([Could not find a library providing tgoto])]
+<a id='L13' name='L13'></a>        )
+<a id='L14' name='L14'></a>        LIBS="$ac_save_LIBS"
+<a id='L15' name='L15'></a>])
 <a id='L16' name='L16'></a> 
-<a id='L17' name='L17'></a>    AC_CACHE_CHECK([if S-Lang uses termcap], [mc_cv_slang_termcap], [
-<a id='L18' name='L18'></a>        ac_save_LIBS="$LIBS"
-<a id='L19' name='L19'></a>        LIBS="$LIBS -lslang"
-<a id='L20' name='L20'></a>        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-<a id='L21' name='L21'></a>#include &lt;slang.h&gt;
-<a id='L22' name='L22'></a>        ]],
-<a id='L23' name='L23'></a>        [[SLtt_get_terminfo(); SLtt_tgetflag((char*)"");]])],
-<a id='L24' name='L24'></a>        [mc_cv_slang_termcap=no], [mc_cv_slang_termcap=yes])
-<a id='L25' name='L25'></a> 
-<a id='L26' name='L26'></a>        LIBS="$ac_save_LIBS"
-<a id='L27' name='L27'></a>    ])
-<a id='L28' name='L28'></a> 
-<a id='L29' name='L29'></a>    if test x"$mc_cv_slang_termcap" = xyes; then
-<a id='L30' name='L30'></a>        mc_USE_TERMCAP
-<a id='L31' name='L31'></a>    fi
-<a id='L32' name='L32'></a>])
+<a id='L17' name='L17'></a>dnl
+<a id='L18' name='L18'></a>dnl Check if the installed S-Lang library uses termcap
+<a id='L19' name='L19'></a>dnl
+<a id='L20' name='L20'></a>AC_DEFUN([mc_SLANG_TERMCAP], [
+<a id='L21' name='L21'></a>    unset ac_cv_lib_termcap_tgoto
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a>    AC_CACHE_CHECK([if S-Lang uses termcap], [mc_cv_slang_termcap], [
+<a id='L24' name='L24'></a>        ac_save_LIBS="$LIBS"
+<a id='L25' name='L25'></a>        LIBS="$LIBS -lslang"
+<a id='L26' name='L26'></a>        AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+<a id='L27' name='L27'></a>#include &lt;slang.h&gt;
+<a id='L28' name='L28'></a>        ]],
+<a id='L29' name='L29'></a>        [[SLtt_get_terminfo(); SLtt_tgetflag((char*)"");]])],
+<a id='L30' name='L30'></a>        [mc_cv_slang_termcap=no], [mc_cv_slang_termcap=yes])
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>        LIBS="$ac_save_LIBS"
+<a id='L33' name='L33'></a>    ])
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>    if test x"$mc_cv_slang_termcap" = xyes; then
+<a id='L36' name='L36'></a>        mc_USE_TERMCAP
+<a id='L37' name='L37'></a>    fi
+<a id='L38' name='L38'></a>])
 </pre>
 <hr />
 <a id='BOTTOM' name='BOTTOM'></a>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+32 m4.include/mc-use-termcap.m4'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+38 m4.include/mc-use-termcap.m4'  /> */</em>
 </body>
 </html>

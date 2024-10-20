@@ -3,7 +3,7 @@
 <head>
 <title>src/vfs/extfs/helpers/u7z</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -42,10 +42,10 @@
 <a id='L17' name='L17'></a># You should have received a copy of the GNU General Public License
 <a id='L18' name='L18'></a># along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 <a id='L19' name='L19'></a> 
-<a id='L20' name='L20'></a>P7ZIP=`which 7z 2&gt;/dev/null` \
-<a id='L21' name='L21'></a>    || P7ZIP=`which 7zz 2&gt;/dev/null` \
-<a id='L22' name='L22'></a>    || P7ZIP=`which 7za 2&gt;/dev/null` \
-<a id='L23' name='L23'></a>    || P7ZIP=`which 7zr 2&gt;/dev/null` \
+<a id='L20' name='L20'></a>P7ZIP=`command -v 7z 2&gt;/dev/null` \
+<a id='L21' name='L21'></a>    || P7ZIP=`command -v 7zz 2&gt;/dev/null` \
+<a id='L22' name='L22'></a>    || P7ZIP=`command -v 7za 2&gt;/dev/null` \
+<a id='L23' name='L23'></a>    || P7ZIP=`command -v 7zr 2&gt;/dev/null` \
 <a id='L24' name='L24'></a>    || P7ZIP=""
 <a id='L25' name='L25'></a> 
 <a id='L26' name='L26'></a># Let the test framework hook in:
@@ -111,7 +111,7 @@
 <a id='L86' name='L86'></a>{
 <a id='L87' name='L87'></a>        dir=`mktemp -d "${MC_TMPDIR:-/tmp}/mctmpdir-u7z.XXXXXX"` || exit 1
 <a id='L88' name='L88'></a>        mkdir -p "$dir"/"$2"
-<a id='L89' name='L89'></a>        $P7ZIP a -w"$dir" "$1" "$dir"/"$2" &gt;/dev/null 2&gt;&amp;1
+<a id='L89' name='L89'></a>        $P7ZIP a "$1" "$dir/${2%%/*}" &gt;/dev/null 2&gt;&amp;1
 <a id='L90' name='L90'></a>        rm -rf "$dir"
 <a id='L91' name='L91'></a>}
 <a id='L92' name='L92'></a> 

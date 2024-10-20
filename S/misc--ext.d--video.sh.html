@@ -3,7 +3,7 @@
 <head>
 <title>misc/ext.d/video.sh</title>
 <meta name='robots' content='noindex,nofollow' />
-<meta name='generator' content='GLOBAL-6.5.7' />
+<meta name='generator' content='GLOBAL-6.6.7' />
 <meta http-equiv='Content-Style-Type' content='text/css' />
 <link rel='stylesheet' type='text/css' href='../style.css' />
 </head>
@@ -31,62 +31,57 @@
 <a id='L6' name='L6'></a>action=$1
 <a id='L7' name='L7'></a>filetype=$2
 <a id='L8' name='L8'></a> 
-<a id='L9' name='L9'></a>[ -n "${MC_XDG_OPEN}" ] || MC_XDG_OPEN="xdg-open"
-<a id='L10' name='L10'></a> 
-<a id='L11' name='L11'></a>do_view_action() {
-<a id='L12' name='L12'></a>    filetype=$1
-<a id='L13' name='L13'></a> 
-<a id='L14' name='L14'></a>    case "${filetype}" in
-<a id='L15' name='L15'></a>    *)
-<a id='L16' name='L16'></a>        if which mplayer &gt;/dev/null 2&gt;&amp;1; then
-<a id='L17' name='L17'></a>            mplayer -identify -vo null -ao null -frames 0 "${MC_EXT_FILENAME}" 2&gt;&amp;1 | \
-<a id='L18' name='L18'></a>                sed -n 's/^ID_//p'
-<a id='L19' name='L19'></a>        elif which mpv_identify.sh &gt;/dev/null 2&gt;&amp;1; then
-<a id='L20' name='L20'></a>            mpv_identify.sh "${MC_EXT_FILENAME}"
-<a id='L21' name='L21'></a>        else
-<a id='L22' name='L22'></a>            echo "Please install either mplayer or mpv to get information for this file"
-<a id='L23' name='L23'></a>        fi
-<a id='L24' name='L24'></a>        ;;
-<a id='L25' name='L25'></a>    esac
-<a id='L26' name='L26'></a>}
-<a id='L27' name='L27'></a> 
-<a id='L28' name='L28'></a>do_open_action() {
-<a id='L29' name='L29'></a>    filetype=$1
-<a id='L30' name='L30'></a> 
-<a id='L31' name='L31'></a>    if which mpv &gt;/dev/null 2&gt;&amp;1; then
-<a id='L32' name='L32'></a>        PLAYER=mpv
-<a id='L33' name='L33'></a>    elif which mplayer &gt;/dev/null 2&gt;&amp;1; then
-<a id='L34' name='L34'></a>        PLAYER=mplayer
+<a id='L9' name='L9'></a>if [ -n "$DISPLAY" ]; then
+<a id='L10' name='L10'></a>    [ -n "${MC_XDG_OPEN}" ] || MC_XDG_OPEN="xdg-open"
+<a id='L11' name='L11'></a>fi
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>do_view_action() {
+<a id='L14' name='L14'></a>    filetype=$1
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>    case "${filetype}" in
+<a id='L17' name='L17'></a>    *)
+<a id='L18' name='L18'></a>        if command -v mplayer &gt;/dev/null 2&gt;&amp;1; then
+<a id='L19' name='L19'></a>            mplayer -identify -vo null -ao null -frames 0 "${MC_EXT_FILENAME}" 2&gt;&amp;1 | \
+<a id='L20' name='L20'></a>                sed -n 's/^ID_//p'
+<a id='L21' name='L21'></a>        elif command -v mpv_identify.sh &gt;/dev/null 2&gt;&amp;1; then
+<a id='L22' name='L22'></a>            mpv_identify.sh "${MC_EXT_FILENAME}"
+<a id='L23' name='L23'></a>        else
+<a id='L24' name='L24'></a>            echo "Please install either mplayer or mpv to get information for this file"
+<a id='L25' name='L25'></a>        fi
+<a id='L26' name='L26'></a>        ;;
+<a id='L27' name='L27'></a>    esac
+<a id='L28' name='L28'></a>}
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>do_open_action() {
+<a id='L31' name='L31'></a>    filetype=$1
+<a id='L32' name='L32'></a> 
+<a id='L33' name='L33'></a>    if command -v mpv &gt;/dev/null 2&gt;&amp;1; then
+<a id='L34' name='L34'></a>        PLAYER="mpv --really-quiet"
 <a id='L35' name='L35'></a>    else
-<a id='L36' name='L36'></a>        echo "Please install either mplayer or mpv to play this file"
-<a id='L37' name='L37'></a>        return
-<a id='L38' name='L38'></a>    fi
-<a id='L39' name='L39'></a> 
-<a id='L40' name='L40'></a>    case "${filetype}" in
-<a id='L41' name='L41'></a>    *)
-<a id='L42' name='L42'></a>        if [ -n "$DISPLAY" ]; then
-<a id='L43' name='L43'></a>            ($PLAYER "${MC_EXT_FILENAME}" &gt;/dev/null 2&gt;&amp;1 &amp;)
-<a id='L44' name='L44'></a>        else
-<a id='L45' name='L45'></a>            $PLAYER -vo null "${MC_EXT_FILENAME}"
-<a id='L46' name='L46'></a>        fi
-<a id='L47' name='L47'></a>        ;;
-<a id='L48' name='L48'></a>    esac
-<a id='L49' name='L49'></a>}
-<a id='L50' name='L50'></a> 
-<a id='L51' name='L51'></a>case "${action}" in
-<a id='L52' name='L52'></a>view)
-<a id='L53' name='L53'></a>    do_view_action "${filetype}"
-<a id='L54' name='L54'></a>    ;;
-<a id='L55' name='L55'></a>open)
-<a id='L56' name='L56'></a>    ("${MC_XDG_OPEN}" "${MC_EXT_FILENAME}" &gt;/dev/null 2&gt;&amp;1) || \
-<a id='L57' name='L57'></a>        do_open_action "${filetype}"
-<a id='L58' name='L58'></a>    ;;
-<a id='L59' name='L59'></a>*)
-<a id='L60' name='L60'></a>    ;;
-<a id='L61' name='L61'></a>esac
+<a id='L36' name='L36'></a>        PLAYER="mplayer -really-quiet"
+<a id='L37' name='L37'></a>    fi
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a>    if [ -n "$DISPLAY" ]; then
+<a id='L40' name='L40'></a>        ($PLAYER "${MC_EXT_FILENAME}" &gt;/dev/null 2&gt;&amp;1 &amp;)
+<a id='L41' name='L41'></a>    else
+<a id='L42' name='L42'></a>        $PLAYER -vo null "${MC_EXT_FILENAME}"
+<a id='L43' name='L43'></a>    fi
+<a id='L44' name='L44'></a>}
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>case "${action}" in
+<a id='L47' name='L47'></a>view)
+<a id='L48' name='L48'></a>    do_view_action "${filetype}"
+<a id='L49' name='L49'></a>    ;;
+<a id='L50' name='L50'></a>open)
+<a id='L51' name='L51'></a>    ("${MC_XDG_OPEN}" "${MC_EXT_FILENAME}" &gt;/dev/null 2&gt;&amp;1) || \
+<a id='L52' name='L52'></a>        do_open_action "${filetype}"
+<a id='L53' name='L53'></a>    ;;
+<a id='L54' name='L54'></a>*)
+<a id='L55' name='L55'></a>    ;;
+<a id='L56' name='L56'></a>esac
 </pre>
 <hr />
 <a id='BOTTOM' name='BOTTOM'></a>
-<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+61 misc/ext.d/video.sh'  /> */</em>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+56 misc/ext.d/video.sh'  /> */</em>
 </body>
 </html>
