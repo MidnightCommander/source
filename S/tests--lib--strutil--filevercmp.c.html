@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tests/lib/strutil/filevercmp.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L36'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L337'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/tests.html'>tests</a>/<a href='../files/tests--lib.html'>lib</a>/<a href='../files/tests--lib--strutil.html'>strutil</a>/filevercmp.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/tests.html'>tests</a>/<a href='../files/tests--lib.html'>lib</a>/<a href='../files/tests--lib--strutil.html'>strutil</a>/filevercmp.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 tests/lib/strutil/filevercmp.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L36' title='Defined at 36.'>sign</a></li>
+<li><a href='#L48' title='Defined at 48.'>test_filevercmp</a></li>
+<li><a href='#L96' title='Defined at 96.'>START_TEST</a></li>
+<li><a href='#L192' title='Defined at 192.'>START_TEST</a></li>
+<li><a href='#L224' title='Defined at 224.'>START_TEST</a></li>
+<li><a href='#L257' title='Defined at 257.'>START_TEST</a></li>
+<li><a href='#L313' title='Defined at 313.'>START_TEST</a></li>
+<li><a href='#L337' title='Defined at 337.'>main</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   lib/strutil - tests for lib/strutil/fileverscmp function.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2019-2026</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2019</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'></em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'></em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/tests--mctest.h.html#L93' title='Referred from 93 in tests/mctest.h.'>TEST_SUITE_NAME</a> "/lib/strutil"
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='tests--mctest.h.html'>tests/mctest.h</a>"
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> "<a href='../I/util.h.html'>lib/util.h</a>"  <em class='comment'>// _GL_CMP()</em>
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L36' name='L36'></a>  36 <a href='../R/sign.html' title='Multiple referred from 3 places.'>sign</a> (<strong class='reserved'>int</strong> <a href='../Y/n.html' title='Multiple used in 251 places.'>n</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L48'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+36 tests/lib/strutil/filevercmp.c'  /> */</em>
+<a id='L37' name='L37'></a>  37 <em class='brace'>{</em>
+<a id='L38' name='L38'></a>  38     <strong class='reserved'>return</strong> <a href='../S/lib--util.h.html#L81' title='Defined at 81 in lib/util.h.'>_GL_CMP</a> (<a href='../Y/n.html' title='Multiple used in 251 places.'>n</a>, 0);
+<a id='L39' name='L39'></a>  39 <em class='brace'>}</em>
+<a id='L40' name='L40'></a>  40 
+<a id='L41' name='L41'></a>  41 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L42' name='L42'></a>  42 
+<a id='L43' name='L43'></a>  43 <em class='comment'>/*</em>
+<a id='L44' name='L44'></a>  44 <em class='comment'> * Return filevercmp (a, a), checking that a similar result is gotten after replacing all '\1's</em>
+<a id='L45' name='L45'></a>  45 <em class='comment'> * with '\0's and calling filenvercmp with the embedded '\0's.</em>
+<a id='L46' name='L46'></a>  46 <em class='comment'> */</em>
+<a id='L47' name='L47'></a>  47 <strong class='reserved'>static</strong> <strong class='reserved'>int</strong>
+<a id='L48' name='L48'></a>  48 <a href='../R/test_filevercmp.html' title='Multiple referred from 3 places.'>test_filevercmp</a> (<strong class='reserved'>char</strong> <strong class='reserved'>const</strong> *<a href='../Y/a.html' title='Multiple used in 466 places.'>a</a>, <strong class='reserved'>char</strong> <strong class='reserved'>const</strong> *<a href='../Y/b.html' title='Multiple used in 652 places.'>b</a>)
+     <em class='comment'>/* <a href='#L36'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L96'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+48 tests/lib/strutil/filevercmp.c'  /> */</em>
+<a id='L49' name='L49'></a>  49 <em class='brace'>{</em>
+<a id='L50' name='L50'></a>  50     <strong class='reserved'>int</strong> <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a>;
+<a id='L51' name='L51'></a>  51     <strong class='reserved'>char</strong> <a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>[<a href='../S/lib--global.h.html#L86' title='Defined at 86 in lib/global.h.'>BUF_1K</a>];
+<a id='L52' name='L52'></a>  52     <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/alen.html' title='Multiple used in 15 places.'>alen</a>, <a href='../Y/blen.html' title='Multiple used in 36 places.'>blen</a>;
+<a id='L53' name='L53'></a>  53     <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>;
+<a id='L54' name='L54'></a>  54     <strong class='reserved'>int</strong> <a href='../Y/nresult.html' title='Multiple used in 3 places.'>nresult</a>;
+<a id='L55' name='L55'></a>  55 
+<a id='L56' name='L56'></a>  56     <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> = <a href='../S/lib--strutil.h.html#L672' title='Defined at 672 in lib/strutil.h.'>filevercmp</a> (<a href='../Y/a.html' title='Multiple used in 466 places.'>a</a>, <a href='../Y/b.html' title='Multiple used in 652 places.'>b</a>);
+<a id='L57' name='L57'></a>  57 
+<a id='L58' name='L58'></a>  58     <a href='../Y/alen.html' title='Multiple used in 15 places.'>alen</a> = <a href='../Y/strlen.html' title='Multiple used in 192 places.'>strlen</a> (<a href='../Y/a.html' title='Multiple used in 466 places.'>a</a>);
+<a id='L59' name='L59'></a>  59     <a href='../Y/blen.html' title='Multiple used in 36 places.'>blen</a> = <a href='../Y/strlen.html' title='Multiple used in 192 places.'>strlen</a> (<a href='../Y/b.html' title='Multiple used in 652 places.'>b</a>);
+<a id='L60' name='L60'></a>  60 
+<a id='L61' name='L61'></a>  61     ck_assert_int_le (<a href='../Y/alen.html' title='Multiple used in 15 places.'>alen</a> + <a href='../Y/blen.html' title='Multiple used in 36 places.'>blen</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>));
+<a id='L62' name='L62'></a>  62     <a href='../Y/memcpy.html' title='Multiple used in 22 places.'>memcpy</a> (<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, <a href='../Y/a.html' title='Multiple used in 466 places.'>a</a>, <a href='../Y/alen.html' title='Multiple used in 15 places.'>alen</a>);
+<a id='L63' name='L63'></a>  63     <a href='../Y/memcpy.html' title='Multiple used in 22 places.'>memcpy</a> (<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a> + <a href='../Y/alen.html' title='Multiple used in 15 places.'>alen</a>, <a href='../Y/b.html' title='Multiple used in 652 places.'>b</a>, <a href='../Y/blen.html' title='Multiple used in 36 places.'>blen</a>);
+<a id='L64' name='L64'></a>  64 
+<a id='L65' name='L65'></a>  65     <strong class='reserved'>for</strong> (<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> &lt; <a href='../Y/alen.html' title='Multiple used in 15 places.'>alen</a> + <a href='../Y/blen.html' title='Multiple used in 36 places.'>blen</a>; <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>++)
+<a id='L66' name='L66'></a>  66         <strong class='reserved'>if</strong> (<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>[<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>] == '\1')
+<a id='L67' name='L67'></a>  67             <a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>[<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>] = '\0';
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69     <a href='../Y/nresult.html' title='Multiple used in 3 places.'>nresult</a> = <a href='../S/lib--strutil--filevercmp.c.html#L195' title='Defined at 195 in lib/strutil/filevercmp.c.'>filenvercmp</a> (<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, <a href='../Y/alen.html' title='Multiple used in 15 places.'>alen</a>, <a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a> + <a href='../Y/alen.html' title='Multiple used in 15 places.'>alen</a>, <a href='../Y/blen.html' title='Multiple used in 36 places.'>blen</a>);
+<a id='L70' name='L70'></a>  70     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 112 places.'>ck_assert_int_eq</a> (<a href='../D/sign.html' title='Multiple defined in 2 places.'>sign</a> (<a href='../Y/nresult.html' title='Multiple used in 3 places.'>nresult</a>), <a href='../D/sign.html' title='Multiple defined in 2 places.'>sign</a> (<a href='../Y/result.html' title='Multiple used in 787 places.'>result</a>));
+<a id='L71' name='L71'></a>  71 
+<a id='L72' name='L72'></a>  72     <strong class='reserved'>return</strong> <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a>;
+<a id='L73' name='L73'></a>  73 <em class='brace'>}</em>
+<a id='L74' name='L74'></a>  74 
+<a id='L75' name='L75'></a>  75 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77 <em class='comment'>/* @DataSource("filevercmp_test_ds1") */</em>
+<a id='L78' name='L78'></a>  78 <em class='comment'>/* Testcases are taken from Gnulib */</em>
+<a id='L79' name='L79'></a>  79 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/tests--lib--strutil--filevercmp.c.html#L100' title='Referred from 100 in tests/lib/strutil/filevercmp.c.'>filevercmp_test_struct</a>
+<a id='L80' name='L80'></a>  80 <em class='brace'>{</em>
+<a id='L81' name='L81'></a>  81     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/s1.html' title='Multiple used in 50 places.'>s1</a>;
+<a id='L82' name='L82'></a>  82     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/s2.html' title='Multiple used in 48 places.'>s2</a>;
+<a id='L83' name='L83'></a>  83     <strong class='reserved'>int</strong> <a href='../Y/expected_result.html' title='Multiple used in 57 places.'>expected_result</a>;
+<a id='L84' name='L84'></a>  84 <em class='brace'>}</em> <a href='../Y/filevercmp_test_ds1.html' title='Multiple used in 3 places.'>filevercmp_test_ds1</a>[] = <em class='brace'>{</em>
+<a id='L85' name='L85'></a>  85     <em class='brace'>{</em> "", "", 0 <em class='brace'>}</em>,        <em class='comment'>//</em>
+<a id='L86' name='L86'></a>  86     <em class='brace'>{</em> "a", "a", 0 <em class='brace'>}</em>,      <em class='comment'>//</em>
+<a id='L87' name='L87'></a>  87     <em class='brace'>{</em> "a", "b", -1 <em class='brace'>}</em>,     <em class='comment'>//</em>
+<a id='L88' name='L88'></a>  88     <em class='brace'>{</em> "b", "a", 1 <em class='brace'>}</em>,      <em class='comment'>//</em>
+<a id='L89' name='L89'></a>  89     <em class='brace'>{</em> "00", "01", -1 <em class='brace'>}</em>,   <em class='comment'>//</em>
+<a id='L90' name='L90'></a>  90     <em class='brace'>{</em> "01", "010", -1 <em class='brace'>}</em>,  <em class='comment'>//</em>
+<a id='L91' name='L91'></a>  91     <em class='brace'>{</em> "9", "10", -1 <em class='brace'>}</em>,    <em class='comment'>//</em>
+<a id='L92' name='L92'></a>  92     <em class='brace'>{</em> "0a", "0", 1 <em class='brace'>}</em>,     <em class='comment'>//</em>
+<a id='L93' name='L93'></a>  93 <em class='brace'>}</em>;
+<a id='L94' name='L94'></a>  94 
+<a id='L95' name='L95'></a>  95 <em class='comment'>/* @Test(dataSource = "filevercmp_test_ds1") */</em>
+<a id='L96' name='L96'></a>  96 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/filevercmp_test1.html' title='Multiple used in 2 places.'>filevercmp_test1</a>)
+     <em class='comment'>/* <a href='#L48'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L192'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+96 tests/lib/strutil/filevercmp.c'  /> */</em>
+<a id='L97' name='L97'></a>  97 <em class='brace'>{</em>
+<a id='L98' name='L98'></a>  98     <em class='comment'>// given</em>
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>int</strong> <a href='../Y/actual_result.html' title='Multiple used in 89 places.'>actual_result</a>;
+<a id='L100' name='L100'></a> 100     <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../S/tests--lib--strutil--filevercmp.c.html#L79' title='Defined at 79 in tests/lib/strutil/filevercmp.c.'>filevercmp_test_struct</a> *<a href='../Y/data.html' title='Multiple used in 930 places.'>data</a> = &amp;<a href='../Y/filevercmp_test_ds1.html' title='Multiple used in 3 places.'>filevercmp_test_ds1</a>[<a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>];
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102     <em class='comment'>// when</em>
+<a id='L103' name='L103'></a> 103     <a href='../Y/actual_result.html' title='Multiple used in 89 places.'>actual_result</a> = <a href='../S/lib--strutil.h.html#L672' title='Defined at 672 in lib/strutil.h.'>filevercmp</a> (<a href='../Y/data.html' title='Multiple used in 930 places.'>data</a>-&gt;<a href='../Y/s1.html' title='Multiple used in 50 places.'>s1</a>, <a href='../Y/data.html' title='Multiple used in 930 places.'>data</a>-&gt;<a href='../Y/s2.html' title='Multiple used in 48 places.'>s2</a>);
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105     <em class='comment'>// then</em>
+<a id='L106' name='L106'></a> 106     <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 112 places.'>ck_assert_int_eq</a> (<a href='../D/sign.html' title='Multiple defined in 2 places.'>sign</a> (<a href='../Y/actual_result.html' title='Multiple used in 89 places.'>actual_result</a>), <a href='../D/sign.html' title='Multiple defined in 2 places.'>sign</a> (<a href='../Y/data.html' title='Multiple used in 930 places.'>data</a>-&gt;<a href='../Y/expected_result.html' title='Multiple used in 57 places.'>expected_result</a>));
+<a id='L107' name='L107'></a> 107 <em class='brace'>}</em>
+<a id='L108' name='L108'></a> 108 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L109' name='L109'></a> 109 
+<a id='L110' name='L110'></a> 110 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L111' name='L111'></a> 111 
+<a id='L112' name='L112'></a> 112 <em class='comment'>/* @DataSource("filevercmp_test_ds2") */</em>
+<a id='L113' name='L113'></a> 113 <em class='comment'>/* Testcases are taken from Gnulib */</em>
+<a id='L114' name='L114'></a> 114 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/filevercmp_test_ds2.html' title='Multiple used in 4 places.'>filevercmp_test_ds2</a>[] = <em class='brace'>{</em>
+<a id='L115' name='L115'></a> 115     "",
+<a id='L116' name='L116'></a> 116     ".",
+<a id='L117' name='L117'></a> 117     "..",
+<a id='L118' name='L118'></a> 118     ".0",
+<a id='L119' name='L119'></a> 119     ".9",
+<a id='L120' name='L120'></a> 120     ".A",
+<a id='L121' name='L121'></a> 121     ".Z",
+<a id='L122' name='L122'></a> 122     ".a~",
+<a id='L123' name='L123'></a> 123     ".a",
+<a id='L124' name='L124'></a> 124     ".b~",
+<a id='L125' name='L125'></a> 125     ".b",
+<a id='L126' name='L126'></a> 126     ".z",
+<a id='L127' name='L127'></a> 127     ".zz~",
+<a id='L128' name='L128'></a> 128     ".zz",
+<a id='L129' name='L129'></a> 129     ".zz.~1~",
+<a id='L130' name='L130'></a> 130     ".zz.0",
+<a id='L131' name='L131'></a> 131     ".\1",
+<a id='L132' name='L132'></a> 132     ".\1.txt",
+<a id='L133' name='L133'></a> 133     ".\1x",
+<a id='L134' name='L134'></a> 134     ".\1x\1",
+<a id='L135' name='L135'></a> 135     ".\1.0",
+<a id='L136' name='L136'></a> 136     "0",
+<a id='L137' name='L137'></a> 137     "9",
+<a id='L138' name='L138'></a> 138     "A",
+<a id='L139' name='L139'></a> 139     "Z",
+<a id='L140' name='L140'></a> 140     "a~",
+<a id='L141' name='L141'></a> 141     "a",
+<a id='L142' name='L142'></a> 142     "a.b~",
+<a id='L143' name='L143'></a> 143     "a.b",
+<a id='L144' name='L144'></a> 144     "a.bc~",
+<a id='L145' name='L145'></a> 145     "a.bc",
+<a id='L146' name='L146'></a> 146     "a+",
+<a id='L147' name='L147'></a> 147     "a.",
+<a id='L148' name='L148'></a> 148     "a..a",
+<a id='L149' name='L149'></a> 149     "a.+",
+<a id='L150' name='L150'></a> 150     "b~",
+<a id='L151' name='L151'></a> 151     "b",
+<a id='L152' name='L152'></a> 152     "gcc-c++-10.fc9.tar.gz",
+<a id='L153' name='L153'></a> 153     "gcc-c++-10.fc9.tar.gz.~1~",
+<a id='L154' name='L154'></a> 154     "gcc-c++-10.fc9.tar.gz.~2~",
+<a id='L155' name='L155'></a> 155     "gcc-c++-10.8.12-0.7rc2.fc9.tar.bz2",
+<a id='L156' name='L156'></a> 156     "gcc-c++-10.8.12-0.7rc2.fc9.tar.bz2.~1~",
+<a id='L157' name='L157'></a> 157     "glibc-2-0.1.beta1.fc10.rpm",
+<a id='L158' name='L158'></a> 158     "glibc-common-5-0.2.beta2.fc9.ebuild",
+<a id='L159' name='L159'></a> 159     "glibc-common-5-0.2b.deb",
+<a id='L160' name='L160'></a> 160     "glibc-common-11b.ebuild",
+<a id='L161' name='L161'></a> 161     "glibc-common-11-0.6rc2.ebuild",
+<a id='L162' name='L162'></a> 162     "libstdc++-0.5.8.11-0.7rc2.fc10.tar.gz",
+<a id='L163' name='L163'></a> 163     "libstdc++-4a.fc8.tar.gz",
+<a id='L164' name='L164'></a> 164     "libstdc++-4.10.4.20040204svn.rpm",
+<a id='L165' name='L165'></a> 165     "libstdc++-devel-3.fc8.ebuild",
+<a id='L166' name='L166'></a> 166     "libstdc++-devel-3a.fc9.tar.gz",
+<a id='L167' name='L167'></a> 167     "libstdc++-devel-8.fc8.deb",
+<a id='L168' name='L168'></a> 168     "libstdc++-devel-8.6.2-0.4b.fc8",
+<a id='L169' name='L169'></a> 169     "nss_ldap-1-0.2b.fc9.tar.bz2",
+<a id='L170' name='L170'></a> 170     "nss_ldap-1-0.6rc2.fc8.tar.gz",
+<a id='L171' name='L171'></a> 171     "nss_ldap-1.0-0.1a.tar.gz",
+<a id='L172' name='L172'></a> 172     "nss_ldap-10beta1.fc8.tar.gz",
+<a id='L173' name='L173'></a> 173     "nss_ldap-10.11.8.6.20040204cvs.fc10.ebuild",
+<a id='L174' name='L174'></a> 174     "z",
+<a id='L175' name='L175'></a> 175     "zz~",
+<a id='L176' name='L176'></a> 176     "zz",
+<a id='L177' name='L177'></a> 177     "zz.~1~",
+<a id='L178' name='L178'></a> 178     "zz.0",
+<a id='L179' name='L179'></a> 179     "zz.0.txt",
+<a id='L180' name='L180'></a> 180     "\1",
+<a id='L181' name='L181'></a> 181     "\1.txt",
+<a id='L182' name='L182'></a> 182     "\1x",
+<a id='L183' name='L183'></a> 183     "\1x\1",
+<a id='L184' name='L184'></a> 184     "\1.0",
+<a id='L185' name='L185'></a> 185     "#\1.b#",
+<a id='L186' name='L186'></a> 186     "#.b#",
+<a id='L187' name='L187'></a> 187 <em class='brace'>}</em>;
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/filevercmp_test_ds2_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds2_len</a> = <a href='../Y/G_N_ELEMENTS.html' title='Multiple used in 30 places.'>G_N_ELEMENTS</a> (<a href='../Y/filevercmp_test_ds2.html' title='Multiple used in 4 places.'>filevercmp_test_ds2</a>);
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191 <em class='comment'>/* @Test(dataSource = "filevercmp_test_ds2") */</em>
+<a id='L192' name='L192'></a> 192 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/filevercmp_test2.html' title='Multiple used in 2 places.'>filevercmp_test2</a>)
+     <em class='comment'>/* <a href='#L96'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L224'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+192 tests/lib/strutil/filevercmp.c'  /> */</em>
+<a id='L193' name='L193'></a> 193 <em class='brace'>{</em>
+<a id='L194' name='L194'></a> 194     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> = <a href='../Y/filevercmp_test_ds2.html' title='Multiple used in 4 places.'>filevercmp_test_ds2</a>[<a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>];
+<a id='L195' name='L195'></a> 195     <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>;
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197     <strong class='reserved'>for</strong> (<a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a> = 0; <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a> &lt; <a href='../Y/filevercmp_test_ds2_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds2_len</a>; <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>++)
+<a id='L198' name='L198'></a> 198     <em class='brace'>{</em>
+<a id='L199' name='L199'></a> 199         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/j.html' title='Multiple used in 188 places.'>j</a> = <a href='../Y/filevercmp_test_ds2.html' title='Multiple used in 4 places.'>filevercmp_test_ds2</a>[<a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>];
+<a id='L200' name='L200'></a> 200         <strong class='reserved'>int</strong> <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a>;
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202         <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> = <a href='../S/tests--lib--strutil--filevercmp.c.html#L48' title='Defined at 48 in tests/lib/strutil/filevercmp.c.'>test_filevercmp</a> (<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>, <a href='../Y/j.html' title='Multiple used in 188 places.'>j</a>);
+<a id='L203' name='L203'></a> 203 
+<a id='L204' name='L204'></a> 204         <strong class='reserved'>if</strong> (<a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> &lt; 0)
+<a id='L205' name='L205'></a> 205             <a href='../Y/ck_assert_int_lt.html' title='Multiple used in 3 places.'>ck_assert_int_lt</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L206' name='L206'></a> 206         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> &gt; 0)
+<a id='L207' name='L207'></a> 207             <a href='../Y/ck_assert_int_gt.html' title='Multiple used in 3 places.'>ck_assert_int_gt</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L208' name='L208'></a> 208         <strong class='reserved'>else</strong>
+<a id='L209' name='L209'></a> 209             <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 112 places.'>ck_assert_int_eq</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L210' name='L210'></a> 210     <em class='brace'>}</em>
+<a id='L211' name='L211'></a> 211 <em class='brace'>}</em>
+<a id='L212' name='L212'></a> 212 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214 <em class='comment'>/* @DataSource("filevercmp_test_ds3") */</em>
+<a id='L215' name='L215'></a> 215 <em class='comment'>/* Ticket #3959 */</em>
+<a id='L216' name='L216'></a> 216 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/filevercmp_test_ds3.html' title='Multiple used in 4 places.'>filevercmp_test_ds3</a>[] = <em class='brace'>{</em>
+<a id='L217' name='L217'></a> 217     "application-1.10.tar.gz",
+<a id='L218' name='L218'></a> 218     "application-1.10.1.tar.gz",
+<a id='L219' name='L219'></a> 219 <em class='brace'>}</em>;
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/filevercmp_test_ds3_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds3_len</a> = <a href='../Y/G_N_ELEMENTS.html' title='Multiple used in 30 places.'>G_N_ELEMENTS</a> (<a href='../Y/filevercmp_test_ds3.html' title='Multiple used in 4 places.'>filevercmp_test_ds3</a>);
+<a id='L222' name='L222'></a> 222 
+<a id='L223' name='L223'></a> 223 <em class='comment'>/* @Test(dataSource = "filevercmp_test_ds3") */</em>
+<a id='L224' name='L224'></a> 224 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/filevercmp_test3.html' title='Multiple used in 2 places.'>filevercmp_test3</a>)
+     <em class='comment'>/* <a href='#L192'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L257'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+224 tests/lib/strutil/filevercmp.c'  /> */</em>
+<a id='L225' name='L225'></a> 225 <em class='brace'>{</em>
+<a id='L226' name='L226'></a> 226     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> = <a href='../Y/filevercmp_test_ds3.html' title='Multiple used in 4 places.'>filevercmp_test_ds3</a>[<a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>];
+<a id='L227' name='L227'></a> 227     <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>;
+<a id='L228' name='L228'></a> 228 
+<a id='L229' name='L229'></a> 229     <strong class='reserved'>for</strong> (<a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a> = 0; <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a> &lt; <a href='../Y/filevercmp_test_ds3_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds3_len</a>; <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>++)
+<a id='L230' name='L230'></a> 230     <em class='brace'>{</em>
+<a id='L231' name='L231'></a> 231         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/j.html' title='Multiple used in 188 places.'>j</a> = <a href='../Y/filevercmp_test_ds3.html' title='Multiple used in 4 places.'>filevercmp_test_ds3</a>[<a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>];
+<a id='L232' name='L232'></a> 232         <strong class='reserved'>int</strong> <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a>;
+<a id='L233' name='L233'></a> 233 
+<a id='L234' name='L234'></a> 234         <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> = <a href='../S/lib--strutil.h.html#L672' title='Defined at 672 in lib/strutil.h.'>filevercmp</a> (<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>, <a href='../Y/j.html' title='Multiple used in 188 places.'>j</a>);
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236         <strong class='reserved'>if</strong> (<a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> &lt; 0)
+<a id='L237' name='L237'></a> 237             <a href='../Y/ck_assert_int_lt.html' title='Multiple used in 3 places.'>ck_assert_int_lt</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L238' name='L238'></a> 238         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> &gt; 0)
+<a id='L239' name='L239'></a> 239             <a href='../Y/ck_assert_int_gt.html' title='Multiple used in 3 places.'>ck_assert_int_gt</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L240' name='L240'></a> 240         <strong class='reserved'>else</strong>
+<a id='L241' name='L241'></a> 241             <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 112 places.'>ck_assert_int_eq</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L242' name='L242'></a> 242     <em class='brace'>}</em>
+<a id='L243' name='L243'></a> 243 <em class='brace'>}</em>
+<a id='L244' name='L244'></a> 244 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L245' name='L245'></a> 245 
+<a id='L246' name='L246'></a> 246 <em class='comment'>/* @DataSource("filevercmp_test_ds4") */</em>
+<a id='L247' name='L247'></a> 247 <em class='comment'>/* Ticket #3905 */</em>
+<a id='L248' name='L248'></a> 248 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/filevercmp_test_ds4.html' title='Multiple used in 4 places.'>filevercmp_test_ds4</a>[] = <em class='brace'>{</em>
+<a id='L249' name='L249'></a> 249     "firefox-58.0.1+build1.tar.gz",
+<a id='L250' name='L250'></a> 250     "firefox-59.0~b14+build1.tar.gz",
+<a id='L251' name='L251'></a> 251     "firefox-59.0.1+build1.tar.gz",
+<a id='L252' name='L252'></a> 252 <em class='brace'>}</em>;
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/filevercmp_test_ds4_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds4_len</a> = <a href='../Y/G_N_ELEMENTS.html' title='Multiple used in 30 places.'>G_N_ELEMENTS</a> (<a href='../Y/filevercmp_test_ds4.html' title='Multiple used in 4 places.'>filevercmp_test_ds4</a>);
+<a id='L255' name='L255'></a> 255 
+<a id='L256' name='L256'></a> 256 <em class='comment'>/* @Test(dataSource = "filevercmp_test_ds4") */</em>
+<a id='L257' name='L257'></a> 257 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/filevercmp_test4.html' title='Multiple used in 2 places.'>filevercmp_test4</a>)
+     <em class='comment'>/* <a href='#L224'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L313'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+257 tests/lib/strutil/filevercmp.c'  /> */</em>
+<a id='L258' name='L258'></a> 258 <em class='brace'>{</em>
+<a id='L259' name='L259'></a> 259     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> = <a href='../Y/filevercmp_test_ds4.html' title='Multiple used in 4 places.'>filevercmp_test_ds4</a>[<a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>];
+<a id='L260' name='L260'></a> 260     <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>;
+<a id='L261' name='L261'></a> 261 
+<a id='L262' name='L262'></a> 262     <strong class='reserved'>for</strong> (<a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a> = 0; <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a> &lt; <a href='../Y/filevercmp_test_ds4_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds4_len</a>; <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>++)
+<a id='L263' name='L263'></a> 263     <em class='brace'>{</em>
+<a id='L264' name='L264'></a> 264         <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/j.html' title='Multiple used in 188 places.'>j</a> = <a href='../Y/filevercmp_test_ds4.html' title='Multiple used in 4 places.'>filevercmp_test_ds4</a>[<a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>];
+<a id='L265' name='L265'></a> 265         <strong class='reserved'>int</strong> <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a>;
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267         <a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> = <a href='../S/lib--strutil.h.html#L672' title='Defined at 672 in lib/strutil.h.'>filevercmp</a> (<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>, <a href='../Y/j.html' title='Multiple used in 188 places.'>j</a>);
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269         <strong class='reserved'>if</strong> (<a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> &lt; 0)
+<a id='L270' name='L270'></a> 270             <a href='../Y/ck_assert_int_lt.html' title='Multiple used in 3 places.'>ck_assert_int_lt</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L271' name='L271'></a> 271         <strong class='reserved'>else</strong> <strong class='reserved'>if</strong> (<a href='../Y/result.html' title='Multiple used in 787 places.'>result</a> &gt; 0)
+<a id='L272' name='L272'></a> 272             <a href='../Y/ck_assert_int_gt.html' title='Multiple used in 3 places.'>ck_assert_int_gt</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L273' name='L273'></a> 273         <strong class='reserved'>else</strong>
+<a id='L274' name='L274'></a> 274             <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 112 places.'>ck_assert_int_eq</a> ((<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a>) <a href='../Y/_i.html' title='Multiple used in 18 places.'>_i</a>, <a href='../Y/_j.html' title='Multiple used in 18 places.'>_j</a>);
+<a id='L275' name='L275'></a> 275     <em class='brace'>}</em>
+<a id='L276' name='L276'></a> 276 <em class='brace'>}</em>
+<a id='L277' name='L277'></a> 277 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279 <em class='comment'>/* @DataSource("filevercmp_test_ds5") */</em>
+<a id='L280' name='L280'></a> 280 <em class='comment'>/* Testcases are taken from Gnulib */</em>
+<a id='L281' name='L281'></a> 281 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/filevercmp_test_ds5.html' title='Multiple used in 6 places.'>filevercmp_test_ds5</a>[] = <em class='brace'>{</em>
+<a id='L282' name='L282'></a> 282     "a",
+<a id='L283' name='L283'></a> 283     "a0",
+<a id='L284' name='L284'></a> 284     "a0000",
+<a id='L285' name='L285'></a> 285     <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>,
+<a id='L286' name='L286'></a> 286     "a\1c-27.txt",
+<a id='L287' name='L287'></a> 287     "a\1c-027.txt",
+<a id='L288' name='L288'></a> 288     "a\1c-00000000000000000000000000000000000000000000000000000027.txt",
+<a id='L289' name='L289'></a> 289     <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>,
+<a id='L290' name='L290'></a> 290     ".a\1c-27.txt",
+<a id='L291' name='L291'></a> 291     ".a\1c-027.txt",
+<a id='L292' name='L292'></a> 292     ".a\1c-00000000000000000000000000000000000000000000000000000027.txt",
+<a id='L293' name='L293'></a> 293     <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>,
+<a id='L294' name='L294'></a> 294     "a\1c-",
+<a id='L295' name='L295'></a> 295     "a\1c-0",
+<a id='L296' name='L296'></a> 296     "a\1c-00",
+<a id='L297' name='L297'></a> 297     <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>,
+<a id='L298' name='L298'></a> 298     ".a\1c-",
+<a id='L299' name='L299'></a> 299     ".a\1c-0",
+<a id='L300' name='L300'></a> 300     ".a\1c-00",
+<a id='L301' name='L301'></a> 301     <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>,
+<a id='L302' name='L302'></a> 302     "a\1c-0.txt",
+<a id='L303' name='L303'></a> 303     "a\1c-00.txt",
+<a id='L304' name='L304'></a> 304     <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>,
+<a id='L305' name='L305'></a> 305     ".a\1c-1\1.txt",
+<a id='L306' name='L306'></a> 306     ".a\1c-001\1.txt",
+<a id='L307' name='L307'></a> 307     <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>,
+<a id='L308' name='L308'></a> 308 <em class='brace'>}</em>;
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/filevercmp_test_ds5_len.html' title='Multiple used in 2 places.'>filevercmp_test_ds5_len</a> = <a href='../Y/G_N_ELEMENTS.html' title='Multiple used in 30 places.'>G_N_ELEMENTS</a> (<a href='../Y/filevercmp_test_ds5.html' title='Multiple used in 6 places.'>filevercmp_test_ds5</a>);
+<a id='L311' name='L311'></a> 311 
+<a id='L312' name='L312'></a> 312 <em class='comment'>/* @Test(dataSource = "filevercmp_test_ds5") */</em>
+<a id='L313' name='L313'></a> 313 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/filevercmp_test5.html' title='Multiple used in 2 places.'>filevercmp_test5</a>)
+     <em class='comment'>/* <a href='#L257'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L337'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+313 tests/lib/strutil/filevercmp.c'  /> */</em>
+<a id='L314' name='L314'></a> 314 <em class='brace'>{</em>
+<a id='L315' name='L315'></a> 315     <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/ii.html' title='Multiple used in 5 places.'>ii</a>;
+<a id='L316' name='L316'></a> 316 
+<a id='L317' name='L317'></a> 317     <strong class='reserved'>for</strong> (<a href='../Y/ii.html' title='Multiple used in 5 places.'>ii</a> = 0; <a href='../Y/ii.html' title='Multiple used in 5 places.'>ii</a> &lt; <a href='../Y/filevercmp_test_ds5_len.html' title='Multiple used in 2 places.'>filevercmp_test_ds5_len</a>; <a href='../Y/ii.html' title='Multiple used in 5 places.'>ii</a>++)
+<a id='L318' name='L318'></a> 318         <strong class='reserved'>for</strong> (; <a href='../Y/filevercmp_test_ds5.html' title='Multiple used in 6 places.'>filevercmp_test_ds5</a>[<a href='../Y/ii.html' title='Multiple used in 5 places.'>ii</a>] != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>; <a href='../Y/ii.html' title='Multiple used in 5 places.'>ii</a>++)
+<a id='L319' name='L319'></a> 319         <em class='brace'>{</em>
+<a id='L320' name='L320'></a> 320             <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> = <a href='../Y/filevercmp_test_ds5.html' title='Multiple used in 6 places.'>filevercmp_test_ds5</a>[<a href='../Y/ii.html' title='Multiple used in 5 places.'>ii</a>];
+<a id='L321' name='L321'></a> 321             <a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/jj.html' title='Multiple used in 3 places.'>jj</a>;
+<a id='L322' name='L322'></a> 322 
+<a id='L323' name='L323'></a> 323             <strong class='reserved'>for</strong> (<a href='../Y/jj.html' title='Multiple used in 3 places.'>jj</a> = <a href='../Y/ii.html' title='Multiple used in 5 places.'>ii</a>; <a href='../Y/filevercmp_test_ds5.html' title='Multiple used in 6 places.'>filevercmp_test_ds5</a>[<a href='../Y/jj.html' title='Multiple used in 3 places.'>jj</a>] != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>; <a href='../Y/jj.html' title='Multiple used in 3 places.'>jj</a>++)
+<a id='L324' name='L324'></a> 324             <em class='brace'>{</em>
+<a id='L325' name='L325'></a> 325                 <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/j.html' title='Multiple used in 188 places.'>j</a> = <a href='../Y/filevercmp_test_ds5.html' title='Multiple used in 6 places.'>filevercmp_test_ds5</a>[<a href='../Y/jj.html' title='Multiple used in 3 places.'>jj</a>];
+<a id='L326' name='L326'></a> 326 
+<a id='L327' name='L327'></a> 327                 <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 112 places.'>ck_assert_int_eq</a> (<a href='../S/tests--lib--strutil--filevercmp.c.html#L48' title='Defined at 48 in tests/lib/strutil/filevercmp.c.'>test_filevercmp</a> (<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>, <a href='../Y/j.html' title='Multiple used in 188 places.'>j</a>), 0);
+<a id='L328' name='L328'></a> 328                 <a href='../Y/ck_assert_int_eq.html' title='Multiple used in 112 places.'>ck_assert_int_eq</a> (<a href='../S/tests--lib--strutil--filevercmp.c.html#L48' title='Defined at 48 in tests/lib/strutil/filevercmp.c.'>test_filevercmp</a> (<a href='../Y/j.html' title='Multiple used in 188 places.'>j</a>, <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>), 0);
+<a id='L329' name='L329'></a> 329             <em class='brace'>}</em>
+<a id='L330' name='L330'></a> 330         <em class='brace'>}</em>
+<a id='L331' name='L331'></a> 331 <em class='brace'>}</em>
+<a id='L332' name='L332'></a> 332 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L333' name='L333'></a> 333 
+<a id='L334' name='L334'></a> 334 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L335' name='L335'></a> 335 
+<a id='L336' name='L336'></a> 336 <strong class='reserved'>int</strong>
+<a id='L337' name='L337'></a> 337 main (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L313'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+337 tests/lib/strutil/filevercmp.c'  /> */</em>
+<a id='L338' name='L338'></a> 338 <em class='brace'>{</em>
+<a id='L339' name='L339'></a> 339     <a href='../Y/TCase.html' title='Multiple used in 69 places.'>TCase</a> *<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>;
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341     <a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a> = <a href='../Y/tcase_create.html' title='Multiple used in 68 places.'>tcase_create</a> ("Core");
+<a id='L342' name='L342'></a> 342 
+<a id='L343' name='L343'></a> 343     <em class='comment'>// Add new tests here: ***************</em>
+<a id='L344' name='L344'></a> 344     <a href='../S/tests--mctest.h.html#L12' title='Defined at 12 in tests/mctest.h.'>mctest_add_parameterized_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/filevercmp_test1.html' title='Multiple used in 2 places.'>filevercmp_test1</a>, <a href='../Y/filevercmp_test_ds1.html' title='Multiple used in 3 places.'>filevercmp_test_ds1</a>);
+<a id='L345' name='L345'></a> 345     <a href='../Y/tcase_add_loop_test.html' title='Multiple used in 4 places.'>tcase_add_loop_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/filevercmp_test2.html' title='Multiple used in 2 places.'>filevercmp_test2</a>, 0, <a href='../Y/filevercmp_test_ds2_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds2_len</a>);
+<a id='L346' name='L346'></a> 346     <a href='../Y/tcase_add_loop_test.html' title='Multiple used in 4 places.'>tcase_add_loop_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/filevercmp_test3.html' title='Multiple used in 2 places.'>filevercmp_test3</a>, 0, <a href='../Y/filevercmp_test_ds3_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds3_len</a>);
+<a id='L347' name='L347'></a> 347     <a href='../Y/tcase_add_loop_test.html' title='Multiple used in 4 places.'>tcase_add_loop_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/filevercmp_test4.html' title='Multiple used in 2 places.'>filevercmp_test4</a>, 0, <a href='../Y/filevercmp_test_ds4_len.html' title='Multiple used in 3 places.'>filevercmp_test_ds4_len</a>);
+<a id='L348' name='L348'></a> 348     <a href='../Y/tcase_add_test.html' title='Multiple used in 49 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/filevercmp_test5.html' title='Multiple used in 2 places.'>filevercmp_test5</a>);
+<a id='L349' name='L349'></a> 349     <em class='comment'>// ***********************************</em>
+<a id='L350' name='L350'></a> 350 
+<a id='L351' name='L351'></a> 351     <strong class='reserved'>return</strong> <a href='../S/tests--mctest.h.html#L87' title='Defined at 87 in tests/mctest.h.'>mctest_run_all</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>);
+<a id='L352' name='L352'></a> 352 <em class='brace'>}</em>
+<a id='L353' name='L353'></a> 353 
+<a id='L354' name='L354'></a> 354 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L36'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L337'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+354 tests/lib/strutil/filevercmp.c'  /> */</em>
+</body>
+</html>

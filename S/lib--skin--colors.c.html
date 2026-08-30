@@ -1,0 +1,510 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>lib/skin/colors.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L154'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L438'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/lib.html'>lib</a>/<a href='../files/lib--skin.html'>skin</a>/colors.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/lib.html'>lib</a>/<a href='../files/lib--skin.html'>skin</a>/colors.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 lib/skin/colors.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L154' title='Defined at 154.'>mc_skin_color_get_from_hash</a></li>
+<li><a href='#L175' title='Defined at 175.'>mc_skin_color_remove_from_hash</a></li>
+<li><a href='#L192' title='Defined at 192.'>mc_skin_color_add_to_hash</a></li>
+<li><a href='#L210' title='Defined at 210.'>mc_skin_color_get_with_defaults</a></li>
+<li><a href='#L231' title='Defined at 231.'>mc_skin_color_look_up_alias</a></li>
+<li><a href='#L284' title='Defined at 284.'>mc_skin_color_get_from_ini_file</a></li>
+<li><a href='#L328' title='Defined at 328.'>mc_skin_color_set_default_for_terminal</a></li>
+<li><a href='#L345' title='Defined at 345.'>mc_skin_color_cache_init</a></li>
+<li><a href='#L355' title='Defined at 355.'>mc_skin_color_check_inisection</a></li>
+<li><a href='#L364' title='Defined at 364.'>mc_skin_color_check_bw_mode</a></li>
+<li><a href='#L387' title='Defined at 387.'>mc_skin_color_parse_ini_file</a></li>
+<li><a href='#L438' title='Defined at 438.'>mc_skin_color_get</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   Skins engine.</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'>   Work with colors</em>
+<a id='L4' name='L4'></a>   4 <em class='comment'></em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Copyright (C) 2009-2026</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L7' name='L7'></a>   7 <em class='comment'></em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Written by:</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'>   Slava Zanko &lt;slavazanko@gmail.com&gt;, 2009</em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   Egmont Koblinger &lt;egmont@gmail.com&gt;, 2010</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2012</em>
+<a id='L12' name='L12'></a>  12 <em class='comment'></em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'></em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'></em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'></em>
+<a id='L25' name='L25'></a>  25 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L26' name='L26'></a>  26 <em class='comment'>   along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</em>
+<a id='L27' name='L27'></a>  27 <em class='comment'> */</em>
+<a id='L28' name='L28'></a>  28 
+<a id='L29' name='L29'></a>  29 <em class='sharp'>#include</em> &lt;config.h&gt;
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;string.h&gt;
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> "<a href='../I/internal.h.html'>internal.h</a>"
+<a id='L33' name='L33'></a>  33 
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "<a href='lib--tty--color.h.html'>lib/tty/color.h</a>"
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='comment'>/*** global variables ****************************************************************************/</em>
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='comment'>/*** file scope macro definitions ****************************************************************/</em>
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <em class='comment'>/*** file scope type declarations ****************************************************************/</em>
+<a id='L41' name='L41'></a>  41 
+<a id='L42' name='L42'></a>  42 <strong class='reserved'>typedef</strong> <strong class='reserved'>struct</strong>
+<a id='L43' name='L43'></a>  43 <em class='brace'>{</em>
+<a id='L44' name='L44'></a>  44     <strong class='reserved'>int</strong> <a href='../Y/role.html' title='Multiple used in 2 places.'>role</a>;
+<a id='L45' name='L45'></a>  45     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>;
+<a id='L46' name='L46'></a>  46     <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>;
+<a id='L47' name='L47'></a>  47 <em class='brace'>}</em> <a href='../S/lib--skin--colors.c.html#L53' title='Referred from 53 in lib/skin/colors.c.'>color_keyword_t</a>;
+<a id='L48' name='L48'></a>  48 
+<a id='L49' name='L49'></a>  49 <em class='comment'>/*** forward declarations (file scope functions) *************************************************/</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>/*** file scope variables ************************************************************************/</em>
+<a id='L52' name='L52'></a>  52 
+<a id='L53' name='L53'></a>  53 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../S/lib--skin--colors.c.html#L47' title='Defined at 47 in lib/skin/colors.c.'>color_keyword_t</a> <a href='../Y/color_keywords.html' title='Multiple used in 4 places.'>color_keywords</a>[] = <em class='brace'>{</em>
+<a id='L54' name='L54'></a>  54     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L17' title='Defined at 17 in lib/skin.h.'>CORE_DEFAULT_COLOR</a>, "skin", "terminal_default_color" <em class='brace'>}</em>,
+<a id='L55' name='L55'></a>  55     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L18' title='Defined at 18 in lib/skin.h.'>CORE_NORMAL_COLOR</a>, "core", "_default_" <em class='brace'>}</em>,
+<a id='L56' name='L56'></a>  56     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L19' title='Defined at 19 in lib/skin.h.'>CORE_MARKED_COLOR</a>, "core", "marked" <em class='brace'>}</em>,
+<a id='L57' name='L57'></a>  57     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L20' title='Defined at 20 in lib/skin.h.'>CORE_SELECTED_COLOR</a>, "core", "selected" <em class='brace'>}</em>,
+<a id='L58' name='L58'></a>  58     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L21' title='Defined at 21 in lib/skin.h.'>CORE_MARKED_SELECTED_COLOR</a>, "core", "markselect" <em class='brace'>}</em>,
+<a id='L59' name='L59'></a>  59     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L22' title='Defined at 22 in lib/skin.h.'>CORE_DISABLED_COLOR</a>, "core", "disabled" <em class='brace'>}</em>,
+<a id='L60' name='L60'></a>  60     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L23' title='Defined at 23 in lib/skin.h.'>CORE_REVERSE_COLOR</a>, "core", "reverse" <em class='brace'>}</em>,
+<a id='L61' name='L61'></a>  61     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L28' title='Defined at 28 in lib/skin.h.'>CORE_HEADER_COLOR</a>, "core", "header" <em class='brace'>}</em>,
+<a id='L62' name='L62'></a>  62     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L24' title='Defined at 24 in lib/skin.h.'>CORE_HINTBAR_COLOR</a>, "core", "hintbar" <em class='brace'>}</em>,
+<a id='L63' name='L63'></a>  63     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L25' title='Defined at 25 in lib/skin.h.'>CORE_SHELLPROMPT_COLOR</a>, "core", "shellprompt" <em class='brace'>}</em>,
+<a id='L64' name='L64'></a>  64     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L26' title='Defined at 26 in lib/skin.h.'>CORE_COMMANDLINE_COLOR</a>, "core", "commandline" <em class='brace'>}</em>,
+<a id='L65' name='L65'></a>  65     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L27' title='Defined at 27 in lib/skin.h.'>CORE_COMMANDLINE_MARK_COLOR</a>, "core", "commandlinemark" <em class='brace'>}</em>,
+<a id='L66' name='L66'></a>  66     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L29' title='Defined at 29 in lib/skin.h.'>CORE_SHADOW_COLOR</a>, "core", "shadow" <em class='brace'>}</em>,
+<a id='L67' name='L67'></a>  67     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L30' title='Defined at 30 in lib/skin.h.'>CORE_FRAME_COLOR</a>, "core", "frame" <em class='brace'>}</em>,
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L33' title='Defined at 33 in lib/skin.h.'>DIALOG_NORMAL_COLOR</a>, "dialog", "_default_" <em class='brace'>}</em>,
+<a id='L70' name='L70'></a>  70     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L34' title='Defined at 34 in lib/skin.h.'>DIALOG_FOCUS_COLOR</a>, "dialog", "dfocus" <em class='brace'>}</em>,
+<a id='L71' name='L71'></a>  71     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L35' title='Defined at 35 in lib/skin.h.'>DIALOG_HOT_NORMAL_COLOR</a>, "dialog", "dhotnormal" <em class='brace'>}</em>,
+<a id='L72' name='L72'></a>  72     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L36' title='Defined at 36 in lib/skin.h.'>DIALOG_HOT_FOCUS_COLOR</a>, "dialog", "dhotfocus" <em class='brace'>}</em>,
+<a id='L73' name='L73'></a>  73     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L37' title='Defined at 37 in lib/skin.h.'>DIALOG_SELECTED_NORMAL_COLOR</a>, "dialog", "dselnormal" <em class='brace'>}</em>,
+<a id='L74' name='L74'></a>  74     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L38' title='Defined at 38 in lib/skin.h.'>DIALOG_SELECTED_FOCUS_COLOR</a>, "dialog", "dselfocus" <em class='brace'>}</em>,
+<a id='L75' name='L75'></a>  75     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L39' title='Defined at 39 in lib/skin.h.'>DIALOG_TITLE_COLOR</a>, "dialog", "dtitle" <em class='brace'>}</em>,
+<a id='L76' name='L76'></a>  76     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L40' title='Defined at 40 in lib/skin.h.'>DIALOG_FRAME_COLOR</a>, "dialog", "dframe" <em class='brace'>}</em>,
+<a id='L77' name='L77'></a>  77 
+<a id='L78' name='L78'></a>  78     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L43' title='Defined at 43 in lib/skin.h.'>ERROR_NORMAL_COLOR</a>, "error", "_default_" <em class='brace'>}</em>,
+<a id='L79' name='L79'></a>  79     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L44' title='Defined at 44 in lib/skin.h.'>ERROR_FOCUS_COLOR</a>, "error", "errdfocus" <em class='brace'>}</em>,
+<a id='L80' name='L80'></a>  80     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L45' title='Defined at 45 in lib/skin.h.'>ERROR_HOT_NORMAL_COLOR</a>, "error", "errdhotnormal" <em class='brace'>}</em>,
+<a id='L81' name='L81'></a>  81     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L46' title='Defined at 46 in lib/skin.h.'>ERROR_HOT_FOCUS_COLOR</a>, "error", "errdhotfocus" <em class='brace'>}</em>,
+<a id='L82' name='L82'></a>  82     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L47' title='Defined at 47 in lib/skin.h.'>ERROR_TITLE_COLOR</a>, "error", "errdtitle" <em class='brace'>}</em>,
+<a id='L83' name='L83'></a>  83     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L48' title='Defined at 48 in lib/skin.h.'>ERROR_FRAME_COLOR</a>, "error", "errdframe" <em class='brace'>}</em>,
+<a id='L84' name='L84'></a>  84 
+<a id='L85' name='L85'></a>  85     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L51' title='Defined at 51 in lib/skin.h.'>FILEHIGHLIGHT_DEFAULT_COLOR</a>, "filehighlight", "_default_" <em class='brace'>}</em>,
+<a id='L86' name='L86'></a>  86 
+<a id='L87' name='L87'></a>  87     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L54' title='Defined at 54 in lib/skin.h.'>MENU_ENTRY_COLOR</a>, "menu", "_default_" <em class='brace'>}</em>,
+<a id='L88' name='L88'></a>  88     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L55' title='Defined at 55 in lib/skin.h.'>MENU_SELECTED_COLOR</a>, "menu", "menusel" <em class='brace'>}</em>,
+<a id='L89' name='L89'></a>  89     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L56' title='Defined at 56 in lib/skin.h.'>MENU_HOT_COLOR</a>, "menu", "menuhot" <em class='brace'>}</em>,
+<a id='L90' name='L90'></a>  90     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L57' title='Defined at 57 in lib/skin.h.'>MENU_HOTSEL_COLOR</a>, "menu", "menuhotsel" <em class='brace'>}</em>,
+<a id='L91' name='L91'></a>  91     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L58' title='Defined at 58 in lib/skin.h.'>MENU_INACTIVE_COLOR</a>, "menu", "menuinactive" <em class='brace'>}</em>,
+<a id='L92' name='L92'></a>  92     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L59' title='Defined at 59 in lib/skin.h.'>MENU_FRAME_COLOR</a>, "menu", "menuframe" <em class='brace'>}</em>,
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L62' title='Defined at 62 in lib/skin.h.'>PMENU_ENTRY_COLOR</a>, "popupmenu", "_default_" <em class='brace'>}</em>,
+<a id='L95' name='L95'></a>  95     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L63' title='Defined at 63 in lib/skin.h.'>PMENU_SELECTED_COLOR</a>, "popupmenu", "menusel" <em class='brace'>}</em>,
+<a id='L96' name='L96'></a>  96     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L66' title='Defined at 66 in lib/skin.h.'>PMENU_TITLE_COLOR</a>, "popupmenu", "menutitle" <em class='brace'>}</em>,
+<a id='L97' name='L97'></a>  97     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L67' title='Defined at 67 in lib/skin.h.'>PMENU_FRAME_COLOR</a>, "popupmenu", "menuframe" <em class='brace'>}</em>,
+<a id='L98' name='L98'></a>  98 
+<a id='L99' name='L99'></a>  99     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L69' title='Defined at 69 in lib/skin.h.'>BUTTONBAR_HOTKEY_COLOR</a>, "buttonbar", "hotkey" <em class='brace'>}</em>,
+<a id='L100' name='L100'></a> 100     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L70' title='Defined at 70 in lib/skin.h.'>BUTTONBAR_BUTTON_COLOR</a>, "buttonbar", "button" <em class='brace'>}</em>,
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L72' title='Defined at 72 in lib/skin.h.'>STATUSBAR_COLOR</a>, "statusbar", "_default_" <em class='brace'>}</em>,
+<a id='L103' name='L103'></a> 103 
+<a id='L104' name='L104'></a> 104     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L78' title='Defined at 78 in lib/skin.h.'>CORE_GAUGE_COLOR</a>, "core", "gauge" <em class='brace'>}</em>,
+<a id='L105' name='L105'></a> 105     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L79' title='Defined at 79 in lib/skin.h.'>CORE_INPUT_COLOR</a>, "core", "input" <em class='brace'>}</em>,
+<a id='L106' name='L106'></a> 106     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L82' title='Defined at 82 in lib/skin.h.'>CORE_INPUT_HISTORY_COLOR</a>, "core", "inputhistory" <em class='brace'>}</em>,
+<a id='L107' name='L107'></a> 107     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L83' title='Defined at 83 in lib/skin.h.'>CORE_COMMAND_HISTORY_COLOR</a>, "core", "commandhistory" <em class='brace'>}</em>,
+<a id='L108' name='L108'></a> 108     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L81' title='Defined at 81 in lib/skin.h.'>CORE_INPUT_MARK_COLOR</a>, "core", "inputmark" <em class='brace'>}</em>,
+<a id='L109' name='L109'></a> 109     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L80' title='Defined at 80 in lib/skin.h.'>CORE_INPUT_UNCHANGED_COLOR</a>, "core", "inputunchanged" <em class='brace'>}</em>,
+<a id='L110' name='L110'></a> 110 
+<a id='L111' name='L111'></a> 111     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L85' title='Defined at 85 in lib/skin.h.'>HELP_NORMAL_COLOR</a>, "help", "_default_" <em class='brace'>}</em>,
+<a id='L112' name='L112'></a> 112     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L86' title='Defined at 86 in lib/skin.h.'>HELP_ITALIC_COLOR</a>, "help", "helpitalic" <em class='brace'>}</em>,
+<a id='L113' name='L113'></a> 113     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L87' title='Defined at 87 in lib/skin.h.'>HELP_BOLD_COLOR</a>, "help", "helpbold" <em class='brace'>}</em>,
+<a id='L114' name='L114'></a> 114     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L88' title='Defined at 88 in lib/skin.h.'>HELP_LINK_COLOR</a>, "help", "helplink" <em class='brace'>}</em>,
+<a id='L115' name='L115'></a> 115     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L89' title='Defined at 89 in lib/skin.h.'>HELP_SLINK_COLOR</a>, "help", "helpslink" <em class='brace'>}</em>,
+<a id='L116' name='L116'></a> 116     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L90' title='Defined at 90 in lib/skin.h.'>HELP_TITLE_COLOR</a>, "help", "helptitle" <em class='brace'>}</em>,
+<a id='L117' name='L117'></a> 117     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L91' title='Defined at 91 in lib/skin.h.'>HELP_FRAME_COLOR</a>, "help", "helpframe" <em class='brace'>}</em>,
+<a id='L118' name='L118'></a> 118 
+<a id='L119' name='L119'></a> 119     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L93' title='Defined at 93 in lib/skin.h.'>VIEWER_NORMAL_COLOR</a>, "viewer", "_default_" <em class='brace'>}</em>,
+<a id='L120' name='L120'></a> 120     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L94' title='Defined at 94 in lib/skin.h.'>VIEWER_BOLD_COLOR</a>, "viewer", "viewbold" <em class='brace'>}</em>,
+<a id='L121' name='L121'></a> 121     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L95' title='Defined at 95 in lib/skin.h.'>VIEWER_UNDERLINED_COLOR</a>, "viewer", "viewunderline" <em class='brace'>}</em>,
+<a id='L122' name='L122'></a> 122     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L96' title='Defined at 96 in lib/skin.h.'>VIEWER_BOLD_UNDERLINED_COLOR</a>, "viewer", "viewboldunderline" <em class='brace'>}</em>,
+<a id='L123' name='L123'></a> 123     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L97' title='Defined at 97 in lib/skin.h.'>VIEWER_SELECTED_COLOR</a>, "viewer", "viewselected" <em class='brace'>}</em>,
+<a id='L124' name='L124'></a> 124     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L98' title='Defined at 98 in lib/skin.h.'>VIEWER_FRAME_COLOR</a>, "viewer", "viewframe" <em class='brace'>}</em>,
+<a id='L125' name='L125'></a> 125 
+<a id='L126' name='L126'></a> 126     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L105' title='Defined at 105 in lib/skin.h.'>EDITOR_NORMAL_COLOR</a>, "editor", "_default_" <em class='brace'>}</em>,
+<a id='L127' name='L127'></a> 127     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L107' title='Defined at 107 in lib/skin.h.'>EDITOR_BOLD_COLOR</a>, "editor", "editbold" <em class='brace'>}</em>,
+<a id='L128' name='L128'></a> 128     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L108' title='Defined at 108 in lib/skin.h.'>EDITOR_MARKED_COLOR</a>, "editor", "editmarked" <em class='brace'>}</em>,
+<a id='L129' name='L129'></a> 129     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L109' title='Defined at 109 in lib/skin.h.'>EDITOR_WHITESPACE_COLOR</a>, "editor", "editwhitespace" <em class='brace'>}</em>,
+<a id='L130' name='L130'></a> 130     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L106' title='Defined at 106 in lib/skin.h.'>EDITOR_NONPRINTABLE_COLOR</a>, "editor", "editnonprintable" <em class='brace'>}</em>,
+<a id='L131' name='L131'></a> 131     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L110' title='Defined at 110 in lib/skin.h.'>EDITOR_RIGHT_MARGIN_COLOR</a>, "editor", "editrightmargin" <em class='brace'>}</em>,
+<a id='L132' name='L132'></a> 132     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L116' title='Defined at 116 in lib/skin.h.'>EDITOR_LINE_STATE_COLOR</a>, "editor", "editlinestate" <em class='brace'>}</em>,
+<a id='L133' name='L133'></a> 133     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L111' title='Defined at 111 in lib/skin.h.'>EDITOR_BACKGROUND_COLOR</a>, "editor", "editbg" <em class='brace'>}</em>,
+<a id='L134' name='L134'></a> 134     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L112' title='Defined at 112 in lib/skin.h.'>EDITOR_FRAME_COLOR</a>, "editor", "editframe" <em class='brace'>}</em>,
+<a id='L135' name='L135'></a> 135     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L113' title='Defined at 113 in lib/skin.h.'>EDITOR_FRAME_ACTIVE_COLOR</a>, "editor", "editframeactive" <em class='brace'>}</em>,
+<a id='L136' name='L136'></a> 136     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L114' title='Defined at 114 in lib/skin.h.'>EDITOR_FRAME_DRAG_COLOR</a>, "editor", "editframedrag" <em class='brace'>}</em>,
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L117' title='Defined at 117 in lib/skin.h.'>EDITOR_BOOKMARK_COLOR</a>, "editor", "bookmark" <em class='brace'>}</em>,
+<a id='L139' name='L139'></a> 139     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L118' title='Defined at 118 in lib/skin.h.'>EDITOR_BOOKMARK_FOUND_COLOR</a>, "editor", "bookmarkfound" <em class='brace'>}</em>,
+<a id='L140' name='L140'></a> 140 
+<a id='L141' name='L141'></a> 141     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L121' title='Defined at 121 in lib/skin.h.'>DIFFVIEWER_ADDED_COLOR</a>, "diffviewer", "added" <em class='brace'>}</em>,
+<a id='L142' name='L142'></a> 142     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L122' title='Defined at 122 in lib/skin.h.'>DIFFVIEWER_CHANGEDLINE_COLOR</a>, "diffviewer", "changedline" <em class='brace'>}</em>,
+<a id='L143' name='L143'></a> 143     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L123' title='Defined at 123 in lib/skin.h.'>DIFFVIEWER_CHANGEDNEW_COLOR</a>, "diffviewer", "changednew" <em class='brace'>}</em>,
+<a id='L144' name='L144'></a> 144     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L124' title='Defined at 124 in lib/skin.h.'>DIFFVIEWER_CHANGED_COLOR</a>, "diffviewer", "changed" <em class='brace'>}</em>,
+<a id='L145' name='L145'></a> 145     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L125' title='Defined at 125 in lib/skin.h.'>DIFFVIEWER_REMOVED_COLOR</a>, "diffviewer", "removed" <em class='brace'>}</em>,
+<a id='L146' name='L146'></a> 146     <em class='brace'>{</em> <a href='../S/lib--skin.h.html#L126' title='Defined at 126 in lib/skin.h.'>DIFFVIEWER_ERROR_COLOR</a>, "diffviewer", "error" <em class='brace'>}</em>,
+<a id='L147' name='L147'></a> 147 <em class='brace'>}</em>;
+<a id='L148' name='L148'></a> 148 
+<a id='L149' name='L149'></a> 149 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L150' name='L150'></a> 150 <em class='comment'>/*** file scope functions ************************************************************************/</em>
+<a id='L151' name='L151'></a> 151 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L152' name='L152'></a> 152 
+<a id='L153' name='L153'></a> 153 <strong class='reserved'>static</strong> <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *
+<a id='L154' name='L154'></a> 154 <a href='../R/mc_skin_color_get_from_hash.html' title='Multiple referred from 3 places.'>mc_skin_color_get_from_hash</a> (<a href='../S/lib--skin.h.html#L143' title='Defined at 143 in lib/skin.h.'>mc_skin_t</a> *<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L175'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+154 lib/skin/colors.c'  /> */</em>
+<a id='L155' name='L155'></a> 155 <em class='brace'>{</em>
+<a id='L156' name='L156'></a> 156     <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> <a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>[<a href='../S/lib--global.h.html#L91' title='Defined at 91 in lib/global.h.'>BUF_TINY</a>];
+<a id='L157' name='L157'></a> 157     <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L158' name='L158'></a> 158 
+<a id='L159' name='L159'></a> 159     <strong class='reserved'>if</strong> (<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a> || <a href='../Y/key.html' title='Multiple used in 187 places.'>key</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L160' name='L160'></a> 160         <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>;
+<a id='L161' name='L161'></a> 161 
+<a id='L162' name='L162'></a> 162     <strong class='reserved'>if</strong> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L163' name='L163'></a> 163         <a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a> = &amp;<a href='../Y/mc_skin__default.html' title='Multiple used in 33 places.'>mc_skin__default</a>;
+<a id='L164' name='L164'></a> 164 
+<a id='L165' name='L165'></a> 165     <a href='../Y/g_snprintf.html' title='Multiple used in 98 places.'>g_snprintf</a> (<a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>), "%s.%s", <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>);
+<a id='L166' name='L166'></a> 166     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = (<a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *) <a href='../Y/g_hash_table_lookup.html' title='Multiple used in 5 places.'>g_hash_table_lookup</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/colors.html' title='Multiple used in 64 places.'>colors</a>, (<a href='../Y/gpointer.html' title='Multiple used in 106 places.'>gpointer</a>) <a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>);
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <strong class='reserved'>return</strong> <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L169' name='L169'></a> 169 <em class='brace'>}</em>
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L172' name='L172'></a> 172 
+<a id='L173' name='L173'></a> 173 <em class='sharp'>#if</em> 0
+<a id='L174' name='L174'></a> 174 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L175' name='L175'></a> 175 mc_skin_color_remove_from_hash (<a href='../S/lib--skin.h.html#L143' title='Defined at 143 in lib/skin.h.'>mc_skin_t</a> *<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>)
+     <em class='comment'>/* <a href='#L154'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L192'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+175 lib/skin/colors.c'  /> */</em>
+<a id='L176' name='L176'></a> 176 <em class='brace'>{</em>
+<a id='L177' name='L177'></a> 177     <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> <a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>[<a href='../S/lib--global.h.html#L91' title='Defined at 91 in lib/global.h.'>BUF_TINY</a>];
+<a id='L178' name='L178'></a> 178     <strong class='reserved'>if</strong> (<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a> || <a href='../Y/key.html' title='Multiple used in 187 places.'>key</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L179' name='L179'></a> 179         <strong class='reserved'>return</strong>;
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181     <strong class='reserved'>if</strong> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L182' name='L182'></a> 182         <a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a> = &amp;<a href='../Y/mc_skin__default.html' title='Multiple used in 33 places.'>mc_skin__default</a>;
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184     <a href='../Y/g_snprintf.html' title='Multiple used in 98 places.'>g_snprintf</a> (<a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>), "%s.%s", <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>);
+<a id='L185' name='L185'></a> 185     <a href='../Y/g_hash_table_remove.html' title='Multiple used in 2 places.'>g_hash_table_remove</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/colors.html' title='Multiple used in 64 places.'>colors</a>, (<a href='../Y/gpointer.html' title='Multiple used in 106 places.'>gpointer</a>) <a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>);
+<a id='L186' name='L186'></a> 186 <em class='brace'>}</em>
+<a id='L187' name='L187'></a> 187 <em class='sharp'>#endif</em>
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L190' name='L190'></a> 190 
+<a id='L191' name='L191'></a> 191 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L192' name='L192'></a> 192 <a href='../R/mc_skin_color_add_to_hash.html' title='Multiple referred from 2 places.'>mc_skin_color_add_to_hash</a> (<a href='../S/lib--skin.h.html#L143' title='Defined at 143 in lib/skin.h.'>mc_skin_t</a> *<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>,
+     <em class='comment'>/* <a href='#L175'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L210'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+192 lib/skin/colors.c'  /> */</em>
+<a id='L193' name='L193'></a> 193                            <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>)
+<a id='L194' name='L194'></a> 194 <em class='brace'>{</em>
+<a id='L195' name='L195'></a> 195     <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>;
+<a id='L196' name='L196'></a> 196 
+<a id='L197' name='L197'></a> 197     <a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a> = <a href='../Y/g_strdup_printf.html' title='Multiple used in 91 places.'>g_strdup_printf</a> ("%s.%s", <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>);
+<a id='L198' name='L198'></a> 198     <strong class='reserved'>if</strong> (<a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L199' name='L199'></a> 199     <em class='brace'>{</em>
+<a id='L200' name='L200'></a> 200         <strong class='reserved'>if</strong> (<a href='../Y/g_hash_table_lookup.html' title='Multiple used in 5 places.'>g_hash_table_lookup</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/colors.html' title='Multiple used in 64 places.'>colors</a>, (<a href='../Y/gpointer.html' title='Multiple used in 106 places.'>gpointer</a>) <a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>) != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L201' name='L201'></a> 201             <a href='../Y/g_hash_table_remove.html' title='Multiple used in 2 places.'>g_hash_table_remove</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/colors.html' title='Multiple used in 64 places.'>colors</a>, (<a href='../Y/gpointer.html' title='Multiple used in 106 places.'>gpointer</a>) <a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>);
+<a id='L202' name='L202'></a> 202 
+<a id='L203' name='L203'></a> 203         <a href='../Y/g_hash_table_insert.html' title='Multiple used in 4 places.'>g_hash_table_insert</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/colors.html' title='Multiple used in 64 places.'>colors</a>, (<a href='../Y/gpointer.html' title='Multiple used in 106 places.'>gpointer</a>) <a href='../Y/kname.html' title='Multiple used in 12 places.'>kname</a>, (<a href='../Y/gpointer.html' title='Multiple used in 106 places.'>gpointer</a>) <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>);
+<a id='L204' name='L204'></a> 204     <em class='brace'>}</em>
+<a id='L205' name='L205'></a> 205 <em class='brace'>}</em>
+<a id='L206' name='L206'></a> 206 
+<a id='L207' name='L207'></a> 207 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L208' name='L208'></a> 208 
+<a id='L209' name='L209'></a> 209 <strong class='reserved'>static</strong> <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *
+<a id='L210' name='L210'></a> 210 <a href='../R/mc_skin_color_get_with_defaults.html' title='Multiple referred from 2 places.'>mc_skin_color_get_with_defaults</a> (<strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>)
+     <em class='comment'>/* <a href='#L192'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L231'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+210 lib/skin/colors.c'  /> */</em>
+<a id='L211' name='L211'></a> 211 <em class='brace'>{</em>
+<a id='L212' name='L212'></a> 212     <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = <a href='../S/lib--skin--colors.c.html#L154' title='Defined at 154 in lib/skin/colors.c.'>mc_skin_color_get_from_hash</a> (<a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>, <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>);
+<a id='L215' name='L215'></a> 215     <strong class='reserved'>if</strong> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L216' name='L216'></a> 216         <strong class='reserved'>return</strong> <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L217' name='L217'></a> 217 
+<a id='L218' name='L218'></a> 218     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = <a href='../S/lib--skin--colors.c.html#L154' title='Defined at 154 in lib/skin/colors.c.'>mc_skin_color_get_from_hash</a> (<a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>, <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, "_default_");
+<a id='L219' name='L219'></a> 219     <strong class='reserved'>if</strong> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L220' name='L220'></a> 220         <strong class='reserved'>return</strong> <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L221' name='L221'></a> 221 
+<a id='L222' name='L222'></a> 222     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = <a href='../S/lib--skin--colors.c.html#L154' title='Defined at 154 in lib/skin/colors.c.'>mc_skin_color_get_from_hash</a> (<a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>, "core", "_default_");
+<a id='L223' name='L223'></a> 223     <strong class='reserved'>return</strong> <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L224' name='L224'></a> 224 <em class='brace'>}</em>
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L227' name='L227'></a> 227 
+<a id='L228' name='L228'></a> 228 <em class='comment'>/* If an alias is found, alloc a new string for the resolved value and free the input parameter.</em>
+<a id='L229' name='L229'></a> 229 <em class='comment'>   Otherwise it's a no-op returning the original string. */</em>
+<a id='L230' name='L230'></a> 230 <strong class='reserved'>static</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *
+<a id='L231' name='L231'></a> 231 <a href='../R/mc_skin_color_look_up_alias.html' title='Multiple referred from 3 places.'>mc_skin_color_look_up_alias</a> (<a href='../S/lib--skin.h.html#L143' title='Defined at 143 in lib/skin.h.'>mc_skin_t</a> *<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>)
+     <em class='comment'>/* <a href='#L210'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L284'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+231 lib/skin/colors.c'  /> */</em>
+<a id='L232' name='L232'></a> 232 <em class='brace'>{</em>
+<a id='L233' name='L233'></a> 233     <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/orig.html' title='Multiple used in 5 places.'>orig</a>, *<a href='../Y/str2.html' title='Multiple used in 8 places.'>str2</a>;
+<a id='L234' name='L234'></a> 234     <strong class='reserved'>int</strong> <a href='../Y/hop.html' title='Multiple used in 2 places.'>hop</a> = 0;
+<a id='L235' name='L235'></a> 235 
+<a id='L236' name='L236'></a> 236     <a href='../Y/orig.html' title='Multiple used in 5 places.'>orig</a> = <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>);
+<a id='L237' name='L237'></a> 237     <a href='../Y/str2.html' title='Multiple used in 8 places.'>str2</a> = <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>);
+<a id='L238' name='L238'></a> 238 
+<a id='L239' name='L239'></a> 239     <strong class='reserved'>while</strong> (<a href='../Y/TRUE.html' title='Multiple used in 2086 places.'>TRUE</a>)
+<a id='L240' name='L240'></a> 240     <em class='brace'>{</em>
+<a id='L241' name='L241'></a> 241         <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> **<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>;
+<a id='L242' name='L242'></a> 242         <a href='../Y/gsize.html' title='Multiple used in 149 places.'>gsize</a> <a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a>;
+<a id='L243' name='L243'></a> 243 
+<a id='L244' name='L244'></a> 244         <a href='../Y/values.html' title='Multiple used in 34 places.'>values</a> = <a href='../S/lib--mcconfig--get.c.html#L223' title='Defined at 223 in lib/mcconfig/get.c.'>mc_config_get_string_list</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/config.html' title='Multiple used in 93 places.'>config</a>, "aliases", <a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>, &amp;<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a>);
+<a id='L245' name='L245'></a> 245         <strong class='reserved'>if</strong> (<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a> != 1)
+<a id='L246' name='L246'></a> 246         <em class='brace'>{</em>
+<a id='L247' name='L247'></a> 247             <em class='comment'>// No such alias declaration found, that is, we've got the resolved value.</em>
+<a id='L248' name='L248'></a> 248             <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>);
+<a id='L249' name='L249'></a> 249             <a href='../Y/g_free.html' title='Multiple used in 1082 places.'>g_free</a> (<a href='../Y/str2.html' title='Multiple used in 8 places.'>str2</a>);
+<a id='L250' name='L250'></a> 250             <a href='../Y/g_free.html' title='Multiple used in 1082 places.'>g_free</a> (<a href='../Y/orig.html' title='Multiple used in 5 places.'>orig</a>);
+<a id='L251' name='L251'></a> 251             <strong class='reserved'>return</strong> <a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>;
+<a id='L252' name='L252'></a> 252         <em class='brace'>}</em>
+<a id='L253' name='L253'></a> 253 
+<a id='L254' name='L254'></a> 254         <a href='../Y/g_free.html' title='Multiple used in 1082 places.'>g_free</a> (<a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>);
+<a id='L255' name='L255'></a> 255         <a href='../Y/str.html' title='Multiple used in 677 places.'>str</a> = <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[0]);
+<a id='L256' name='L256'></a> 256         <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>);
+<a id='L257' name='L257'></a> 257 
+<a id='L258' name='L258'></a> 258         <em class='comment'>// str2 resolves at half speed than str. This is used for loop detection.</em>
+<a id='L259' name='L259'></a> 259         <strong class='reserved'>if</strong> (<a href='../Y/hop.html' title='Multiple used in 2 places.'>hop</a>++ % 2 != 0)
+<a id='L260' name='L260'></a> 260         <em class='brace'>{</em>
+<a id='L261' name='L261'></a> 261             <a href='../Y/values.html' title='Multiple used in 34 places.'>values</a> = <a href='../S/lib--mcconfig--get.c.html#L223' title='Defined at 223 in lib/mcconfig/get.c.'>mc_config_get_string_list</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/config.html' title='Multiple used in 93 places.'>config</a>, "aliases", <a href='../Y/str2.html' title='Multiple used in 8 places.'>str2</a>, &amp;<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a>);
+<a id='L262' name='L262'></a> 262             <a href='../Y/g_assert.html' title='Multiple used in 33 places.'>g_assert</a> (<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a> == 1);
+<a id='L263' name='L263'></a> 263             <a href='../Y/g_free.html' title='Multiple used in 1082 places.'>g_free</a> (<a href='../Y/str2.html' title='Multiple used in 8 places.'>str2</a>);
+<a id='L264' name='L264'></a> 264             <a href='../Y/str2.html' title='Multiple used in 8 places.'>str2</a> = <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[0]);
+<a id='L265' name='L265'></a> 265             <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>);
+<a id='L266' name='L266'></a> 266 
+<a id='L267' name='L267'></a> 267             <strong class='reserved'>if</strong> (<a href='../Y/strcmp.html' title='Multiple used in 200 places.'>strcmp</a> (<a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>, <a href='../Y/str2.html' title='Multiple used in 8 places.'>str2</a>) == 0)
+<a id='L268' name='L268'></a> 268             <em class='brace'>{</em>
+<a id='L269' name='L269'></a> 269                 <em class='comment'>// Loop detected.</em>
+<a id='L270' name='L270'></a> 270                 <a href='../Y/fprintf.html' title='Multiple used in 71 places.'>fprintf</a> (<a href='../Y/stderr.html' title='Multiple used in 53 places.'>stderr</a>,
+<a id='L271' name='L271'></a> 271                          "Loop detected while trying to resolve alias \"%s\" in skin \"%s\"\n",
+<a id='L272' name='L272'></a> 272                          <a href='../Y/orig.html' title='Multiple used in 5 places.'>orig</a>, <a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>);
+<a id='L273' name='L273'></a> 273                 <a href='../Y/g_free.html' title='Multiple used in 1082 places.'>g_free</a> (<a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>);
+<a id='L274' name='L274'></a> 274                 <a href='../Y/g_free.html' title='Multiple used in 1082 places.'>g_free</a> (<a href='../Y/str2.html' title='Multiple used in 8 places.'>str2</a>);
+<a id='L275' name='L275'></a> 275                 <strong class='reserved'>return</strong> <a href='../Y/orig.html' title='Multiple used in 5 places.'>orig</a>;
+<a id='L276' name='L276'></a> 276             <em class='brace'>}</em>
+<a id='L277' name='L277'></a> 277         <em class='brace'>}</em>
+<a id='L278' name='L278'></a> 278     <em class='brace'>}</em>
+<a id='L279' name='L279'></a> 279 <em class='brace'>}</em>
+<a id='L280' name='L280'></a> 280 
+<a id='L281' name='L281'></a> 281 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L282' name='L282'></a> 282 
+<a id='L283' name='L283'></a> 283 <strong class='reserved'>static</strong> <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *
+<a id='L284' name='L284'></a> 284 <a href='../R/mc_skin_color_get_from_ini_file.html' title='Multiple referred from 2 places.'>mc_skin_color_get_from_ini_file</a> (<a href='../S/lib--skin.h.html#L143' title='Defined at 143 in lib/skin.h.'>mc_skin_t</a> *<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>)
+     <em class='comment'>/* <a href='#L231'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L328'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+284 lib/skin/colors.c'  /> */</em>
+<a id='L285' name='L285'></a> 285 <em class='brace'>{</em>
+<a id='L286' name='L286'></a> 286     <a href='../Y/gsize.html' title='Multiple used in 149 places.'>gsize</a> <a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a>;
+<a id='L287' name='L287'></a> 287     <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> **<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>;
+<a id='L288' name='L288'></a> 288     <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>, *<a href='../Y/tmp.html' title='Multiple used in 256 places.'>tmp</a>;
+<a id='L289' name='L289'></a> 289 
+<a id='L290' name='L290'></a> 290     <a href='../Y/values.html' title='Multiple used in 34 places.'>values</a> = <a href='../S/lib--mcconfig--get.c.html#L223' title='Defined at 223 in lib/mcconfig/get.c.'>mc_config_get_string_list</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/config.html' title='Multiple used in 93 places.'>config</a>, <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>, &amp;<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a>);
+<a id='L291' name='L291'></a> 291     <strong class='reserved'>if</strong> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a> || <a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[0] == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L292' name='L292'></a> 292     <em class='brace'>{</em>
+<a id='L293' name='L293'></a> 293         <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>);
+<a id='L294' name='L294'></a> 294         <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>;
+<a id='L295' name='L295'></a> 295     <em class='brace'>}</em>
+<a id='L296' name='L296'></a> 296 
+<a id='L297' name='L297'></a> 297     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = <a href='../Y/g_try_new0.html' title='Multiple used in 12 places.'>g_try_new0</a> (<a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a>, 1);
+<a id='L298' name='L298'></a> 298     <strong class='reserved'>if</strong> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L299' name='L299'></a> 299     <em class='brace'>{</em>
+<a id='L300' name='L300'></a> 300         <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>);
+<a id='L301' name='L301'></a> 301         <strong class='reserved'>return</strong> <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>;
+<a id='L302' name='L302'></a> 302     <em class='brace'>}</em>
+<a id='L303' name='L303'></a> 303 
+<a id='L304' name='L304'></a> 304     <a href='../Y/tmp.html' title='Multiple used in 256 places.'>tmp</a> = <a href='../S/lib--skin--colors.c.html#L210' title='Defined at 210 in lib/skin/colors.c.'>mc_skin_color_get_with_defaults</a> (<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, "_default_");
+<a id='L305' name='L305'></a> 305     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/fg.html' title='Multiple used in 26 places.'>fg</a> = (<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a> &gt; 0 &amp;&amp; <a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[0][0])
+<a id='L306' name='L306'></a> 306         ? <a href='../S/lib--skin--colors.c.html#L231' title='Defined at 231 in lib/skin/colors.c.'>mc_skin_color_look_up_alias</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, <a href='../Y/g_strstrip.html' title='Multiple used in 11 places.'>g_strstrip</a> (<a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[0])))
+<a id='L307' name='L307'></a> 307         : (<a href='../Y/tmp.html' title='Multiple used in 256 places.'>tmp</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>) ? <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/tmp.html' title='Multiple used in 256 places.'>tmp</a>-&gt;<a href='../Y/fg.html' title='Multiple used in 26 places.'>fg</a>)
+<a id='L308' name='L308'></a> 308                         : <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>;
+<a id='L309' name='L309'></a> 309     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/bg.html' title='Multiple used in 41 places.'>bg</a> = (<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a> &gt; 1 &amp;&amp; <a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[1][0])
+<a id='L310' name='L310'></a> 310         ? <a href='../S/lib--skin--colors.c.html#L231' title='Defined at 231 in lib/skin/colors.c.'>mc_skin_color_look_up_alias</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, <a href='../Y/g_strstrip.html' title='Multiple used in 11 places.'>g_strstrip</a> (<a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[1])))
+<a id='L311' name='L311'></a> 311         : (<a href='../Y/tmp.html' title='Multiple used in 256 places.'>tmp</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>) ? <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/tmp.html' title='Multiple used in 256 places.'>tmp</a>-&gt;<a href='../Y/bg.html' title='Multiple used in 41 places.'>bg</a>)
+<a id='L312' name='L312'></a> 312                         : <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>;
+<a id='L313' name='L313'></a> 313     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/attrs.html' title='Multiple used in 77 places.'>attrs</a> = (<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a> &gt; 2 &amp;&amp; <a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[2][0])
+<a id='L314' name='L314'></a> 314         ? <a href='../S/lib--skin--colors.c.html#L231' title='Defined at 231 in lib/skin/colors.c.'>mc_skin_color_look_up_alias</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, <a href='../Y/g_strstrip.html' title='Multiple used in 11 places.'>g_strstrip</a> (<a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>[2])))
+<a id='L315' name='L315'></a> 315         : (<a href='../Y/tmp.html' title='Multiple used in 256 places.'>tmp</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>) ? <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (<a href='../Y/tmp.html' title='Multiple used in 256 places.'>tmp</a>-&gt;<a href='../Y/attrs.html' title='Multiple used in 77 places.'>attrs</a>)
+<a id='L316' name='L316'></a> 316                         : <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>;
+<a id='L317' name='L317'></a> 317 
+<a id='L318' name='L318'></a> 318     <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/values.html' title='Multiple used in 34 places.'>values</a>);
+<a id='L319' name='L319'></a> 319 
+<a id='L320' name='L320'></a> 320     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/pair_index.html' title='Multiple used in 13 places.'>pair_index</a> = <a href='../S/lib--tty--color.c.html#L147' title='Defined at 147 in lib/tty/color.c.'>tty_try_alloc_color_pair</a> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L321' name='L321'></a> 321 
+<a id='L322' name='L322'></a> 322     <strong class='reserved'>return</strong> <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L323' name='L323'></a> 323 <em class='brace'>}</em>
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L326' name='L326'></a> 326 
+<a id='L327' name='L327'></a> 327 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L328' name='L328'></a> 328 <a href='../S/lib--skin--colors.c.html#L401' title='Referred from 401 in lib/skin/colors.c.'>mc_skin_color_set_default_for_terminal</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L284'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L345'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+328 lib/skin/colors.c'  /> */</em>
+<a id='L329' name='L329'></a> 329 <em class='brace'>{</em>
+<a id='L330' name='L330'></a> 330     <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L331' name='L331'></a> 331 
+<a id='L332' name='L332'></a> 332     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = <a href='../Y/g_try_new0.html' title='Multiple used in 12 places.'>g_try_new0</a> (<a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a>, 1);
+<a id='L333' name='L333'></a> 333     <strong class='reserved'>if</strong> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L334' name='L334'></a> 334     <em class='brace'>{</em>
+<a id='L335' name='L335'></a> 335         <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/fg.html' title='Multiple used in 26 places.'>fg</a> = <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> ("default");
+<a id='L336' name='L336'></a> 336         <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/bg.html' title='Multiple used in 41 places.'>bg</a> = <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> ("default");
+<a id='L337' name='L337'></a> 337         <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/attrs.html' title='Multiple used in 77 places.'>attrs</a> = <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>;
+<a id='L338' name='L338'></a> 338         <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/pair_index.html' title='Multiple used in 13 places.'>pair_index</a> = <a href='../S/lib--tty--color.c.html#L147' title='Defined at 147 in lib/tty/color.c.'>tty_try_alloc_color_pair</a> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L339' name='L339'></a> 339     <em class='brace'>}</em>
+<a id='L340' name='L340'></a> 340 <em class='brace'>}</em>
+<a id='L341' name='L341'></a> 341 
+<a id='L342' name='L342'></a> 342 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L343' name='L343'></a> 343 
+<a id='L344' name='L344'></a> 344 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L345' name='L345'></a> 345 <a href='../S/lib--skin--colors.c.html#L426' title='Referred from 426 in lib/skin/colors.c.'>mc_skin_color_cache_init</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L328'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L355'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+345 lib/skin/colors.c'  /> */</em>
+<a id='L346' name='L346'></a> 346 <em class='brace'>{</em>
+<a id='L347' name='L347'></a> 347     <strong class='reserved'>for</strong> (<a href='../Y/size_t.html' title='Multiple used in 719 places.'>size_t</a> <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> &lt; <a href='../Y/G_N_ELEMENTS.html' title='Multiple used in 30 places.'>G_N_ELEMENTS</a> (<a href='../Y/color_keywords.html' title='Multiple used in 4 places.'>color_keywords</a>); <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>++)
+<a id='L348' name='L348'></a> 348         <a href='../Y/tty_color_role_to_pair.html' title='Multiple used in 7 places.'>tty_color_role_to_pair</a>[<a href='../Y/color_keywords.html' title='Multiple used in 4 places.'>color_keywords</a>[<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>].<a href='../Y/role.html' title='Multiple used in 2 places.'>role</a> - <a href='../S/lib--tty--color.h.html#L48' title='Defined at 48 in lib/tty/color.h.'>TTY_COLOR_MAP_OFFSET</a>] =
+<a id='L349' name='L349'></a> 349             <a href='../S/lib--skin--colors.c.html#L438' title='Defined at 438 in lib/skin/colors.c.'>mc_skin_color_get</a> (<a href='../Y/color_keywords.html' title='Multiple used in 4 places.'>color_keywords</a>[<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>].<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <a href='../Y/color_keywords.html' title='Multiple used in 4 places.'>color_keywords</a>[<a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>].<a href='../Y/key.html' title='Multiple used in 187 places.'>key</a>);
+<a id='L350' name='L350'></a> 350 <em class='brace'>}</em>
+<a id='L351' name='L351'></a> 351 
+<a id='L352' name='L352'></a> 352 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L353' name='L353'></a> 353 
+<a id='L354' name='L354'></a> 354 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1951 places.'>gboolean</a>
+<a id='L355' name='L355'></a> 355 <a href='../R/mc_skin_color_check_inisection.html' title='Multiple referred from 2 places.'>mc_skin_color_check_inisection</a> (<strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>)
+     <em class='comment'>/* <a href='#L345'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L364'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+355 lib/skin/colors.c'  /> */</em>
+<a id='L356' name='L356'></a> 356 <em class='brace'>{</em>
+<a id='L357' name='L357'></a> 357     <strong class='reserved'>return</strong> !((<a href='../Y/strcasecmp.html' title='Multiple used in 11 places.'>strcasecmp</a> ("skin", <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>) == 0) || (<a href='../Y/strcasecmp.html' title='Multiple used in 11 places.'>strcasecmp</a> ("aliases", <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>) == 0)
+<a id='L358' name='L358'></a> 358              || (<a href='../Y/strcasecmp.html' title='Multiple used in 11 places.'>strcasecmp</a> ("lines", <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>) == 0) || (<a href='../Y/strncasecmp.html' title='Multiple used in 12 places.'>strncasecmp</a> ("widget-", <a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, 7) == 0));
+<a id='L359' name='L359'></a> 359 <em class='brace'>}</em>
+<a id='L360' name='L360'></a> 360 
+<a id='L361' name='L361'></a> 361 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L362' name='L362'></a> 362 
+<a id='L363' name='L363'></a> 363 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L364' name='L364'></a> 364 <a href='../S/lib--skin--colors.c.html#L394' title='Referred from 394 in lib/skin/colors.c.'>mc_skin_color_check_bw_mode</a> (<a href='../S/lib--skin.h.html#L143' title='Defined at 143 in lib/skin.h.'>mc_skin_t</a> *<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>)
+     <em class='comment'>/* <a href='#L355'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L387'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+364 lib/skin/colors.c'  /> */</em>
+<a id='L365' name='L365'></a> 365 <em class='brace'>{</em>
+<a id='L366' name='L366'></a> 366     <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> **<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>, **<a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a>;
+<a id='L367' name='L367'></a> 367 
+<a id='L368' name='L368'></a> 368     <strong class='reserved'>if</strong> (<a href='../S/lib--tty--color.c.html#L139' title='Defined at 139 in lib/tty/color.c.'>tty_use_colors</a> () &amp;&amp; !<a href='../Y/mc_global.html' title='Multiple used in 672 places.'>mc_global</a>.<a href='../Y/tty.html' title='Multiple used in 203 places.'>tty</a>.<a href='../Y/disable_colors.html' title='Multiple used in 10 places.'>disable_colors</a>)
+<a id='L369' name='L369'></a> 369         <strong class='reserved'>return</strong>;
+<a id='L370' name='L370'></a> 370 
+<a id='L371' name='L371'></a> 371     <a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a> = <a href='../S/lib--mcconfig--get.c.html#L49' title='Defined at 49 in lib/mcconfig/get.c.'>mc_config_get_groups</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/config.html' title='Multiple used in 93 places.'>config</a>, <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>);
+<a id='L372' name='L372'></a> 372 
+<a id='L373' name='L373'></a> 373     <strong class='reserved'>for</strong> (<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a> = <a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a>; *<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>; <a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>++)
+<a id='L374' name='L374'></a> 374         <strong class='reserved'>if</strong> (<a href='../S/lib--skin--colors.c.html#L355' title='Defined at 355 in lib/skin/colors.c.'>mc_skin_color_check_inisection</a> (*<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>))
+<a id='L375' name='L375'></a> 375             <a href='../S/lib--mcconfig--common.c.html#L203' title='Defined at 203 in lib/mcconfig/common.c.'>mc_config_del_group</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/config.html' title='Multiple used in 93 places.'>config</a>, *<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>);
+<a id='L376' name='L376'></a> 376 
+<a id='L377' name='L377'></a> 377     <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a>);
+<a id='L378' name='L378'></a> 378 
+<a id='L379' name='L379'></a> 379     <a href='../S/lib--skin--hc-skins.c.html#L50' title='Defined at 50 in lib/skin/hc-skins.c.'>mc_skin_hardcoded_blackwhite_colors</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>);
+<a id='L380' name='L380'></a> 380 <em class='brace'>}</em>
+<a id='L381' name='L381'></a> 381 
+<a id='L382' name='L382'></a> 382 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L383' name='L383'></a> 383 <em class='comment'>/*** public functions ****************************************************************************/</em>
+<a id='L384' name='L384'></a> 384 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L385' name='L385'></a> 385 
+<a id='L386' name='L386'></a> 386 <a href='../Y/gboolean.html' title='Multiple used in 1951 places.'>gboolean</a>
+<a id='L387' name='L387'></a> 387 <a href='../R/mc_skin_color_parse_ini_file.html' title='Multiple referred from 2 places.'>mc_skin_color_parse_ini_file</a> (<a href='../S/lib--skin.h.html#L143' title='Defined at 143 in lib/skin.h.'>mc_skin_t</a> *<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>)
+     <em class='comment'>/* <a href='#L364'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L438'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+387 lib/skin/colors.c'  /> */</em>
+<a id='L388' name='L388'></a> 388 <em class='brace'>{</em>
+<a id='L389' name='L389'></a> 389     <a href='../Y/gboolean.html' title='Multiple used in 1951 places.'>gboolean</a> <a href='../Y/ret.html' title='Multiple used in 891 places.'>ret</a> = <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>;
+<a id='L390' name='L390'></a> 390     <a href='../Y/gsize.html' title='Multiple used in 149 places.'>gsize</a> <a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a>;
+<a id='L391' name='L391'></a> 391     <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> **<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>, **<a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a>;
+<a id='L392' name='L392'></a> 392     <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L393' name='L393'></a> 393 
+<a id='L394' name='L394'></a> 394     <a href='../S/lib--skin--colors.c.html#L364' title='Defined at 364 in lib/skin/colors.c.'>mc_skin_color_check_bw_mode</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>);
+<a id='L395' name='L395'></a> 395 
+<a id='L396' name='L396'></a> 396     <a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a> = <a href='../S/lib--mcconfig--get.c.html#L49' title='Defined at 49 in lib/mcconfig/get.c.'>mc_config_get_groups</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/config.html' title='Multiple used in 93 places.'>config</a>, &amp;<a href='../Y/items_count.html' title='Multiple used in 12 places.'>items_count</a>);
+<a id='L397' name='L397'></a> 397     <strong class='reserved'>if</strong> (*<a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L398' name='L398'></a> 398         <strong class='reserved'>goto</strong> <a href='../Y/ret.html' title='Multiple used in 891 places.'>ret</a>;
+<a id='L399' name='L399'></a> 399 
+<a id='L400' name='L400'></a> 400     <em class='comment'>// as first, need to set up default colors</em>
+<a id='L401' name='L401'></a> 401     <a href='../S/lib--skin--colors.c.html#L328' title='Defined at 328 in lib/skin/colors.c.'>mc_skin_color_set_default_for_terminal</a> ();
+<a id='L402' name='L402'></a> 402     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = <a href='../S/lib--skin--colors.c.html#L284' title='Defined at 284 in lib/skin/colors.c.'>mc_skin_color_get_from_ini_file</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, "core", "_default_");
+<a id='L403' name='L403'></a> 403     <strong class='reserved'>if</strong> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> == <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L404' name='L404'></a> 404         <strong class='reserved'>goto</strong> <a href='../Y/ret.html' title='Multiple used in 891 places.'>ret</a>;
+<a id='L405' name='L405'></a> 405 
+<a id='L406' name='L406'></a> 406     <a href='../S/lib--skin--colors.c.html#L192' title='Defined at 192 in lib/skin/colors.c.'>mc_skin_color_add_to_hash</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, "core", "_default_", <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>);
+<a id='L407' name='L407'></a> 407 
+<a id='L408' name='L408'></a> 408     <strong class='reserved'>for</strong> (<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a> = <a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a>; *<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>; <a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>++)
+<a id='L409' name='L409'></a> 409     <em class='brace'>{</em>
+<a id='L410' name='L410'></a> 410         <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> **<a href='../Y/keys.html' title='Multiple used in 47 places.'>keys</a>, **<a href='../Y/orig_keys.html' title='Multiple used in 4 places.'>orig_keys</a>;
+<a id='L411' name='L411'></a> 411 
+<a id='L412' name='L412'></a> 412         <strong class='reserved'>if</strong> (!<a href='../S/lib--skin--colors.c.html#L355' title='Defined at 355 in lib/skin/colors.c.'>mc_skin_color_check_inisection</a> (*<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>))
+<a id='L413' name='L413'></a> 413             <strong class='reserved'>continue</strong>;
+<a id='L414' name='L414'></a> 414 
+<a id='L415' name='L415'></a> 415         <a href='../Y/orig_keys.html' title='Multiple used in 4 places.'>orig_keys</a> = <a href='../S/lib--mcconfig--get.c.html#L69' title='Defined at 69 in lib/mcconfig/get.c.'>mc_config_get_keys</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>-&gt;<a href='../Y/config.html' title='Multiple used in 93 places.'>config</a>, *<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>, <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>);
+<a id='L416' name='L416'></a> 416 
+<a id='L417' name='L417'></a> 417         <strong class='reserved'>for</strong> (<a href='../Y/keys.html' title='Multiple used in 47 places.'>keys</a> = <a href='../Y/orig_keys.html' title='Multiple used in 4 places.'>orig_keys</a>; *<a href='../Y/keys.html' title='Multiple used in 47 places.'>keys</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>; <a href='../Y/keys.html' title='Multiple used in 47 places.'>keys</a>++)
+<a id='L418' name='L418'></a> 418         <em class='brace'>{</em>
+<a id='L419' name='L419'></a> 419             <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = <a href='../S/lib--skin--colors.c.html#L284' title='Defined at 284 in lib/skin/colors.c.'>mc_skin_color_get_from_ini_file</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, *<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>, *<a href='../Y/keys.html' title='Multiple used in 47 places.'>keys</a>);
+<a id='L420' name='L420'></a> 420             <strong class='reserved'>if</strong> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>)
+<a id='L421' name='L421'></a> 421                 <a href='../S/lib--skin--colors.c.html#L192' title='Defined at 192 in lib/skin/colors.c.'>mc_skin_color_add_to_hash</a> (<a href='../Y/mc_skin.html' title='Multiple used in 137 places.'>mc_skin</a>, *<a href='../Y/groups.html' title='Multiple used in 35 places.'>groups</a>, *<a href='../Y/keys.html' title='Multiple used in 47 places.'>keys</a>, <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>);
+<a id='L422' name='L422'></a> 422         <em class='brace'>}</em>
+<a id='L423' name='L423'></a> 423         <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/orig_keys.html' title='Multiple used in 4 places.'>orig_keys</a>);
+<a id='L424' name='L424'></a> 424     <em class='brace'>}</em>
+<a id='L425' name='L425'></a> 425 
+<a id='L426' name='L426'></a> 426     <a href='../S/lib--skin--colors.c.html#L345' title='Defined at 345 in lib/skin/colors.c.'>mc_skin_color_cache_init</a> ();
+<a id='L427' name='L427'></a> 427 
+<a id='L428' name='L428'></a> 428     <a href='../Y/ret.html' title='Multiple used in 891 places.'>ret</a> = <a href='../Y/TRUE.html' title='Multiple used in 2086 places.'>TRUE</a>;
+<a id='L429' name='L429'></a> 429 
+<a id='L430' name='L430'></a> 430 <a href='../Y/ret.html' title='Multiple used in 891 places.'>ret</a>:
+<a id='L431' name='L431'></a> 431     <a href='../Y/g_strfreev.html' title='Multiple used in 53 places.'>g_strfreev</a> (<a href='../Y/orig_groups.html' title='Multiple used in 9 places.'>orig_groups</a>);
+<a id='L432' name='L432'></a> 432     <strong class='reserved'>return</strong> <a href='../Y/ret.html' title='Multiple used in 891 places.'>ret</a>;
+<a id='L433' name='L433'></a> 433 <em class='brace'>}</em>
+<a id='L434' name='L434'></a> 434 
+<a id='L435' name='L435'></a> 435 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L436' name='L436'></a> 436 
+<a id='L437' name='L437'></a> 437 <strong class='reserved'>int</strong>
+<a id='L438' name='L438'></a> 438 <a href='../R/mc_skin_color_get.html' title='Multiple referred from 3 places.'>mc_skin_color_get</a> (<strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <strong class='reserved'>const</strong> <a href='../Y/gchar.html' title='Multiple used in 322 places.'>gchar</a> *<a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>)
+     <em class='comment'>/* <a href='#L387'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+438 lib/skin/colors.c'  /> */</em>
+<a id='L439' name='L439'></a> 439 <em class='brace'>{</em>
+<a id='L440' name='L440'></a> 440     <a href='../S/lib--tty--color.h.html#L30' title='Defined at 30 in lib/tty/color.h.'>tty_color_pair_t</a> *<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>;
+<a id='L441' name='L441'></a> 441 
+<a id='L442' name='L442'></a> 442     <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> = <a href='../S/lib--skin--colors.c.html#L210' title='Defined at 210 in lib/skin/colors.c.'>mc_skin_color_get_with_defaults</a> (<a href='../Y/group.html' title='Multiple used in 143 places.'>group</a>, <a href='../Y/name.html' title='Multiple used in 626 places.'>name</a>);
+<a id='L443' name='L443'></a> 443 
+<a id='L444' name='L444'></a> 444     <strong class='reserved'>return</strong> (<a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a> != <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>) ? <a href='../Y/mc_skin_color.html' title='Multiple used in 44 places.'>mc_skin_color</a>-&gt;<a href='../Y/pair_index.html' title='Multiple used in 13 places.'>pair_index</a> : 0;
+<a id='L445' name='L445'></a> 445 <em class='brace'>}</em>
+<a id='L446' name='L446'></a> 446 
+<a id='L447' name='L447'></a> 447 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L154'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L438'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+447 lib/skin/colors.c'  /> */</em>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>misc/mcedit.menu.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/misc.html'>misc</a>/mcedit.menu.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/misc.html'>misc</a>/mcedit.menu.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 misc/mcedit.menu.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>shell_patterns=0    # expression type
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>##############################################################################
+<a id='L4' name='L4'></a># The macros are:
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># %f The name of the current file.
+<a id='L7' name='L7'></a># %p Same as %f.
+<a id='L8' name='L8'></a># %n The current file name without extension.
+<a id='L9' name='L9'></a># %x The extension of the current file name.
+<a id='L10' name='L10'></a># %d The current working directory.
+<a id='L11' name='L11'></a>#
+<a id='L12' name='L12'></a># Unlike in mc.menu file, file and directory macros do NOT refer to the file on
+<a id='L13' name='L13'></a># the panels, so uppercase and lowercase versions of the above are the same.
+<a id='L14' name='L14'></a>#
+<a id='L15' name='L15'></a># %% The % character.
+<a id='L16' name='L16'></a># %c The cursor column position number.
+<a id='L17' name='L17'></a># %i The indent of blank space, equal the cursor column position.
+<a id='L18' name='L18'></a># %y The syntax type of current file.
+<a id='L19' name='L19'></a># %b The block file name.
+<a id='L20' name='L20'></a>#
+<a id='L21' name='L21'></a># %view Runs the commands and pipes standard output to the view command.
+<a id='L22' name='L22'></a>#    If %view is immediately followed by '{', keywords 'ascii', 'hex',
+<a id='L23' name='L23'></a>#    'nroff' and 'unform' are recognized.
+<a id='L24' name='L24'></a>#
+<a id='L25' name='L25'></a># %{some text} Prompt for the substitution. An input box
+<a id='L26' name='L26'></a>#   is shown and the text inside the braces is used as a
+<a id='L27' name='L27'></a>#   prompt. The macro is substituted by the text typed by the
+<a id='L28' name='L28'></a>#   user. The user can press ESC or F10 to cancel. This macro
+<a id='L29' name='L29'></a>#   doesn't work on the command line yet.
+<a id='L30' name='L30'></a>#
+<a id='L31' name='L31'></a># With a number followed the % character you can turn quoting on (default)
+<a id='L32' name='L32'></a># and off. For example:
+<a id='L33' name='L33'></a>#   %f    quote expanded macro
+<a id='L34' name='L34'></a>#   %1f   ditto
+<a id='L35' name='L35'></a>#   %0f   don't quote expanded macro
+<a id='L36' name='L36'></a>##############################################################################
+<a id='L37' name='L37'></a> 
+<a id='L38' name='L38'></a>#----------------------- Begin [perl] language template -----------------------
+<a id='L39' name='L39'></a>+ y Perl\ Program | f \.pl$
+<a id='L40' name='L40'></a>1       Author description header
+<a id='L41' name='L41'></a>        unset LANG
+<a id='L42' name='L42'></a>        unset LANGUAGE
+<a id='L43' name='L43'></a>        LC_ALL=
+<a id='L44' name='L44'></a>        MY_UID="`id | sed 's/^.*uid=\([^(]*\).*$/\1/'`"
+<a id='L45' name='L45'></a>        AUTHOR="`awk -F: '$3 == '$MY_UID' {print $5}' /etc/passwd`"
+<a id='L46' name='L46'></a>        cat &gt;&gt;%b &lt;&lt;EOF
+<a id='L47' name='L47'></a>        #----------------------------------------------------------------------
+<a id='L48' name='L48'></a>        # Description:
+<a id='L49' name='L49'></a>        # Author: $AUTHOR &lt;$REPLYTO&gt;
+<a id='L50' name='L50'></a>        # Created at: `date`
+<a id='L51' name='L51'></a>        # Computer: `uname -n` 
+<a id='L52' name='L52'></a>        # System: `uname -sr` on `uname -m`
+<a id='L53' name='L53'></a>        #
+<a id='L54' name='L54'></a>        # Copyright (c) `date +%%Y` $AUTHOR  All rights reserved.
+<a id='L55' name='L55'></a>        #
+<a id='L56' name='L56'></a>        #----------------------------------------------------------------------
+<a id='L57' name='L57'></a>        # Configure section:
+<a id='L58' name='L58'></a> 
+<a id='L59' name='L59'></a>        #----------------------------------------------------------------------
+<a id='L60' name='L60'></a>        #
+<a id='L61' name='L61'></a>        # main()
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a>        EOF
+<a id='L64' name='L64'></a> 
+<a id='L65' name='L65'></a>+ y Perl\ Program | f \.pl$
+<a id='L66' name='L66'></a>2       while ()
+<a id='L67' name='L67'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L68' name='L68'></a>        %iwhile() {
+<a id='L69' name='L69'></a>        %i}
+<a id='L70' name='L70'></a>        EOF
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>+ y Perl\ Program | f \.pl$
+<a id='L73' name='L73'></a>3       for ()
+<a id='L74' name='L74'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L75' name='L75'></a>        %ifor ($i =  ; $i &lt;  ; $i++) {
+<a id='L76' name='L76'></a>        %i}
+<a id='L77' name='L77'></a>        EOF
+<a id='L78' name='L78'></a> 
+<a id='L79' name='L79'></a>+ y Perl\ Program | f \.pl$
+<a id='L80' name='L80'></a>4       foreach ()
+<a id='L81' name='L81'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L82' name='L82'></a>        %iforeach ($ ) {
+<a id='L83' name='L83'></a>        %i}
+<a id='L84' name='L84'></a>        EOF
+<a id='L85' name='L85'></a> 
+<a id='L86' name='L86'></a>+ y Perl\ Program | f \.pl$
+<a id='L87' name='L87'></a>5       if ()
+<a id='L88' name='L88'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L89' name='L89'></a>        %iif () {
+<a id='L90' name='L90'></a>        %i}
+<a id='L91' name='L91'></a>        EOF
+<a id='L92' name='L92'></a> 
+<a id='L93' name='L93'></a>+ y Perl\ Program | f \.pl$
+<a id='L94' name='L94'></a>6       if () else
+<a id='L95' name='L95'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L96' name='L96'></a>        %iif () {
+<a id='L97' name='L97'></a>        %i} else {
+<a id='L98' name='L98'></a>        %i}
+<a id='L99' name='L99'></a>        EOF
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>+ y Perl\ Program | f \.pl$
+<a id='L102' name='L102'></a>7       if () elsif ()
+<a id='L103' name='L103'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L104' name='L104'></a>        %iif () {
+<a id='L105' name='L105'></a>        %i} elsif () {
+<a id='L106' name='L106'></a>        %i}
+<a id='L107' name='L107'></a>        EOF
+<a id='L108' name='L108'></a> 
+<a id='L109' name='L109'></a>+ y Perl\ Program | f \.pl$
+<a id='L110' name='L110'></a>8       substr ()
+<a id='L111' name='L111'></a>        echo "%i$ = substr(\$str, \$off, \$cnt);" &gt;%b
+<a id='L112' name='L112'></a> 
+<a id='L113' name='L113'></a>+ y Perl\ Program | f \.pl$
+<a id='L114' name='L114'></a>9       opendir ()
+<a id='L115' name='L115'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L116' name='L116'></a>        %iopendir(DIR, \$dir) || die("\$0: can't open \$dir\n");
+<a id='L117' name='L117'></a>        EOF
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>+ y Perl\ Program | f \.pl$
+<a id='L120' name='L120'></a>a       sub ()
+<a id='L121' name='L121'></a>        NAME=%{ Enter name of subroutine: }
+<a id='L122' name='L122'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L123' name='L123'></a>        sub
+<a id='L124' name='L124'></a>        $NAME ()
+<a id='L125' name='L125'></a>        {
+<a id='L126' name='L126'></a>        } # end of $NAME()
+<a id='L127' name='L127'></a>        EOF
+<a id='L128' name='L128'></a>#----------------------- End [perl] language template -------------------------
+<a id='L129' name='L129'></a> 
+<a id='L130' name='L130'></a>#---------------------- Begin [shell] language template -----------------------
+<a id='L131' name='L131'></a>+ y Shell\ Script | f \.sh$
+<a id='L132' name='L132'></a>1       Author description header
+<a id='L133' name='L133'></a>        unset LANG
+<a id='L134' name='L134'></a>        unset LANGUAGE
+<a id='L135' name='L135'></a>        LC_ALL=
+<a id='L136' name='L136'></a>        MY_UID="`id | sed 's/^.*uid=\([^(]*\).*$/\1/'`"
+<a id='L137' name='L137'></a>        AUTHOR="`awk -F: '$3 == '$MY_UID' {print $5}' /etc/passwd`"
+<a id='L138' name='L138'></a>        cat &gt;&gt;%b &lt;&lt;EOF
+<a id='L139' name='L139'></a>        #----------------------------------------------------------------------
+<a id='L140' name='L140'></a>        # Description:
+<a id='L141' name='L141'></a>        # Author: $AUTHOR &lt;$REPLYTO&gt;
+<a id='L142' name='L142'></a>        # Created at: `date`
+<a id='L143' name='L143'></a>        # Computer: `uname -n`
+<a id='L144' name='L144'></a>        # System: `uname -sr` on `uname -m`
+<a id='L145' name='L145'></a>        #
+<a id='L146' name='L146'></a>        # Copyright (c) `date +%%Y` $AUTHOR  All rights reserved.
+<a id='L147' name='L147'></a>        #
+<a id='L148' name='L148'></a>        #----------------------------------------------------------------------
+<a id='L149' name='L149'></a>        # Configure section:
+<a id='L150' name='L150'></a> 
+<a id='L151' name='L151'></a>        #----------------------------------------------------------------------
+<a id='L152' name='L152'></a>        #
+<a id='L153' name='L153'></a>        # main()
+<a id='L154' name='L154'></a> 
+<a id='L155' name='L155'></a>        EOF
+<a id='L156' name='L156'></a> 
+<a id='L157' name='L157'></a>+ y Shell\ Script | f \.sh$
+<a id='L158' name='L158'></a>3       for
+<a id='L159' name='L159'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L160' name='L160'></a>        %ifor i in \$
+<a id='L161' name='L161'></a>        %ido
+<a id='L162' name='L162'></a>        %idone
+<a id='L163' name='L163'></a>        EOF
+<a id='L164' name='L164'></a> 
+<a id='L165' name='L165'></a>+ y Shell\ Script | f \.sh$
+<a id='L166' name='L166'></a>4       while
+<a id='L167' name='L167'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L168' name='L168'></a>        %iwhile
+<a id='L169' name='L169'></a>        %ido
+<a id='L170' name='L170'></a>        %idone
+<a id='L171' name='L171'></a>        EOF
+<a id='L172' name='L172'></a> 
+<a id='L173' name='L173'></a>+ y Shell\ Script | f \.sh$
+<a id='L174' name='L174'></a>5       if [] then else
+<a id='L175' name='L175'></a>        cat &lt;&lt;EOF &gt;&gt; %b
+<a id='L176' name='L176'></a>        %iif [ ];then
+<a id='L177' name='L177'></a>        %ielse
+<a id='L178' name='L178'></a>        %ifi
+<a id='L179' name='L179'></a>        EOF
+<a id='L180' name='L180'></a> 
+<a id='L181' name='L181'></a>+ y Shell\ Script | f \.sh$
+<a id='L182' name='L182'></a>6       case
+<a id='L183' name='L183'></a>        NUMBER=%{ Enter number elements of case:}
+<a id='L184' name='L184'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L185' name='L185'></a>        %icase "\$" in
+<a id='L186' name='L186'></a>        EOF
+<a id='L187' name='L187'></a>        while [ "$NUMBER" -gt 0 ]
+<a id='L188' name='L188'></a>        do
+<a id='L189' name='L189'></a>        cat &lt;&lt;EOF &gt;&gt; %b
+<a id='L190' name='L190'></a>        %i)
+<a id='L191' name='L191'></a>        %i    ;;
+<a id='L192' name='L192'></a>        EOF
+<a id='L193' name='L193'></a>        let NUMBER=$NUMBER-1
+<a id='L194' name='L194'></a>        done
+<a id='L195' name='L195'></a>        cat &lt;&lt;EOF &gt;&gt; %b
+<a id='L196' name='L196'></a>        %i*)
+<a id='L197' name='L197'></a>        %iesac
+<a id='L198' name='L198'></a>        EOF
+<a id='L199' name='L199'></a> 
+<a id='L200' name='L200'></a>+ y Shell\ Script | f \.sh$
+<a id='L201' name='L201'></a>7       function
+<a id='L202' name='L202'></a>        NAME=%{ Enter name of function:}
+<a id='L203' name='L203'></a>        cat &lt;&lt;EOF &gt;&gt; %b
+<a id='L204' name='L204'></a>        $NAME() {
+<a id='L205' name='L205'></a>        } # end of $NAME()
+<a id='L206' name='L206'></a>        EOF
+<a id='L207' name='L207'></a> 
+<a id='L208' name='L208'></a>+ y Shell\ Script | f \.sh$
+<a id='L209' name='L209'></a>8       select of bash
+<a id='L210' name='L210'></a>        cat &lt;&lt;EOF &gt;&gt; %b
+<a id='L211' name='L211'></a>        %iselect i in \$l
+<a id='L212' name='L212'></a>        %ido
+<a id='L213' name='L213'></a>        %i    if [ -n "\$i" ];then
+<a id='L214' name='L214'></a>        %i       break
+<a id='L215' name='L215'></a>        %i    else
+<a id='L216' name='L216'></a>        %i       continue
+<a id='L217' name='L217'></a>        %i    fi
+<a id='L218' name='L218'></a>        %idone
+<a id='L219' name='L219'></a>        EOF
+<a id='L220' name='L220'></a> 
+<a id='L221' name='L221'></a>#----------------------- End [shell] language template ------------------------
+<a id='L222' name='L222'></a> 
+<a id='L223' name='L223'></a>#------------------------- Begin [c] language template ------------------------
+<a id='L224' name='L224'></a>+ f \.h$ | f \.c$ | f \.cc$
+<a id='L225' name='L225'></a>1       Author description header
+<a id='L226' name='L226'></a>        unset LANG
+<a id='L227' name='L227'></a>        unset LANGUAGE
+<a id='L228' name='L228'></a>        LC_ALL=
+<a id='L229' name='L229'></a>        MY_UID="`id | sed 's/^.*uid=\([^(]*\).*$/\1/'`"
+<a id='L230' name='L230'></a>        AUTHOR="`awk -F: '$3 == '$MY_UID' {print $5}' /etc/passwd`"
+<a id='L231' name='L231'></a>        cat &gt;&gt; %b &lt;&lt;EOF
+<a id='L232' name='L232'></a>        /********************************************************************
+<a id='L233' name='L233'></a>        * Description:
+<a id='L234' name='L234'></a>        * Author: $AUTHOR &lt;$REPLYTO&gt;
+<a id='L235' name='L235'></a>        * Created at: `date`
+<a id='L236' name='L236'></a>        * Computer: `uname -n`
+<a id='L237' name='L237'></a>        * System: `uname -sr` on `uname -m`
+<a id='L238' name='L238'></a>        *
+<a id='L239' name='L239'></a>        * Copyright (c) `date +%%Y` $AUTHOR  All rights reserved.
+<a id='L240' name='L240'></a>        *
+<a id='L241' name='L241'></a>        ********************************************************************/
+<a id='L242' name='L242'></a>        EOF
+<a id='L243' name='L243'></a> 
+<a id='L244' name='L244'></a>+ f \.h$ | f \.c$ | f \.cc$
+<a id='L245' name='L245'></a>2       GPL description header
+<a id='L246' name='L246'></a>        cat &gt;&gt;%b &lt;&lt;EOF
+<a id='L247' name='L247'></a>        /*
+<a id='L248' name='L248'></a>        *  This program is free software: you can redistribute it and/or modify
+<a id='L249' name='L249'></a>        *  it under the terms of the GNU General Public License as published by
+<a id='L250' name='L250'></a>        *  the Free Software Foundation, either version 3 of the License, or
+<a id='L251' name='L251'></a>        *  (at your option) any later version.
+<a id='L252' name='L252'></a>        *
+<a id='L253' name='L253'></a>        *  This program is distributed in the hope that it will be useful,
+<a id='L254' name='L254'></a>        *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+<a id='L255' name='L255'></a>        *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<a id='L256' name='L256'></a>        *  GNU General Public License for more details.
+<a id='L257' name='L257'></a>        *
+<a id='L258' name='L258'></a>        *  You should have received a copy of the GNU General Public License
+<a id='L259' name='L259'></a>        *  along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<a id='L260' name='L260'></a>        */
+<a id='L261' name='L261'></a>        EOF
+<a id='L262' name='L262'></a> 
+<a id='L263' name='L263'></a>+ f \.c$ | f \.cc$
+<a id='L264' name='L264'></a>3       if ()
+<a id='L265' name='L265'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L266' name='L266'></a>        %iif () {
+<a id='L267' name='L267'></a>        %i}
+<a id='L268' name='L268'></a>        EOF
+<a id='L269' name='L269'></a> 
+<a id='L270' name='L270'></a>+ f \.c$ | f \.cc$
+<a id='L271' name='L271'></a>4       if () else
+<a id='L272' name='L272'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L273' name='L273'></a>        %iif () {
+<a id='L274' name='L274'></a>        %i} else {
+<a id='L275' name='L275'></a>        %i}
+<a id='L276' name='L276'></a>        EOF
+<a id='L277' name='L277'></a> 
+<a id='L278' name='L278'></a>+ f \.c$ | f \.cc$
+<a id='L279' name='L279'></a>5       if () else if ()
+<a id='L280' name='L280'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L281' name='L281'></a>        %iif ( ) {
+<a id='L282' name='L282'></a>        %i} else if ( ) {
+<a id='L283' name='L283'></a>        %i}
+<a id='L284' name='L284'></a>        EOF
+<a id='L285' name='L285'></a> 
+<a id='L286' name='L286'></a>+ f \.c$ | f \.cc$
+<a id='L287' name='L287'></a>6       switch ()
+<a id='L288' name='L288'></a>        NUMBER=%{ Enter number elements of switch:}
+<a id='L289' name='L289'></a>        echo "%iswitch () {" &gt;%b
+<a id='L290' name='L290'></a>        while [ "$NUMBER" -gt 0 ]
+<a id='L291' name='L291'></a>        do
+<a id='L292' name='L292'></a>            echo "%icase '':" &gt;&gt;%b
+<a id='L293' name='L293'></a>            echo "%i      break;" &gt;&gt;%b
+<a id='L294' name='L294'></a>            let NUMBER=$NUMBER-1
+<a id='L295' name='L295'></a>        done
+<a id='L296' name='L296'></a>        echo "%i      default:" &gt;&gt;%b
+<a id='L297' name='L297'></a>        echo "%i}" &gt;&gt;%b
+<a id='L298' name='L298'></a> 
+<a id='L299' name='L299'></a>+ f \.c$ | f \.cc$
+<a id='L300' name='L300'></a>7       for ()
+<a id='L301' name='L301'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L302' name='L302'></a>        %ifor (i =  ; i &lt;  ; i++) {
+<a id='L303' name='L303'></a>        %i}
+<a id='L304' name='L304'></a>        EOF
+<a id='L305' name='L305'></a> 
+<a id='L306' name='L306'></a>+ f \.c$ | f \.cc$
+<a id='L307' name='L307'></a>8       while ()
+<a id='L308' name='L308'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L309' name='L309'></a>        %iwhile () {
+<a id='L310' name='L310'></a>        %i}
+<a id='L311' name='L311'></a>        EOF
+<a id='L312' name='L312'></a> 
+<a id='L313' name='L313'></a>+ f \.c$ | f \.cc$
+<a id='L314' name='L314'></a>9       do {} while ()
+<a id='L315' name='L315'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L316' name='L316'></a>        %ido {
+<a id='L317' name='L317'></a>        %i} while ()
+<a id='L318' name='L318'></a>        EOF
+<a id='L319' name='L319'></a> 
+<a id='L320' name='L320'></a>+ f \.c$ | f \.cc$
+<a id='L321' name='L321'></a>a       array
+<a id='L322' name='L322'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L323' name='L323'></a>        %ichar const x[] = {
+<a id='L324' name='L324'></a>        %i, ,
+<a id='L325' name='L325'></a>        %i};
+<a id='L326' name='L326'></a>        EOF
+<a id='L327' name='L327'></a>        
+<a id='L328' name='L328'></a>+ f \.c$ | f \.cc$
+<a id='L329' name='L329'></a>b       enum
+<a id='L330' name='L330'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L331' name='L331'></a>        %ienum x {
+<a id='L332' name='L332'></a>        %i, ,
+<a id='L333' name='L333'></a>        %i};
+<a id='L334' name='L334'></a>        EOF
+<a id='L335' name='L335'></a>        
+<a id='L336' name='L336'></a>+ f \.c$ | f \.cc$
+<a id='L337' name='L337'></a>c       struct
+<a id='L338' name='L338'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L339' name='L339'></a>        %istruct ? {
+<a id='L340' name='L340'></a>        %i;
+<a id='L341' name='L341'></a>        %i};
+<a id='L342' name='L342'></a>        EOF
+<a id='L343' name='L343'></a> 
+<a id='L344' name='L344'></a>+ f \.c$ | f \.cc$
+<a id='L345' name='L345'></a>d       union
+<a id='L346' name='L346'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L347' name='L347'></a>        %iunion ? {
+<a id='L348' name='L348'></a>        %i;
+<a id='L349' name='L349'></a>        %i};
+<a id='L350' name='L350'></a>        EOF
+<a id='L351' name='L351'></a> 
+<a id='L352' name='L352'></a>+ f \.c$ | f \.cc$
+<a id='L353' name='L353'></a>e       typedef struct
+<a id='L354' name='L354'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L355' name='L355'></a>        %itypedef struct {
+<a id='L356' name='L356'></a>        %i;
+<a id='L357' name='L357'></a>        %i} ?;
+<a id='L358' name='L358'></a>        EOF
+<a id='L359' name='L359'></a> 
+<a id='L360' name='L360'></a>+ f \.c$ | f \.cc$
+<a id='L361' name='L361'></a>f       function
+<a id='L362' name='L362'></a>        NAME=%{ Enter name of function:}
+<a id='L363' name='L363'></a>        cat &lt;&lt;EOF &gt;&gt; %b
+<a id='L364' name='L364'></a>        $NAME()
+<a id='L365' name='L365'></a>        {
+<a id='L366' name='L366'></a>        } /* end of $NAME() */
+<a id='L367' name='L367'></a>        EOF
+<a id='L368' name='L368'></a> 
+<a id='L369' name='L369'></a>+ f \.c$ | f \.h$ | f \.cc$
+<a id='L370' name='L370'></a>g       #include
+<a id='L371' name='L371'></a>        INC=%{ Enter include name: }
+<a id='L372' name='L372'></a>        if [ -r "$INC" ];then
+<a id='L373' name='L373'></a>            echo \#include \"$INC\" &gt;%b
+<a id='L374' name='L374'></a>        else
+<a id='L375' name='L375'></a>            echo \#include \&lt;$INC\&gt; &gt;%b
+<a id='L376' name='L376'></a>        fi
+<a id='L377' name='L377'></a> 
+<a id='L378' name='L378'></a>+ f \.c$ | f \.h$ | f \.cc$
+<a id='L379' name='L379'></a>d       #define
+<a id='L380' name='L380'></a>        echo "#define " &gt;%b
+<a id='L381' name='L381'></a> 
+<a id='L382' name='L382'></a>+ f \.c$ | f \.h$ | f \.cc$
+<a id='L383' name='L383'></a>d       #ifdef
+<a id='L384' name='L384'></a>        cat &lt;&lt;EOF &gt; %b
+<a id='L385' name='L385'></a>        #ifdef
+<a id='L386' name='L386'></a>        #else
+<a id='L387' name='L387'></a>        #endif
+<a id='L388' name='L388'></a>        EOF
+<a id='L389' name='L389'></a> 
+<a id='L390' name='L390'></a>+ f \.c$ | f \.h$ | f \.cc$
+<a id='L391' name='L391'></a>...............................................................................
+<a id='L392' name='L392'></a> 
+<a id='L393' name='L393'></a>+ f \.c$ | f \.h$ | f \.cc$
+<a id='L394' name='L394'></a>h       View all *.h into current directory
+<a id='L395' name='L395'></a>        cat *.h |less
+<a id='L396' name='L396'></a> 
+<a id='L397' name='L397'></a>+ f \.c$ | f \.cc$
+<a id='L398' name='L398'></a>d       Run gdb for current file
+<a id='L399' name='L399'></a>        [ -x "./%n" ] &amp;&amp; gdb ./%n
+<a id='L400' name='L400'></a> 
+<a id='L401' name='L401'></a>= f \.c$ | f \.cc$
+<a id='L402' name='L402'></a>+ f \.c$ | f \.cc$
+<a id='L403' name='L403'></a>c       Compile, link and run the current .c file
+<a id='L404' name='L404'></a>        export CFLAGS="-g -Wall -O2"
+<a id='L405' name='L405'></a>        make || make %n || cc $CFLAGS -o %n %f
+<a id='L406' name='L406'></a>        [ -r "%n" ] &amp;&amp; (echo "*** press any key for run... ***"; read)
+<a id='L407' name='L407'></a>        [ -x "%n" ] &amp;&amp; ./%n
+<a id='L408' name='L408'></a>        (echo -ne "\n--- Press any key for return to edit. ---"; read)
+<a id='L409' name='L409'></a> 
+<a id='L410' name='L410'></a>+ f \.c$ | f \.h$
+<a id='L411' name='L411'></a>t       clang-format `C/C++' formatter
+<a id='L412' name='L412'></a>        clang-format -i %b 1&gt;/dev/null 2&gt; %e
+<a id='L413' name='L413'></a> 
+<a id='L414' name='L414'></a>#--------------------- End [c/c++] language template --------------------------
+<a id='L415' name='L415'></a> 
+<a id='L416' name='L416'></a>#------------------------- Begin unknown template -----------------------------
+<a id='L417' name='L417'></a>+ y unknown &amp; t r
+<a id='L418' name='L418'></a>s       #! /bin/sh
+<a id='L419' name='L419'></a>        echo "#! /bin/sh" &gt;%b
+<a id='L420' name='L420'></a> 
+<a id='L421' name='L421'></a>+ y unknown &amp; t r
+<a id='L422' name='L422'></a>p       #! /usr/bin/perl
+<a id='L423' name='L423'></a>        echo "#! /usr/bin/perl" &gt;%b
+<a id='L424' name='L424'></a> 
+<a id='L425' name='L425'></a>+ y unknown &amp; t r
+<a id='L426' name='L426'></a>a       Author description header
+<a id='L427' name='L427'></a>        unset LANG
+<a id='L428' name='L428'></a>        unset LANGUAGE
+<a id='L429' name='L429'></a>        LC_ALL=
+<a id='L430' name='L430'></a>        MY_UID="`id | sed 's/^.*uid=\([^(]*\).*$/\1/'`"
+<a id='L431' name='L431'></a>        AUTHOR="`awk -F: '$3 == '$MY_UID' {print $5}' /etc/passwd`"
+<a id='L432' name='L432'></a>        cat &gt;&gt;%b &lt;&lt;EOF
+<a id='L433' name='L433'></a>        ----------------------------------------------------------------------
+<a id='L434' name='L434'></a>        Description:
+<a id='L435' name='L435'></a>        Author: $AUTHOR &lt;$REPLYTO&gt;
+<a id='L436' name='L436'></a>        Created at: `date`
+<a id='L437' name='L437'></a>        Computer: `uname -n` 
+<a id='L438' name='L438'></a>        System: `uname -sr` on `uname -m`
+<a id='L439' name='L439'></a> 
+<a id='L440' name='L440'></a>        Copyright (c) `date +%%Y` $AUTHOR  All rights reserved.
+<a id='L441' name='L441'></a>        ----------------------------------------------------------------------
+<a id='L442' name='L442'></a> 
+<a id='L443' name='L443'></a>        EOF
+<a id='L444' name='L444'></a>#--------------------------- End unknown template -----------------------------
+<a id='L445' name='L445'></a> 
+<a id='L446' name='L446'></a>-------------------------------------------------------------------------------
+<a id='L447' name='L447'></a> 
+<a id='L448' name='L448'></a>#----------------------- Begin common section ---------------------------------
+<a id='L449' name='L449'></a>S       Sort selection
+<a id='L450' name='L450'></a>        TMPFILE=`mktemp ${MC_TMPDIR:-/tmp}/up.XXXXXX` || exit 1
+<a id='L451' name='L451'></a>        cat %b &gt; $TMPFILE
+<a id='L452' name='L452'></a>        cat $TMPFILE| sort &gt;%b
+<a id='L453' name='L453'></a>        rm -f $TMPFILE
+<a id='L454' name='L454'></a> 
+<a id='L455' name='L455'></a>I       Insert `Changelog' string
+<a id='L456' name='L456'></a>        DATE="`date +%%Y-%%m-%%d`"
+<a id='L457' name='L457'></a>        MY_UID="`id | sed 's/^.*uid=\([^(]*\).*$/\1/'`"
+<a id='L458' name='L458'></a>        AUTHOR="`awk -F: '$3 == '$MY_UID' {print $5}' /etc/passwd`"
+<a id='L459' name='L459'></a>        EMAIL="&lt;$REPLYTO&gt;"
+<a id='L460' name='L460'></a>        echo "$DATE  $AUTHOR  $EMAIL" &gt;%b
+<a id='L461' name='L461'></a> 
+<a id='L462' name='L462'></a>s       Invoke `shell'
+<a id='L463' name='L463'></a>        sh
+<a id='L464' name='L464'></a> 
+<a id='L465' name='L465'></a>m       view `man'
+<a id='L466' name='L466'></a>        MAN=%{Enter name of man:}
+<a id='L467' name='L467'></a>        %view{ascii,nroff} MANROFFOPT='@MAN_FLAGS@' MAN_KEEP_FORMATTING=1 man -P cat $MAN
+<a id='L468' name='L468'></a> 
+<a id='L469' name='L469'></a>i       Insert output of command to cursor
+<a id='L470' name='L470'></a>        CMD=%{ Enter command: }
+<a id='L471' name='L471'></a>        eval $CMD &gt; %b
+<a id='L472' name='L472'></a> 
+<a id='L473' name='L473'></a>o       Open bash to next free console
+<a id='L474' name='L474'></a>        open -s -- /bin/bash
+<a id='L475' name='L475'></a> 
+<a id='L476' name='L476'></a>u       Upper case selection
+<a id='L477' name='L477'></a>        TMPFILE=`mktemp ${MC_TMPDIR:-/tmp}/up.XXXXXX` || exit 1
+<a id='L478' name='L478'></a>        cat %b &gt; $TMPFILE
+<a id='L479' name='L479'></a>        sed 's/\(.*\)/\U\1/' $TMPFILE &gt;%b
+<a id='L480' name='L480'></a>        rm -f $TMPFILE
+<a id='L481' name='L481'></a> 
+<a id='L482' name='L482'></a>l       Lower case selection
+<a id='L483' name='L483'></a>        TMPFILE=`mktemp ${MC_TMPDIR:-/tmp}/up.XXXXXX` || exit 1
+<a id='L484' name='L484'></a>        cat %b &gt; $TMPFILE
+<a id='L485' name='L485'></a>        sed 's/\(.*\)/\L\1/' $TMPFILE &gt;%b
+<a id='L486' name='L486'></a>        rm -f $TMPFILE
+<a id='L487' name='L487'></a> 
+<a id='L488' name='L488'></a>#-------------------------- End of common section -----------------------------
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+488 misc/mcedit.menu.in'  /> */</em>
+</body>
+</html>

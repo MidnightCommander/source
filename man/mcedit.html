@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="mandoc.css" type="text/css" media="all"/>
+  <title>MCEDIT(1)</title>
+</head>
+<body>
+<table class="head">
+  <tr>
+    <td class="head-ltitle">MCEDIT(1)</td>
+    <td class="head-vol">GNU Midnight Commander</td>
+    <td class="head-rtitle">MCEDIT(1)</td>
+  </tr>
+</table>
+<div class="manual-text">
+<section class="Sh">
+<h1 class="Sh" id="NAME"><a class="permalink" href="#NAME">NAME</a></h1>
+<p class="Pp">mcedit - Internal file editor of GNU Midnight Commander.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNOPSIS"><a class="permalink" href="#SYNOPSIS">SYNOPSIS</a></h1>
+<p class="Pp"><b>mcedit</b> [-bcCdfhstVx?] [+lineno] [file1] [file2] ...</p>
+<p class="Pp"><b>mcedit</b> [-bcCdfhstVx?] file1:lineno[:] file2:lineno[:]
+  ...</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="DESCRIPTION"><a class="permalink" href="#DESCRIPTION">DESCRIPTION</a></h1>
+<p class="Pp">mcedit is a link to <b>mc</b>, the main GNU Midnight Commander
+    executable. Executing GNU Midnight Commander under this name runs the
+    internal editor and opens files specified on the command line. The editor is
+    based on the terminal version of <b>cooledit</b> - standalone editor for X
+    Window System.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS"><a class="permalink" href="#OPTIONS">OPTIONS</a></h1>
+<dl class="Bl-tag">
+  <dt><i>+lineno</i></dt>
+  <dd>Go to the line specified by number (do not put a space between the
+      <i>+</i> sign and the number). Several line numbers are allowed but only
+      the last one will be used, and it will be applied to the first file
+    only.</dd>
+  <dt id="b"><a class="permalink" href="#b"><i>-b</i></a></dt>
+  <dd>Force black and white display. Setting the <b>NO_COLOR</b> environment
+      variable to a nonempty value has the same effect.</dd>
+  <dt id="c"><a class="permalink" href="#c"><i>-c</i></a></dt>
+  <dd>Force ANSI color mode on terminals that don't seem to have color
+    support.</dd>
+  <dt id="d"><a class="permalink" href="#d"><i>-d</i></a></dt>
+  <dd>Disable mouse support.</dd>
+  <dt id="f"><a class="permalink" href="#f"><i>-f</i></a></dt>
+  <dd>Display the compiled-in search path for GNU Midnight Commander data
+    files.</dd>
+  <dt id="S"><a class="permalink" href="#S"><i>-S arg, --skin=arg</i></a></dt>
+  <dd>Specify a name of skin in the command line. See the <b>Skins</b> section
+      in mc(1) for more information.</dd>
+  <dt id="t"><a class="permalink" href="#t"><i>-t</i></a></dt>
+  <dd>Force using termcap database instead of terminfo. This option is only
+      applicable if GNU Midnight Commander was compiled with S-Lang library with
+      terminfo support.</dd>
+  <dt id="V"><a class="permalink" href="#V"><i>-V</i></a></dt>
+  <dd>Display the version of the program.</dd>
+  <dt id="x"><a class="permalink" href="#x"><i>-x</i></a></dt>
+  <dd>Force xterm mode. Used when running on xterm-capable terminals (two screen
+      modes, and able to send mouse escape sequences).</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FEATURES"><a class="permalink" href="#FEATURES">FEATURES</a></h1>
+<p class="Pp">The internal file editor is a full-featured windowed editor. It
+    can edit several files at the same time. Maximum size of each file is 64
+    megabytes. It is possible to edit binary files. The features it presently
+    supports are: block copy, move, delete, cut, paste; key for key undo;
+    pull-down menus; file insertion; macro commands; regular expression search
+    and replace; shift-arrow text highlighting (if supported by the terminal);
+    insert-overwrite toggle; autoindent; tunable tab size; syntax highlighting
+    for various file types; and an option to pipe text blocks through shell
+    commands like indent and ispell.</p>
+<p class="Pp">Each file is opened in its own window in full-screen mode. Window
+    control in mcedit is similar to the window control in other multi-window
+    program: double click on window title maximizes the window to full-screen or
+    restores window size and position; left-click on window title and mouse drag
+    moves the window in editor area; left-click on low-right frame corner and
+    mouse drag resizes the window. These actions can be made using
+    &quot;Window&quot; menu.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="KEYS"><a class="permalink" href="#KEYS">KEYS</a></h1>
+<p class="Pp">The editor is easy to use and can be used without learning. The
+    pull-down menu is invoked by pressing F9. You can learn other keys from the
+    menu and from the button bar labels.</p>
+<p class="Pp">In addition to that, Shift combined with arrows does text
+    highlighting (if supported by the terminal): <b>Ctrl-Ins</b> copies to the
+    file <b>~/.cache/mc/mcedit/mcedit.clip</b>, <b>Shift-Ins</b> pastes from
+    <b>~/.cache/mc/mcedit/mcedit.clip</b>, <b>Shift-Del</b> cuts to
+    <b>~/.cache/mc/mcedit/mcedit.clip</b>, and <b>Ctrl-Del</b> deletes
+    highlighted text. Mouse highlighting also works on some terminals. To use
+    the standard mouse support provided by your terminal, hold the Shift key.
+    Please note that the mouse support in the terminal doesn't share the
+    clipboard with <b>mcedit</b>.</p>
+<p class="Pp">The completion key (usually <b>Meta-Tab</b> or <b>Escape Tab</b>)
+    completes the word under the cursor using the words used in the file.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="MACRO"><a class="permalink" href="#MACRO">MACRO</a></h1>
+<p class="Pp">To define a macro, press <b>Ctrl-R</b> and then type out the keys
+    you want to be executed. Press <b>Ctrl-R</b> again when finished. The macro
+    can be assigned to any key by pressing that key. The macro is executed when
+    you press the assigned key.</p>
+<p class="Pp">The macro commands are stored in section <b>[editor]</b> it the
+    file <b>~/.local/share/mc/mc.macros</b>.</p>
+<p class="Pp">External scripts (filters) can be assigned into the any hotkey by
+    edit <b>mc.macros</b> like following:</p>
+<p class="Pp"></p>
+<pre>[editor]
+ctrl-W=ExecuteScript:25;</pre>
+<p class="Pp">This means that ctrl-W hotkey initiates the
+    <i>ExecuteScript(25)</i> action, then editor handler translates this into
+    execution of <b>~/.local/share/mc/mcedit/macros.d/macro.25.sh</b> shell
+    script.</p>
+<p class="Pp">External scripts are stored in
+    <b>~/.local/share/mc/mcedit/macros.d/</b> directory and must be named as
+    <b>macro.XXXX.sh</b> where <b>XXXX</b> is the number from 0 to 9999. See
+    <b>Edit Menu File</b> for more detail about format of the script.</p>
+<p class="Pp">Following macro definition and directives can be used:</p>
+<dl class="Bl-tag">
+  <dt><i>#silent</i></dt>
+  <dd>If this directive is set, then script starts without interactive
+    subshell.</dd>
+  <dt><i>%c</i></dt>
+  <dd>The cursor column position number.</dd>
+  <dt><i>%i</i></dt>
+  <dd>The indent of blank space, equal the cursor column.</dd>
+  <dt><i>%y</i></dt>
+  <dd>The syntax type of current file.</dd>
+  <dt><i>%b</i></dt>
+  <dd>The block file name.</dd>
+  <dt><i>%f</i></dt>
+  <dd>The current file name.</dd>
+  <dt><i>%n</i></dt>
+  <dd>Only the current file name without extension.</dd>
+  <dt><i>%x</i></dt>
+  <dd>The extension of current file name.</dd>
+  <dt><i>%d</i></dt>
+  <dd>The current directory name.</dd>
+  <dt><i>%F</i></dt>
+  <dd>The current file in the unselected panel.</dd>
+  <dt><i>%D</i></dt>
+  <dd>The directory name of the unselected panel.</dd>
+  <dt><i>%t</i></dt>
+  <dd>The currently tagged files.</dd>
+  <dt><i>%T</i></dt>
+  <dd>The tagged files in the unselected panel.</dd>
+  <dt><i>%v</i> and <i>%V</i></dt>
+  <dd>Similar to the <i>%t</i> and <i>%T</i> , but expands to full names of
+      tagged files.</dd>
+  <dt><i>%u</i> and <i>%U</i></dt>
+  <dd>Similar to the <i>%t</i> and <i>%T</i> macros, but in addition the files
+      are untagged. You can use this macro only once per menu file entry or
+      extension file entry, because next time there will be no tagged
+    files.</dd>
+  <dt><i>%s</i> and <i>%S</i></dt>
+  <dd>The selected files: The tagged files if there are any. Otherwise the
+      current file.</dd>
+</dl>
+<p class="Pp">Feel free to edit this files, if you need. Here is a sample
+    external script:</p>
+<p class="Pp"></p>
+<pre>l       comment selection
+	TMPFILE=`mktemp ${MC_TMPDIR:-/tmp}/up.XXXXXX` || exit 1
+	echo #if 0 &gt; $TMPFILE
+	cat %b &gt;&gt; $TMPFILE
+	echo #endif &gt;&gt; $TMPFILE
+	cat $TMPFILE &gt; %b
+	rm -f $TMPFILE</pre>
+<p class="Pp">If some keys don't work, you can use <b>Learn Keys</b> in the
+    <b>Options</b> menu.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="CODE_NAVIGATION"><a class="permalink" href="#CODE_NAVIGATION">CODE
+  NAVIGATION</a></h1>
+<p class="Pp"><b>mcedit</b> can be used for navigation through code with tags
+    files created by etags or ctags commands. If there is no TAGS file code
+    navigation will not work. For example, in case of exuberant-ctags for C
+    language command will be:</p>
+<p class="Pp">ctags -e --language-force=C -R ./</p>
+<p class="Pp"><b>Meta-Enter</b> shows list box to select item under cursor
+    (cursor should stand at the end of the word).</p>
+<p class="Pp"><b>Meta-Minus</b> where minus is symbol &quot;-&quot; goes to
+    previous function in navigation list (like browser's Back button).</p>
+<p class="Pp"><b>Meta-Equal</b> where equal is symbol &quot;=&quot; goes to next
+    function in navigation list (like browser's Forward button).</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SYNTAX_HIGHLIGHTING"><a class="permalink" href="#SYNTAX_HIGHLIGHTING">SYNTAX
+  HIGHLIGHTING</a></h1>
+<p class="Pp"><b>mcedit</b> supports syntax highlighting. This means that
+    keywords and contexts (like C comments, string constants, etc) are
+    highlighted in different colors. The following section explains the format
+    of the file <b>~/.local/share/mc/syntax/Syntax</b>. If this file is missing,
+    system-wide <b>/__w/mc/mc/install-prefix/share/mc/syntax/Syntax</b> is used.
+    The file <b>~/.local/share/mc/syntax/Syntax</b> is rescanned on opening of
+    every new editor file. The file contains rules for highlighting, each of
+    which is given on a separate line, and define which keywords will be
+    highlighted with what color.</p>
+<p class="Pp">The file is divided into sections, each beginning with a line with
+    the <b>file</b> command. The sections are normally put into separate files
+    using the <b>include</b> command.</p>
+<p class="Pp">The <b>file</b> command has three arguments. The first argument is
+    a regular expression that is applied to the file name to determine if the
+    following section applies to the file. The second argument is the
+    description of the file type. It is used in <b>cooledit</b>; future versions
+    of <b>mcedit</b> may use it as well. The third optional argument is a
+    regular expression to match the first line of text of the file. The rules in
+    the following section apply if either the file name or the first line of
+    text matches.</p>
+<p class="Pp">A section ends with the start of another section. Each section is
+    divided into contexts, and each context contains rules. A context is a scope
+    within the text that a particular set of rules belongs to. For instance, the
+    text within a C style comment (i.e. between <b>/*</b> and <b>*/</b>) has its
+    own color. This is a context, although it has no further rules inside it
+    because there is probably nothing that we want highlighted within a C
+    comment.</p>
+<p class="Pp">A trivial C programming section might look like this:</p>
+<p class="Pp"></p>
+<pre>file .\*\\.c C\sProgram\sFile (#include|/\\\*)
+wholechars abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_
+# default colors
+define  comment   brown
+context default
+<br/>
+  keyword  whole  if       yellow
+<br/>
+  keyword  whole  else     yellow
+<br/>
+  keyword  whole  for      yellow
+<br/>
+  keyword  whole  while    yellow
+<br/>
+  keyword  whole  do       yellow
+<br/>
+  keyword  whole  switch   yellow
+<br/>
+  keyword  whole  case     yellow
+<br/>
+  keyword  whole  static   yellow
+<br/>
+  keyword  whole  extern   yellow
+<br/>
+  keyword         {        brightcyan
+<br/>
+  keyword         }        brightcyan
+<br/>
+  keyword         '*'      green
+# C comments
+context /\* \*/ comment
+# C preprocessor directives
+context linestart # \n red
+<br/>
+  keyword  \\\n  brightred
+# C string constants
+context &quot; &quot; green
+<br/>
+  keyword  %d    brightgreen
+<br/>
+  keyword  %s    brightgreen
+<br/>
+  keyword  %c    brightgreen
+<br/>
+  keyword  \\&quot;   brightgreen</pre>
+<p class="Pp">Each context starts with a line of the form:</p>
+<p class="Pp"><b>context</b> [<b>exclusive</b>]
+    [<b>whole</b>|<b>wholeright</b>|<b>wholeleft</b>] [<b>linestart</b>]
+    <i>delim</i> [<b>linestart</b>] <i>delim</i> [<i>foreground</i>]
+    [<i>background</i>] [<i>attributes</i>]</p>
+<p class="Pp">The first context is an exception. It must start with the
+  command</p>
+<p class="Pp"><b>context default</b> [<i>foreground</i>] [<i>background</i>]
+    [<i>attributes</i>]</p>
+<p class="Pp">otherwise <b>mcedit</b> will report an error. The <b>linestart</b>
+    option specifies that <i>delim</i> must start at the beginning of a line.
+    The <b>whole</b> option tells that <i>delim</i> must be a whole word. To
+    specify that a word must begin on the word boundary only on the left side,
+    you can use the <b>wholeleft</b> option, and similarly a word that must end
+    on the word boundary is specified by <b>wholeright</b>.</p>
+<p class="Pp">The set of characters that constitute a whole word can be changed
+    at any point in the file with the <b>wholechars</b> command. The left and
+    right set of characters can be set separately with</p>
+<p class="Pp"><b>wholechars</b> [<b>left</b>|<b>right</b>] <i>characters</i></p>
+<p class="Pp">The <b>exclusive</b> option causes the text between the delimiters
+    to be highlighted, but not the delimiters themselves.</p>
+<p class="Pp">Each rule is a line of the form:</p>
+<p class="Pp"><b>keyword</b> [<b>whole</b>|<b>wholeright</b>|<b>wholeleft</b>]
+    [<b>linestart</b>] <i>string foreground</i> [<i>background</i>]
+    [<i>attributes</i>]</p>
+<p class="Pp">Context or keyword strings are interpreted, so that you can
+    include tabs and spaces with the sequences \t and \s. Newlines and
+    backslashes are specified with \n and \\ respectively. Since whitespace is
+    used as a separator, it may not be used as is. Also, \* must be used to
+    specify an asterisk. The * itself is a wildcard that matches any length of
+    characters. For example,</p>
+<p class="Pp"></p>
+<pre>
+<br/>
+  keyword         '*'      green</pre>
+<p class="Pp">colors all C single character constants green. You also could
+  use</p>
+<p class="Pp"></p>
+<pre>
+<br/>
+  keyword         &quot;*&quot;      green</pre>
+<p class="Pp">to color string constants, but the matched string would not be
+    allowed to span across multiple newlines. The wildcard may be used within
+    context delimiters as well, but you cannot have a wildcard as the last or
+    first character.</p>
+<p class="Pp">Important to note is the line</p>
+<p class="Pp"></p>
+<pre>
+<br/>
+  keyword  \\\n  brightgreen</pre>
+<p class="Pp">This line defines a keyword containing the backslash and newline
+    characters. Since the keywords are matched before the context delimiters,
+    this keyword prevents the context from ending at the end of the lines that
+    end in a backslash, thus allowing C preprocessor directive to continue
+    across multiple lines.</p>
+<p class="Pp">The possible colors are: black, gray, red, brightred, green,
+    brightgreen, brown, yellow, blue, brightblue, magenta, brightmagenta, cyan,
+    brightcyan, lightgray and white. The special keyword &quot;default&quot;
+    means the terminal's default. Another special keyword &quot;base&quot; means
+    mc's main colors, it is useful as a placeholder if you want to specify
+    attributes without modifying the background color. When 256 colors are
+    available, they can be specified either as color16 to color255, or as rgb000
+    to rgb555 and gray0 to gray23.</p>
+<p class="Pp">If the syntax file is shared with <b>cooledit</b>, it is possible
+    to specify different colors for <b>mcedit</b> and <b>cooledit</b> by
+    separating them with a slash, e.g.</p>
+<p class="Pp"></p>
+<pre>keyword  #include  red/Orange</pre>
+<p class="Pp"><b>mcedit</b> uses the color before the slash. See cooledit(1) for
+    supported <b>cooledit</b> colors.</p>
+<p class="Pp">Attributes can be any of bold, italic, underline, reverse and
+    blink, appended by a plus sign if more than one are desired.</p>
+<p class="Pp">Comments may be put on a separate line starting with the hash sign
+    (#).</p>
+<p class="Pp">If you are describing case insensitive language you need to use
+    <b>caseinsensitive</b> directive. It should be specified at the beginning of
+    syntax file.</p>
+<p class="Pp">Because of the simplicity of the implementation, there are a few
+    intricacies that will not be dealt with correctly but these are a minor
+    irritation. On the whole, a broad spectrum of quite complicated situations
+    are handled with these simple rules. It is a good idea to take a look at the
+    syntax file to see some of the nifty tricks you can do with a little
+    imagination. If you cannot get by with the rules I have coded, and you think
+    you have a rule that would be useful, please email me with your request.
+    However, do not ask for regular expression support, because this is flatly
+    impossible.</p>
+<p class="Pp">A useful hint is to work with as much as possible with the things
+    you can do rather than try to do things that this implementation cannot deal
+    with. Also remember that the aim of syntax highlighting is to make
+    programming less prone to error, not to make code look pretty.</p>
+<p class="Pp">Special sequences interpreted by <b>mcedit</b> are listed
+  below:</p>
+<p class="Pp"></p>
+<pre>mcedit    PCRE2 equivalent
+[a-c]     \[a-c\]        ([ ] has no special meaning)
+\[a-c\]   (a|-|c)*       ( -  has no special meaning)
+{a-c}     \{a-c\}        ({ } has no special meaning)
+\{a-c\}   [ac-]          ( -  has no special meaning)
+.         \.
+(         \(
+)         \)
+*         .*
++         [^ \t]*
+?         \?
+\*        \*
+\+        \+
+^         \^
+$         \$
+|         \|
+\s        [ ]            (space only)
+\t        \t
+\n        \n</pre>
+<p class="Pp">The syntax highlighting can be toggled using Ctrl-s shortcut.
+    Pressing C-s twice effectively reloads the syntax file, so you don't have to
+    exit the editor, or <b>mc</b> itself, to test your syntax modifications.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="OPTIONS~2"><a class="permalink" href="#OPTIONS~2">OPTIONS</a></h1>
+<p class="Pp">Most options can be set from Options dialog box. See the
+    <b>Options</b> menu. The following options are defined in
+    <b>~/.config/mc/ini</b> and have obvious counterparts in the dialog box. You
+    can modify them to change the editor behavior, by editing the file. Unless
+    specified, a 1 sets the option to on, and a 0 sets it to off, as usual.</p>
+<dl class="Bl-tag">
+  <dt id="use_internal_edit"><a class="permalink" href="#use_internal_edit"><i>use_internal_edit</i></a></dt>
+  <dd>This option is ignored when invoking <b>mcedit</b>.</dd>
+  <dt id="editor_tab_spacing"><a class="permalink" href="#editor_tab_spacing"><i>editor_tab_spacing</i></a></dt>
+  <dd>Interpret the tab character as being of this length. Default is 8. You
+      should avoid using other than 8 since most other editors and text viewers
+      assume a tab spacing of 8. Use <b>editor_fake_half_tabs</b> to simulate a
+      smaller tab spacing.</dd>
+  <dt id="editor_fill_tabs_with_spaces"><a class="permalink" href="#editor_fill_tabs_with_spaces"><i>editor_fill_tabs_with_spaces</i></a></dt>
+  <dd>Never insert a tab character. Rather insert spaces (ascii 32) to fill to
+      the desired tab size.</dd>
+  <dt id="editor_return_does_auto_indent"><a class="permalink" href="#editor_return_does_auto_indent"><i>editor_return_does_auto_indent</i></a></dt>
+  <dd>Pressing return will tab across to match the indentation of the first line
+      above that has text on it.</dd>
+  <dt id="editor_backspace_through_tabs"><a class="permalink" href="#editor_backspace_through_tabs"><i>editor_backspace_through_tabs</i></a></dt>
+  <dd>Make a single backspace delete all the space to the left margin if there
+      is no text between the cursor and the left margin.</dd>
+  <dt id="editor_fake_half_tabs"><a class="permalink" href="#editor_fake_half_tabs"><i>editor_fake_half_tabs</i></a></dt>
+  <dd>This will emulate a half tab for those who want to program with a tab
+      spacing of 4, but do not want the tab size changed from 8 (so that the
+      code will be formatted the same when displayed by other programs). When
+      editing between text and the left margin, moving and tabbing will be as
+      though a tab space were 4, while actually using spaces and normal tabs for
+      an optimal fill. When editing anywhere else, a normal tab is
+    inserted.</dd>
+  <dt id="editor_option_save_mode"><a class="permalink" href="#editor_option_save_mode"><i>editor_option_save_mode</i></a></dt>
+  <dd>Possible values 0, 1 and 2. The save mode (see the options menu also)
+      allows you to change the method of saving a file. Quick save (0) saves the
+      file immediately, truncating the disk file to zero length (i.e. erasing
+      it) and then writing the editor contents to the file. This method is fast,
+      but dangerous, since a system error during a file save will leave the file
+      only partially written, possibly rendering the data irretrievable. When
+      saving, the safe save (1) option enables creation of a temporary file into
+      which the file contents are first written. In the event of a problem, the
+      original file is untouched. When the temporary file is successfully
+      written, it is renamed to the name of the original file, thus replacing
+      it. The safest method is create backups (2): a backup file is created
+      before any changes are made. You can specify your own backup file
+      extension in the dialog. Note that saving twice will replace your backup
+      as well as your original file.</dd>
+  <dt id="editor_word_wrap_line_length"><a class="permalink" href="#editor_word_wrap_line_length"><i>editor_word_wrap_line_length</i></a></dt>
+  <dd>Line length to wrap at. Default is 72.</dd>
+  <dt id="editor_backup_extension"><a class="permalink" href="#editor_backup_extension"><i>editor_backup_extension</i></a></dt>
+  <dd>Symbol to add to name of backup files. Default is &quot;~&quot;.</dd>
+  <dt id="editor_line_state"><a class="permalink" href="#editor_line_state"><i>editor_line_state</i></a></dt>
+  <dd>Show state line of editor. Currently it shows current line number (in the
+      future it might show things like folding, breakpoints, etc.). M-n toggles
+      this option.</dd>
+  <dt id="editor_visible_spaces"><a class="permalink" href="#editor_visible_spaces"><i>editor_visible_spaces</i></a></dt>
+  <dd>Toggle &quot;show visible trailing spaces&quot;. If
+      editor_visible_spaces=1, they are shown as '.'</dd>
+  <dt id="editor_visible_tabs"><a class="permalink" href="#editor_visible_tabs"><i>editor_visible_tabs</i></a></dt>
+  <dd>Toggle &quot;show visible tabs&quot;. If editor_visible_tabs=1, tabs are
+      shown as '&lt;----&gt;'</dd>
+  <dt id="editor_persistent_selections"><a class="permalink" href="#editor_persistent_selections"><i>editor_persistent_selections</i></a></dt>
+  <dd>Do not remove block selection after cursor movement.</dd>
+  <dt id="editor_drop_selection_on_copy"><a class="permalink" href="#editor_drop_selection_on_copy"><i>editor_drop_selection_on_copy</i></a></dt>
+  <dd>Reset selection after copy to clipboard.</dd>
+  <dt id="editor_cursor_beyond_eol"><a class="permalink" href="#editor_cursor_beyond_eol"><i>editor_cursor_beyond_eol</i></a></dt>
+  <dd>Allow moving cursor beyond the end of line.</dd>
+  <dt id="editor_cursor_after_inserted_block"><a class="permalink" href="#editor_cursor_after_inserted_block"><i>editor_cursor_after_inserted_block</i></a></dt>
+  <dd>Allow moving cursor after inserted block.</dd>
+  <dt id="editor_syntax_highlighting"><a class="permalink" href="#editor_syntax_highlighting"><i>editor_syntax_highlighting</i></a></dt>
+  <dd>enable syntax highlighting.</dd>
+  <dt id="editor_edit_confirm_save"><a class="permalink" href="#editor_edit_confirm_save"><i>editor_edit_confirm_save</i></a></dt>
+  <dd>Show confirmation dialog on save.</dd>
+  <dt id="editor_option_typewriter_wrap"><a class="permalink" href="#editor_option_typewriter_wrap"><i>editor_option_typewriter_wrap</i></a></dt>
+  <dd>to be described</dd>
+  <dt id="editor_option_auto_para_formatting"><a class="permalink" href="#editor_option_auto_para_formatting"><i>editor_option_auto_para_formatting</i></a></dt>
+  <dd>to be described</dd>
+  <dt id="editor_option_save_position"><a class="permalink" href="#editor_option_save_position"><i>editor_option_save_position</i></a></dt>
+  <dd>Save file position on exit.</dd>
+  <dt id="source_codepage"><a class="permalink" href="#source_codepage"><i>source_codepage</i></a></dt>
+  <dd>Symbol representation of codepage name for file (i.e. CP1251, ~ -
+      default).</dd>
+  <dt id="editor_group_undo"><a class="permalink" href="#editor_group_undo"><i>editor_group_undo</i></a></dt>
+  <dd>Combine UNDO actions for several of the same type of action
+      (inserting/overwriting, deleting, navigating, typing)</dd>
+  <dt id="editor_wordcompletion_collect_entire_file"><a class="permalink" href="#editor_wordcompletion_collect_entire_file"><i>editor_wordcompletion_collect_entire_file</i></a></dt>
+  <dd>Search autocomplete candidates in entire file (1) or just from beginning
+      of file to cursor position (0).</dd>
+  <dt id="editor_wordcompletion_collect_all_files"><a class="permalink" href="#editor_wordcompletion_collect_all_files"><i>editor_wordcompletion_collect_all_files</i></a></dt>
+  <dd>Search autocomplete candidates from all loaded files (1, default), not
+      only from the currently edited one (0).</dd>
+  <dt id="spell_language"><a class="permalink" href="#spell_language"><i>spell_language</i></a></dt>
+  <dd>Spelling language (en, en-variant_0, ru, etc) installed with aspell
+      package (a full list can be obtained using 'aspell' utility). Use
+      <b>spell_language = NONE</b> to disable aspell support. Default value is
+      'en'. Option must be located in the [Misc] section.</dd>
+  <dt id="editor_stop_format_chars"><a class="permalink" href="#editor_stop_format_chars"><i>editor_stop_format_chars</i></a></dt>
+  <dd>Set of characters to stop paragraph formatting. If one of those characters
+      is found in the beginning of line, that line and all following lines of
+      paragraph will be untouched. Default value is
+      &quot;<b>-</b><b>+</b><b>*</b><b>\</b><b>,</b><b>.</b><b>;</b><b>:</b><b>&amp;</b><b>&gt;</b>&quot;.</dd>
+  <dt id="editor_state_full_filename"><a class="permalink" href="#editor_state_full_filename"><i>editor_state_full_filename</i></a></dt>
+  <dd>Show full path name in the status line. If disabled (default), only base
+      name of the file is shown.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="FILES"><a class="permalink" href="#FILES">FILES</a></h1>
+<p class="Pp"><i>/__w/mc/mc/install-prefix/share/mc/help/mc.hlp</i></p>
+<dl class="Bl-tag">
+  <dt></dt>
+  <dd>The help file for the program.</dd>
+</dl>
+<p class="Pp"><i>/__w/mc/mc/install-prefix/share/mc/mc.ini</i></p>
+<dl class="Bl-tag">
+  <dt></dt>
+  <dd>The default system-wide setup for GNU Midnight Commander, used only if the
+      user's own ~/.config/mc/ini file is missing.</dd>
+</dl>
+<p class="Pp"><i>/__w/mc/mc/install-prefix/share/mc/mc.lib</i></p>
+<dl class="Bl-tag">
+  <dt></dt>
+  <dd>Global settings for Midnight Commander. Settings in this file affect all
+      users, whether they have ~/.config/mc/ini or not.</dd>
+</dl>
+<p class="Pp"><i>/__w/mc/mc/install-prefix/share/mc/syntax/*</i></p>
+<dl class="Bl-tag">
+  <dt></dt>
+  <dd>The default system-wide syntax files for mcedit, used only if the
+      corresponding user's own file in <b>~/.local/share/mc/syntax/</b> is
+      missing.</dd>
+</dl>
+<p class="Pp"><i>~/.config/mc/ini</i></p>
+<dl class="Bl-tag">
+  <dt></dt>
+  <dd>User's own setup. If this file is present then the setup is loaded from
+      here instead of the system-wide setup file.</dd>
+</dl>
+<p class="Pp"><i>~/.local/share/mc/mcedit/</i></p>
+<dl class="Bl-tag">
+  <dt></dt>
+  <dd>User's own directory where block commands are processed and saved and
+      user's own syntax files are located.</dd>
+</dl>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="LICENSE"><a class="permalink" href="#LICENSE">LICENSE</a></h1>
+<p class="Pp">This program is distributed under the terms of the GNU General
+    Public License as published by the Free Software Foundation. See the
+    built-in help of Midnight Commander for details on the License and the lack
+    of warranty.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AVAILABILITY"><a class="permalink" href="#AVAILABILITY">AVAILABILITY</a></h1>
+<p class="Pp">The latest version of this program can be found at
+    https://ftp.osuosl.org/pub/midnightcommander/ .</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="SEE_ALSO"><a class="permalink" href="#SEE_ALSO">SEE
+  ALSO</a></h1>
+<p class="Pp">cooledit(1), mc(1), gpm(1), terminfo(1), scanf(3).</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="AUTHORS"><a class="permalink" href="#AUTHORS">AUTHORS</a></h1>
+<p class="Pp">Paul Sheer (psheer@obsidian.co.za) is the original author of
+    Midnight Commander's internal editor.</p>
+</section>
+<section class="Sh">
+<h1 class="Sh" id="BUGS"><a class="permalink" href="#BUGS">BUGS</a></h1>
+<p class="Pp">Bugs should be reported to
+    https://github.com/MidnightCommander/mc/issues .</p>
+</section>
+</div>
+<table class="foot">
+  <tr>
+    <td class="foot-date">August 2026</td>
+    <td class="foot-os">MC Version 894fcb6</td>
+  </tr>
+</table>
+</body>
+</html>

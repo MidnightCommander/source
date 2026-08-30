@@ -1,0 +1,569 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tests/src/editor/edit_replace_cmd.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L131'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L469'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/tests.html'>tests</a>/<a href='../files/tests--src.html'>src</a>/<a href='../files/tests--src--editor.html'>editor</a>/edit_replace_cmd.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/tests.html'>tests</a>/<a href='../files/tests--src.html'>src</a>/<a href='../files/tests--src--editor.html'>editor</a>/edit_replace_cmd.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L131' title='Defined at 131.'>message</a></li>
+<li><a href='#L141' title='Defined at 141.'>status_msg_init</a></li>
+<li><a href='#L155' title='Defined at 155.'>status_msg_deinit</a></li>
+<li><a href='#L163' title='Defined at 163.'>edit_search_update_callback</a></li>
+<li><a href='#L174' title='Defined at 174.'>edit_dialog_replace_show</a></li>
+<li><a href='#L191' title='Defined at 191.'>edit_dialog_replace_prompt_show</a></li>
+<li><a href='#L205' title='Defined at 205.'>edit_load_syntax</a></li>
+<li><a href='#L216' title='Defined at 216.'>edit_get_syntax_color</a></li>
+<li><a href='#L228' title='Defined at 228.'>edit_load_macro_cmd</a></li>
+<li><a href='#L239' title='Defined at 239.'>setup</a></li>
+<li><a href='#L268' title='Defined at 268.'>teardown</a></li>
+<li><a href='#L281' title='Defined at 281.'>test_replace_check</a></li>
+<li><a href='#L301' title='Defined at 301.'>START_TEST</a></li>
+<li><a href='#L325' title='Defined at 325.'>START_TEST</a></li>
+<li><a href='#L349' title='Defined at 349.'>START_TEST</a></li>
+<li><a href='#L373' title='Defined at 373.'>START_TEST</a></li>
+<li><a href='#L397' title='Defined at 397.'>START_TEST</a></li>
+<li><a href='#L421' title='Defined at 421.'>START_TEST</a></li>
+<li><a href='#L445' title='Defined at 445.'>START_TEST</a></li>
+<li><a href='#L469' title='Defined at 469.'>main</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   src/editor - tests for edit_replace_cmd() function</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2025-2026</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Andrew Borodin &lt;aborodin@vmail.ru&gt;, 2025</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'></em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'></em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/tests--mctest.h.html#L93' title='Referred from 93 in tests/mctest.h.'>TEST_SUITE_NAME</a> "/src/editor"
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='tests--mctest.h.html'>tests/mctest.h</a>"
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;ctype.h&gt;
+<a id='L31' name='L31'></a>  31 
+<a id='L32' name='L32'></a>  32 <em class='sharp'>#include</em> "<a href='lib--charsets.h.html'>lib/charsets.h</a>"
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='src--selcodepage.h.html'>src/selcodepage.h</a>"
+<a id='L34' name='L34'></a>  34 
+<a id='L35' name='L35'></a>  35 <em class='sharp'>#include</em> "<a href='src--editor--editwidget.h.html'>src/editor/editwidget.h</a>"
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> "<a href='src--editor--editmacros.h.html'>src/editor/editmacros.h</a>"  <em class='comment'>// edit_load_macro_cmd()</em>
+<a id='L37' name='L37'></a>  37 <em class='sharp'>#include</em> "<a href='src--editor--editsearch.h.html'>src/editor/editsearch.h</a>"
+<a id='L38' name='L38'></a>  38 
+<a id='L39' name='L39'></a>  39 <strong class='reserved'>static</strong> <a href='../D/WGroup.html' title='Multiple defined in 2 places.'>WGroup</a> <a href='../Y/owner.html' title='Multiple used in 152 places.'>owner</a>;
+<a id='L40' name='L40'></a>  40 <strong class='reserved'>static</strong> <a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> *<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>;
+<a id='L41' name='L41'></a>  41 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> **<a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a>;
+<a id='L42' name='L42'></a>  42 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> **<a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a>;
+<a id='L43' name='L43'></a>  43 <strong class='reserved'>static</strong> <a href='../Y/gboolean.html' title='Multiple used in 1951 places.'>gboolean</a> <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>;
+<a id='L44' name='L44'></a>  44 
+<a id='L45' name='L45'></a>  45 <em class='comment'>// input text: entire text</em>
+<a id='L46' name='L46'></a>  46 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/test_regex_in.html' title='Multiple used in 4 places.'>test_regex_in</a> = "qwe\n"   <em class='comment'>//</em>
+<a id='L47' name='L47'></a>  47                                    "qwe\n"   <em class='comment'>//</em>
+<a id='L48' name='L48'></a>  48                                    "qwe\n"   <em class='comment'>//</em>
+<a id='L49' name='L49'></a>  49                                    "qwe\n"   <em class='comment'>//</em>
+<a id='L50' name='L50'></a>  50                                    "qwe\n"   <em class='comment'>//</em>
+<a id='L51' name='L51'></a>  51                                    "qwe\n"   <em class='comment'>//</em>
+<a id='L52' name='L52'></a>  52                                    "qwe\n"   <em class='comment'>//</em>
+<a id='L53' name='L53'></a>  53                                    "qwe\n";  <em class='comment'>//</em>
+<a id='L54' name='L54'></a>  54 
+<a id='L55' name='L55'></a>  55 <em class='comment'>// insert char at begin of string:</em>
+<a id='L56' name='L56'></a>  56 <em class='comment'>// s/^.*/X\\0</em>
+<a id='L57' name='L57'></a>  57 <em class='comment'>// s/^/X</em>
+<a id='L58' name='L58'></a>  58 <em class='comment'>// not in selection</em>
+<a id='L59' name='L59'></a>  59 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/test_regex_out1.html' title='Multiple used in 3 places.'>test_regex_out1</a> = "Xqwe\n"   <em class='comment'>//</em>
+<a id='L60' name='L60'></a>  60                                      "Xqwe\n"   <em class='comment'>//</em>
+<a id='L61' name='L61'></a>  61                                      "Xqwe\n"   <em class='comment'>//</em>
+<a id='L62' name='L62'></a>  62                                      "Xqwe\n"   <em class='comment'>//</em>
+<a id='L63' name='L63'></a>  63                                      "Xqwe\n"   <em class='comment'>//</em>
+<a id='L64' name='L64'></a>  64                                      "Xqwe\n"   <em class='comment'>//</em>
+<a id='L65' name='L65'></a>  65                                      "Xqwe\n"   <em class='comment'>//</em>
+<a id='L66' name='L66'></a>  66                                      "Xqwe\n";  <em class='comment'>//</em>
+<a id='L67' name='L67'></a>  67 
+<a id='L68' name='L68'></a>  68 <em class='comment'>// replace first char of string:</em>
+<a id='L69' name='L69'></a>  69 <em class='comment'>// s/^./X</em>
+<a id='L70' name='L70'></a>  70 <em class='comment'>// not in selection</em>
+<a id='L71' name='L71'></a>  71 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/test_regex_out2.html' title='Multiple used in 2 places.'>test_regex_out2</a> = "Xwe\n"   <em class='comment'>//</em>
+<a id='L72' name='L72'></a>  72                                      "Xwe\n"   <em class='comment'>//</em>
+<a id='L73' name='L73'></a>  73                                      "Xwe\n"   <em class='comment'>//</em>
+<a id='L74' name='L74'></a>  74                                      "Xwe\n"   <em class='comment'>//</em>
+<a id='L75' name='L75'></a>  75                                      "Xwe\n"   <em class='comment'>//</em>
+<a id='L76' name='L76'></a>  76                                      "Xwe\n"   <em class='comment'>//</em>
+<a id='L77' name='L77'></a>  77                                      "Xwe\n"   <em class='comment'>//</em>
+<a id='L78' name='L78'></a>  78                                      "Xwe\n";  <em class='comment'>//</em>
+<a id='L79' name='L79'></a>  79 
+<a id='L80' name='L80'></a>  80 <em class='comment'>// input text: selected</em>
+<a id='L81' name='L81'></a>  81 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/test_regex_selected_in.html' title='Multiple used in 5 places.'>test_regex_selected_in</a> = "qwe\n"   <em class='comment'>//</em>
+<a id='L82' name='L82'></a>  82                                             "qwe\n"   <em class='comment'>//</em>
+<a id='L83' name='L83'></a>  83                                             "qwe\n"   <em class='comment'>// selected, mark1 = 8 (begin of string) or 9</em>
+<a id='L84' name='L84'></a>  84                                             "qwe\n"   <em class='comment'>// selected</em>
+<a id='L85' name='L85'></a>  85                                             "qwe\n"   <em class='comment'>// selected</em>
+<a id='L86' name='L86'></a>  86                                             "qwe\n"   <em class='comment'>// mark2 = 20, begin of string</em>
+<a id='L87' name='L87'></a>  87                                             "qwe\n"   <em class='comment'>//</em>
+<a id='L88' name='L88'></a>  88                                             "qwe\n";  <em class='comment'>//</em>
+<a id='L89' name='L89'></a>  89 
+<a id='L90' name='L90'></a>  90 <em class='comment'>// insert char at begin of string:</em>
+<a id='L91' name='L91'></a>  91 <em class='comment'>// s/^.*/X\\0</em>
+<a id='L92' name='L92'></a>  92 <em class='comment'>// in selection from begin of string</em>
+<a id='L93' name='L93'></a>  93 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/test1_regex_selected_out.html' title='Multiple used in 3 places.'>test1_regex_selected_out</a> = "qwe\n"   <em class='comment'>//</em>
+<a id='L94' name='L94'></a>  94                                               "qwe\n"   <em class='comment'>//</em>
+<a id='L95' name='L95'></a>  95                                               "Xqwe\n"  <em class='comment'>// selected, mark1 = 8 (begin of string)</em>
+<a id='L96' name='L96'></a>  96                                               "Xqwe\n"  <em class='comment'>// selected</em>
+<a id='L97' name='L97'></a>  97                                               "Xqwe\n"  <em class='comment'>// selected</em>
+<a id='L98' name='L98'></a>  98                                               "qwe\n"   <em class='comment'>// mark2 = 20, begin of string</em>
+<a id='L99' name='L99'></a>  99                                               "qwe\n"   <em class='comment'>//</em>
+<a id='L100' name='L100'></a> 100                                               "qwe\n";  <em class='comment'>//</em>
+<a id='L101' name='L101'></a> 101 
+<a id='L102' name='L102'></a> 102 <em class='comment'>// insert char at begin of string:</em>
+<a id='L103' name='L103'></a> 103 <em class='comment'>// s/^.*/X\\0</em>
+<a id='L104' name='L104'></a> 104 <em class='comment'>// in selection not from begin of string</em>
+<a id='L105' name='L105'></a> 105 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/test2_regex_selected_out.html' title='Multiple used in 3 places.'>test2_regex_selected_out</a> = "qwe\n"   <em class='comment'>//</em>
+<a id='L106' name='L106'></a> 106                                               "qwe\n"   <em class='comment'>//</em>
+<a id='L107' name='L107'></a> 107                                               "qwe\n"   <em class='comment'>// selected, mark1 = 9 (not begin of string)</em>
+<a id='L108' name='L108'></a> 108                                               "Xqwe\n"  <em class='comment'>// selected</em>
+<a id='L109' name='L109'></a> 109                                               "Xqwe\n"  <em class='comment'>// selected</em>
+<a id='L110' name='L110'></a> 110                                               "qwe\n"   <em class='comment'>// mark2 = 20, begin of string</em>
+<a id='L111' name='L111'></a> 111                                               "qwe\n"   <em class='comment'>//</em>
+<a id='L112' name='L112'></a> 112                                               "qwe\n";  <em class='comment'>//</em>
+<a id='L113' name='L113'></a> 113 
+<a id='L114' name='L114'></a> 114 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/replace_regex_entire_string__from.html' title='Multiple used in 6 places.'>replace_regex_entire_string__from</a> = "^.*";
+<a id='L115' name='L115'></a> 115 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/replace_regex_entire_string__to.html' title='Multiple used in 6 places.'>replace_regex_entire_string__to</a> = "X\\0";
+<a id='L116' name='L116'></a> 116 
+<a id='L117' name='L117'></a> 117 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/replace_regex_insert_char_at_begin_of_string__from.html' title='Multiple used in 2 places.'>replace_regex_insert_char_at_begin_of_string__from</a> = "^";
+<a id='L118' name='L118'></a> 118 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/replace_regex_replace_first_char_of_string__from.html' title='Multiple used in 2 places.'>replace_regex_replace_first_char_of_string__from</a> = "^.";
+<a id='L119' name='L119'></a> 119 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/replace_regex_begin_of_string__to.html' title='Multiple used in 3 places.'>replace_regex_begin_of_string__to</a> = "X";
+<a id='L120' name='L120'></a> 120 
+<a id='L121' name='L121'></a> 121 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L122' name='L122'></a> 122 
+<a id='L123' name='L123'></a> 123 <strong class='reserved'>void</strong> <a href='../D/edit_dialog_replace_show.html' title='Multiple defined in 2 places.'>edit_dialog_replace_show</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> *<a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/search_default.html' title='Multiple used in 8 places.'>search_default</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/replace_default.html' title='Multiple used in 6 places.'>replace_default</a>,
+<a id='L124' name='L124'></a> 124                                <strong class='reserved'>char</strong> **<a href='../Y/search_text.html' title='Multiple used in 16 places.'>search_text</a>, <strong class='reserved'>char</strong> **<a href='../Y/replace_text.html' title='Multiple used in 7 places.'>replace_text</a>);
+<a id='L125' name='L125'></a> 125 <strong class='reserved'>int</strong> <a href='../D/edit_dialog_replace_prompt_show.html' title='Multiple defined in 2 places.'>edit_dialog_replace_prompt_show</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> *<a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>, <strong class='reserved'>char</strong> *<a href='../Y/from_text.html' title='Multiple used in 6 places.'>from_text</a>, <strong class='reserved'>char</strong> *<a href='../Y/to_text.html' title='Multiple used in 6 places.'>to_text</a>, <strong class='reserved'>int</strong> <a href='../Y/xpos.html' title='Multiple used in 20 places.'>xpos</a>,
+<a id='L126' name='L126'></a> 126                                      <strong class='reserved'>int</strong> <a href='../Y/ypos.html' title='Multiple used in 35 places.'>ypos</a>);
+<a id='L127' name='L127'></a> 127 
+<a id='L128' name='L128'></a> 128 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L129' name='L129'></a> 129 <em class='comment'>/* @Mock */</em>
+<a id='L130' name='L130'></a> 130 <strong class='reserved'>void</strong>
+<a id='L131' name='L131'></a> 131 <a href='../R/message.html' title='Multiple referred from 177 places.'>message</a> (<strong class='reserved'>int</strong> <a href='../Y/flags.html' title='Multiple used in 403 places.'>flags</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/title.html' title='Multiple used in 184 places.'>title</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 943 places.'>text</a>, ...)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L141'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+131 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L132' name='L132'></a> 132 <em class='brace'>{</em>
+<a id='L133' name='L133'></a> 133     (<strong class='reserved'>void</strong>) <a href='../Y/flags.html' title='Multiple used in 403 places.'>flags</a>;
+<a id='L134' name='L134'></a> 134     (<strong class='reserved'>void</strong>) <a href='../Y/title.html' title='Multiple used in 184 places.'>title</a>;
+<a id='L135' name='L135'></a> 135     (<strong class='reserved'>void</strong>) <a href='../Y/text.html' title='Multiple used in 943 places.'>text</a>;
+<a id='L136' name='L136'></a> 136 <em class='brace'>}</em>
+<a id='L137' name='L137'></a> 137 
+<a id='L138' name='L138'></a> 138 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L139' name='L139'></a> 139 <em class='comment'>/* @Mock */</em>
+<a id='L140' name='L140'></a> 140 <strong class='reserved'>void</strong>
+<a id='L141' name='L141'></a> 141 <a href='../R/status_msg_init.html' title='Multiple referred from 11 places.'>status_msg_init</a> (<a href='../D/status_msg_t.html' title='Multiple defined in 2 places.'>status_msg_t</a> *<a href='../Y/sm.html' title='Multiple used in 114 places.'>sm</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/title.html' title='Multiple used in 184 places.'>title</a>, <strong class='reserved'>double</strong> <a href='../Y/delay.html' title='Multiple used in 20 places.'>delay</a>, <a href='../Y/status_msg_cb.html' title='Multiple used in 13 places.'>status_msg_cb</a> <a href='../Y/init_cb.html' title='Multiple used in 8 places.'>init_cb</a>,
+     <em class='comment'>/* <a href='#L131'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L155'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+141 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L142' name='L142'></a> 142                  <a href='../Y/status_msg_update_cb.html' title='Multiple used in 7 places.'>status_msg_update_cb</a> <a href='../Y/update_cb.html' title='Multiple used in 8 places.'>update_cb</a>, <a href='../Y/status_msg_cb.html' title='Multiple used in 13 places.'>status_msg_cb</a> <a href='../Y/deinit_cb.html' title='Multiple used in 8 places.'>deinit_cb</a>)
+<a id='L143' name='L143'></a> 143 <em class='brace'>{</em>
+<a id='L144' name='L144'></a> 144     (<strong class='reserved'>void</strong>) <a href='../Y/sm.html' title='Multiple used in 114 places.'>sm</a>;
+<a id='L145' name='L145'></a> 145     (<strong class='reserved'>void</strong>) <a href='../Y/title.html' title='Multiple used in 184 places.'>title</a>;
+<a id='L146' name='L146'></a> 146     (<strong class='reserved'>void</strong>) <a href='../Y/delay.html' title='Multiple used in 20 places.'>delay</a>;
+<a id='L147' name='L147'></a> 147     (<strong class='reserved'>void</strong>) <a href='../Y/init_cb.html' title='Multiple used in 8 places.'>init_cb</a>;
+<a id='L148' name='L148'></a> 148     (<strong class='reserved'>void</strong>) <a href='../Y/update_cb.html' title='Multiple used in 8 places.'>update_cb</a>;
+<a id='L149' name='L149'></a> 149     (<strong class='reserved'>void</strong>) <a href='../Y/deinit_cb.html' title='Multiple used in 8 places.'>deinit_cb</a>;
+<a id='L150' name='L150'></a> 150 <em class='brace'>}</em>
+<a id='L151' name='L151'></a> 151 
+<a id='L152' name='L152'></a> 152 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L153' name='L153'></a> 153 <em class='comment'>/* @Mock */</em>
+<a id='L154' name='L154'></a> 154 <strong class='reserved'>void</strong>
+<a id='L155' name='L155'></a> 155 <a href='../R/status_msg_deinit.html' title='Multiple referred from 11 places.'>status_msg_deinit</a> (<a href='../D/status_msg_t.html' title='Multiple defined in 2 places.'>status_msg_t</a> *<a href='../Y/sm.html' title='Multiple used in 114 places.'>sm</a>)
+     <em class='comment'>/* <a href='#L141'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L163'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+155 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L156' name='L156'></a> 156 <em class='brace'>{</em>
+<a id='L157' name='L157'></a> 157     (<strong class='reserved'>void</strong>) <a href='../Y/sm.html' title='Multiple used in 114 places.'>sm</a>;
+<a id='L158' name='L158'></a> 158 <em class='brace'>}</em>
+<a id='L159' name='L159'></a> 159 
+<a id='L160' name='L160'></a> 160 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L161' name='L161'></a> 161 <em class='comment'>/* @Mock */</em>
+<a id='L162' name='L162'></a> 162 <a href='../D/mc_search_cbret_t.html' title='Multiple defined in 2 places.'>mc_search_cbret_t</a>
+<a id='L163' name='L163'></a> 163 <a href='../R/edit_search_update_callback.html' title='Multiple referred from 3 places.'>edit_search_update_callback</a> (<strong class='reserved'>const</strong> <strong class='reserved'>void</strong> *<a href='../Y/user_data.html' title='Multiple used in 75 places.'>user_data</a>, <a href='../Y/off_t.html' title='Multiple used in 623 places.'>off_t</a> <a href='../Y/char_offset.html' title='Multiple used in 16 places.'>char_offset</a>)
+     <em class='comment'>/* <a href='#L155'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L174'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+163 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L164' name='L164'></a> 164 <em class='brace'>{</em>
+<a id='L165' name='L165'></a> 165     (<strong class='reserved'>void</strong>) <a href='../Y/user_data.html' title='Multiple used in 75 places.'>user_data</a>;
+<a id='L166' name='L166'></a> 166     (<strong class='reserved'>void</strong>) <a href='../Y/char_offset.html' title='Multiple used in 16 places.'>char_offset</a>;
+<a id='L167' name='L167'></a> 167 
+<a id='L168' name='L168'></a> 168     <strong class='reserved'>return</strong> <a href='../S/lib--search.h.html#L56' title='Defined at 56 in lib/search.h.'>MC_SEARCH_CB_OK</a>;
+<a id='L169' name='L169'></a> 169 <em class='brace'>}</em>
+<a id='L170' name='L170'></a> 170 
+<a id='L171' name='L171'></a> 171 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L172' name='L172'></a> 172 <em class='comment'>/* @Mock */</em>
+<a id='L173' name='L173'></a> 173 <strong class='reserved'>void</strong>
+<a id='L174' name='L174'></a> 174 <a href='../R/edit_dialog_replace_show.html' title='Multiple referred from 3 places.'>edit_dialog_replace_show</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> *<a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/search_default.html' title='Multiple used in 8 places.'>search_default</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/replace_default.html' title='Multiple used in 6 places.'>replace_default</a>,
+     <em class='comment'>/* <a href='#L163'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L191'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+174 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L175' name='L175'></a> 175                           <strong class='reserved'>char</strong> **<a href='../Y/search_text.html' title='Multiple used in 16 places.'>search_text</a>, <strong class='reserved'>char</strong> **<a href='../Y/replace_text.html' title='Multiple used in 7 places.'>replace_text</a>)
+<a id='L176' name='L176'></a> 176 <em class='brace'>{</em>
+<a id='L177' name='L177'></a> 177     (<strong class='reserved'>void</strong>) <a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>;
+<a id='L178' name='L178'></a> 178     (<strong class='reserved'>void</strong>) <a href='../Y/search_default.html' title='Multiple used in 8 places.'>search_default</a>;
+<a id='L179' name='L179'></a> 179     (<strong class='reserved'>void</strong>) <a href='../Y/replace_default.html' title='Multiple used in 6 places.'>replace_default</a>;
+<a id='L180' name='L180'></a> 180 
+<a id='L181' name='L181'></a> 181     *<a href='../Y/search_text.html' title='Multiple used in 16 places.'>search_text</a> = <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (*<a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a>);
+<a id='L182' name='L182'></a> 182     *<a href='../Y/replace_text.html' title='Multiple used in 7 places.'>replace_text</a> = <a href='../Y/g_strdup.html' title='Multiple used in 394 places.'>g_strdup</a> (*<a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a>);
+<a id='L183' name='L183'></a> 183 
+<a id='L184' name='L184'></a> 184     <a href='../Y/edit_search_options.html' title='Multiple used in 33 places.'>edit_search_options</a>.<a href='../Y/type.html' title='Multiple used in 296 places.'>type</a> = <a href='../S/lib--search.h.html#L37' title='Defined at 37 in lib/search.h.'>MC_SEARCH_T_REGEX</a>;
+<a id='L185' name='L185'></a> 185     <a href='../Y/edit_search_options.html' title='Multiple used in 33 places.'>edit_search_options</a>.<a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a>;
+<a id='L186' name='L186'></a> 186 <em class='brace'>}</em>
+<a id='L187' name='L187'></a> 187 
+<a id='L188' name='L188'></a> 188 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L189' name='L189'></a> 189 <em class='comment'>/* @Mock */</em>
+<a id='L190' name='L190'></a> 190 <strong class='reserved'>int</strong>
+<a id='L191' name='L191'></a> 191 <a href='../R/edit_dialog_replace_prompt_show.html' title='Multiple referred from 3 places.'>edit_dialog_replace_prompt_show</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> *<a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>, <strong class='reserved'>char</strong> *<a href='../Y/from_text.html' title='Multiple used in 6 places.'>from_text</a>, <strong class='reserved'>char</strong> *<a href='../Y/to_text.html' title='Multiple used in 6 places.'>to_text</a>, <strong class='reserved'>int</strong> <a href='../Y/xpos.html' title='Multiple used in 20 places.'>xpos</a>, <strong class='reserved'>int</strong> <a href='../Y/ypos.html' title='Multiple used in 35 places.'>ypos</a>)
+     <em class='comment'>/* <a href='#L174'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L205'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+191 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L192' name='L192'></a> 192 <em class='brace'>{</em>
+<a id='L193' name='L193'></a> 193     (<strong class='reserved'>void</strong>) <a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>;
+<a id='L194' name='L194'></a> 194     (<strong class='reserved'>void</strong>) <a href='../Y/from_text.html' title='Multiple used in 6 places.'>from_text</a>;
+<a id='L195' name='L195'></a> 195     (<strong class='reserved'>void</strong>) <a href='../Y/to_text.html' title='Multiple used in 6 places.'>to_text</a>;
+<a id='L196' name='L196'></a> 196     (<strong class='reserved'>void</strong>) <a href='../Y/xpos.html' title='Multiple used in 20 places.'>xpos</a>;
+<a id='L197' name='L197'></a> 197     (<strong class='reserved'>void</strong>) <a href='../Y/ypos.html' title='Multiple used in 35 places.'>ypos</a>;
+<a id='L198' name='L198'></a> 198 
+<a id='L199' name='L199'></a> 199     <strong class='reserved'>return</strong> <a href='../S/src--editor--editsearch.h.html#L6' title='Defined at 6 in src/editor/editsearch.h.'>B_REPLACE_ALL</a>;
+<a id='L200' name='L200'></a> 200 <em class='brace'>}</em>
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L203' name='L203'></a> 203 <em class='comment'>/* @Mock */</em>
+<a id='L204' name='L204'></a> 204 <strong class='reserved'>void</strong>
+<a id='L205' name='L205'></a> 205 <a href='../R/edit_load_syntax.html' title='Multiple referred from 7 places.'>edit_load_syntax</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> *<a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>, <a href='../Y/GPtrArray.html' title='Multiple used in 94 places.'>GPtrArray</a> *<a href='../Y/pnames.html' title='Multiple used in 10 places.'>pnames</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/type.html' title='Multiple used in 296 places.'>type</a>)
+     <em class='comment'>/* <a href='#L191'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L216'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+205 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L206' name='L206'></a> 206 <em class='brace'>{</em>
+<a id='L207' name='L207'></a> 207     (<strong class='reserved'>void</strong>) <a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>;
+<a id='L208' name='L208'></a> 208     (<strong class='reserved'>void</strong>) <a href='../Y/pnames.html' title='Multiple used in 10 places.'>pnames</a>;
+<a id='L209' name='L209'></a> 209     (<strong class='reserved'>void</strong>) <a href='../Y/type.html' title='Multiple used in 296 places.'>type</a>;
+<a id='L210' name='L210'></a> 210 <em class='brace'>}</em>
+<a id='L211' name='L211'></a> 211 
+<a id='L212' name='L212'></a> 212 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L213' name='L213'></a> 213 
+<a id='L214' name='L214'></a> 214 <em class='comment'>/* @Mock */</em>
+<a id='L215' name='L215'></a> 215 <strong class='reserved'>int</strong>
+<a id='L216' name='L216'></a> 216 <a href='../R/edit_get_syntax_color.html' title='Multiple referred from 3 places.'>edit_get_syntax_color</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> *<a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>, <a href='../Y/off_t.html' title='Multiple used in 623 places.'>off_t</a> <a href='../Y/byte_index.html' title='Multiple used in 72 places.'>byte_index</a>)
+     <em class='comment'>/* <a href='#L205'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L228'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+216 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L217' name='L217'></a> 217 <em class='brace'>{</em>
+<a id='L218' name='L218'></a> 218     (<strong class='reserved'>void</strong>) <a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>;
+<a id='L219' name='L219'></a> 219     (<strong class='reserved'>void</strong>) <a href='../Y/byte_index.html' title='Multiple used in 72 places.'>byte_index</a>;
+<a id='L220' name='L220'></a> 220 
+<a id='L221' name='L221'></a> 221     <strong class='reserved'>return</strong> 0;
+<a id='L222' name='L222'></a> 222 <em class='brace'>}</em>
+<a id='L223' name='L223'></a> 223 
+<a id='L224' name='L224'></a> 224 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L225' name='L225'></a> 225 
+<a id='L226' name='L226'></a> 226 <em class='comment'>/* @Mock */</em>
+<a id='L227' name='L227'></a> 227 <a href='../Y/gboolean.html' title='Multiple used in 1951 places.'>gboolean</a>
+<a id='L228' name='L228'></a> 228 <a href='../R/edit_load_macro_cmd.html' title='Multiple referred from 2 places.'>edit_load_macro_cmd</a> (<a href='../D/WEdit.html' title='Multiple defined in 2 places.'>WEdit</a> *<a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>)
+     <em class='comment'>/* <a href='#L216'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L239'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+228 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L229' name='L229'></a> 229 <em class='brace'>{</em>
+<a id='L230' name='L230'></a> 230     (<strong class='reserved'>void</strong>) <a href='../Y/edit.html' title='Multiple used in 2257 places.'>edit</a>;
+<a id='L231' name='L231'></a> 231 
+<a id='L232' name='L232'></a> 232     <strong class='reserved'>return</strong> <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>;
+<a id='L233' name='L233'></a> 233 <em class='brace'>}</em>
+<a id='L234' name='L234'></a> 234 
+<a id='L235' name='L235'></a> 235 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L236' name='L236'></a> 236 
+<a id='L237' name='L237'></a> 237 <em class='comment'>/* @Before */</em>
+<a id='L238' name='L238'></a> 238 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L239' name='L239'></a> 239 <a href='../R/setup.html' title='Multiple referred from 41 places.'>setup</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L228'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L268'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+239 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L240' name='L240'></a> 240 <em class='brace'>{</em>
+<a id='L241' name='L241'></a> 241     <a href='../D/WRect.html' title='Multiple defined in 2 places.'>WRect</a> <a href='../Y/r.html' title='Multiple used in 859 places.'>r</a>;
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243     <a href='../S/lib--strutil--strutil.c.html#L401' title='Defined at 401 in lib/strutil/strutil.c.'>str_init_strings</a> (<a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>);
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245     <a href='../Y/mc_global.html' title='Multiple used in 672 places.'>mc_global</a>.<a href='../Y/sysconfig_dir.html' title='Multiple used in 40 places.'>sysconfig_dir</a> = (<strong class='reserved'>char</strong> *) <a href='../Y/TEST_SHARE_DIR.html' title='Multiple used in 14 places.'>TEST_SHARE_DIR</a>;
+<a id='L246' name='L246'></a> 246     <a href='../S/lib--charsets.c.html#L209' title='Defined at 209 in lib/charsets.c.'>load_codepages_list</a> ();
+<a id='L247' name='L247'></a> 247 
+<a id='L248' name='L248'></a> 248     <a href='../Y/edit_options.html' title='Multiple used in 171 places.'>edit_options</a>.<a href='../Y/filesize_threshold.html' title='Multiple used in 7 places.'>filesize_threshold</a> = (<strong class='reserved'>char</strong> *) "64M";
+<a id='L249' name='L249'></a> 249 
+<a id='L250' name='L250'></a> 250     <a href='../S/lib--widget--rect.c.html#L86' title='Defined at 86 in lib/widget/rect.c.'>rect_init</a> (&amp;<a href='../Y/r.html' title='Multiple used in 859 places.'>r</a>, 0, 0, 24, 80);
+<a id='L251' name='L251'></a> 251     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a> = <a href='../S/src--editor--edit.c.html#L2129' title='Defined at 2129 in src/editor/edit.c.'>edit_init</a> (<a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>, &amp;<a href='../Y/r.html' title='Multiple used in 859 places.'>r</a>, <a href='../Y/NULL.html' title='Multiple used in 5504 places.'>NULL</a>);
+<a id='L252' name='L252'></a> 252     <a href='../Y/memset.html' title='Multiple used in 74 places.'>memset</a> (&amp;<a href='../Y/owner.html' title='Multiple used in 152 places.'>owner</a>, 0, <strong class='reserved'>sizeof</strong> (<a href='../Y/owner.html' title='Multiple used in 152 places.'>owner</a>));
+<a id='L253' name='L253'></a> 253     <a href='../S/lib--widget--group.h.html#L79' title='Defined at 79 in lib/widget/group.h.'>group_add_widget</a> (&amp;<a href='../Y/owner.html' title='Multiple used in 152 places.'>owner</a>, <a href='../S/lib--widget--widget-common.h.html#L15' title='Defined at 15 in lib/widget/widget-common.h.'>WIDGET</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>));
+<a id='L254' name='L254'></a> 254 
+<a id='L255' name='L255'></a> 255     <a href='../Y/mc_global.html' title='Multiple used in 672 places.'>mc_global</a>.<a href='../Y/source_codepage.html' title='Multiple used in 29 places.'>source_codepage</a> = 0;
+<a id='L256' name='L256'></a> 256     <a href='../Y/mc_global.html' title='Multiple used in 672 places.'>mc_global</a>.<a href='../Y/display_codepage.html' title='Multiple used in 25 places.'>display_codepage</a> = 0;
+<a id='L257' name='L257'></a> 257     <a href='../Y/cp_source.html' title='Multiple used in 24 places.'>cp_source</a> = "ASCII";
+<a id='L258' name='L258'></a> 258     <a href='../Y/cp_display.html' title='Multiple used in 21 places.'>cp_display</a> = "ASCII";
+<a id='L259' name='L259'></a> 259 
+<a id='L260' name='L260'></a> 260     <a href='../S/src--selcodepage.c.html#L106' title='Defined at 106 in src/selcodepage.c.'>do_set_codepage</a> (0);
+<a id='L261' name='L261'></a> 261     <a href='../S/src--editor--edit.c.html#L2319' title='Defined at 2319 in src/editor/edit.c.'>edit_set_codeset</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>);
+<a id='L262' name='L262'></a> 262 <em class='brace'>}</em>
+<a id='L263' name='L263'></a> 263 
+<a id='L264' name='L264'></a> 264 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L265' name='L265'></a> 265 
+<a id='L266' name='L266'></a> 266 <em class='comment'>/* @After */</em>
+<a id='L267' name='L267'></a> 267 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L268' name='L268'></a> 268 <a href='../R/teardown.html' title='Multiple referred from 39 places.'>teardown</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L239'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L281'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+268 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L269' name='L269'></a> 269 <em class='brace'>{</em>
+<a id='L270' name='L270'></a> 270     <a href='../S/src--editor--edit.c.html#L2244' title='Defined at 2244 in src/editor/edit.c.'>edit_clean</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>);
+<a id='L271' name='L271'></a> 271     <a href='../S/lib--widget--group.c.html#L825' title='Defined at 825 in lib/widget/group.c.'>group_remove_widget</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>);
+<a id='L272' name='L272'></a> 272     <a href='../Y/g_free.html' title='Multiple used in 1082 places.'>g_free</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>);
+<a id='L273' name='L273'></a> 273 
+<a id='L274' name='L274'></a> 274     <a href='../S/lib--charsets.c.html#L236' title='Defined at 236 in lib/charsets.c.'>free_codepages_list</a> ();
+<a id='L275' name='L275'></a> 275     <a href='../S/lib--strutil--strutil.c.html#L432' title='Defined at 432 in lib/strutil/strutil.c.'>str_uninit_strings</a> ();
+<a id='L276' name='L276'></a> 276 <em class='brace'>}</em>
+<a id='L277' name='L277'></a> 277 
+<a id='L278' name='L278'></a> 278 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L279' name='L279'></a> 279 
+<a id='L280' name='L280'></a> 280 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L281' name='L281'></a> 281 <a href='../R/test_replace_check.html' title='Multiple referred from 7 places.'>test_replace_check</a> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/test_out.html' title='Multiple used in 4 places.'>test_out</a>)
+     <em class='comment'>/* <a href='#L268'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L301'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+281 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L282' name='L282'></a> 282 <em class='brace'>{</em>
+<a id='L283' name='L283'></a> 283     <a href='../Y/GString.html' title='Multiple used in 374 places.'>GString</a> *<a href='../Y/actual_replaced_str.html' title='Multiple used in 5 places.'>actual_replaced_str</a>;
+<a id='L284' name='L284'></a> 284 
+<a id='L285' name='L285'></a> 285     <a href='../Y/actual_replaced_str.html' title='Multiple used in 5 places.'>actual_replaced_str</a> = <a href='../Y/g_string_new.html' title='Multiple used in 75 places.'>g_string_new</a> ("");
+<a id='L286' name='L286'></a> 286 
+<a id='L287' name='L287'></a> 287     <strong class='reserved'>for</strong> (<a href='../Y/off_t.html' title='Multiple used in 623 places.'>off_t</a> <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> = 0; <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a> &lt; <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>.<a href='../Y/size.html' title='Multiple used in 384 places.'>size</a>; <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>++)
+<a id='L288' name='L288'></a> 288     <em class='brace'>{</em>
+<a id='L289' name='L289'></a> 289         <strong class='reserved'>const</strong> <strong class='reserved'>int</strong> <a href='../Y/chr.html' title='Multiple used in 16 places.'>chr</a> = <a href='../S/src--editor--editbuffer.c.html#L187' title='Defined at 187 in src/editor/editbuffer.c.'>edit_buffer_get_byte</a> (&amp;<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, <a href='../Y/i.html' title='Multiple used in 1927 places.'>i</a>);
+<a id='L290' name='L290'></a> 290 
+<a id='L291' name='L291'></a> 291         <a href='../Y/g_string_append_c.html' title='Multiple used in 130 places.'>g_string_append_c</a> (<a href='../Y/actual_replaced_str.html' title='Multiple used in 5 places.'>actual_replaced_str</a>, <a href='../Y/chr.html' title='Multiple used in 16 places.'>chr</a>);
+<a id='L292' name='L292'></a> 292     <em class='brace'>}</em>
+<a id='L293' name='L293'></a> 293 
+<a id='L294' name='L294'></a> 294     <a href='../S/tests--mctest.h.html#L17' title='Defined at 17 in tests/mctest.h.'>mctest_assert_str_eq</a> (<a href='../Y/actual_replaced_str.html' title='Multiple used in 5 places.'>actual_replaced_str</a>-&gt;<a href='../Y/str.html' title='Multiple used in 677 places.'>str</a>, <a href='../Y/test_out.html' title='Multiple used in 4 places.'>test_out</a>);
+<a id='L295' name='L295'></a> 295     <a href='../Y/g_string_free.html' title='Multiple used in 226 places.'>g_string_free</a> (<a href='../Y/actual_replaced_str.html' title='Multiple used in 5 places.'>actual_replaced_str</a>, <a href='../Y/TRUE.html' title='Multiple used in 2086 places.'>TRUE</a>);
+<a id='L296' name='L296'></a> 296 <em class='brace'>}</em>
+<a id='L297' name='L297'></a> 297 
+<a id='L298' name='L298'></a> 298 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L299' name='L299'></a> 299 
+<a id='L300' name='L300'></a> 300 <em class='comment'>// replace entire string</em>
+<a id='L301' name='L301'></a> 301 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/test_replace_regex__entire_string.html' title='Multiple used in 2 places.'>test_replace_regex__entire_string</a>)
+     <em class='comment'>/* <a href='#L281'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L325'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+301 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L302' name='L302'></a> 302 <em class='brace'>{</em>
+<a id='L303' name='L303'></a> 303     <em class='comment'>// given</em>
+<a id='L304' name='L304'></a> 304     <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>;
+<a id='L305' name='L305'></a> 305     <a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a> = &amp;<a href='../Y/replace_regex_entire_string__from.html' title='Multiple used in 6 places.'>replace_regex_entire_string__from</a>;
+<a id='L306' name='L306'></a> 306     <a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a> = &amp;<a href='../Y/replace_regex_entire_string__to.html' title='Multiple used in 6 places.'>replace_regex_entire_string__to</a>;
+<a id='L307' name='L307'></a> 307     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark1.html' title='Multiple used in 62 places.'>mark1</a> = 0;
+<a id='L308' name='L308'></a> 308     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark2.html' title='Multiple used in 69 places.'>mark2</a> = 0;
+<a id='L309' name='L309'></a> 309 
+<a id='L310' name='L310'></a> 310     <strong class='reserved'>for</strong> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> = <a href='../Y/test_regex_in.html' title='Multiple used in 4 places.'>test_regex_in</a>; *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> != '\0'; <a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>++)
+<a id='L311' name='L311'></a> 311         <a href='../S/src--editor--editbuffer.c.html#L489' title='Defined at 489 in src/editor/editbuffer.c.'>edit_buffer_insert</a> (&amp;<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>);
+<a id='L312' name='L312'></a> 312 
+<a id='L313' name='L313'></a> 313     <em class='comment'>// when</em>
+<a id='L314' name='L314'></a> 314     <a href='../S/src--editor--edit.c.html#L2766' title='Defined at 2766 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, 0);
+<a id='L315' name='L315'></a> 315     <a href='../S/src--editor--editsearch.c.html#L811' title='Defined at 811 in src/editor/editsearch.c.'>edit_replace_cmd</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L316' name='L316'></a> 316 
+<a id='L317' name='L317'></a> 317     <em class='comment'>// then</em>
+<a id='L318' name='L318'></a> 318     <a href='../S/tests--src--editor--edit_replace_cmd.c.html#L281' title='Defined at 281 in tests/src/editor/edit_replace_cmd.c.'>test_replace_check</a> (<a href='../Y/test_regex_out1.html' title='Multiple used in 3 places.'>test_regex_out1</a>);
+<a id='L319' name='L319'></a> 319 <em class='brace'>}</em>
+<a id='L320' name='L320'></a> 320 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L321' name='L321'></a> 321 
+<a id='L322' name='L322'></a> 322 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L323' name='L323'></a> 323 
+<a id='L324' name='L324'></a> 324 <em class='comment'>// insert first char in string</em>
+<a id='L325' name='L325'></a> 325 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/test_replace_regex__insert_char_at_begin_of_string.html' title='Multiple used in 2 places.'>test_replace_regex__insert_char_at_begin_of_string</a>)
+     <em class='comment'>/* <a href='#L301'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L349'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+325 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L326' name='L326'></a> 326 <em class='brace'>{</em>
+<a id='L327' name='L327'></a> 327     <em class='comment'>// given</em>
+<a id='L328' name='L328'></a> 328     <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>;
+<a id='L329' name='L329'></a> 329     <a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a> = &amp;<a href='../Y/replace_regex_insert_char_at_begin_of_string__from.html' title='Multiple used in 2 places.'>replace_regex_insert_char_at_begin_of_string__from</a>;
+<a id='L330' name='L330'></a> 330     <a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a> = &amp;<a href='../Y/replace_regex_begin_of_string__to.html' title='Multiple used in 3 places.'>replace_regex_begin_of_string__to</a>;
+<a id='L331' name='L331'></a> 331     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark1.html' title='Multiple used in 62 places.'>mark1</a> = 0;
+<a id='L332' name='L332'></a> 332     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark2.html' title='Multiple used in 69 places.'>mark2</a> = 0;
+<a id='L333' name='L333'></a> 333 
+<a id='L334' name='L334'></a> 334     <strong class='reserved'>for</strong> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> = <a href='../Y/test_regex_in.html' title='Multiple used in 4 places.'>test_regex_in</a>; *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> != '\0'; <a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>++)
+<a id='L335' name='L335'></a> 335         <a href='../S/src--editor--editbuffer.c.html#L489' title='Defined at 489 in src/editor/editbuffer.c.'>edit_buffer_insert</a> (&amp;<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>);
+<a id='L336' name='L336'></a> 336 
+<a id='L337' name='L337'></a> 337     <em class='comment'>// when</em>
+<a id='L338' name='L338'></a> 338     <a href='../S/src--editor--edit.c.html#L2766' title='Defined at 2766 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, 0);
+<a id='L339' name='L339'></a> 339     <a href='../S/src--editor--editsearch.c.html#L811' title='Defined at 811 in src/editor/editsearch.c.'>edit_replace_cmd</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L340' name='L340'></a> 340 
+<a id='L341' name='L341'></a> 341     <em class='comment'>// then</em>
+<a id='L342' name='L342'></a> 342     <a href='../S/tests--src--editor--edit_replace_cmd.c.html#L281' title='Defined at 281 in tests/src/editor/edit_replace_cmd.c.'>test_replace_check</a> (<a href='../Y/test_regex_out1.html' title='Multiple used in 3 places.'>test_regex_out1</a>);
+<a id='L343' name='L343'></a> 343 <em class='brace'>}</em>
+<a id='L344' name='L344'></a> 344 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L345' name='L345'></a> 345 
+<a id='L346' name='L346'></a> 346 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L347' name='L347'></a> 347 
+<a id='L348' name='L348'></a> 348 <em class='comment'>// replace first char of string</em>
+<a id='L349' name='L349'></a> 349 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/test_replace_regex__replace_first_char_of_string.html' title='Multiple used in 2 places.'>test_replace_regex__replace_first_char_of_string</a>)
+     <em class='comment'>/* <a href='#L325'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L373'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+349 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L350' name='L350'></a> 350 <em class='brace'>{</em>
+<a id='L351' name='L351'></a> 351     <em class='comment'>// given</em>
+<a id='L352' name='L352'></a> 352     <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>;
+<a id='L353' name='L353'></a> 353     <a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a> = &amp;<a href='../Y/replace_regex_replace_first_char_of_string__from.html' title='Multiple used in 2 places.'>replace_regex_replace_first_char_of_string__from</a>;
+<a id='L354' name='L354'></a> 354     <a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a> = &amp;<a href='../Y/replace_regex_begin_of_string__to.html' title='Multiple used in 3 places.'>replace_regex_begin_of_string__to</a>;
+<a id='L355' name='L355'></a> 355     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark1.html' title='Multiple used in 62 places.'>mark1</a> = 0;
+<a id='L356' name='L356'></a> 356     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark2.html' title='Multiple used in 69 places.'>mark2</a> = 0;
+<a id='L357' name='L357'></a> 357 
+<a id='L358' name='L358'></a> 358     <strong class='reserved'>for</strong> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> = <a href='../Y/test_regex_in.html' title='Multiple used in 4 places.'>test_regex_in</a>; *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> != '\0'; <a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>++)
+<a id='L359' name='L359'></a> 359         <a href='../S/src--editor--editbuffer.c.html#L489' title='Defined at 489 in src/editor/editbuffer.c.'>edit_buffer_insert</a> (&amp;<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>);
+<a id='L360' name='L360'></a> 360 
+<a id='L361' name='L361'></a> 361     <em class='comment'>// when</em>
+<a id='L362' name='L362'></a> 362     <a href='../S/src--editor--edit.c.html#L2766' title='Defined at 2766 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, 0);
+<a id='L363' name='L363'></a> 363     <a href='../S/src--editor--editsearch.c.html#L811' title='Defined at 811 in src/editor/editsearch.c.'>edit_replace_cmd</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L364' name='L364'></a> 364 
+<a id='L365' name='L365'></a> 365     <em class='comment'>// then</em>
+<a id='L366' name='L366'></a> 366     <a href='../S/tests--src--editor--edit_replace_cmd.c.html#L281' title='Defined at 281 in tests/src/editor/edit_replace_cmd.c.'>test_replace_check</a> (<a href='../Y/test_regex_out2.html' title='Multiple used in 2 places.'>test_regex_out2</a>);
+<a id='L367' name='L367'></a> 367 <em class='brace'>}</em>
+<a id='L368' name='L368'></a> 368 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L369' name='L369'></a> 369 
+<a id='L370' name='L370'></a> 370 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L371' name='L371'></a> 371 
+<a id='L372' name='L372'></a> 372 <em class='comment'>// replace from begin of string in selection</em>
+<a id='L373' name='L373'></a> 373 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/test_replace_regex__in_selection_top_down_1.html' title='Multiple used in 2 places.'>test_replace_regex__in_selection_top_down_1</a>)
+     <em class='comment'>/* <a href='#L349'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L397'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+373 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L374' name='L374'></a> 374 <em class='brace'>{</em>
+<a id='L375' name='L375'></a> 375     <em class='comment'>// given</em>
+<a id='L376' name='L376'></a> 376     <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/TRUE.html' title='Multiple used in 2086 places.'>TRUE</a>;
+<a id='L377' name='L377'></a> 377     <a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a> = &amp;<a href='../Y/replace_regex_entire_string__from.html' title='Multiple used in 6 places.'>replace_regex_entire_string__from</a>;
+<a id='L378' name='L378'></a> 378     <a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a> = &amp;<a href='../Y/replace_regex_entire_string__to.html' title='Multiple used in 6 places.'>replace_regex_entire_string__to</a>;
+<a id='L379' name='L379'></a> 379     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark1.html' title='Multiple used in 62 places.'>mark1</a> = 8;
+<a id='L380' name='L380'></a> 380     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark2.html' title='Multiple used in 69 places.'>mark2</a> = 20;
+<a id='L381' name='L381'></a> 381 
+<a id='L382' name='L382'></a> 382     <strong class='reserved'>for</strong> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> = <a href='../Y/test_regex_selected_in.html' title='Multiple used in 5 places.'>test_regex_selected_in</a>; *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> != '\0'; <a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>++)
+<a id='L383' name='L383'></a> 383         <a href='../S/src--editor--editbuffer.c.html#L489' title='Defined at 489 in src/editor/editbuffer.c.'>edit_buffer_insert</a> (&amp;<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>);
+<a id='L384' name='L384'></a> 384 
+<a id='L385' name='L385'></a> 385     <em class='comment'>// when</em>
+<a id='L386' name='L386'></a> 386     <a href='../S/src--editor--edit.c.html#L2766' title='Defined at 2766 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, 0);
+<a id='L387' name='L387'></a> 387     <a href='../S/src--editor--editsearch.c.html#L811' title='Defined at 811 in src/editor/editsearch.c.'>edit_replace_cmd</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L388' name='L388'></a> 388 
+<a id='L389' name='L389'></a> 389     <em class='comment'>// then</em>
+<a id='L390' name='L390'></a> 390     <a href='../S/tests--src--editor--edit_replace_cmd.c.html#L281' title='Defined at 281 in tests/src/editor/edit_replace_cmd.c.'>test_replace_check</a> (<a href='../Y/test1_regex_selected_out.html' title='Multiple used in 3 places.'>test1_regex_selected_out</a>);
+<a id='L391' name='L391'></a> 391 <em class='brace'>}</em>
+<a id='L392' name='L392'></a> 392 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L393' name='L393'></a> 393 
+<a id='L394' name='L394'></a> 394 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L395' name='L395'></a> 395 
+<a id='L396' name='L396'></a> 396 <em class='comment'>// replace not from begin of string in selection</em>
+<a id='L397' name='L397'></a> 397 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/test_replace_regex__in_selection_top_down_2.html' title='Multiple used in 2 places.'>test_replace_regex__in_selection_top_down_2</a>)
+     <em class='comment'>/* <a href='#L373'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L421'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+397 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L398' name='L398'></a> 398 <em class='brace'>{</em>
+<a id='L399' name='L399'></a> 399     <em class='comment'>// given</em>
+<a id='L400' name='L400'></a> 400     <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/TRUE.html' title='Multiple used in 2086 places.'>TRUE</a>;
+<a id='L401' name='L401'></a> 401     <a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a> = &amp;<a href='../Y/replace_regex_entire_string__from.html' title='Multiple used in 6 places.'>replace_regex_entire_string__from</a>;
+<a id='L402' name='L402'></a> 402     <a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a> = &amp;<a href='../Y/replace_regex_entire_string__to.html' title='Multiple used in 6 places.'>replace_regex_entire_string__to</a>;
+<a id='L403' name='L403'></a> 403     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark1.html' title='Multiple used in 62 places.'>mark1</a> = 9;
+<a id='L404' name='L404'></a> 404     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark2.html' title='Multiple used in 69 places.'>mark2</a> = 20;
+<a id='L405' name='L405'></a> 405 
+<a id='L406' name='L406'></a> 406     <strong class='reserved'>for</strong> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> = <a href='../Y/test_regex_selected_in.html' title='Multiple used in 5 places.'>test_regex_selected_in</a>; *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> != '\0'; <a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>++)
+<a id='L407' name='L407'></a> 407         <a href='../S/src--editor--editbuffer.c.html#L489' title='Defined at 489 in src/editor/editbuffer.c.'>edit_buffer_insert</a> (&amp;<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>);
+<a id='L408' name='L408'></a> 408 
+<a id='L409' name='L409'></a> 409     <em class='comment'>// when</em>
+<a id='L410' name='L410'></a> 410     <a href='../S/src--editor--edit.c.html#L2766' title='Defined at 2766 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, 0);
+<a id='L411' name='L411'></a> 411     <a href='../S/src--editor--editsearch.c.html#L811' title='Defined at 811 in src/editor/editsearch.c.'>edit_replace_cmd</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L412' name='L412'></a> 412 
+<a id='L413' name='L413'></a> 413     <em class='comment'>// then</em>
+<a id='L414' name='L414'></a> 414     <a href='../S/tests--src--editor--edit_replace_cmd.c.html#L281' title='Defined at 281 in tests/src/editor/edit_replace_cmd.c.'>test_replace_check</a> (<a href='../Y/test2_regex_selected_out.html' title='Multiple used in 3 places.'>test2_regex_selected_out</a>);
+<a id='L415' name='L415'></a> 415 <em class='brace'>}</em>
+<a id='L416' name='L416'></a> 416 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L417' name='L417'></a> 417 
+<a id='L418' name='L418'></a> 418 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L419' name='L419'></a> 419 
+<a id='L420' name='L420'></a> 420 <em class='comment'>// replace from begin of string in selection</em>
+<a id='L421' name='L421'></a> 421 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/test_replace_regex__in_selection_bottom_up_1.html' title='Multiple used in 2 places.'>test_replace_regex__in_selection_bottom_up_1</a>)
+     <em class='comment'>/* <a href='#L397'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L445'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+421 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L422' name='L422'></a> 422 <em class='brace'>{</em>
+<a id='L423' name='L423'></a> 423     <em class='comment'>// given</em>
+<a id='L424' name='L424'></a> 424     <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/TRUE.html' title='Multiple used in 2086 places.'>TRUE</a>;
+<a id='L425' name='L425'></a> 425     <a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a> = &amp;<a href='../Y/replace_regex_entire_string__from.html' title='Multiple used in 6 places.'>replace_regex_entire_string__from</a>;
+<a id='L426' name='L426'></a> 426     <a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a> = &amp;<a href='../Y/replace_regex_entire_string__to.html' title='Multiple used in 6 places.'>replace_regex_entire_string__to</a>;
+<a id='L427' name='L427'></a> 427     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark1.html' title='Multiple used in 62 places.'>mark1</a> = 20;
+<a id='L428' name='L428'></a> 428     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark2.html' title='Multiple used in 69 places.'>mark2</a> = 8;
+<a id='L429' name='L429'></a> 429 
+<a id='L430' name='L430'></a> 430     <strong class='reserved'>for</strong> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> = <a href='../Y/test_regex_selected_in.html' title='Multiple used in 5 places.'>test_regex_selected_in</a>; *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> != '\0'; <a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>++)
+<a id='L431' name='L431'></a> 431         <a href='../S/src--editor--editbuffer.c.html#L489' title='Defined at 489 in src/editor/editbuffer.c.'>edit_buffer_insert</a> (&amp;<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>);
+<a id='L432' name='L432'></a> 432 
+<a id='L433' name='L433'></a> 433     <em class='comment'>// when</em>
+<a id='L434' name='L434'></a> 434     <a href='../S/src--editor--edit.c.html#L2766' title='Defined at 2766 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, 0);
+<a id='L435' name='L435'></a> 435     <a href='../S/src--editor--editsearch.c.html#L811' title='Defined at 811 in src/editor/editsearch.c.'>edit_replace_cmd</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L436' name='L436'></a> 436 
+<a id='L437' name='L437'></a> 437     <em class='comment'>// then</em>
+<a id='L438' name='L438'></a> 438     <a href='../S/tests--src--editor--edit_replace_cmd.c.html#L281' title='Defined at 281 in tests/src/editor/edit_replace_cmd.c.'>test_replace_check</a> (<a href='../Y/test1_regex_selected_out.html' title='Multiple used in 3 places.'>test1_regex_selected_out</a>);
+<a id='L439' name='L439'></a> 439 <em class='brace'>}</em>
+<a id='L440' name='L440'></a> 440 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L441' name='L441'></a> 441 
+<a id='L442' name='L442'></a> 442 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L443' name='L443'></a> 443 
+<a id='L444' name='L444'></a> 444 <em class='comment'>// replace not from begin of string in selection</em>
+<a id='L445' name='L445'></a> 445 <a href='../S/tests--mctest.h.html#L65' title='Referred from 65 in tests/mctest.h.'>START_TEST</a> (<a href='../Y/test_replace_regex__in_selection_bottom_up_2.html' title='Multiple used in 2 places.'>test_replace_regex__in_selection_bottom_up_2</a>)
+     <em class='comment'>/* <a href='#L421'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L469'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+445 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L446' name='L446'></a> 446 <em class='brace'>{</em>
+<a id='L447' name='L447'></a> 447     <em class='comment'>// given</em>
+<a id='L448' name='L448'></a> 448     <a href='../Y/only_in_selection.html' title='Multiple used in 16 places.'>only_in_selection</a> = <a href='../Y/TRUE.html' title='Multiple used in 2086 places.'>TRUE</a>;
+<a id='L449' name='L449'></a> 449     <a href='../Y/replace_regex__from.html' title='Multiple used in 9 places.'>replace_regex__from</a> = &amp;<a href='../Y/replace_regex_entire_string__from.html' title='Multiple used in 6 places.'>replace_regex_entire_string__from</a>;
+<a id='L450' name='L450'></a> 450     <a href='../Y/replace_regex__to.html' title='Multiple used in 9 places.'>replace_regex__to</a> = &amp;<a href='../Y/replace_regex_entire_string__to.html' title='Multiple used in 6 places.'>replace_regex_entire_string__to</a>;
+<a id='L451' name='L451'></a> 451     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark1.html' title='Multiple used in 62 places.'>mark1</a> = 20;
+<a id='L452' name='L452'></a> 452     <a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/mark2.html' title='Multiple used in 69 places.'>mark2</a> = 9;
+<a id='L453' name='L453'></a> 453 
+<a id='L454' name='L454'></a> 454     <strong class='reserved'>for</strong> (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> = <a href='../Y/test_regex_selected_in.html' title='Multiple used in 5 places.'>test_regex_selected_in</a>; *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a> != '\0'; <a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>++)
+<a id='L455' name='L455'></a> 455         <a href='../S/src--editor--editbuffer.c.html#L489' title='Defined at 489 in src/editor/editbuffer.c.'>edit_buffer_insert</a> (&amp;<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>-&gt;<a href='../Y/buffer.html' title='Multiple used in 1017 places.'>buffer</a>, *<a href='../Y/ti.html' title='Multiple used in 27 places.'>ti</a>);
+<a id='L456' name='L456'></a> 456 
+<a id='L457' name='L457'></a> 457     <em class='comment'>// when</em>
+<a id='L458' name='L458'></a> 458     <a href='../S/src--editor--edit.c.html#L2766' title='Defined at 2766 in src/editor/edit.c.'>edit_cursor_move</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, 0);
+<a id='L459' name='L459'></a> 459     <a href='../S/src--editor--editsearch.c.html#L811' title='Defined at 811 in src/editor/editsearch.c.'>edit_replace_cmd</a> (<a href='../Y/test_edit.html' title='Multiple used in 84 places.'>test_edit</a>, <a href='../Y/FALSE.html' title='Multiple used in 1785 places.'>FALSE</a>);
+<a id='L460' name='L460'></a> 460 
+<a id='L461' name='L461'></a> 461     <em class='comment'>// then</em>
+<a id='L462' name='L462'></a> 462     <a href='../S/tests--src--editor--edit_replace_cmd.c.html#L281' title='Defined at 281 in tests/src/editor/edit_replace_cmd.c.'>test_replace_check</a> (<a href='../Y/test2_regex_selected_out.html' title='Multiple used in 3 places.'>test2_regex_selected_out</a>);
+<a id='L463' name='L463'></a> 463 <em class='brace'>}</em>
+<a id='L464' name='L464'></a> 464 <a href='../Y/END_TEST.html' title='Multiple used in 56 places.'>END_TEST</a>
+<a id='L465' name='L465'></a> 465 
+<a id='L466' name='L466'></a> 466 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L467' name='L467'></a> 467 
+<a id='L468' name='L468'></a> 468 <strong class='reserved'>int</strong>
+<a id='L469' name='L469'></a> 469 main (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L445'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+469 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+<a id='L470' name='L470'></a> 470 <em class='brace'>{</em>
+<a id='L471' name='L471'></a> 471     <a href='../Y/TCase.html' title='Multiple used in 69 places.'>TCase</a> *<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>;
+<a id='L472' name='L472'></a> 472 
+<a id='L473' name='L473'></a> 473     <a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a> = <a href='../Y/tcase_create.html' title='Multiple used in 68 places.'>tcase_create</a> ("Core");
+<a id='L474' name='L474'></a> 474 
+<a id='L475' name='L475'></a> 475     <a href='../Y/tcase_add_checked_fixture.html' title='Multiple used in 41 places.'>tcase_add_checked_fixture</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../D/setup.html' title='Multiple defined in 35 places.'>setup</a>, <a href='../D/teardown.html' title='Multiple defined in 35 places.'>teardown</a>);
+<a id='L476' name='L476'></a> 476 
+<a id='L477' name='L477'></a> 477     <em class='comment'>// Add new tests here: ***************</em>
+<a id='L478' name='L478'></a> 478     <a href='../Y/tcase_add_test.html' title='Multiple used in 49 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/test_replace_regex__entire_string.html' title='Multiple used in 2 places.'>test_replace_regex__entire_string</a>);
+<a id='L479' name='L479'></a> 479     <a href='../Y/tcase_add_test.html' title='Multiple used in 49 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/test_replace_regex__insert_char_at_begin_of_string.html' title='Multiple used in 2 places.'>test_replace_regex__insert_char_at_begin_of_string</a>);
+<a id='L480' name='L480'></a> 480     <a href='../Y/tcase_add_test.html' title='Multiple used in 49 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/test_replace_regex__replace_first_char_of_string.html' title='Multiple used in 2 places.'>test_replace_regex__replace_first_char_of_string</a>);
+<a id='L481' name='L481'></a> 481     <a href='../Y/tcase_add_test.html' title='Multiple used in 49 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/test_replace_regex__in_selection_top_down_1.html' title='Multiple used in 2 places.'>test_replace_regex__in_selection_top_down_1</a>);
+<a id='L482' name='L482'></a> 482     <a href='../Y/tcase_add_test.html' title='Multiple used in 49 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/test_replace_regex__in_selection_top_down_2.html' title='Multiple used in 2 places.'>test_replace_regex__in_selection_top_down_2</a>);
+<a id='L483' name='L483'></a> 483     <a href='../Y/tcase_add_test.html' title='Multiple used in 49 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/test_replace_regex__in_selection_bottom_up_1.html' title='Multiple used in 2 places.'>test_replace_regex__in_selection_bottom_up_1</a>);
+<a id='L484' name='L484'></a> 484     <a href='../Y/tcase_add_test.html' title='Multiple used in 49 places.'>tcase_add_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>, <a href='../Y/test_replace_regex__in_selection_bottom_up_2.html' title='Multiple used in 2 places.'>test_replace_regex__in_selection_bottom_up_2</a>);
+<a id='L485' name='L485'></a> 485     <em class='comment'>// ***********************************</em>
+<a id='L486' name='L486'></a> 486 
+<a id='L487' name='L487'></a> 487     <strong class='reserved'>return</strong> <a href='../S/tests--mctest.h.html#L87' title='Defined at 87 in tests/mctest.h.'>mctest_run_all</a> (<a href='../Y/tc_core.html' title='Multiple used in 363 places.'>tc_core</a>);
+<a id='L488' name='L488'></a> 488 <em class='brace'>}</em>
+<a id='L489' name='L489'></a> 489 
+<a id='L490' name='L490'></a> 490 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L131'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L469'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+490 tests/src/editor/edit_replace_cmd.c'  /> */</em>
+</body>
+</html>

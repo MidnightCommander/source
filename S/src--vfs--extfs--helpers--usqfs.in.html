@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/usqfs.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/usqfs.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/usqfs.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/usqfs.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! /bin/sh
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Squash file system
+<a id='L4' name='L4'></a>#
+<a id='L5' name='L5'></a># tested to comply with the output of unsquashfs version 4.6.1 (2023/03/25)
+<a id='L6' name='L6'></a> 
+<a id='L7' name='L7'></a>SQUASHFS="${MC_TEST_EXTFS_LIST_CMD:-unsquashfs}"
+<a id='L8' name='L8'></a>AWK="@AWK@"
+<a id='L9' name='L9'></a>MV=mv
+<a id='L10' name='L10'></a>RM=rm
+<a id='L11' name='L11'></a> 
+<a id='L12' name='L12'></a>mcsqfs_list ()
+<a id='L13' name='L13'></a>{
+<a id='L14' name='L14'></a>  $SQUASHFS -d "" -lls "$1" | $AWK '
+<a id='L15' name='L15'></a>    {
+<a id='L16' name='L16'></a>      split($2, a, "/")
+<a id='L17' name='L17'></a>      file_type=substr($1,1,1)
+<a id='L18' name='L18'></a>      file_size=file_type == "c" || file_type == "b" ? 0 : $3
+<a id='L19' name='L19'></a>      # character or block device
+<a id='L20' name='L20'></a>      if (NF == 7) {
+<a id='L21' name='L21'></a>        split($5, b, "-")
+<a id='L22' name='L22'></a>        printf "-%9s   1 %8s %8s %8s %2s-%2s-%4s %5s %s\n", substr($1,2), a[1], a[2], file_size, b[2], b[3], b[1], $6, $7
+<a id='L23' name='L23'></a>      } else {
+<a id='L24' name='L24'></a>        split($4, b, "-")
+<a id='L25' name='L25'></a>        # normal file
+<a id='L26' name='L26'></a>        if (NF &lt; 7)
+<a id='L27' name='L27'></a>          printf "%10s   1 %8s %8s %8s %2s-%2s-%4s %5s %s\n", $1, a[1], a[2], file_size, b[2], b[3], b[1], $5, $6
+<a id='L28' name='L28'></a>        # symbolic link
+<a id='L29' name='L29'></a>        else
+<a id='L30' name='L30'></a>          printf "%10s   1 %8s %8s %8s %2s-%2s-%4s %5s %s %s %s\n", $1, a[1], a[2], file_size, b[2], b[3], b[1], $5, $6, $7, $8
+<a id='L31' name='L31'></a>      }
+<a id='L32' name='L32'></a>    }' 2&gt;/dev/null
+<a id='L33' name='L33'></a>}
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a># permission user group         size date        time filename -  symlinktarget
+<a id='L36' name='L36'></a># lrwxrwxrwx root/root             2 2013-12-31 12:50 /foolink -&gt; foo
+<a id='L37' name='L37'></a>#         $1 a[1] a[2]            $3 b[1]b[2]b[3]  $5       $6 $7 $8
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a># AAAAAAAAAA NNN OOOOOOOO GGGGGGGG SSSSSSSS DATETIME [PATH/]FILENAME [-&gt; [PATH/]FILENAME[/]]]
+<a id='L40' name='L40'></a>#
+<a id='L41' name='L41'></a># where (things in [] are optional):
+<a id='L42' name='L42'></a>#
+<a id='L43' name='L43'></a># AAAAAAAAAA is the permission string like in ls -l
+<a id='L44' name='L44'></a># NNN        is the number of links
+<a id='L45' name='L45'></a># OOOOOOOO   is the owner (either UID or name)
+<a id='L46' name='L46'></a># GGGGGGGG   is the group (either GID or name)
+<a id='L47' name='L47'></a># SSSSSSSS   is the file size
+<a id='L48' name='L48'></a># FILENAME   is the filename
+<a id='L49' name='L49'></a># PATH       is the path from the archive's root without the leading slash (/)
+<a id='L50' name='L50'></a># DATETIME   has one of the following formats:
+<a id='L51' name='L51'></a>#            Mon DD hh:mm, Mon DD YYYY, Mon DD YYYY hh:mm, MM-DD-YYYY hh:mm
+<a id='L52' name='L52'></a>#
+<a id='L53' name='L53'></a>#            where Mon is a three letter English month name, DD is day 1-31,
+<a id='L54' name='L54'></a>#            MM is month 01-12, YYYY is four digit year, hh is hour and
+<a id='L55' name='L55'></a>#            mm is minute.
+<a id='L56' name='L56'></a>#
+<a id='L57' name='L57'></a># If the -&gt; [PATH/]FILENAME part is present, it means:
+<a id='L58' name='L58'></a>#
+<a id='L59' name='L59'></a># If permissions start with an l (ell), then it is the name that symlink
+<a id='L60' name='L60'></a># points to. (If this PATH starts with a MC vfs prefix, then it is a symlink
+<a id='L61' name='L61'></a># somewhere to the other virtual filesystem (if you want to specify path from
+<a id='L62' name='L62'></a># the local root, use local:/path_name instead of /path_name, since /path_name
+<a id='L63' name='L63'></a># means from root of the archive listed).
+<a id='L64' name='L64'></a>#
+<a id='L65' name='L65'></a># If permissions do not start with l, but number of links is greater than one,
+<a id='L66' name='L66'></a># then it says that this file should be a hardlinked with the other file.
+<a id='L67' name='L67'></a> 
+<a id='L68' name='L68'></a>mcsqfs_copyout ()
+<a id='L69' name='L69'></a>{
+<a id='L70' name='L70'></a>  $SQUASHFS "$1" "$2" &gt;/dev/null
+<a id='L71' name='L71'></a>  $MV "squashfs-root/$2" "$3"
+<a id='L72' name='L72'></a>  $RM -rf squashfs-root
+<a id='L73' name='L73'></a>}
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a>umask 077
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a>cmd="$1"
+<a id='L78' name='L78'></a>shift
+<a id='L79' name='L79'></a>case "$cmd" in
+<a id='L80' name='L80'></a>  list) mcsqfs_list "$@" ;;
+<a id='L81' name='L81'></a>  copyout) mcsqfs_copyout "$@" ;;
+<a id='L82' name='L82'></a>  *) exit 1 ;;
+<a id='L83' name='L83'></a>esac
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>exit 0
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+85 src/vfs/extfs/helpers/usqfs.in'  /> */</em>
+</body>
+</html>

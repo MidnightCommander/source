@@ -1,0 +1,480 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>a</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L91'>a</a>                  91 lib/intprops-internal.h #define _GL_INT_NEGATE_RANGE_OVERFLOW(a, min, max) ((min) &lt; 0 ? (a) &lt; -(max) : 0 &lt; (a))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L140'>a</a>                 140 lib/intprops-internal.h #define _GL_INT_ADD_WRAPV(a, b, r)      __builtin_add_overflow (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L141'>a</a>                 141 lib/intprops-internal.h #define _GL_INT_SUBTRACT_WRAPV(a, b, r) __builtin_sub_overflow (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L143'>a</a>                 143 lib/intprops-internal.h #define _GL_INT_ADD_WRAPV(a, b, r)      ckd_add (r, +(a), +(b))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L144'>a</a>                 144 lib/intprops-internal.h #define _GL_INT_SUBTRACT_WRAPV(a, b, r) ckd_sub (r, +(a), +(b))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L146'>a</a>                 146 lib/intprops-internal.h #define _GL_INT_ADD_WRAPV(a, b, r) _GL_INT_OP_WRAPV (a, b, r, +, _GL_INT_ADD_RANGE_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L147'>a</a>                 147 lib/intprops-internal.h #define _GL_INT_SUBTRACT_WRAPV(a, b, r)                                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L148'>a</a>                 148 lib/intprops-internal.h     _GL_INT_OP_WRAPV (a, b, r, -, _GL_INT_SUBTRACT_RANGE_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L153'>a</a>                 153 lib/intprops-internal.h #define _GL_INT_MULTIPLY_WRAPV(a, b, r) __builtin_mul_overflow (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L156'>a</a>                 156 lib/intprops-internal.h #define _GL_INT_MULTIPLY_WRAPV(a, b, r)                                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L157'>a</a>                 157 lib/intprops-internal.h     ((!_GL_SIGNED_TYPE_OR_EXPR (*(r)) &amp;&amp; _GL_EXPR_SIGNED (a) &amp;&amp; _GL_EXPR_SIGNED (b)                \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L158'>a</a>                 158 lib/intprops-internal.h       &amp;&amp; _GL_INT_MULTIPLY_RANGE_OVERFLOW (a, b, (__typeof__ (*(r))) 0, (__typeof__ (*(r))) -1))    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L159'>a</a>                 159 lib/intprops-internal.h          ? ((void) __builtin_mul_overflow (a, b, r), 1)                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L160'>a</a>                 160 lib/intprops-internal.h          : __builtin_mul_overflow (a, b, r))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L163'>a</a>                 163 lib/intprops-internal.h #define _GL_INT_MULTIPLY_WRAPV(a, b, r) ckd_mul (r, +(a), +(b))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L165'>a</a>                 165 lib/intprops-internal.h #define _GL_INT_MULTIPLY_WRAPV(a, b, r)                                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L166'>a</a>                 166 lib/intprops-internal.h     _GL_INT_OP_WRAPV (a, b, r, *, _GL_INT_MULTIPLY_RANGE_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L187'>a</a>                 187 lib/intprops-internal.h #define _GL_INT_OP_WRAPV(a, b, r, op, overflow)                                                    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L189'>a</a>                 189 lib/intprops-internal.h          signed char: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, signed char,           \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L191'>a</a>                 191 lib/intprops-internal.h          unsigned char: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, unsigned char, 0,    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L193'>a</a>                 193 lib/intprops-internal.h          short int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, short int, SHRT_MIN,     \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L195'>a</a>                 195 lib/intprops-internal.h          unsigned short int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int,                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L197'>a</a>                 197 lib/intprops-internal.h          int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, int, INT_MIN, INT_MAX),        \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L198'>a</a>                 198 lib/intprops-internal.h          unsigned int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, unsigned int, 0,      \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L200'>a</a>                 200 lib/intprops-internal.h          long int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int, long int, LONG_MIN,  \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L202'>a</a>                 202 lib/intprops-internal.h          unsigned long int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int,             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L204'>a</a>                 204 lib/intprops-internal.h          long long int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long long int,            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L206'>a</a>                 206 lib/intprops-internal.h          unsigned long long int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long long int,   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L217'>a</a>                 217 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_SMALLISH(a, b, r, op, overflow, st, smin, smax, ut, umax)                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L219'>a</a>                 219 lib/intprops-internal.h          ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, st, smin, smax)                   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L220'>a</a>                 220 lib/intprops-internal.h          : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, ut, 0, umax))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L222'>a</a>                 222 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_SMALLISH(a, b, r, op, overflow, st, smin, smax, ut, umax)                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L223'>a</a>                 223 lib/intprops-internal.h     (overflow (a, b, smin, smax)                                                                   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L224'>a</a>                 224 lib/intprops-internal.h          ? (overflow (a, b, 0, umax)                                                               \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L225'>a</a>                 225 lib/intprops-internal.h                 ? (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, unsigned, st), 1)               \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L226'>a</a>                 226 lib/intprops-internal.h                 : (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, unsigned, st)) &lt; 0)             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L227'>a</a>                 227 lib/intprops-internal.h          : (overflow (a, b, 0, umax)                                                               \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L228'>a</a>                 228 lib/intprops-internal.h                 ? (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, unsigned, st)) &gt;= 0             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L229'>a</a>                 229 lib/intprops-internal.h                 : (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, unsigned, st), 0)))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L232'>a</a>                 232 lib/intprops-internal.h #define _GL_INT_OP_WRAPV(a, b, r, op, overflow)                                                    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L234'>a</a>                 234 lib/intprops-internal.h          ? _GL_INT_OP_WRAPV_SMALLISH (a, b, r, op, overflow, signed char, SCHAR_MIN, SCHAR_MAX,    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L237'>a</a>                 237 lib/intprops-internal.h          ? _GL_INT_OP_WRAPV_SMALLISH (a, b, r, op, overflow, short int, SHRT_MIN, SHRT_MAX,        \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L241'>a</a>                 241 lib/intprops-internal.h                 ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, int, INT_MIN, INT_MAX)     \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L242'>a</a>                 242 lib/intprops-internal.h                 : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, unsigned int, 0,           \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L244'>a</a>                 244 lib/intprops-internal.h          : _GL_INT_OP_WRAPV_LONGISH (a, b, r, op, overflow))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L246'>a</a>                 246 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_LONGISH(a, b, r, op, overflow)                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L248'>a</a>                 248 lib/intprops-internal.h          ? (_GL_EXPR_SIGNED (*(r)) ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int,    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L250'>a</a>                 250 lib/intprops-internal.h                                    : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int,    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L253'>a</a>                 253 lib/intprops-internal.h                 ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long long int, long long int,   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L255'>a</a>                 255 lib/intprops-internal.h                 : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long long int,                  \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L258'>a</a>                 258 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_LONGISH(a, b, r, op, overflow)                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L259'>a</a>                 259 lib/intprops-internal.h     (_GL_EXPR_SIGNED (*(r)) ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int, long int, \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L261'>a</a>                 261 lib/intprops-internal.h                             : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int,           \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L272'>a</a>                 272 lib/intprops-internal.h #define _GL_INT_OP_CALC(a, b, r, op, overflow, ut, t, tmin, tmax)                                  \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L273'>a</a>                 273 lib/intprops-internal.h     (overflow (a, b, tmin, tmax) ? (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, ut, t), 1)     \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L274'>a</a>                 274 lib/intprops-internal.h                                  : (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, ut, t), 0))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L283'>a</a>                 283 lib/intprops-internal.h #define _GL_INT_NEGATE_OVERFLOW(a) __builtin_sub_overflow_p (0, a, (__typeof__ (-(a))) 0)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L285'>a</a>                 285 lib/intprops-internal.h #define _GL_INT_NEGATE_OVERFLOW(a)                                                                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L286'>a</a>                 286 lib/intprops-internal.h     _GL_INT_NEGATE_RANGE_OVERFLOW (a, _GL_INT_MINIMUM (a), _GL_INT_MAXIMUM (a))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L306'>a</a>                 306 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_VIA_UNSIGNED(a, b, op, ut, t) ((t) ((ut) (a) op (ut) (b)))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L314'>a</a>                 314 lib/intprops-internal.h #define _GL_INT_ADD_RANGE_OVERFLOW(a, b, tmin, tmax)                                               \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L315'>a</a>                 315 lib/intprops-internal.h     ((b) &lt; 0 ? (((tmin) ? ((_GL_EXPR_SIGNED (_GL_INT_CONVERT (a, (tmin) - (b))) || (b) &lt; (tmin))   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L316'>a</a>                 316 lib/intprops-internal.h                            &amp;&amp; (a) &lt; (tmin) - (b))                                                  \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L317'>a</a>                 317 lib/intprops-internal.h                         : (a) &lt;= -1 - (b))                                                         \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L318'>a</a>                 318 lib/intprops-internal.h                 || ((_GL_EXPR_SIGNED (a) ? 0 &lt;= (a) : (tmax) &lt; (a)) &amp;&amp; (tmax) &lt; (a) + (b)))        \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L319'>a</a>                 319 lib/intprops-internal.h          : (a) &lt; 0                                                                                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L320'>a</a>                 320 lib/intprops-internal.h          ? (((tmin) ? ((_GL_EXPR_SIGNED (_GL_INT_CONVERT (b, (tmin) - (a))) || (a) &lt; (tmin))       \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L321'>a</a>                 321 lib/intprops-internal.h                        &amp;&amp; (b) &lt; (tmin) - (a))                                                      \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L322'>a</a>                 322 lib/intprops-internal.h                     : (b) &lt;= -1 - (a))                                                             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L323'>a</a>                 323 lib/intprops-internal.h             || ((_GL_EXPR_SIGNED (_GL_INT_CONVERT (a, b)) || (tmax) &lt; (b)) &amp;&amp; (tmax) &lt; (a) + (b))) \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L324'>a</a>                 324 lib/intprops-internal.h          : (tmax) &lt; (b) || (tmax) - (b) &lt; (a))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L325'>a</a>                 325 lib/intprops-internal.h #define _GL_INT_SUBTRACT_RANGE_OVERFLOW(a, b, tmin, tmax)                                          \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L326'>a</a>                 326 lib/intprops-internal.h     (((a) &lt; 0) == ((b) &lt; 0)                                                                        \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L327'>a</a>                 327 lib/intprops-internal.h          ? ((a) &lt; (b) ? !(tmin) || -1 - (tmin) &lt; (b) - (a) - 1 : (tmax) &lt; (a) - (b))               \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L328'>a</a>                 328 lib/intprops-internal.h          : (a) &lt; 0 ? ((!_GL_EXPR_SIGNED (_GL_INT_CONVERT ((a) - (tmin), b)) &amp;&amp; (a) - (tmin) &lt; 0)   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L329'>a</a>                 329 lib/intprops-internal.h                       || (a) - (tmin) &lt; (b))                                                       \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L331'>a</a>                 331 lib/intprops-internal.h                          &amp;&amp; _GL_EXPR_SIGNED (_GL_INT_CONVERT ((tmax) + (b), a)))                   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L333'>a</a>                 333 lib/intprops-internal.h                       || (tmax) + (b) &lt; (a)))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L334'>a</a>                 334 lib/intprops-internal.h #define _GL_INT_MULTIPLY_RANGE_OVERFLOW(a, b, tmin, tmax)                                          \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L335'>a</a>                 335 lib/intprops-internal.h     ((b) &lt; 0 ? ((a) &lt; 0 ? (_GL_EXPR_SIGNED (_GL_INT_CONVERT (tmax, b))                             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L336'>a</a>                 336 lib/intprops-internal.h                                ? (a) &lt; (tmax) / (b)                                                \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L340'>a</a>                 340 lib/intprops-internal.h                                   &lt;= -1 - (a)))                                                    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L342'>a</a>                 342 lib/intprops-internal.h                     ? (_GL_EXPR_SIGNED (a) ? 0 &lt; (a) + (tmin) : 0 &lt; (a) &amp;&amp; -1 - (tmin) &lt; (a) - 1)  \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L343'>a</a>                 343 lib/intprops-internal.h                     : (tmin) / (b) &lt; (a))                                                          \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L346'>a</a>                 346 lib/intprops-internal.h          : ((a) &lt; 0 ? (_GL_INT_NEGATE_OVERFLOW (_GL_INT_CONVERT (a, tmin)) &amp;&amp; (a) == -1            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L348'>a</a>                 348 lib/intprops-internal.h                            : (tmin) / (a) &lt; (b))                                                   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L349'>a</a>                 349 lib/intprops-internal.h                     : (tmax) / (b) &lt; (a)))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L110'>a</a>                 110 lib/intprops.h #define INT_ADD_RANGE_OVERFLOW(a, b, min, max) ((b) &lt; 0 ? (a) &lt; (min) - (b) : (max) - (b) &lt; (a))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L114'>a</a>                 114 lib/intprops.h #define INT_SUBTRACT_RANGE_OVERFLOW(a, b, min, max)                                                \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L115'>a</a>                 115 lib/intprops.h     ((b) &lt; 0 ? (max) + (b) &lt; (a) : (a) &lt; (min) + (b))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L119'>a</a>                 119 lib/intprops.h #define INT_NEGATE_RANGE_OVERFLOW(a, min, max) _GL_INT_NEGATE_RANGE_OVERFLOW (a, min, max)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L125'>a</a>                 125 lib/intprops.h #define INT_MULTIPLY_RANGE_OVERFLOW(a, b, min, max)                                                \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L126'>a</a>                 126 lib/intprops.h     ((b) &lt; 0        ? ((a) &lt; 0         ? (a) &lt; (max) / (b)                                         \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L128'>a</a>                 128 lib/intprops.h                                        : (min) / (b) &lt; (a))                                        \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L130'>a</a>                 130 lib/intprops.h                     : ((a) &lt; 0 ? (a) &lt; (min) / (b) : (max) / (b) &lt; (a)))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L134'>a</a>                 134 lib/intprops.h #define INT_DIVIDE_RANGE_OVERFLOW(a, b, min, max) ((min) &lt; 0 &amp;&amp; (b) == -1 &amp;&amp; (a) &lt; -(max))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L141'>a</a>                 141 lib/intprops.h #define INT_REMAINDER_RANGE_OVERFLOW(a, b, min, max) INT_DIVIDE_RANGE_OVERFLOW (a, b, min, max)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L150'>a</a>                 150 lib/intprops.h #define INT_LEFT_SHIFT_RANGE_OVERFLOW(a, b, min, max)                                              \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L151'>a</a>                 151 lib/intprops.h     ((a) &lt; 0 ? (a) &lt; (min) &gt;&gt; (b) : (max) &gt;&gt; (b) &lt; (a))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L158'>a</a>                 158 lib/intprops.h #define _GL_ADD_OVERFLOW(a, b, min, max) __builtin_add_overflow_p (a, b, (__typeof__ ((a) + (b))) 0)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L159'>a</a>                 159 lib/intprops.h #define _GL_SUBTRACT_OVERFLOW(a, b, min, max)                                                      \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L160'>a</a>                 160 lib/intprops.h     __builtin_sub_overflow_p (a, b, (__typeof__ ((a) - (b))) 0)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L161'>a</a>                 161 lib/intprops.h #define _GL_MULTIPLY_OVERFLOW(a, b, min, max)                                                      \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L162'>a</a>                 162 lib/intprops.h     __builtin_mul_overflow_p (a, b, (__typeof__ ((a) * (b))) 0)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L164'>a</a>                 164 lib/intprops.h #define _GL_ADD_OVERFLOW(a, b, min, max)                                                           \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L165'>a</a>                 165 lib/intprops.h     ((min) &lt; 0     ? INT_ADD_RANGE_OVERFLOW (a, b, min, max)                                       \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L166'>a</a>                 166 lib/intprops.h          : (a) &lt; 0 ? (b) &lt;= (a) + (b)                                                              \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L167'>a</a>                 167 lib/intprops.h          : (b) &lt; 0 ? (a) &lt;= (a) + (b)                                                              \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L168'>a</a>                 168 lib/intprops.h                    : (a) + (b) &lt; (b))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L169'>a</a>                 169 lib/intprops.h #define _GL_SUBTRACT_OVERFLOW(a, b, min, max)                                                      \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L170'>a</a>                 170 lib/intprops.h     ((min) &lt; 0     ? INT_SUBTRACT_RANGE_OVERFLOW (a, b, min, max)                                  \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L171'>a</a>                 171 lib/intprops.h          : (a) &lt; 0 ? 1                                                                             \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L172'>a</a>                 172 lib/intprops.h          : (b) &lt; 0 ? (a) - (b) &lt;= (a)                                                              \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L173'>a</a>                 173 lib/intprops.h                    : (a) &lt; (b))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L174'>a</a>                 174 lib/intprops.h #define _GL_MULTIPLY_OVERFLOW(a, b, min, max)                                                      \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L175'>a</a>                 175 lib/intprops.h     (((min) == 0 &amp;&amp; (((a) &lt; 0 &amp;&amp; 0 &lt; (b)) || ((b) &lt; 0 &amp;&amp; 0 &lt; (a))))                                \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L176'>a</a>                 176 lib/intprops.h      || INT_MULTIPLY_RANGE_OVERFLOW (a, b, min, max))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L178'>a</a>                 178 lib/intprops.h #define _GL_DIVIDE_OVERFLOW(a, b, min, max)                                                        \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L179'>a</a>                 179 lib/intprops.h     ((min) &lt; 0     ? (b) == _GL_INT_CONVERT (min, -1) &amp;&amp; (a) &lt; -(max)                              \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L180'>a</a>                 180 lib/intprops.h          : (a) &lt; 0 ? (b) &lt;= (a) + (b) - 1                                                          \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L181'>a</a>                 181 lib/intprops.h                    : (b) &lt; 0 &amp;&amp; (a) + (b) &lt;= (a))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L182'>a</a>                 182 lib/intprops.h #define _GL_REMAINDER_OVERFLOW(a, b, min, max)                                                     \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L183'>a</a>                 183 lib/intprops.h     ((min) &lt; 0     ? (b) == _GL_INT_CONVERT (min, -1) &amp;&amp; (a) &lt; -(max)                              \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L184'>a</a>                 184 lib/intprops.h          : (a) &lt; 0 ? (a) % (b) != ((max) - (b) + 1) % (b)                                          \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L185'>a</a>                 185 lib/intprops.h                    : (b) &lt; 0 &amp;&amp; !_GL_UNSIGNED_NEG_MULTIPLE (a, b, max))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L191'>a</a>                 191 lib/intprops.h #define _GL_UNSIGNED_NEG_MULTIPLE(a, b, max)                                                       \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L194'>a</a>                 194 lib/intprops.h                  ? (a)                                                                             \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L195'>a</a>                 195 lib/intprops.h                  : (a) % (_GL_INT_CONVERT (a, _GL_SIGNED_INT_MAXIMUM (b)) + 1))                    \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L196'>a</a>                 196 lib/intprops.h           : (a) % -(b))                                                                            \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L253'>a</a>                 253 lib/intprops.h #define INT_ADD_OVERFLOW(a, b)       _GL_BINARY_OP_OVERFLOW (a, b, _GL_ADD_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L254'>a</a>                 254 lib/intprops.h #define INT_SUBTRACT_OVERFLOW(a, b)  _GL_BINARY_OP_OVERFLOW (a, b, _GL_SUBTRACT_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L255'>a</a>                 255 lib/intprops.h #define INT_NEGATE_OVERFLOW(a)       _GL_INT_NEGATE_OVERFLOW (a)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L256'>a</a>                 256 lib/intprops.h #define INT_MULTIPLY_OVERFLOW(a, b)  _GL_BINARY_OP_OVERFLOW (a, b, _GL_MULTIPLY_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L257'>a</a>                 257 lib/intprops.h #define INT_DIVIDE_OVERFLOW(a, b)    _GL_BINARY_OP_OVERFLOW (a, b, _GL_DIVIDE_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L258'>a</a>                 258 lib/intprops.h #define INT_REMAINDER_OVERFLOW(a, b) _GL_BINARY_OP_OVERFLOW (a, b, _GL_REMAINDER_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L259'>a</a>                 259 lib/intprops.h #define INT_LEFT_SHIFT_OVERFLOW(a, b)                                                              \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L260'>a</a>                 260 lib/intprops.h     INT_LEFT_SHIFT_RANGE_OVERFLOW (a, b, _GL_INT_MINIMUM (a), _GL_INT_MAXIMUM (a))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L266'>a</a>                 266 lib/intprops.h #define _GL_BINARY_OP_OVERFLOW(a, b, op_result_overflow)                                           \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L267'>a</a>                 267 lib/intprops.h     op_result_overflow (a, b, _GL_INT_MINIMUM (_GL_INT_CONVERT (a, b)),                            \</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L268'>a</a>                 268 lib/intprops.h                         _GL_INT_MAXIMUM (_GL_INT_CONVERT (a, b)))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L272'>a</a>                 272 lib/intprops.h #define INT_ADD_WRAPV(a, b, r)      _GL_INT_ADD_WRAPV (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L273'>a</a>                 273 lib/intprops.h #define INT_SUBTRACT_WRAPV(a, b, r) _GL_INT_SUBTRACT_WRAPV (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L274'>a</a>                 274 lib/intprops.h #define INT_MULTIPLY_WRAPV(a, b, r) _GL_INT_MULTIPLY_WRAPV (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L303'>a</a>                 303 lib/intprops.h #define INT_ADD_OK(a, b, r)      (!INT_ADD_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L304'>a</a>                 304 lib/intprops.h #define INT_SUBTRACT_OK(a, b, r) (!INT_SUBTRACT_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L305'>a</a>                 305 lib/intprops.h #define INT_MULTIPLY_OK(a, b, r) (!INT_MULTIPLY_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--skin--ini-file.c.html#L95'>a</a>                  95 lib/skin/ini-file.c string_array_comparator (gconstpointer a, gconstpointer b)</span>
+<span class='curline'><a href='../S/lib--skin--ini-file.c.html#L97'>a</a>                  97 lib/skin/ini-file.c     return strcmp (*(char *const *) a, *(char *const *) b);</span>
+<span class='curline'><a href='../S/lib--stdckdint.in.h.html#L31'>a</a>                  31 lib/stdckdint.in.h #define ckd_add(r, a, b) ((bool) _GL_INT_ADD_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--stdckdint.in.h.html#L32'>a</a>                  32 lib/stdckdint.in.h #define ckd_sub(r, a, b) ((bool) _GL_INT_SUBTRACT_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--stdckdint.in.h.html#L33'>a</a>                  33 lib/stdckdint.in.h #define ckd_mul(r, a, b) ((bool) _GL_INT_MULTIPLY_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--strutil.h.html#L540'>a</a>                 540 lib/strutil.h  int filenvercmp (char const *a, ssize_t alen, char const *b, ssize_t blen);</span>
+<span class='curline'><a href='../S/lib--strutil--filevercmp.c.html#L195'>a</a>                 195 lib/strutil/filevercmp.c filenvercmp (const char *a, ssize_t alen, const char *b, ssize_t blen)</span>
+<span class='curline'><a href='../S/lib--strutil--filevercmp.c.html#L203'>a</a>                 203 lib/strutil/filevercmp.c     aempty = alen &lt; 0 ? a[0] == '\0' : alen == 0;</span>
+<span class='curline'><a href='../S/lib--strutil--filevercmp.c.html#L213'>a</a>                 213 lib/strutil/filevercmp.c     if (a[0] == '.')</span>
+<span class='curline'><a href='../S/lib--strutil--filevercmp.c.html#L221'>a</a>                 221 lib/strutil/filevercmp.c         adot = alen &lt; 0 ? a[1] == '\0' : alen == 1;</span>
+<span class='curline'><a href='../S/lib--strutil--filevercmp.c.html#L229'>a</a>                 229 lib/strutil/filevercmp.c         adotdot = a[1] == '.' &amp;&amp; (alen &lt; 0 ? a[2] == '\0' : alen == 2);</span>
+<span class='curline'><a href='../S/lib--strutil--filevercmp.c.html#L240'>a</a>                 240 lib/strutil/filevercmp.c     aprefixlen = file_prefixlen (a, &amp;alen);</span>
+<span class='curline'><a href='../S/lib--strutil--filevercmp.c.html#L246'>a</a>                 246 lib/strutil/filevercmp.c     result = verrevcmp (a, aprefixlen, b, bprefixlen);</span>
+<span class='curline'><a href='../S/lib--strutil--filevercmp.c.html#L250'>a</a>                 250 lib/strutil/filevercmp.c     return (result != 0 || one_pass_only ? result : verrevcmp (a, alen, b, blen));</span>
+<span class='curline'><a href='../S/lib--tty--key.c.html#L562'>a</a>                 562 lib/tty/key.c  select_cmp_by_fd_set (gconstpointer a, gconstpointer b)</span>
+<span class='curline'><a href='../S/lib--tty--key.c.html#L564'>a</a>                 564 lib/tty/key.c      const select_t *s = (const select_t *) a;</span>
+<span class='curline'><a href='../S/lib--tty--key.c.html#L573'>a</a>                 573 lib/tty/key.c  select_cmp_by_fd (gconstpointer a, gconstpointer b)</span>
+<span class='curline'><a href='../S/lib--tty--key.c.html#L575'>a</a>                 575 lib/tty/key.c      const select_t *s = (const select_t *) a;</span>
+<span class='curline'><a href='../S/lib--util.h.html#L84'>a</a>                  84 lib/util.h     #define DOZ(a, b) ((a) &gt; (b) ? (a) - (b) : 0)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L990'>a</a>                 990 lib/vfs/direntry.c vfs_s_entry_compare (const void *a, const void *b)</span>
+<span class='curline'><a href='../S/lib--vfs--direntry.c.html#L992'>a</a>                 992 lib/vfs/direntry.c     const struct vfs_s_entry *e = (const struct vfs_s_entry *) a;</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L91'>a</a>                  91 lib/vfs/gc.c   #define VFS_STAMPING(a) ((struct vfs_stamping *) (a))</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L113'>a</a>                 113 lib/vfs/gc.c   vfs_stamp_compare (gconstpointer a, gconstpointer b)</span>
+<span class='curline'><a href='../S/lib--vfs--gc.c.html#L115'>a</a>                 115 lib/vfs/gc.c       const struct vfs_stamping *vsa = (const struct vfs_stamping *) a;</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L28'>a</a>                  28 lib/vfs/vfs.h  #define VFS_CLASS(a)        ((struct vfs_class *) (a))</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L39'>a</a>                  39 lib/vfs/vfs.h  #define IS_LINEAR(a) 0</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L40'>a</a>                  40 lib/vfs/vfs.h  #define NO_LINEAR(a) a</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L43'>a</a>                  43 lib/vfs/vfs.h  #define IS_LINEAR(a) ((a) == (O_RDONLY | O_LINEAR))  // Return only 0 and 1 !</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L44'>a</a>                  44 lib/vfs/vfs.h  #define NO_LINEAR(a) (((a) == (O_RDONLY | O_LINEAR)) ? O_RDONLY : (a))</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L34'>a</a>                  34 lib/vfs/xdirentry.h #define ERRNOR(a, b)                                                                               \</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L37'>a</a>                  37 lib/vfs/xdirentry.h         me-&gt;verrno = a;                                                                            \</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L42'>a</a>                  42 lib/vfs/xdirentry.h #define VFS_SUBCLASS(a)           ((struct vfs_s_subclass *) (a))</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L44'>a</a>                  44 lib/vfs/xdirentry.h #define VFS_SUPER(a)              ((struct vfs_s_super *) (a))</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L45'>a</a>                  45 lib/vfs/xdirentry.h #define CONST_VFS_SUPER(a)        ((const struct vfs_s_super *) (a))</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L46'>a</a>                  46 lib/vfs/xdirentry.h #define VFS_ENTRY(a)              ((struct vfs_s_entry *) (a))</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L47'>a</a>                  47 lib/vfs/xdirentry.h #define VFS_INODE(a)              ((struct vfs_s_inode *) (a))</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L49'>a</a>                  49 lib/vfs/xdirentry.h #define VFS_FILE_HANDLER(a)       ((vfs_file_handler_t *) a)</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L50'>a</a>                  50 lib/vfs/xdirentry.h #define VFS_FILE_HANDLER_SUPER(a) VFS_FILE_HANDLER (a)-&gt;ino-&gt;super</span>
+<span class='curline'><a href='../S/lib--vfs--xdirentry.h.html#L169'>a</a>                 169 lib/vfs/xdirentry.h int vfs_s_entry_compare (const void *a, const void *b);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L393'>a</a>                 393 lib/widget/input_complete.c host_equal_func (gconstpointer a, gconstpointer b)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L395'>a</a>                 395 lib/widget/input_complete.c     return (strcmp ((const char *) a, (const char *) b) == 0);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L682'>a</a>                 682 lib/widget/input_complete.c match_compare (gconstpointer a, gconstpointer b)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L684'>a</a>                 684 lib/widget/input_complete.c     return strcmp (*(char *const *) a, *(char *const *) b);</span>
+<span class='curline'><a href='../S/lib--widget--listbox.c.html#L67'>a</a>                  67 lib/widget/listbox.c listbox_entry_cmp (const void *a, const void *b, void *user_data)</span>
+<span class='curline'><a href='../S/lib--widget--listbox.c.html#L69'>a</a>                  69 lib/widget/listbox.c     const WLEntry *ea = (const WLEntry *) a;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.h.html#L470'>a</a>                 470 lib/widget/widget-common.h widget_overlapped (const Widget *a, const Widget *b)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.h.html#L472'>a</a>                 472 lib/widget/widget-common.h     return rects_are_overlapped (&amp;a-&gt;rect, &amp;b-&gt;rect);</span>
+<span class='curline'><a href='../S/src--diffviewer--internal.h.html#L55'>a</a>                  55 src/diffviewer/internal.h     int a[2][2];</span>
+<span class='curline'><a href='../S/src--diffviewer--internal.h.html#L80'>a</a>                  80 src/diffviewer/internal.h     GArray *a;</span>
+<span class='curline'><a href='../S/src--diffviewer--internal.h.html#L94'>a</a>                  94 src/diffviewer/internal.h     GArray *a[DIFF_COUNT];</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L156'>a</a>                 156 src/diffviewer/search.c     if ((size_t) dview-&gt;search.last_accessed_num_line &gt;= dview-&gt;a[dview-&gt;ord]-&gt;len)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L157'>a</a>                 157 src/diffviewer/search.c         dview-&gt;search.last_accessed_num_line = (ssize_t) dview-&gt;a[dview-&gt;ord]-&gt;len;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L163'>a</a>                 163 src/diffviewer/search.c         p = (DIFFLN *) &amp;g_array_index (dview-&gt;a[dview-&gt;ord], DIFFLN, (size_t) ind);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L186'>a</a>                 186 src/diffviewer/search.c     else if ((size_t) dview-&gt;search.last_accessed_num_line &gt;= dview-&gt;a[dview-&gt;ord]-&gt;len)</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L188'>a</a>                 188 src/diffviewer/search.c         dview-&gt;search.last_accessed_num_line = (ssize_t) dview-&gt;a[dview-&gt;ord]-&gt;len;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L192'>a</a>                 192 src/diffviewer/search.c     for (ind = (size_t) ++dview-&gt;search.last_accessed_num_line; ind &lt; dview-&gt;a[dview-&gt;ord]-&gt;len;</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L197'>a</a>                 197 src/diffviewer/search.c         p = (DIFFLN *) &amp;g_array_index (dview-&gt;a[dview-&gt;ord], DIFFLN, ind);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L738'>a</a>                 738 src/diffviewer/ydiff.c     op.a[0][0] = f1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L739'>a</a>                 739 src/diffviewer/ydiff.c     op.a[0][1] = f2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L741'>a</a>                 741 src/diffviewer/ydiff.c     op.a[1][0] = t1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L742'>a</a>                 742 src/diffviewer/ydiff.c     op.a[1][1] = t2;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L910'>a</a>                 910 src/diffviewer/ydiff.c #define F1 a[eff][0]</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L911'>a</a>                 911 src/diffviewer/ydiff.c #define F2 a[eff][1]</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L912'>a</a>                 912 src/diffviewer/ydiff.c #define T1 a[ord ^ 1][0]</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L913'>a</a>                 913 src/diffviewer/ydiff.c #define T2 a[ord ^ 1][1]</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1615'>a</a>                1615 src/diffviewer/ydiff.c     GArray *a = ((PRINTER_CTX *) ctx)-&gt;a;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1634'>a</a>                1634 src/diffviewer/ydiff.c         g_array_append_val (a, p);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1640'>a</a>                1640 src/diffviewer/ydiff.c         p = &amp;g_array_index (a, DIFFLN, a-&gt;len - 1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1707'>a</a>                1707 src/diffviewer/ydiff.c     ctx.a = dview-&gt;a[DIFF_LEFT];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1711'>a</a>                1711 src/diffviewer/ydiff.c     ctx.a = dview-&gt;a[DIFF_RIGHT];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1718'>a</a>                1718 src/diffviewer/ydiff.c     if (rv != 0 || dview-&gt;a[DIFF_LEFT]-&gt;len != dview-&gt;a[DIFF_RIGHT]-&gt;len)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1733'>a</a>                1733 src/diffviewer/ydiff.c         for (i = 0; i &lt; dview-&gt;a[DIFF_LEFT]-&gt;len; i++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1739'>a</a>                1739 src/diffviewer/ydiff.c             p = &amp;g_array_index (dview-&gt;a[DIFF_LEFT], DIFFLN, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1740'>a</a>                1740 src/diffviewer/ydiff.c             q = &amp;g_array_index (dview-&gt;a[DIFF_RIGHT], DIFFLN, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1772'>a</a>                1772 src/diffviewer/ydiff.c         len = dview-&gt;a[DIFF_LEFT]-&gt;len;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1807'>a</a>                1807 src/diffviewer/ydiff.c get_line_numbers (const GArray *a, size_t pos, int *linenum, int *lineofs)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1814'>a</a>                1814 src/diffviewer/ydiff.c     if (a-&gt;len != 0)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1816'>a</a>                1816 src/diffviewer/ydiff.c         if (pos &gt;= a-&gt;len)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1817'>a</a>                1817 src/diffviewer/ydiff.c             pos = a-&gt;len - 1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1819'>a</a>                1819 src/diffviewer/ydiff.c         p = &amp;g_array_index (a, DIFFLN, pos);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1842'>a</a>                1842 src/diffviewer/ydiff.c calc_nwidth (const GArray *const *a)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1847'>a</a>                1847 src/diffviewer/ydiff.c     get_line_numbers (a[DIFF_LEFT], a[DIFF_LEFT]-&gt;len - 1, &amp;l1, &amp;o1);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1848'>a</a>                1848 src/diffviewer/ydiff.c     get_line_numbers (a[DIFF_RIGHT], a[DIFF_RIGHT]-&gt;len - 1, &amp;l2, &amp;o2);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1857'>a</a>                1857 src/diffviewer/ydiff.c find_prev_hunk (const GArray *a, int pos)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1860'>a</a>                1860 src/diffviewer/ydiff.c     for (; pos &gt; 0 &amp;&amp; ((DIFFLN *) &amp;g_array_index (a, DIFFLN, pos))-&gt;ch != EQU_CH; pos--)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1862'>a</a>                1862 src/diffviewer/ydiff.c     for (; pos &gt; 0 &amp;&amp; ((DIFFLN *) &amp;g_array_index (a, DIFFLN, pos))-&gt;ch == EQU_CH; pos--)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1864'>a</a>                1864 src/diffviewer/ydiff.c     for (; pos &gt; 0 &amp;&amp; ((DIFFLN *) &amp;g_array_index (a, DIFFLN, pos))-&gt;ch != EQU_CH; pos--)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1866'>a</a>                1866 src/diffviewer/ydiff.c     if (pos &gt; 0 &amp;&amp; (size_t) pos &lt; a-&gt;len)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1869'>a</a>                1869 src/diffviewer/ydiff.c     for (; pos &gt; 0 &amp;&amp; ((DIFFLN *) &amp;g_array_index (a, DIFFLN, pos - 1))-&gt;ch == EQU_CH; pos--)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1871'>a</a>                1871 src/diffviewer/ydiff.c     for (; pos &gt; 0 &amp;&amp; ((DIFFLN *) &amp;g_array_index (a, DIFFLN, pos - 1))-&gt;ch != EQU_CH; pos--)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1881'>a</a>                1881 src/diffviewer/ydiff.c find_next_hunk (const GArray *a, size_t pos)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1883'>a</a>                1883 src/diffviewer/ydiff.c     for (; pos &lt; a-&gt;len &amp;&amp; ((DIFFLN *) &amp;g_array_index (a, DIFFLN, pos))-&gt;ch != EQU_CH; pos++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1885'>a</a>                1885 src/diffviewer/ydiff.c     for (; pos &lt; a-&gt;len &amp;&amp; ((DIFFLN *) &amp;g_array_index (a, DIFFLN, pos))-&gt;ch == EQU_CH; pos++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1905'>a</a>                1905 src/diffviewer/ydiff.c     const GArray *a0 = dview-&gt;a[DIFF_LEFT];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L1906'>a</a>                1906 src/diffviewer/ydiff.c     const GArray *a1 = dview-&gt;a[DIFF_RIGHT];</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2208'>a</a>                2208 src/diffviewer/ydiff.c     if (dview-&gt;a[DIFF_LEFT] != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2209'>a</a>                2209 src/diffviewer/ydiff.c         g_array_free (dview-&gt;a[DIFF_LEFT], TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2210'>a</a>                2210 src/diffviewer/ydiff.c     if (dview-&gt;a[DIFF_RIGHT] != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2211'>a</a>                2211 src/diffviewer/ydiff.c         g_array_free (dview-&gt;a[DIFF_RIGHT], TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2213'>a</a>                2213 src/diffviewer/ydiff.c     dview-&gt;a[DIFF_LEFT] = g_array_new (FALSE, FALSE, sizeof (DIFFLN));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2214'>a</a>                2214 src/diffviewer/ydiff.c     g_array_set_clear_func (dview-&gt;a[DIFF_LEFT], cc_free_elt);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2215'>a</a>                2215 src/diffviewer/ydiff.c     dview-&gt;a[DIFF_RIGHT] = g_array_new (FALSE, FALSE, sizeof (DIFFLN));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2216'>a</a>                2216 src/diffviewer/ydiff.c     g_array_set_clear_func (dview-&gt;a[DIFF_RIGHT], cc_free_elt);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2434'>a</a>                2434 src/diffviewer/ydiff.c     dview-&gt;a[DIFF_LEFT] = g_array_new (FALSE, FALSE, sizeof (DIFFLN));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2435'>a</a>                2435 src/diffviewer/ydiff.c     g_array_set_clear_func (dview-&gt;a[DIFF_LEFT], cc_free_elt);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2436'>a</a>                2436 src/diffviewer/ydiff.c     dview-&gt;a[DIFF_RIGHT] = g_array_new (FALSE, FALSE, sizeof (DIFFLN));</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2437'>a</a>                2437 src/diffviewer/ydiff.c     g_array_set_clear_func (dview-&gt;a[DIFF_RIGHT], cc_free_elt);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2457'>a</a>                2457 src/diffviewer/ydiff.c     if (dview-&gt;a[DIFF_LEFT] != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2459'>a</a>                2459 src/diffviewer/ydiff.c         g_array_free (dview-&gt;a[DIFF_LEFT], TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2460'>a</a>                2460 src/diffviewer/ydiff.c         dview-&gt;a[DIFF_LEFT] = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2462'>a</a>                2462 src/diffviewer/ydiff.c     if (dview-&gt;a[DIFF_RIGHT] != NULL)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2464'>a</a>                2464 src/diffviewer/ydiff.c         g_array_free (dview-&gt;a[DIFF_RIGHT], TRUE);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2465'>a</a>                2465 src/diffviewer/ydiff.c         dview-&gt;a[DIFF_RIGHT] = NULL;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2522'>a</a>                2522 src/diffviewer/ydiff.c     for (i = dview-&gt;skip_rows, j = 0; i &lt; dview-&gt;a[ord]-&gt;len &amp;&amp; j &lt; height; j++, i++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2527'>a</a>                2527 src/diffviewer/ydiff.c         p = (DIFFLN *) &amp;g_array_index (dview-&gt;a[ord], DIFFLN, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2691'>a</a>                2691 src/diffviewer/ydiff.c     get_line_numbers (dview-&gt;a[ord], dview-&gt;skip_rows, &amp;linenum, &amp;lineofs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2720'>a</a>                2720 src/diffviewer/ydiff.c         dview-&gt;display_numbers = calc_nwidth ((const GArray *const *) dview-&gt;a);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2735'>a</a>                2735 src/diffviewer/ydiff.c     last = dview-&gt;a[DIFF_LEFT]-&gt;len - 1;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2749'>a</a>                2749 src/diffviewer/ydiff.c         dview-&gt;display_numbers = calc_nwidth ((const GArray *const *) dview-&gt;a);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2828'>a</a>                2828 src/diffviewer/ydiff.c     get_line_numbers (dview-&gt;a[ord], dview-&gt;skip_rows, &amp;linenum, &amp;lineofs);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2872'>a</a>                2872 src/diffviewer/ydiff.c                 for (; i &lt; dview-&gt;a[ord]-&gt;len; i++)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2876'>a</a>                2876 src/diffviewer/ydiff.c                     p = &amp;g_array_index (dview-&gt;a[ord], DIFFLN, i);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3015'>a</a>                3015 src/diffviewer/ydiff.c         dview-&gt;display_numbers ^= calc_nwidth ((const GArray *const *) dview-&gt;a);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3064'>a</a>                3064 src/diffviewer/ydiff.c             find_next_hunk (dview-&gt;a[DIFF_LEFT], dview-&gt;skip_rows);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3068'>a</a>                3068 src/diffviewer/ydiff.c             find_prev_hunk (dview-&gt;a[DIFF_LEFT], dview-&gt;skip_rows);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3097'>a</a>                3097 src/diffviewer/ydiff.c         dview-&gt;skip_rows = dview-&gt;search.last_accessed_num_line = dview-&gt;a[DIFF_LEFT]-&gt;len - 1;</span>
+<span class='curline'><a href='../S/src--editor--edit-impl.h.html#L74'>a</a>                  74 src/editor/edit-impl.h #define edit_query_dialog2(h, t, a, b)    query_dialog (h, t, D_NORMAL, 2, a, b)</span>
+<span class='curline'><a href='../S/src--editor--edit-impl.h.html#L75'>a</a>                  75 src/editor/edit-impl.h #define edit_query_dialog3(h, t, a, b, c) query_dialog (h, t, D_NORMAL, 3, a, b, c)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L1581'>a</a>                1581 src/editor/edit.c         int a;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L1586'>a</a>                1586 src/editor/edit.c         a = edit_buffer_get_byte (&amp;edit-&gt;buffer, q);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L1596'>a</a>                1596 src/editor/edit.c             if (inc &gt; 0 &amp;&amp; a == '\n')</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L1601'>a</a>                1601 src/editor/edit.c         i += (a == c) - (a == d);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L94'>a</a>                  94 src/editor/syntax.c         if (*a == NULL)                                                                            \</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L102'>a</a>                 102 src/editor/syntax.c         if (*a != NULL)                                                                            \</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L838'>a</a>                 838 src/editor/syntax.c     char f[80], b[80], a[80], *p;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L898'>a</a>                 898 src/editor/syntax.c         g_strlcpy (a, color-&gt;attrs, sizeof (a));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L899'>a</a>                 899 src/editor/syntax.c         p = strchr (a, '/');</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L903'>a</a>                 903 src/editor/syntax.c         p = a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L906'>a</a>                 906 src/editor/syntax.c         color-&gt;attrs = a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L984'>a</a>                 984 src/editor/syntax.c         char **a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1011'>a</a>                1011 src/editor/syntax.c         a = args + 1;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1041'>a</a>                1041 src/editor/syntax.c             if (strcmp (*a, "left") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1043'>a</a>                1043 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1044'>a</a>                1044 src/editor/syntax.c                 g_strlcpy (whole_left, *a, sizeof (whole_left));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1046'>a</a>                1046 src/editor/syntax.c             else if (strcmp (*a, "right") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1048'>a</a>                1048 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1049'>a</a>                1049 src/editor/syntax.c                 g_strlcpy (whole_right, *a, sizeof (whole_right));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1053'>a</a>                1053 src/editor/syntax.c                 g_strlcpy (whole_left, *a, sizeof (whole_left));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1054'>a</a>                1054 src/editor/syntax.c                 g_strlcpy (whole_right, *a, sizeof (whole_right));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1056'>a</a>                1056 src/editor/syntax.c             a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1067'>a</a>                1067 src/editor/syntax.c                 if (strcmp (*a, "default") != 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1070'>a</a>                1070 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1081'>a</a>                1081 src/editor/syntax.c                 if (strcmp (*a, "exclusive") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1083'>a</a>                1083 src/editor/syntax.c                     a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1087'>a</a>                1087 src/editor/syntax.c                 if (strcmp (*a, "whole") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1089'>a</a>                1089 src/editor/syntax.c                     a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1093'>a</a>                1093 src/editor/syntax.c                 else if (strcmp (*a, "wholeleft") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1095'>a</a>                1095 src/editor/syntax.c                     a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1098'>a</a>                1098 src/editor/syntax.c                 else if (strcmp (*a, "wholeright") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1100'>a</a>                1100 src/editor/syntax.c                     a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1104'>a</a>                1104 src/editor/syntax.c                 if (strcmp (*a, "linestart") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1106'>a</a>                1106 src/editor/syntax.c                     a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1110'>a</a>                1110 src/editor/syntax.c                 c-&gt;left = g_string_new (*a++);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1112'>a</a>                1112 src/editor/syntax.c                 if (strcmp (*a, "linestart") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1114'>a</a>                1114 src/editor/syntax.c                     a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1118'>a</a>                1118 src/editor/syntax.c                 c-&gt;right = g_string_new (*a++);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1126'>a</a>                1126 src/editor/syntax.c             subst_defines (edit-&gt;defines, a, &amp;args[ARGS_LEN]);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1127'>a</a>                1127 src/editor/syntax.c             color.fg = *a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1128'>a</a>                1128 src/editor/syntax.c             if (*a != NULL)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1129'>a</a>                1129 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1130'>a</a>                1130 src/editor/syntax.c             color.bg = *a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1131'>a</a>                1131 src/editor/syntax.c             if (*a != NULL)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1132'>a</a>                1132 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1133'>a</a>                1133 src/editor/syntax.c             color.attrs = *a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1134'>a</a>                1134 src/editor/syntax.c             if (*a != NULL)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1135'>a</a>                1135 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1163'>a</a>                1163 src/editor/syntax.c             if (strcmp (*a, "whole") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1165'>a</a>                1165 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1169'>a</a>                1169 src/editor/syntax.c             else if (strcmp (*a, "wholeleft") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1171'>a</a>                1171 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1174'>a</a>                1174 src/editor/syntax.c             else if (strcmp (*a, "wholeright") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1176'>a</a>                1176 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1180'>a</a>                1180 src/editor/syntax.c             if (strcmp (*a, "linestart") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1182'>a</a>                1182 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1186'>a</a>                1186 src/editor/syntax.c             if (strcmp (*a, "whole") == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1189'>a</a>                1189 src/editor/syntax.c             k-&gt;keyword = g_string_new (*a++);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1190'>a</a>                1190 src/editor/syntax.c             subst_defines (edit-&gt;defines, a, &amp;args[ARGS_LEN]);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1191'>a</a>                1191 src/editor/syntax.c             color.fg = *a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1192'>a</a>                1192 src/editor/syntax.c             if (*a != NULL)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1193'>a</a>                1193 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1194'>a</a>                1194 src/editor/syntax.c             color.bg = *a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1195'>a</a>                1195 src/editor/syntax.c             if (*a != NULL)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1196'>a</a>                1196 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1197'>a</a>                1197 src/editor/syntax.c             color.attrs = *a;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1198'>a</a>                1198 src/editor/syntax.c             if (*a != NULL)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1199'>a</a>                1199 src/editor/syntax.c                 a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1219'>a</a>                1219 src/editor/syntax.c             char *key = *a++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1232'>a</a>                1232 src/editor/syntax.c             while (*a != NULL)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1233'>a</a>                1233 src/editor/syntax.c                 *argv++ = g_strdup (*a++);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L112'>a</a>                 112 src/filemanager/dir.c compare_by_names (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L115'>a</a>                 115 src/filemanager/dir.c     if (a-&gt;name_sort_key == NULL)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L116'>a</a>                 116 src/filemanager/dir.c         a-&gt;name_sort_key = str_create_key_for_filename (a-&gt;fname-&gt;str, case_sensitive);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L120'>a</a>                 120 src/filemanager/dir.c     return key_collate (a-&gt;name_sort_key, b-&gt;name_sort_key);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L326'>a</a>                 326 src/filemanager/dir.c unsorted (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L328'>a</a>                 328 src/filemanager/dir.c     (void) a;</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L337'>a</a>                 337 src/filemanager/dir.c sort_name (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L339'>a</a>                 339 src/filemanager/dir.c     int ad = MY_ISDIR (a);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L343'>a</a>                 343 src/filemanager/dir.c         return compare_by_names (a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L351'>a</a>                 351 src/filemanager/dir.c sort_vers (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L353'>a</a>                 353 src/filemanager/dir.c     int ad = MY_ISDIR (a);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L360'>a</a>                 360 src/filemanager/dir.c         result = filevercmp (a-&gt;fname-&gt;str, b-&gt;fname-&gt;str);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L364'>a</a>                 364 src/filemanager/dir.c         return compare_by_names (a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L373'>a</a>                 373 src/filemanager/dir.c sort_ext (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L375'>a</a>                 375 src/filemanager/dir.c     int ad = MY_ISDIR (a);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L382'>a</a>                 382 src/filemanager/dir.c         if (a-&gt;extension_sort_key == NULL)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L383'>a</a>                 383 src/filemanager/dir.c             a-&gt;extension_sort_key = str_create_key (extension (a-&gt;fname-&gt;str), case_sensitive);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L387'>a</a>                 387 src/filemanager/dir.c         r = str_key_collate (a-&gt;extension_sort_key, b-&gt;extension_sort_key, case_sensitive);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L391'>a</a>                 391 src/filemanager/dir.c         return compare_by_names (a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L400'>a</a>                 400 src/filemanager/dir.c sort_time (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L402'>a</a>                 402 src/filemanager/dir.c     int ad = MY_ISDIR (a);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L407'>a</a>                 407 src/filemanager/dir.c         int result = _GL_CMP (a-&gt;st.st_mtime, b-&gt;st.st_mtime);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L412'>a</a>                 412 src/filemanager/dir.c         return compare_by_names (a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L421'>a</a>                 421 src/filemanager/dir.c sort_ctime (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L423'>a</a>                 423 src/filemanager/dir.c     int ad = MY_ISDIR (a);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L428'>a</a>                 428 src/filemanager/dir.c         int result = _GL_CMP (a-&gt;st.st_ctime, b-&gt;st.st_ctime);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L433'>a</a>                 433 src/filemanager/dir.c         return compare_by_names (a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L442'>a</a>                 442 src/filemanager/dir.c sort_atime (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L444'>a</a>                 444 src/filemanager/dir.c     int ad = MY_ISDIR (a);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L449'>a</a>                 449 src/filemanager/dir.c         int result = _GL_CMP (a-&gt;st.st_atime, b-&gt;st.st_atime);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L454'>a</a>                 454 src/filemanager/dir.c         return compare_by_names (a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L463'>a</a>                 463 src/filemanager/dir.c sort_inode (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L465'>a</a>                 465 src/filemanager/dir.c     int ad = MY_ISDIR (a);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L469'>a</a>                 469 src/filemanager/dir.c         return (a-&gt;st.st_ino - b-&gt;st.st_ino) * reverse;</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L477'>a</a>                 477 src/filemanager/dir.c sort_size (file_entry_t *a, file_entry_t *b)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L479'>a</a>                 479 src/filemanager/dir.c     int ad = MY_ISDIR (a);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L484'>a</a>                 484 src/filemanager/dir.c         int result = _GL_CMP (a-&gt;st.st_size, b-&gt;st.st_size);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L489'>a</a>                 489 src/filemanager/dir.c         return compare_by_names (a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L93'>a</a>                  93 src/filemanager/dir.h int unsorted (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L94'>a</a>                  94 src/filemanager/dir.h int sort_name (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L95'>a</a>                  95 src/filemanager/dir.h int sort_vers (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L96'>a</a>                  96 src/filemanager/dir.h int sort_ext (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L97'>a</a>                  97 src/filemanager/dir.h int sort_time (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L98'>a</a>                  98 src/filemanager/dir.h int sort_atime (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L99'>a</a>                  99 src/filemanager/dir.h int sort_ctime (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L100'>a</a>                 100 src/filemanager/dir.h int sort_size (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.h.html#L101'>a</a>                 101 src/filemanager/dir.h int sort_inode (file_entry_t *a, file_entry_t *b);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L838'>a</a>                 838 src/filemanager/file.c                      const char *a, const char *b)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L849'>a</a>                 849 src/filemanager/file.c     width_a = str_term_width1 (a);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L859'>a</a>                 859 src/filemanager/file.c             s = g_strndup (str_trunc (a, width), width);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L866'>a</a>                 866 src/filemanager/file.c             a = str_trunc (a, width);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L867'>a</a>                 867 src/filemanager/file.c             msg = g_strdup_printf (fmt, a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L875'>a</a>                 875 src/filemanager/file.c         msg = g_strdup_printf (fmt, a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L890'>a</a>                 890 src/filemanager/file.c warn_same_file (file_op_context_t *ctx, const char *fmt, const char *a, const char *b)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L897'>a</a>                 897 src/filemanager/file.c                                  const char *a, const char *b);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L903'>a</a>                 903 src/filemanager/file.c         return parent_call (pntr.p, ctx, 3, strlen (fmt), fmt, strlen (a), a, strlen (b), b);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L905'>a</a>                 905 src/filemanager/file.c     return real_warn_same_file (ctx, Foreground, fmt, a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L911'>a</a>                 911 src/filemanager/file.c check_same_file (file_op_context_t *ctx, const char *a, const struct stat *ast, const char *b,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L918'>a</a>                 918 src/filemanager/file.c         *status = warn_same_file (ctx, _ ("\"%s\"\nand\n\"%s\"\nare the same directory"), a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L920'>a</a>                 920 src/filemanager/file.c         *status = warn_same_file (ctx, _ ("\"%s\"\nand\n\"%s\"\nare the same file"), a, b);</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L218'>a</a>                 218 src/filemanager/find.c max (int a, int b)</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L220'>a</a>                 220 src/filemanager/find.c     return (a &gt; b ? a : b);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L192'>a</a>                 192 src/filemanager/layout.c max (int a, int b)</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L194'>a</a>                 194 src/filemanager/layout.c     return a &gt; b ? a : b;</span>
+<span class='curline'><a href='../S/src--filemanager--panelize.c.html#L102'>a</a>                 102 src/filemanager/panelize.c panelize_entry_cmp_by_label (gconstpointer a, gconstpointer b)</span>
+<span class='curline'><a href='../S/src--filemanager--panelize.c.html#L104'>a</a>                 104 src/filemanager/panelize.c     const panelize_entry_t *entry = (const panelize_entry_t *) a;</span>
+<span class='curline'><a href='../S/src--textconf.c.html#L197'>a</a>                 197 src/textconf.c #define PRINTF_GROUP(a)       (void) printf ("[%s]\n", a)</span>
+<span class='curline'><a href='../S/src--textconf.c.html#L198'>a</a>                 198 src/textconf.c #define PRINTF_SECTION(a, b)  (void) printf ("    %-17s %s\n", a, b)</span>
+<span class='curline'><a href='../S/src--textconf.c.html#L199'>a</a>                 199 src/textconf.c #define PRINTF_SECTION2(a, b) (void) printf ("    %-17s %s/\n", a, b)</span>
+<span class='curline'><a href='../S/src--textconf.c.html#L200'>a</a>                 200 src/textconf.c #define PRINTF(a, b, c)       (void) printf ("\t%-15s %s/%s\n", a, b, c)</span>
+<span class='curline'><a href='../S/src--textconf.c.html#L201'>a</a>                 201 src/textconf.c #define PRINTF2(a, b, c)      (void) printf ("\t%-15s %s%s\n", a, b, c)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L163'>a</a>                 163 src/vfs/cpio/cpio.c cpio_defer_find (const void *a, const void *b)</span>
+<span class='curline'><a href='../S/src--vfs--cpio--cpio.c.html#L165'>a</a>                 165 src/vfs/cpio/cpio.c     const defer_inode *a1 = (const defer_inode *) a;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L83'>a</a>                  83 src/vfs/extfs/extfs.c #define EXTFS_SUPER(a) ((struct extfs_super_t *) (a))</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L173'>a</a>                 173 src/vfs/extfs/extfs.c     struct vfs_s_super *a = VFS_SUPER (data);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L178'>a</a>                 178 src/vfs/extfs/extfs.c     info = &amp;g_array_index (extfs_plugins, extfs_plugin_info_t, EXTFS_SUPER (a)-&gt;fstype);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L179'>a</a>                 179 src/vfs/extfs/extfs.c     name = g_strconcat (a-&gt;name != NULL ? a-&gt;name : "", PATH_SEP_STR, info-&gt;prefix,</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L188'>a</a>                 188 src/vfs/extfs/extfs.c extfs_cmp_archive (const void *a, const void *b)</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L190'>a</a>                 190 src/vfs/extfs/extfs.c     const struct vfs_s_super *ar = (const struct vfs_s_super *) a;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L752'>a</a>                 752 src/vfs/extfs/extfs.c     struct extfs_super_t *a;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L758'>a</a>                 758 src/vfs/extfs/extfs.c     a = *archive;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L776'>a</a>                 776 src/vfs/extfs/extfs.c         result = extfs_read_archive (pip, a, &amp;error);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L779'>a</a>                 779 src/vfs/extfs/extfs.c             VFS_SUPER (a)-&gt;me-&gt;free (VFS_SUPER (a));</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L805'>a</a>                 805 src/vfs/extfs/extfs.c     struct extfs_super_t *a = NULL;</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L819'>a</a>                 819 src/vfs/extfs/extfs.c         a = EXTFS_SUPER (parc-&gt;data);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L820'>a</a>                 820 src/vfs/extfs/extfs.c         vfs_stamp (vfs_extfs_ops, (vfsid) a);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L826'>a</a>                 826 src/vfs/extfs/extfs.c             result = extfs_open_and_read_archive (fstype, archive_name, &amp;a);</span>
+<span class='curline'><a href='../S/src--vfs--extfs--extfs.c.html#L837'>a</a>                 837 src/vfs/extfs/extfs.c     *archive = a;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1261'>a</a>                1261 src/vfs/ftpfs/ftpfs.c         unsigned char *a = (unsigned char *) &amp;((struct sockaddr_in *) &amp;data_addr)-&gt;sin_addr;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1264'>a</a>                1264 src/vfs/ftpfs/ftpfs.c         if (ftpfs_command (me, super, WAIT_REPLY, "PORT %u,%u,%u,%u,%u,%u", a[0], a[1], a[2], a[3],</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L82'>a</a>                  82 src/vfs/sfs/sfs.c #define COPY_STRING(a)                                                                             \</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L83'>a</a>                  83 src/vfs/sfs/sfs.c     if ((t - pad) + strlen (a) &gt; sizeof (pad))                                                     \</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L90'>a</a>                  90 src/vfs/sfs/sfs.c         strcpy (t, a);                                                                             \</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L91'>a</a>                  91 src/vfs/sfs/sfs.c         t += strlen (a);                                                                           \</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L124'>a</a>                 124 src/vfs/sfs/sfs.c cachedfile_compare (const void *a, const void *b)</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L126'>a</a>                 126 src/vfs/sfs/sfs.c     const cachedfile *cf = (const cachedfile *) a;</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--file.c.html#L43'>a</a>                  43 src/vfs/sftpfs/file.c #define SFTP_FILE_HANDLER(a) ((sftpfs_file_handler_t *) a)</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L72'>a</a>                  72 src/viewer/coord_cache.c typedef gboolean (*cmp_fn) (const coord_cache_entry_t *a, const coord_cache_entry_t *b);</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L96'>a</a>                  96 src/viewer/coord_cache.c mcview_coord_cache_entry_less_offset (const coord_cache_entry_t *a, const coord_cache_entry_t *b)</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L98'>a</a>                  98 src/viewer/coord_cache.c     return (a-&gt;cc_offset &lt; b-&gt;cc_offset);</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L104'>a</a>                 104 src/viewer/coord_cache.c mcview_coord_cache_entry_less_plain (const coord_cache_entry_t *a, const coord_cache_entry_t *b)</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L106'>a</a>                 106 src/viewer/coord_cache.c     if (a-&gt;cc_line &lt; b-&gt;cc_line)</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L109'>a</a>                 109 src/viewer/coord_cache.c     if (a-&gt;cc_line == b-&gt;cc_line)</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L110'>a</a>                 110 src/viewer/coord_cache.c         return (a-&gt;cc_column &lt; b-&gt;cc_column);</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L118'>a</a>                 118 src/viewer/coord_cache.c mcview_coord_cache_entry_less_nroff (const coord_cache_entry_t *a, const coord_cache_entry_t *b)</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L120'>a</a>                 120 src/viewer/coord_cache.c     if (a-&gt;cc_line &lt; b-&gt;cc_line)</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L123'>a</a>                 123 src/viewer/coord_cache.c     if (a-&gt;cc_line == b-&gt;cc_line)</span>
+<span class='curline'><a href='../S/src--viewer--coord_cache.c.html#L124'>a</a>                 124 src/viewer/coord_cache.c         return (a-&gt;cc_nroff_column &lt; b-&gt;cc_nroff_column);</span>
+<span class='curline'><a href='../S/src--viewer--internal.h.html#L339'>a</a>                 339 src/viewer/internal.h mcview_offset_rounddown (off_t a, off_t b)</span>
+<span class='curline'><a href='../S/src--viewer--internal.h.html#L342'>a</a>                 342 src/viewer/internal.h     return a - a % b;</span>
+<span class='curline'><a href='../S/tests--lib--search--regex_replace_esc_seq.c.html#L33'>a</a>                  33 tests/lib/search/regex_replace_esc_seq.c #define test_helper_check_valid_data(a, b, c, d, e, f)                                             \</span>
+<span class='curline'><a href='../S/tests--lib--search--regex_replace_esc_seq.c.html#L35'>a</a>                  35 tests/lib/search/regex_replace_esc_seq.c         ck_assert_msg (a == b, "ret_value != %s", (b) ? "TRUE" : "FALSE");                         \</span>
+<span class='curline'><a href='../S/tests--lib--strutil--filevercmp.c.html#L48'>a</a>                  48 tests/lib/strutil/filevercmp.c test_filevercmp (char const *a, char const *b)</span>
+<span class='curline'><a href='../S/tests--lib--strutil--filevercmp.c.html#L56'>a</a>                  56 tests/lib/strutil/filevercmp.c     result = filevercmp (a, b);</span>
+<span class='curline'><a href='../S/tests--lib--strutil--filevercmp.c.html#L58'>a</a>                  58 tests/lib/strutil/filevercmp.c     alen = strlen (a);</span>
+<span class='curline'><a href='../S/tests--lib--strutil--filevercmp.c.html#L62'>a</a>                  62 tests/lib/strutil/filevercmp.c     memcpy (buffer, a, alen);</span>
+<span class='curline'><a href='../S/tests--lib--strutil--str_verscmp.c.html#L37'>a</a>                  37 tests/lib/strutil/str_verscmp.c static char const a[] = "B0075022800016.gbp.corp.com";</span>
+<span class='curline'><a href='../S/tests--lib--strutil--str_verscmp.c.html#L72'>a</a>                  72 tests/lib/strutil/str_verscmp.c     { a, b, -1 },</span>
+<span class='curline'><a href='../S/tests--lib--strutil--str_verscmp.c.html#L74'>a</a>                  74 tests/lib/strutil/str_verscmp.c     { a, c, -1 },</span>
+<span class='curline'><a href='../S/tests--lib--strutil--str_verscmp.c.html#L75'>a</a>                  75 tests/lib/strutil/str_verscmp.c     { b, a, 1 },</span>
+<span class='curline'><a href='../S/tests--lib--strutil--str_verscmp.c.html#L77'>a</a>                  77 tests/lib/strutil/str_verscmp.c     { c, a, 1 },</span>
+</pre>
+</body>
+</html>

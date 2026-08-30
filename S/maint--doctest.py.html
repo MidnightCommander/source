@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>maint/doctest.py</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/maint.html'>maint</a>/doctest.py</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/maint.html'>maint</a>/doctest.py</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 maint/doctest.py'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#!/usr/bin/env python3
+<a id='L2' name='L2'></a> 
+<a id='L3' name='L3'></a>import re
+<a id='L4' name='L4'></a>import subprocess
+<a id='L5' name='L5'></a> 
+<a id='L6' name='L6'></a>from pathlib import Path
+<a id='L7' name='L7'></a> 
+<a id='L8' name='L8'></a>MC_SOURCE_ROOT = Path(__file__).parent.parent
+<a id='L9' name='L9'></a> 
+<a id='L10' name='L10'></a>if not (MC_SOURCE_ROOT / "doc/man/mc.1.in").exists():
+<a id='L11' name='L11'></a>    raise FileNotFoundError("cannot read doc/man/mc.1.in")
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>warnings = []
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>for manpage in (MC_SOURCE_ROOT / "doc").glob("**/*.1.*"):
+<a id='L16' name='L16'></a>    print(manpage)
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>    for renderer in ("groff", "nroff"):
+<a id='L19' name='L19'></a>        warnings.extend(
+<a id='L20' name='L20'></a>            subprocess.check_output(
+<a id='L21' name='L21'></a>                f"{renderer} -K UTF-8 -Tutf8 -mandoc -ww '{manpage}' | grep 'warning:' || true",
+<a id='L22' name='L22'></a>                shell=True,
+<a id='L23' name='L23'></a>                stderr=subprocess.STDOUT,
+<a id='L24' name='L24'></a>            ).splitlines()
+<a id='L25' name='L25'></a>        )
+<a id='L26' name='L26'></a> 
+<a id='L27' name='L27'></a>    content = "\n".join(manpage.read_text().splitlines()[1:])  # skip first line
+<a id='L28' name='L28'></a> 
+<a id='L29' name='L29'></a>    # https://mandoc.bsd.lv/mdoc/intro/escaping.html
+<a id='L30' name='L30'></a>    for pattern in ("\\\\", "\\.", "\\!"):
+<a id='L31' name='L31'></a>        if pattern in content:
+<a id='L32' name='L32'></a>            warnings.append(f"{manpage}: forbidden pattern '{pattern}'")
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>    if re.findall(r"\b-\b", content):
+<a id='L35' name='L35'></a>        warnings.append(f"{manpage}: unescaped dash ('-')")
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>    if re.findall(r'[^.]\\"', content):
+<a id='L38' name='L38'></a>        warnings.append(f"{manpage}: escaped quote ('\"')")
+<a id='L39' name='L39'></a> 
+<a id='L40' name='L40'></a># Check that English manuals are in ASCII
+<a id='L41' name='L41'></a>for manpage in (MC_SOURCE_ROOT / "doc/man").glob("*.1.in"):
+<a id='L42' name='L42'></a>    print(manpage)
+<a id='L43' name='L43'></a>    warnings.extend(
+<a id='L44' name='L44'></a>        subprocess.check_output(
+<a id='L45' name='L45'></a>            f"groff -Tascii -winput '{manpage}' | grep 'warning:' || true",
+<a id='L46' name='L46'></a>            shell=True,
+<a id='L47' name='L47'></a>            stderr=subprocess.STDOUT,
+<a id='L48' name='L48'></a>        ).splitlines()
+<a id='L49' name='L49'></a>    )
+<a id='L50' name='L50'></a> 
+<a id='L51' name='L51'></a>if set(warnings):
+<a id='L52' name='L52'></a>    raise AssertionError(f"roff warnings: {set(warnings)}")
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+52 maint/doctest.py'  /> */</em>
+</body>
+</html>
