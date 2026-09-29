@@ -1,0 +1,873 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>r</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L140'>r</a>                 140 lib/intprops-internal.h #define _GL_INT_ADD_WRAPV(a, b, r)      __builtin_add_overflow (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L141'>r</a>                 141 lib/intprops-internal.h #define _GL_INT_SUBTRACT_WRAPV(a, b, r) __builtin_sub_overflow (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L143'>r</a>                 143 lib/intprops-internal.h #define _GL_INT_ADD_WRAPV(a, b, r)      ckd_add (r, +(a), +(b))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L144'>r</a>                 144 lib/intprops-internal.h #define _GL_INT_SUBTRACT_WRAPV(a, b, r) ckd_sub (r, +(a), +(b))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L146'>r</a>                 146 lib/intprops-internal.h #define _GL_INT_ADD_WRAPV(a, b, r) _GL_INT_OP_WRAPV (a, b, r, +, _GL_INT_ADD_RANGE_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L147'>r</a>                 147 lib/intprops-internal.h #define _GL_INT_SUBTRACT_WRAPV(a, b, r)                                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L148'>r</a>                 148 lib/intprops-internal.h     _GL_INT_OP_WRAPV (a, b, r, -, _GL_INT_SUBTRACT_RANGE_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L153'>r</a>                 153 lib/intprops-internal.h #define _GL_INT_MULTIPLY_WRAPV(a, b, r) __builtin_mul_overflow (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L156'>r</a>                 156 lib/intprops-internal.h #define _GL_INT_MULTIPLY_WRAPV(a, b, r)                                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L157'>r</a>                 157 lib/intprops-internal.h     ((!_GL_SIGNED_TYPE_OR_EXPR (*(r)) &amp;&amp; _GL_EXPR_SIGNED (a) &amp;&amp; _GL_EXPR_SIGNED (b)                \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L158'>r</a>                 158 lib/intprops-internal.h       &amp;&amp; _GL_INT_MULTIPLY_RANGE_OVERFLOW (a, b, (__typeof__ (*(r))) 0, (__typeof__ (*(r))) -1))    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L159'>r</a>                 159 lib/intprops-internal.h          ? ((void) __builtin_mul_overflow (a, b, r), 1)                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L160'>r</a>                 160 lib/intprops-internal.h          : __builtin_mul_overflow (a, b, r))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L163'>r</a>                 163 lib/intprops-internal.h #define _GL_INT_MULTIPLY_WRAPV(a, b, r) ckd_mul (r, +(a), +(b))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L165'>r</a>                 165 lib/intprops-internal.h #define _GL_INT_MULTIPLY_WRAPV(a, b, r)                                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L166'>r</a>                 166 lib/intprops-internal.h     _GL_INT_OP_WRAPV (a, b, r, *, _GL_INT_MULTIPLY_RANGE_OVERFLOW)</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L187'>r</a>                 187 lib/intprops-internal.h #define _GL_INT_OP_WRAPV(a, b, r, op, overflow)                                                    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L188'>r</a>                 188 lib/intprops-internal.h     (_Generic (*(r),                                                                               \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L189'>r</a>                 189 lib/intprops-internal.h          signed char: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, signed char,           \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L191'>r</a>                 191 lib/intprops-internal.h          unsigned char: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, unsigned char, 0,    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L193'>r</a>                 193 lib/intprops-internal.h          short int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, short int, SHRT_MIN,     \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L195'>r</a>                 195 lib/intprops-internal.h          unsigned short int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int,                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L197'>r</a>                 197 lib/intprops-internal.h          int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, int, INT_MIN, INT_MAX),        \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L198'>r</a>                 198 lib/intprops-internal.h          unsigned int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, unsigned int, 0,      \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L200'>r</a>                 200 lib/intprops-internal.h          long int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int, long int, LONG_MIN,  \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L202'>r</a>                 202 lib/intprops-internal.h          unsigned long int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int,             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L204'>r</a>                 204 lib/intprops-internal.h          long long int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long long int,            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L206'>r</a>                 206 lib/intprops-internal.h          unsigned long long int: _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long long int,   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L217'>r</a>                 217 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_SMALLISH(a, b, r, op, overflow, st, smin, smax, ut, umax)                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L218'>r</a>                 218 lib/intprops-internal.h     (_GL_TYPE_SIGNED (__typeof__ (*(r)))                                                           \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L219'>r</a>                 219 lib/intprops-internal.h          ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, st, smin, smax)                   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L220'>r</a>                 220 lib/intprops-internal.h          : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, ut, 0, umax))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L222'>r</a>                 222 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_SMALLISH(a, b, r, op, overflow, st, smin, smax, ut, umax)                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L225'>r</a>                 225 lib/intprops-internal.h                 ? (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, unsigned, st), 1)               \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L226'>r</a>                 226 lib/intprops-internal.h                 : (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, unsigned, st)) &lt; 0)             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L228'>r</a>                 228 lib/intprops-internal.h                 ? (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, unsigned, st)) &gt;= 0             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L229'>r</a>                 229 lib/intprops-internal.h                 : (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, unsigned, st), 0)))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L232'>r</a>                 232 lib/intprops-internal.h #define _GL_INT_OP_WRAPV(a, b, r, op, overflow)                                                    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L233'>r</a>                 233 lib/intprops-internal.h     (sizeof *(r) == sizeof (signed char)                                                           \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L234'>r</a>                 234 lib/intprops-internal.h          ? _GL_INT_OP_WRAPV_SMALLISH (a, b, r, op, overflow, signed char, SCHAR_MIN, SCHAR_MAX,    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L236'>r</a>                 236 lib/intprops-internal.h          : sizeof *(r) == sizeof (short int)                                                       \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L237'>r</a>                 237 lib/intprops-internal.h          ? _GL_INT_OP_WRAPV_SMALLISH (a, b, r, op, overflow, short int, SHRT_MIN, SHRT_MAX,        \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L239'>r</a>                 239 lib/intprops-internal.h          : sizeof *(r) == sizeof (int)                                                             \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L240'>r</a>                 240 lib/intprops-internal.h          ? (_GL_EXPR_SIGNED (*(r))                                                                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L241'>r</a>                 241 lib/intprops-internal.h                 ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, int, INT_MIN, INT_MAX)     \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L242'>r</a>                 242 lib/intprops-internal.h                 : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned int, unsigned int, 0,           \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L244'>r</a>                 244 lib/intprops-internal.h          : _GL_INT_OP_WRAPV_LONGISH (a, b, r, op, overflow))</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L246'>r</a>                 246 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_LONGISH(a, b, r, op, overflow)                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L247'>r</a>                 247 lib/intprops-internal.h     (sizeof *(r) == sizeof (long int)                                                              \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L248'>r</a>                 248 lib/intprops-internal.h          ? (_GL_EXPR_SIGNED (*(r)) ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int,    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L250'>r</a>                 250 lib/intprops-internal.h                                    : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int,    \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L252'>r</a>                 252 lib/intprops-internal.h          : (_GL_EXPR_SIGNED (*(r))                                                                 \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L253'>r</a>                 253 lib/intprops-internal.h                 ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long long int, long long int,   \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L255'>r</a>                 255 lib/intprops-internal.h                 : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long long int,                  \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L258'>r</a>                 258 lib/intprops-internal.h #define _GL_INT_OP_WRAPV_LONGISH(a, b, r, op, overflow)                                            \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L259'>r</a>                 259 lib/intprops-internal.h     (_GL_EXPR_SIGNED (*(r)) ? _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int, long int, \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L261'>r</a>                 261 lib/intprops-internal.h                             : _GL_INT_OP_CALC (a, b, r, op, overflow, unsigned long int,           \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L272'>r</a>                 272 lib/intprops-internal.h #define _GL_INT_OP_CALC(a, b, r, op, overflow, ut, t, tmin, tmax)                                  \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L273'>r</a>                 273 lib/intprops-internal.h     (overflow (a, b, tmin, tmax) ? (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, ut, t), 1)     \</span>
+<span class='curline'><a href='../S/lib--intprops-internal.h.html#L274'>r</a>                 274 lib/intprops-internal.h                                  : (*(r) = _GL_INT_OP_WRAPV_VIA_UNSIGNED (a, b, op, ut, t), 0))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L272'>r</a>                 272 lib/intprops.h #define INT_ADD_WRAPV(a, b, r)      _GL_INT_ADD_WRAPV (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L273'>r</a>                 273 lib/intprops.h #define INT_SUBTRACT_WRAPV(a, b, r) _GL_INT_SUBTRACT_WRAPV (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L274'>r</a>                 274 lib/intprops.h #define INT_MULTIPLY_WRAPV(a, b, r) _GL_INT_MULTIPLY_WRAPV (a, b, r)</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L303'>r</a>                 303 lib/intprops.h #define INT_ADD_OK(a, b, r)      (!INT_ADD_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L304'>r</a>                 304 lib/intprops.h #define INT_SUBTRACT_OK(a, b, r) (!INT_SUBTRACT_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--intprops.h.html#L305'>r</a>                 305 lib/intprops.h #define INT_MULTIPLY_OK(a, b, r) (!INT_MULTIPLY_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--stdckdint.in.h.html#L31'>r</a>                  31 lib/stdckdint.in.h #define ckd_add(r, a, b) ((bool) _GL_INT_ADD_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--stdckdint.in.h.html#L32'>r</a>                  32 lib/stdckdint.in.h #define ckd_sub(r, a, b) ((bool) _GL_INT_SUBTRACT_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--stdckdint.in.h.html#L33'>r</a>                  33 lib/stdckdint.in.h #define ckd_mul(r, a, b) ((bool) _GL_INT_MULTIPLY_WRAPV (a, b, r))</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L181'>r</a>                 181 lib/terminal.c     const char *r;  // Current position where the original data is read</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L188'>r</a>                 188 lib/terminal.c     for (w = s, r = s; *r != '\0';)</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L190'>r</a>                 190 lib/terminal.c         if (*r == ESC_CHAR)</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L194'>r</a>                 194 lib/terminal.c             if (*(++r) == '[' || *r == '(')</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L196'>r</a>                 196 lib/terminal.c                 ++r;</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L197'>r</a>                 197 lib/terminal.c                 parse_csi (NULL, &amp;r, end);</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L201'>r</a>                 201 lib/terminal.c             if (*r == ']')</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L209'>r</a>                 209 lib/terminal.c                 for (const char *new_r = r; *new_r != '\0'; new_r++)</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L215'>r</a>                 215 lib/terminal.c                         r = new_r;</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L221'>r</a>                 221 lib/terminal.c                             r = new_r + 1;</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L236'>r</a>                 236 lib/terminal.c             if (*r != '\0')</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L237'>r</a>                 237 lib/terminal.c                 r++;</span>
+<span class='curline'><a href='../S/lib--terminal.c.html#L242'>r</a>                 242 lib/terminal.c             *(w++) = *(r++);</span>
+<span class='curline'><a href='../S/lib--tty--color-internal.c.html#L243'>r</a>                 243 lib/tty/color-internal.c     int r, g, b;</span>
+<span class='curline'><a href='../S/lib--tty--color-internal.c.html#L250'>r</a>                 250 lib/tty/color-internal.c         r = g = b = (color - 231) * 10 + 8;</span>
+<span class='curline'><a href='../S/lib--tty--color-internal.c.html#L255'>r</a>                 255 lib/tty/color-internal.c         r = (color / (6 * 6) % 6);</span>
+<span class='curline'><a href='../S/lib--tty--color-internal.c.html#L256'>r</a>                 256 lib/tty/color-internal.c         r = r &gt; 0 ? r * 40 + 55 : 0;</span>
+<span class='curline'><a href='../S/lib--tty--color-internal.c.html#L267'>r</a>                 267 lib/tty/color-internal.c     color = FLAG_TRUECOLOR | (r &lt;&lt; 16) | (g &lt;&lt; 8) | b;</span>
+<span class='curline'><a href='../S/lib--tty--win.c.html#L72'>r</a>                  72 lib/tty/win.c      int r;</span>
+<span class='curline'><a href='../S/lib--tty--win.c.html#L79'>r</a>                  79 lib/tty/win.c      r = (c - 'A') * 16;</span>
+<span class='curline'><a href='../S/lib--tty--win.c.html#L82'>r</a>                  82 lib/tty/win.c      r += (c - 'A');</span>
+<span class='curline'><a href='../S/lib--tty--win.c.html#L83'>r</a>                  83 lib/tty/win.c      return r;</span>
+<span class='curline'><a href='../S/lib--util.c.html#L103'>r</a>                 103 lib/util.c         char *buf, *buf2, *q, *r, c;</span>
+<span class='curline'><a href='../S/lib--util.c.html#L110'>r</a>                 110 lib/util.c         r = buf = g_malloc (MC_MAXPATHLEN);</span>
+<span class='curline'><a href='../S/lib--util.c.html#L112'>r</a>                 112 lib/util.c         *r++ = PATH_SEP;</span>
+<span class='curline'><a href='../S/lib--util.c.html#L113'>r</a>                 113 lib/util.c         *r = '\0';</span>
+<span class='curline'><a href='../S/lib--util.c.html#L132'>r</a>                 132 lib/util.c                 strcpy (r, p + 1);</span>
+<span class='curline'><a href='../S/lib--util.c.html#L147'>r</a>                 147 lib/util.c                     strcpy (r, buf2);</span>
+<span class='curline'><a href='../S/lib--util.c.html#L150'>r</a>                 150 lib/util.c             r = strchr (buf, '\0');</span>
+<span class='curline'><a href='../S/lib--util.c.html#L151'>r</a>                 151 lib/util.c             if (*r == '\0' || !IS_PATH_SEP (r[-1]))</span>
+<span class='curline'><a href='../S/lib--util.c.html#L154'>r</a>                 154 lib/util.c                 *r++ = PATH_SEP;</span>
+<span class='curline'><a href='../S/lib--util.c.html#L155'>r</a>                 155 lib/util.c                 *r = '\0';</span>
+<span class='curline'><a href='../S/lib--util.c.html#L164'>r</a>                 164 lib/util.c         else if (IS_PATH_SEP (r[-1]) &amp;&amp; r != buf + 1)</span>
+<span class='curline'><a href='../S/lib--util.c.html#L165'>r</a>                 165 lib/util.c             r[-1] = '\0';</span>
+<span class='curline'><a href='../S/lib--util.c.html#L894'>r</a>                 894 lib/util.c                 char *r, *s;</span>
+<span class='curline'><a href='../S/lib--util.c.html#L897'>r</a>                 897 lib/util.c                 r = strchr (p, PATH_SEP);</span>
+<span class='curline'><a href='../S/lib--util.c.html#L898'>r</a>                 898 lib/util.c                 if (r == NULL)</span>
+<span class='curline'><a href='../S/lib--util.c.html#L904'>r</a>                 904 lib/util.c                 len = r - p;</span>
+<span class='curline'><a href='../S/lib--util.c.html#L908'>r</a>                 908 lib/util.c                 p = r + 1;</span>
+<span class='curline'><a href='../S/lib--widget--background.c.html#L111'>r</a>                 111 lib/widget/background.c     WRect r = { y, x, lines, cols };</span>
+<span class='curline'><a href='../S/lib--widget--background.c.html#L117'>r</a>                 117 lib/widget/background.c     widget_init (w, &amp;r, callback != NULL ? callback : background_callback, NULL);</span>
+<span class='curline'><a href='../S/lib--widget--button.c.html#L235'>r</a>                 235 lib/widget/button.c     WRect r = { y, x, 1, 1 };</span>
+<span class='curline'><a href='../S/lib--widget--button.c.html#L245'>r</a>                 245 lib/widget/button.c     r.cols = button_get_columns (b);</span>
+<span class='curline'><a href='../S/lib--widget--button.c.html#L246'>r</a>                 246 lib/widget/button.c     widget_init (w, &amp;r, button_default_callback, button_mouse_default_callback);</span>
+<span class='curline'><a href='../S/lib--widget--buttonbar.c.html#L246'>r</a>                 246 lib/widget/buttonbar.c     WRect r = { LINES - 1, 0, 1, COLS };</span>
+<span class='curline'><a href='../S/lib--widget--buttonbar.c.html#L252'>r</a>                 252 lib/widget/buttonbar.c     widget_init (w, &amp;r, buttonbar_callback, buttonbar_mouse_callback);</span>
+<span class='curline'><a href='../S/lib--widget--check.c.html#L140'>r</a>                 140 lib/widget/check.c     WRect r = { y, x, 1, 1 };</span>
+<span class='curline'><a href='../S/lib--widget--check.c.html#L148'>r</a>                 148 lib/widget/check.c     r.cols = 4 + hotkey_width (c-&gt;text);</span>
+<span class='curline'><a href='../S/lib--widget--check.c.html#L149'>r</a>                 149 lib/widget/check.c     widget_init (w, &amp;r, check_callback, check_mouse_callback);</span>
+<span class='curline'><a href='../S/lib--widget--dialog.c.html#L388'>r</a>                 388 lib/widget/dialog.c     WRect r = { y1, x1, lines, cols };</span>
+<span class='curline'><a href='../S/lib--widget--dialog.c.html#L396'>r</a>                 396 lib/widget/dialog.c     widget_adjust_position (pos_flags, &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--dialog.c.html#L397'>r</a>                 397 lib/widget/dialog.c     group_init (g, &amp;r, callback != NULL ? callback : dlg_default_callback,</span>
+<span class='curline'><a href='../S/lib--widget--frame.c.html#L101'>r</a>                 101 lib/widget/frame.c     WRect r = { y, x, lines, cols };</span>
+<span class='curline'><a href='../S/lib--widget--frame.c.html#L107'>r</a>                 107 lib/widget/frame.c     widget_init (w, &amp;r, frame_callback, NULL);</span>
+<span class='curline'><a href='../S/lib--widget--gauge.c.html#L133'>r</a>                 133 lib/widget/gauge.c     WRect r = { y, x, 1, cols };</span>
+<span class='curline'><a href='../S/lib--widget--gauge.c.html#L139'>r</a>                 139 lib/widget/gauge.c     widget_init (w, &amp;r, gauge_callback, NULL);</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L203'>r</a>                 203 lib/widget/group.c         WRect r = WIDGET (w-&gt;owner)-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L205'>r</a>                 205 lib/widget/group.c         r.lines = 0;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L206'>r</a>                 206 lib/widget/group.c         r.cols = 0;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L208'>r</a>                 208 lib/widget/group.c         widget_default_make_global (w, &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L211'>r</a>                 211 lib/widget/group.c             WIDGET (iter-&gt;data)-&gt;make_global (WIDGET (iter-&gt;data), &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L239'>r</a>                 239 lib/widget/group.c         WRect r = WIDGET (w-&gt;owner)-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L241'>r</a>                 241 lib/widget/group.c         r.lines = 0;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L242'>r</a>                 242 lib/widget/group.c         r.cols = 0;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L244'>r</a>                 244 lib/widget/group.c         widget_default_make_local (w, &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L247'>r</a>                 247 lib/widget/group.c             WIDGET (iter-&gt;data)-&gt;make_local (WIDGET (iter-&gt;data), &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L393'>r</a>                 393 lib/widget/group.c     WRect r = c-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L396'>r</a>                 396 lib/widget/group.c         r.x = g-&gt;x + (g-&gt;cols - c-&gt;rect.cols) / 2;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L399'>r</a>                 399 lib/widget/group.c         r.x += wss-&gt;shift_x;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L400'>r</a>                 400 lib/widget/group.c         r.cols += wss-&gt;scale_x;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L403'>r</a>                 403 lib/widget/group.c         r.x += wss-&gt;shift_x;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L405'>r</a>                 405 lib/widget/group.c         r.x += wss-&gt;shift_x + wss-&gt;scale_x;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L408'>r</a>                 408 lib/widget/group.c         r.y = g-&gt;y + (g-&gt;lines - c-&gt;rect.lines) / 2;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L411'>r</a>                 411 lib/widget/group.c         r.y += wss-&gt;shift_y;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L412'>r</a>                 412 lib/widget/group.c         r.lines += wss-&gt;scale_y;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L415'>r</a>                 415 lib/widget/group.c         r.y += wss-&gt;shift_y;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L417'>r</a>                 417 lib/widget/group.c         r.y += wss-&gt;shift_y + wss-&gt;scale_y;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L419'>r</a>                 419 lib/widget/group.c     send_message (c, NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L425'>r</a>                 425 lib/widget/group.c group_set_position (WGroup *g, const WRect *r)</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L432'>r</a>                 432 lib/widget/group.c     *w = *r;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L454'>r</a>                 454 lib/widget/group.c group_default_resize (WGroup *g, WRect *r)</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L465'>r</a>                 465 lib/widget/group.c     r0 = r != NULL ? *r : w-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L599'>r</a>                 599 lib/widget/group.c group_init (WGroup *g, const WRect *r, widget_cb_fn callback, widget_mouse_cb_fn mouse_callback)</span>
+<span class='curline'><a href='../S/lib--widget--group.c.html#L603'>r</a>                 603 lib/widget/group.c     widget_init (w, r, callback != NULL ? callback : group_default_callback, mouse_callback);</span>
+<span class='curline'><a href='../S/lib--widget--group.h.html#L41'>r</a>                  41 lib/widget/group.h void group_init (WGroup *g, const WRect *r, widget_cb_fn callback,</span>
+<span class='curline'><a href='../S/lib--widget--groupbox.c.html#L102'>r</a>                 102 lib/widget/groupbox.c     WRect r = { y, x, height, width };</span>
+<span class='curline'><a href='../S/lib--widget--groupbox.c.html#L108'>r</a>                 108 lib/widget/groupbox.c     widget_init (w, &amp;r, groupbox_callback, NULL);</span>
+<span class='curline'><a href='../S/lib--widget--history.c.html#L84'>r</a>                  84 lib/widget/history.c     WRect r;</span>
+<span class='curline'><a href='../S/lib--widget--history.c.html#L117'>r</a>                 117 lib/widget/history.c     rect_init (&amp;r, y, x, he, wi);</span>
+<span class='curline'><a href='../S/lib--widget--history.c.html#L119'>r</a>                 119 lib/widget/history.c     return dlg_default_callback (WIDGET (dlg_head), NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--hline.c.html#L145'>r</a>                 145 lib/widget/hline.c     WRect r = { y, x, 1, width };</span>
+<span class='curline'><a href='../S/lib--widget--hline.c.html#L151'>r</a>                 151 lib/widget/hline.c     r.cols = width &lt; 0 ? 1 : width;</span>
+<span class='curline'><a href='../S/lib--widget--hline.c.html#L152'>r</a>                 152 lib/widget/hline.c     widget_init (w, &amp;r, hline_callback, NULL);</span>
+<span class='curline'><a href='../S/lib--widget--input.c.html#L963'>r</a>                 963 lib/widget/input.c     WRect r = { y, x, 1, width };</span>
+<span class='curline'><a href='../S/lib--widget--input.c.html#L969'>r</a>                 969 lib/widget/input.c     widget_init (w, &amp;r, input_callback, input_mouse_callback);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L83'>r</a>                  83 lib/widget/input_complete.c     char *r;</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L855'>r</a>                 855 lib/widget/input_complete.c         state-&gt;r = strrchr (state-&gt;word, '@');</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L916'>r</a>                 916 lib/widget/input_complete.c                         state-&gt;r = mc_build_filename (cdpath, state-&gt;word, (char *) NULL);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L918'>r</a>                 918 lib/widget/input_complete.c                         matches = completion_matches (state-&gt;r, filename_completion_function,</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L920'>r</a>                 920 lib/widget/input_complete.c                         g_free (state-&gt;r);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1298'>r</a>                1298 lib/widget/input_complete.c     if (state.p &gt; state.q &amp;&amp; state.p &gt; state.r)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1308'>r</a>                1308 lib/widget/input_complete.c     else if (state.q &gt; state.p &amp;&amp; state.q &gt; state.r)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1318'>r</a>                1318 lib/widget/input_complete.c     else if (state.r &gt; state.p &amp;&amp; state.r &gt; state.q)</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1321'>r</a>                1321 lib/widget/input_complete.c         matches = completion_matches (state.r, hostname_completion_function, state.flags);</span>
+<span class='curline'><a href='../S/lib--widget--input_complete.c.html#L1323'>r</a>                1323 lib/widget/input_complete.c             *lc_start += state.r - state.word;</span>
+<span class='curline'><a href='../S/lib--widget--label.c.html#L135'>r</a>                 135 lib/widget/label.c     WRect r = { y, x, 1, 1 };</span>
+<span class='curline'><a href='../S/lib--widget--label.c.html#L140'>r</a>                 140 lib/widget/label.c         str_msg_term_size (text, &amp;r.lines, &amp;r.cols);</span>
+<span class='curline'><a href='../S/lib--widget--label.c.html#L144'>r</a>                 144 lib/widget/label.c     widget_init (w, &amp;r, label_callback, NULL);</span>
+<span class='curline'><a href='../S/lib--widget--listbox.c.html#L559'>r</a>                 559 lib/widget/listbox.c     WRect r = { y, x, 1, width };</span>
+<span class='curline'><a href='../S/lib--widget--listbox.c.html#L565'>r</a>                 565 lib/widget/listbox.c     r.lines = height &gt; 0 ? height : 1;</span>
+<span class='curline'><a href='../S/lib--widget--listbox.c.html#L566'>r</a>                 566 lib/widget/listbox.c     widget_init (w, &amp;r, listbox_callback, listbox_mouse_callback);</span>
+<span class='curline'><a href='../S/lib--widget--menu.c.html#L972'>r</a>                 972 lib/widget/menu.c     WRect r = { 0, 0, 1, COLS };</span>
+<span class='curline'><a href='../S/lib--widget--menu.c.html#L978'>r</a>                 978 lib/widget/menu.c     widget_init (w, &amp;r, menubar_callback, menubar_mouse_callback);</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L266'>r</a>                 266 lib/widget/quick.c             WRadio *r;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L275'>r</a>                 275 lib/widget/quick.c             r = radio_new (++y, x, quick_widget-&gt;u.radio.count, (const char **) items);</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L276'>r</a>                 276 lib/widget/quick.c             r-&gt;pos = r-&gt;sel = *quick_widget-&gt;u.radio.value;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L278'>r</a>                 278 lib/widget/quick.c             item.widget = WIDGET (r);</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L418'>r</a>                 418 lib/widget/quick.c         WRect *r;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L439'>r</a>                 439 lib/widget/quick.c             r = &amp;item-&gt;widget-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L440'>r</a>                 440 lib/widget/quick.c             if (r-&gt;x != x1)</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L441'>r</a>                 441 lib/widget/quick.c                 r-&gt;x = x2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L443'>r</a>                 443 lib/widget/quick.c                 r-&gt;x += 2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L447'>r</a>                 447 lib/widget/quick.c             r = &amp;item-&gt;widget-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L450'>r</a>                 450 lib/widget/quick.c                 if (r-&gt;x != x1)</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L451'>r</a>                 451 lib/widget/quick.c                     r-&gt;x = x2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L453'>r</a>                 453 lib/widget/quick.c                     r-&gt;x += 2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L457'>r</a>                 457 lib/widget/quick.c                 r-&gt;x = x;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L458'>r</a>                 458 lib/widget/quick.c                 x += r-&gt;cols + 1;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L470'>r</a>                 470 lib/widget/quick.c             r = &amp;item-&gt;widget-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L476'>r</a>                 476 lib/widget/quick.c                 r-&gt;x = label-&gt;rect.x + label-&gt;rect.cols + 1 - WIDGET (label-&gt;owner)-&gt;rect.x;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L477'>r</a>                 477 lib/widget/quick.c                 r-&gt;cols = width - label-&gt;rect.cols - 1;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L481'>r</a>                 481 lib/widget/quick.c                 if (r-&gt;x != x1)</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L482'>r</a>                 482 lib/widget/quick.c                     r-&gt;x = x2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L484'>r</a>                 484 lib/widget/quick.c                     r-&gt;x += 2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L485'>r</a>                 485 lib/widget/quick.c                 r-&gt;cols = width - label-&gt;rect.cols - 1;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L486'>r</a>                 486 lib/widget/quick.c                 label-&gt;rect.x = r-&gt;x + r-&gt;cols + 1;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L490'>r</a>                 490 lib/widget/quick.c                 if (r-&gt;x != x1)</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L491'>r</a>                 491 lib/widget/quick.c                     r-&gt;x = x2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L493'>r</a>                 493 lib/widget/quick.c                     r-&gt;x += 2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L494'>r</a>                 494 lib/widget/quick.c                 r-&gt;cols = width;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L499'>r</a>                 499 lib/widget/quick.c             r-&gt;lines = 1;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L500'>r</a>                 500 lib/widget/quick.c             widget_set_size_rect (item-&gt;widget, r);</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L506'>r</a>                 506 lib/widget/quick.c             r = &amp;item-&gt;widget-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L507'>r</a>                 507 lib/widget/quick.c             if (r-&gt;x != x1)</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L508'>r</a>                 508 lib/widget/quick.c                 r-&gt;x = x2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L509'>r</a>                 509 lib/widget/quick.c             r-&gt;cols = column_width;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L519'>r</a>                 519 lib/widget/quick.c                 r = &amp;item-&gt;widget-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L526'>r</a>                 526 lib/widget/quick.c                     r-&gt;x = wg-&gt;rect.x + 1 - WIDGET (wg-&gt;owner)-&gt;rect.x;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L527'>r</a>                 527 lib/widget/quick.c                     r-&gt;cols = wg-&gt;rect.cols;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L532'>r</a>                 532 lib/widget/quick.c                     if (r-&gt;x != x1)</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L533'>r</a>                 533 lib/widget/quick.c                         r-&gt;x = x2;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L534'>r</a>                 534 lib/widget/quick.c                     r-&gt;x--;</span>
+<span class='curline'><a href='../S/lib--widget--quick.c.html#L535'>r</a>                 535 lib/widget/quick.c                     r-&gt;cols = column_width + 2;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L61'>r</a>                  61 lib/widget/radio.c radio_execute_cmd (WRadio *r, long command)</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L64'>r</a>                  64 lib/widget/radio.c     Widget *w = WIDGET (r);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L70'>r</a>                  70 lib/widget/radio.c         if (r-&gt;pos == 0)</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L74'>r</a>                  74 lib/widget/radio.c             r-&gt;pos = 0;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L76'>r</a>                  76 lib/widget/radio.c             r-&gt;pos--;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L82'>r</a>                  82 lib/widget/radio.c         if (r-&gt;pos == r-&gt;count - 1)</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L86'>r</a>                  86 lib/widget/radio.c             r-&gt;pos = r-&gt;count - 1;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L88'>r</a>                  88 lib/widget/radio.c             r-&gt;pos++;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L93'>r</a>                  93 lib/widget/radio.c         r-&gt;sel = r-&gt;pos;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L110'>r</a>                 110 lib/widget/radio.c radio_key (WRadio *r, int key)</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L114'>r</a>                 114 lib/widget/radio.c     command = widget_lookup_key (WIDGET (r), key);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L117'>r</a>                 117 lib/widget/radio.c     return radio_execute_cmd (r, command);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L125'>r</a>                 125 lib/widget/radio.c     WRadio *r = RADIO (w);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L131'>r</a>                 131 lib/widget/radio.c         for (i = 0; i &lt; r-&gt;count; i++)</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L133'>r</a>                 133 lib/widget/radio.c             if (r-&gt;texts[i].hotkey != NULL)</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L137'>r</a>                 137 lib/widget/radio.c                 c = g_ascii_tolower ((gchar) r-&gt;texts[i].hotkey[0]);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L140'>r</a>                 140 lib/widget/radio.c                 r-&gt;pos = i;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L150'>r</a>                 150 lib/widget/radio.c         return radio_key (r, parm);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L153'>r</a>                 153 lib/widget/radio.c         return radio_execute_cmd (r, parm);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L156'>r</a>                 156 lib/widget/radio.c         widget_gotoyx (r, r-&gt;pos, 1);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L165'>r</a>                 165 lib/widget/radio.c         for (i = 0; i &lt; r-&gt;count; i++)</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L167'>r</a>                 167 lib/widget/radio.c             widget_selectcolor (w, i == r-&gt;pos &amp;&amp; focused, FALSE);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L170'>r</a>                 170 lib/widget/radio.c             tty_print_string ((r-&gt;sel == i) ? "(*) " : "( ) ");</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L171'>r</a>                 171 lib/widget/radio.c             hotkey_draw (w, r-&gt;texts[i], i == r-&gt;pos &amp;&amp; focused);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L178'>r</a>                 178 lib/widget/radio.c         for (i = 0; i &lt; r-&gt;count; i++)</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L179'>r</a>                 179 lib/widget/radio.c             hotkey_free (r-&gt;texts[i]);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L180'>r</a>                 180 lib/widget/radio.c         g_free (r-&gt;texts);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L219'>r</a>                 219 lib/widget/radio.c     WRadio *r;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L223'>r</a>                 223 lib/widget/radio.c     r = g_new (WRadio, 1);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L224'>r</a>                 224 lib/widget/radio.c     w = WIDGET (r);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L227'>r</a>                 227 lib/widget/radio.c     r-&gt;texts = g_new (hotkey_t, count);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L233'>r</a>                 233 lib/widget/radio.c         r-&gt;texts[i] = hotkey_new (texts[i]);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L234'>r</a>                 234 lib/widget/radio.c         width = hotkey_width (r-&gt;texts[i]);</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L244'>r</a>                 244 lib/widget/radio.c     r-&gt;pos = 0;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L245'>r</a>                 245 lib/widget/radio.c     r-&gt;sel = 0;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L246'>r</a>                 246 lib/widget/radio.c     r-&gt;count = count;</span>
+<span class='curline'><a href='../S/lib--widget--radio.c.html#L248'>r</a>                 248 lib/widget/radio.c     return r;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L64'>r</a>                  64 lib/widget/rect.c     WRect *r;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L66'>r</a>                  66 lib/widget/rect.c     r = g_try_new (WRect, 1);</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L68'>r</a>                  68 lib/widget/rect.c     if (r != NULL)</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L69'>r</a>                  69 lib/widget/rect.c         rect_init (r, y, x, lines, cols);</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L71'>r</a>                  71 lib/widget/rect.c     return r;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L86'>r</a>                  86 lib/widget/rect.c rect_init (WRect *r, int y, int x, int lines, int cols)</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L88'>r</a>                  88 lib/widget/rect.c     r-&gt;y = y;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L89'>r</a>                  89 lib/widget/rect.c     r-&gt;x = x;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L90'>r</a>                  90 lib/widget/rect.c     r-&gt;lines = lines;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L91'>r</a>                  91 lib/widget/rect.c     r-&gt;cols = cols;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L104'>r</a>                 104 lib/widget/rect.c rect_move (WRect *r, int dy, int dx)</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L106'>r</a>                 106 lib/widget/rect.c     r-&gt;y += dy;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L107'>r</a>                 107 lib/widget/rect.c     r-&gt;x += dx;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L120'>r</a>                 120 lib/widget/rect.c rect_resize (WRect *r, int dl, int dc)</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L122'>r</a>                 122 lib/widget/rect.c     r-&gt;lines += dl;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L123'>r</a>                 123 lib/widget/rect.c     r-&gt;cols += dc;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L140'>r</a>                 140 lib/widget/rect.c rect_grow (WRect *r, int dl, int dc)</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L142'>r</a>                 142 lib/widget/rect.c     r-&gt;y -= dl;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L143'>r</a>                 143 lib/widget/rect.c     r-&gt;x -= dc;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L144'>r</a>                 144 lib/widget/rect.c     r-&gt;lines += dl * 2;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L145'>r</a>                 145 lib/widget/rect.c     r-&gt;cols += dc * 2;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L160'>r</a>                 160 lib/widget/rect.c rect_intersect (WRect *r, const WRect *r1)</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L166'>r</a>                 166 lib/widget/rect.c     y = r-&gt;y + r-&gt;lines;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L167'>r</a>                 167 lib/widget/rect.c     x = r-&gt;x + r-&gt;cols;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L176'>r</a>                 176 lib/widget/rect.c     r-&gt;y = MAX (r-&gt;y, r1-&gt;y);</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L177'>r</a>                 177 lib/widget/rect.c     r-&gt;x = MAX (r-&gt;x, r1-&gt;x);</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L180'>r</a>                 180 lib/widget/rect.c     r-&gt;lines = y - r-&gt;y;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L181'>r</a>                 181 lib/widget/rect.c     r-&gt;cols = x - r-&gt;x;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L196'>r</a>                 196 lib/widget/rect.c rect_union (WRect *r, const WRect *r1)</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L202'>r</a>                 202 lib/widget/rect.c     y = r-&gt;y + r-&gt;lines;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L203'>r</a>                 203 lib/widget/rect.c     x = r-&gt;x + r-&gt;cols;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L212'>r</a>                 212 lib/widget/rect.c     r-&gt;y = MIN (r-&gt;y, r1-&gt;y);</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L213'>r</a>                 213 lib/widget/rect.c     r-&gt;x = MIN (r-&gt;x, r1-&gt;x);</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L216'>r</a>                 216 lib/widget/rect.c     r-&gt;lines = y - r-&gt;y;</span>
+<span class='curline'><a href='../S/lib--widget--rect.c.html#L217'>r</a>                 217 lib/widget/rect.c     r-&gt;cols = x - r-&gt;x;</span>
+<span class='curline'><a href='../S/lib--widget--rect.h.html#L34'>r</a>                  34 lib/widget/rect.h void rect_init (WRect *r, int y, int x, int lines, int cols);</span>
+<span class='curline'><a href='../S/lib--widget--rect.h.html#L35'>r</a>                  35 lib/widget/rect.h void rect_move (WRect *r, int dy, int dx);</span>
+<span class='curline'><a href='../S/lib--widget--rect.h.html#L36'>r</a>                  36 lib/widget/rect.h void rect_resize (WRect *r, int dl, int dc);</span>
+<span class='curline'><a href='../S/lib--widget--rect.h.html#L37'>r</a>                  37 lib/widget/rect.h void rect_grow (WRect *r, int dl, int dc);</span>
+<span class='curline'><a href='../S/lib--widget--rect.h.html#L38'>r</a>                  38 lib/widget/rect.h void rect_intersect (WRect *r, const WRect *r1);</span>
+<span class='curline'><a href='../S/lib--widget--rect.h.html#L39'>r</a>                  39 lib/widget/rect.h void rect_union (WRect *r, const WRect *r1);</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L85'>r</a>                  85 lib/widget/widget-common.c widget_default_resize (Widget *w, const WRect *r)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L87'>r</a>                  87 lib/widget/widget-common.c     if (r == NULL)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L90'>r</a>                  90 lib/widget/widget-common.c     w-&gt;rect = *r;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L307'>r</a>                 307 lib/widget/widget-common.c widget_init (Widget *w, const WRect *r, widget_cb_fn callback, widget_mouse_cb_fn mouse_callback)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L310'>r</a>                 310 lib/widget/widget-common.c     w-&gt;rect = *r;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L392'>r</a>                 392 lib/widget/widget-common.c widget_adjust_position (widget_pos_flags_t pos_flags, WRect *r)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L396'>r</a>                 396 lib/widget/widget-common.c         r-&gt;y = 0;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L397'>r</a>                 397 lib/widget/widget-common.c         r-&gt;x = 0;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L398'>r</a>                 398 lib/widget/widget-common.c         r-&gt;lines = LINES;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L399'>r</a>                 399 lib/widget/widget-common.c         r-&gt;cols = COLS;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L404'>r</a>                 404 lib/widget/widget-common.c             r-&gt;x = (COLS - r-&gt;cols) / 2;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L407'>r</a>                 407 lib/widget/widget-common.c             r-&gt;y = (LINES - r-&gt;lines) / 2;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L411'>r</a>                 411 lib/widget/widget-common.c             if (r-&gt;y &gt; 3)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L412'>r</a>                 412 lib/widget/widget-common.c                 r-&gt;y -= 2;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L413'>r</a>                 413 lib/widget/widget-common.c             else if (r-&gt;y == 3)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L414'>r</a>                 414 lib/widget/widget-common.c                 r-&gt;y = 2;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L433'>r</a>                 433 lib/widget/widget-common.c     WRect r = { y, x, lines, cols };</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L435'>r</a>                 435 lib/widget/widget-common.c     send_message (w, NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L448'>r</a>                 448 lib/widget/widget-common.c widget_set_size_rect (Widget *w, WRect *r)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L450'>r</a>                 450 lib/widget/widget-common.c     send_message (w, NULL, MSG_RESIZE, 0, r);</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L895'>r</a>                 895 lib/widget/widget-common.c     const WRect *r = &amp;w-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L897'>r</a>                 897 lib/widget/widget-common.c     return (event-&gt;x &gt; r-&gt;x) &amp;&amp; (event-&gt;y &gt; r-&gt;y) &amp;&amp; (event-&gt;x &lt;= r-&gt;x + r-&gt;cols)</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.c.html#L898'>r</a>                 898 lib/widget/widget-common.c         &amp;&amp; (event-&gt;y &lt;= r-&gt;y + r-&gt;lines);</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.h.html#L206'>r</a>                 206 lib/widget/widget-common.h void widget_init (Widget *w, const WRect *r, widget_cb_fn callback,</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.h.html#L212'>r</a>                 212 lib/widget/widget-common.h void widget_adjust_position (widget_pos_flags_t pos_flags, WRect *r);</span>
+<span class='curline'><a href='../S/lib--widget--widget-common.h.html#L214'>r</a>                 214 lib/widget/widget-common.h void widget_set_size_rect (Widget *w, WRect *r);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L79'>r</a>                  79 lib/widget/wtools.c             WRect r = { 0, 0, w-&gt;rect.lines, w-&gt;rect.cols };</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L108'>r</a>                 108 lib/widget/wtools.c                 r.y = ypos;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L112'>r</a>                 112 lib/widget/wtools.c             return dlg_default_callback (w, NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L181'>r</a>                 181 lib/widget/wtools.c     WRect r = { -1, -1, 0, COLS / 2 };</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L184'>r</a>                 184 lib/widget/wtools.c         .rect = r,</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L664'>r</a>                 664 lib/widget/wtools.c     WRect r;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L681'>r</a>                 681 lib/widget/wtools.c     r = wd-&gt;rect;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L682'>r</a>                 682 lib/widget/wtools.c     r.lines = y + 2;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L683'>r</a>                 683 lib/widget/wtools.c     r.cols = wd_width;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L684'>r</a>                 684 lib/widget/wtools.c     widget_set_size_rect (wd, &amp;r);</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L104'>r</a>                 104 src/diffviewer/search.c         WRect r = { -1, -1, 0, 58 };</span>
+<span class='curline'><a href='../S/src--diffviewer--search.c.html#L107'>r</a>                 107 src/diffviewer/search.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2348'>r</a>                2348 src/diffviewer/ydiff.c     WRect r = { -1, -1, 0, 56 };</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2351'>r</a>                2351 src/diffviewer/ydiff.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2475'>r</a>                2475 src/diffviewer/ydiff.c dview_display_file (const WDiff *dview, diff_place_t ord, int r, int c, int height, int width)</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2532'>r</a>                2532 src/diffviewer/ydiff.c             tty_gotoyx (r + j, c - 2);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2539'>r</a>                2539 src/diffviewer/ydiff.c                 tty_gotoyx (r + j, c - xwidth);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2562'>r</a>                2562 src/diffviewer/ydiff.c                     tty_gotoyx (r + j, c);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2613'>r</a>                2613 src/diffviewer/ydiff.c                 tty_gotoyx (r + j, c - xwidth);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2623'>r</a>                2623 src/diffviewer/ydiff.c         tty_gotoyx (r + j, c);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2665'>r</a>                2665 src/diffviewer/ydiff.c             tty_gotoyx (r + j, c - xwidth);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L2669'>r</a>                2669 src/diffviewer/ydiff.c         tty_gotoyx (r + j, c);</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3330'>r</a>                3330 src/diffviewer/ydiff.c     WRect r;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3338'>r</a>                3338 src/diffviewer/ydiff.c     r = dw-&gt;rect;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3344'>r</a>                3344 src/diffviewer/ydiff.c     r.lines--;</span>
+<span class='curline'><a href='../S/src--diffviewer--ydiff.c.html#L3345'>r</a>                3345 src/diffviewer/ydiff.c     widget_init (w, &amp;r, dview_callback, dview_mouse_callback);</span>
+<span class='curline'><a href='../S/src--editor--bookmark.c.html#L221'>r</a>                 221 src/editor/bookmark.c     gboolean r = FALSE;</span>
+<span class='curline'><a href='../S/src--editor--bookmark.c.html#L224'>r</a>                 224 src/editor/bookmark.c         return r;</span>
+<span class='curline'><a href='../S/src--editor--bookmark.c.html#L231'>r</a>                 231 src/editor/bookmark.c             r = TRUE;</span>
+<span class='curline'><a href='../S/src--editor--bookmark.c.html#L245'>r</a>                 245 src/editor/bookmark.c     return r;</span>
+<span class='curline'><a href='../S/src--editor--edit-impl.h.html#L116'>r</a>                 116 src/editor/edit-impl.h gboolean edit_add_window (WDialog *h, const WRect *r, const edit_arg_t *arg);</span>
+<span class='curline'><a href='../S/src--editor--edit-impl.h.html#L159'>r</a>                 159 src/editor/edit-impl.h WEdit *edit_init (WEdit *edit, const WRect *r, const edit_arg_t *arg);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L169'>r</a>                 169 src/editor/edit.c         WRect r;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L171'>r</a>                 171 src/editor/edit.c         r = wd-&gt;rect;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L172'>r</a>                 172 src/editor/edit.c         r.cols = MAX (r.cols, lw-&gt;rect.cols + 6);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L173'>r</a>                 173 src/editor/edit.c         widget_set_size_rect (wd, &amp;r);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L174'>r</a>                 174 src/editor/edit.c         r = lw-&gt;rect;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L175'>r</a>                 175 src/editor/edit.c         r.x = wd-&gt;rect.x + (wd-&gt;rect.cols - r.cols) / 2;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L176'>r</a>                 176 src/editor/edit.c         widget_set_size_rect (lw, &amp;r);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L896'>r</a>                 896 src/editor/edit.c     unsigned long r = 0;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L928'>r</a>                 928 src/editor/edit.c         r |= x;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L932'>r</a>                 932 src/editor/edit.c     return r;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2129'>r</a>                2129 src/editor/edit.c edit_init (WEdit *edit, const WRect *r, const edit_arg_t *arg)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L2160'>r</a>                2160 src/editor/edit.c         widget_init (w, r, NULL, NULL);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L398'>r</a>                 398 src/editor/editcmd.c     WRect r = { -1, -1, 0, 64 };</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L401'>r</a>                 401 src/editor/editcmd.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L462'>r</a>                 462 src/editor/editcmd.c     off_t r;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L466'>r</a>                 466 src/editor/editcmd.c     r = edit_buffer_get_bol (&amp;edit-&gt;buffer, m1);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L467'>r</a>                 467 src/editor/editcmd.c     c = (long) edit_move_forward3 (edit, r, 0, m1);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L468'>r</a>                 468 src/editor/editcmd.c     r = edit_buffer_get_bol (&amp;edit-&gt;buffer, m2);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L469'>r</a>                 469 src/editor/editcmd.c     d = (long) edit_move_forward3 (edit, r, 0, m2);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L477'>r</a>                 477 src/editor/editcmd.c         r = edit_buffer_get_current_bol (&amp;edit-&gt;buffer);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L478'>r</a>                 478 src/editor/editcmd.c         p = edit_move_forward3 (edit, r, b, 0);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L479'>r</a>                 479 src/editor/editcmd.c         q = edit_move_forward3 (edit, r, c, 0);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L491'>r</a>                 491 src/editor/editcmd.c             r = edit_buffer_get_forward_offset (&amp;edit-&gt;buffer, edit-&gt;buffer.curs1, 1, 0);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L492'>r</a>                 492 src/editor/editcmd.c             edit_cursor_move (edit, r - edit-&gt;buffer.curs1);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L572'>r</a>                 572 src/editor/editcmd.c     GString *r;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L574'>r</a>                 574 src/editor/editcmd.c     r = g_string_sized_new (finish - start);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L590'>r</a>                 590 src/editor/editcmd.c                 g_string_append_c (r, (gchar) c);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L598'>r</a>                 598 src/editor/editcmd.c             g_string_append_c (r, (gchar) c);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L601'>r</a>                 601 src/editor/editcmd.c     return r;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L923'>r</a>                 923 src/editor/editcmd.c         WRect r = { -1, -1, 0, 38 };</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L926'>r</a>                 926 src/editor/editcmd.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1132'>r</a>                1132 src/editor/editcmd.c     WRect r = WIDGET (h)-&gt;rect;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1134'>r</a>                1134 src/editor/editcmd.c     rect_grow (&amp;r, -1, 0);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1136'>r</a>                1136 src/editor/editcmd.c     return edit_add_window (h, &amp;r, arg);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1583'>r</a>                1583 src/editor/editcmd.c         int r;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1585'>r</a>                1585 src/editor/editcmd.c         r = mc_write (file, VERTICAL_MAGIC, sizeof (VERTICAL_MAGIC));</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1586'>r</a>                1586 src/editor/editcmd.c         if (r &gt; 0)</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1597'>r</a>                1597 src/editor/editcmd.c                 r = mc_write (file, p, len);</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1598'>r</a>                1598 src/editor/editcmd.c                 if (r &lt; 0)</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1600'>r</a>                1600 src/editor/editcmd.c                 p += r;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1601'>r</a>                1601 src/editor/editcmd.c                 len -= r;</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1972'>r</a>                1972 src/editor/editcmd.c     WRect r = { -1, -1, 0, 50 };</span>
+<span class='curline'><a href='../S/src--editor--editcmd.c.html#L1975'>r</a>                1975 src/editor/editcmd.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--editor--editoptions.c.html#L194'>r</a>                 194 src/editor/editoptions.c         WRect r = { -1, -1, 0, 74 };</span>
+<span class='curline'><a href='../S/src--editor--editoptions.c.html#L197'>r</a>                 197 src/editor/editoptions.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L111'>r</a>                 111 src/editor/editsearch.c         WRect r = { -1, -1, 0, 58 };</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L114'>r</a>                 114 src/editor/editsearch.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L631'>r</a>                 631 src/editor/editsearch.c         WRect r;</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L633'>r</a>                 633 src/editor/editsearch.c         r = wd-&gt;rect;</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L634'>r</a>                 634 src/editor/editsearch.c         r.cols = MAX (r.cols, lw-&gt;rect.cols + 6);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L635'>r</a>                 635 src/editor/editsearch.c         widget_set_size_rect (wd, &amp;r);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L636'>r</a>                 636 src/editor/editsearch.c         r = lw-&gt;rect;</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L637'>r</a>                 637 src/editor/editsearch.c         r.x = wd-&gt;rect.x + (wd-&gt;rect.cols - r.cols) / 2;</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L638'>r</a>                 638 src/editor/editsearch.c         widget_set_size_rect (lw, &amp;r);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L718'>r</a>                 718 src/editor/editsearch.c         WRect r = { -1, -1, 0, 58 };</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L721'>r</a>                 721 src/editor/editsearch.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L787'>r</a>                 787 src/editor/editsearch.c         WRect r = { ypos, xpos, 0, -1 };</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L790'>r</a>                 790 src/editor/editsearch.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L161'>r</a>                 161 src/editor/editwidget.c         WRect r = { -1, -1, 0, 40 };</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L164'>r</a>                 164 src/editor/editwidget.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1018'>r</a>                1018 src/editor/editwidget.c     WRect *r = &amp;w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1041'>r</a>                1041 src/editor/editwidget.c     global_x = event-&gt;x + r-&gt;x;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1042'>r</a>                1042 src/editor/editwidget.c     global_y = event-&gt;y + r-&gt;y;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1052'>r</a>                1052 src/editor/editwidget.c         r-&gt;y = global_y;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1053'>r</a>                1053 src/editor/editwidget.c         r-&gt;x = global_x - edit-&gt;drag_state_start;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1057'>r</a>                1057 src/editor/editwidget.c         r-&gt;lines = MAX (WINDOW_MIN_LINES, global_y - r-&gt;y + 1);</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1058'>r</a>                1058 src/editor/editwidget.c         r-&gt;cols = MAX (WINDOW_MIN_COLS, global_x - r-&gt;x + 1);</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1362'>r</a>                1362 src/editor/editwidget.c edit_add_window (WDialog *h, const WRect *r, const edit_arg_t *arg)</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1367'>r</a>                1367 src/editor/editwidget.c     edit = edit_init (NULL, r, arg);</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1524'>r</a>                1524 src/editor/editwidget.c         WRect r;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1527'>r</a>                1527 src/editor/editwidget.c         r = WIDGET (w-&gt;owner)-&gt;rect;</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1528'>r</a>                1528 src/editor/editwidget.c         rect_grow (&amp;r, -1, 0);</span>
+<span class='curline'><a href='../S/src--editor--editwidget.c.html#L1529'>r</a>                1529 src/editor/editwidget.c         widget_set_size_rect (w, &amp;r);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L178'>r</a>                 178 src/editor/syntax.c     context_rule_t *r = CONTEXT_RULE (rule);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L180'>r</a>                 180 src/editor/syntax.c     g_string_free (r-&gt;left, TRUE);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L181'>r</a>                 181 src/editor/syntax.c     g_string_free (r-&gt;right, TRUE);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L182'>r</a>                 182 src/editor/syntax.c     g_free (r-&gt;whole_word_chars_left);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L183'>r</a>                 183 src/editor/syntax.c     g_free (r-&gt;whole_word_chars_right);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L184'>r</a>                 184 src/editor/syntax.c     g_free (r-&gt;keyword_first_chars);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L186'>r</a>                 186 src/editor/syntax.c     if (r-&gt;keyword != NULL)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L187'>r</a>                 187 src/editor/syntax.c         g_ptr_array_free (r-&gt;keyword, TRUE);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L189'>r</a>                 189 src/editor/syntax.c     g_free (r);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L398'>r</a>                 398 src/editor/syntax.c     context_rule_t *r;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L431'>r</a>                 431 src/editor/syntax.c         r = CONTEXT_RULE (g_ptr_array_index (edit-&gt;rules, _rule.context));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L432'>r</a>                 432 src/editor/syntax.c         if (r-&gt;first_right == c &amp;&amp; (edit-&gt;rule.border &amp; RULE_ON_RIGHT_BORDER) == 0</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L433'>r</a>                 433 src/editor/syntax.c             &amp;&amp; r-&gt;right-&gt;len != 0</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L434'>r</a>                 434 src/editor/syntax.c             &amp;&amp; (e = compare_word_to_right (edit, i, r-&gt;right, r-&gt;whole_word_chars_left,</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L435'>r</a>                 435 src/editor/syntax.c                                            r-&gt;whole_word_chars_right, r-&gt;line_start_right))</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L441'>r</a>                 441 src/editor/syntax.c             if (r-&gt;between_delimiters)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L465'>r</a>                 465 src/editor/syntax.c         r = CONTEXT_RULE (g_ptr_array_index (edit-&gt;rules, _rule.context));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L466'>r</a>                 466 src/editor/syntax.c         p = r-&gt;keyword_first_chars;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L475'>r</a>                 475 src/editor/syntax.c                 count = p - r-&gt;keyword_first_chars;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L476'>r</a>                 476 src/editor/syntax.c                 k = SYNTAX_KEYWORD (g_ptr_array_index (r-&gt;keyword, count));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L487'>r</a>                 487 src/editor/syntax.c                         r = CONTEXT_RULE (g_ptr_array_index (edit-&gt;rules, _rule._context));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L488'>r</a>                 488 src/editor/syntax.c                         if (r-&gt;right != NULL &amp;&amp; r-&gt;right-&gt;len != 0</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L489'>r</a>                 489 src/editor/syntax.c                             &amp;&amp; r-&gt;right-&gt;str[r-&gt;right-&gt;len - 1] == '\n')</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L516'>r</a>                 516 src/editor/syntax.c                 r = CONTEXT_RULE (g_ptr_array_index (edit-&gt;rules, _rule._context));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L518'>r</a>                 518 src/editor/syntax.c                 if (r-&gt;between_delimiters)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L524'>r</a>                 524 src/editor/syntax.c                     if (r-&gt;first_right == c)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L528'>r</a>                 528 src/editor/syntax.c                         if (r-&gt;right-&gt;len != 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L529'>r</a>                 529 src/editor/syntax.c                             e = compare_word_to_right (edit, i, r-&gt;right, r-&gt;whole_word_chars_left,</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L530'>r</a>                 530 src/editor/syntax.c                                                        r-&gt;whole_word_chars_right,</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L531'>r</a>                 531 src/editor/syntax.c                                                        r-&gt;line_start_right);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L550'>r</a>                 550 src/editor/syntax.c                 r = CONTEXT_RULE (g_ptr_array_index (edit-&gt;rules, count));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L551'>r</a>                 551 src/editor/syntax.c                 if (r-&gt;first_left == c)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L555'>r</a>                 555 src/editor/syntax.c                     if (r-&gt;left-&gt;len != 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L556'>r</a>                 556 src/editor/syntax.c                         e = compare_word_to_right (edit, i, r-&gt;left, r-&gt;whole_word_chars_left,</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L557'>r</a>                 557 src/editor/syntax.c                                                    r-&gt;whole_word_chars_right, r-&gt;line_start_left);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L563'>r</a>                 563 src/editor/syntax.c                         if (!r-&gt;between_delimiters &amp;&amp; _rule.keyword == 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L580'>r</a>                 580 src/editor/syntax.c         r = CONTEXT_RULE (g_ptr_array_index (edit-&gt;rules, _rule.context));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L581'>r</a>                 581 src/editor/syntax.c         p = r-&gt;keyword_first_chars;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L589'>r</a>                 589 src/editor/syntax.c             count = p - r-&gt;keyword_first_chars;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L590'>r</a>                 590 src/editor/syntax.c             k = SYNTAX_KEYWORD (g_ptr_array_index (r-&gt;keyword, count));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L673'>r</a>                 673 src/editor/syntax.c     context_rule_t *r;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L675'>r</a>                 675 src/editor/syntax.c     r = CONTEXT_RULE (g_ptr_array_index (edit-&gt;rules, rule-&gt;context));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L676'>r</a>                 676 src/editor/syntax.c     k = SYNTAX_KEYWORD (g_ptr_array_index (r-&gt;keyword, rule-&gt;keyword));</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L692'>r</a>                 692 src/editor/syntax.c     size_t r = 0;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L708'>r</a>                 708 src/editor/syntax.c                 r = 0;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L712'>r</a>                 712 src/editor/syntax.c         r++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L721'>r</a>                 721 src/editor/syntax.c                 r++;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L729'>r</a>                 729 src/editor/syntax.c     if (r != 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L734'>r</a>                 734 src/editor/syntax.c     return r;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L742'>r</a>                 742 src/editor/syntax.c     char *r, *p;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L744'>r</a>                 744 src/editor/syntax.c     p = r = s;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L785'>r</a>                 785 src/editor/syntax.c                 return r;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L805'>r</a>                 805 src/editor/syntax.c     return r;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1532'>r</a>                1532 src/editor/syntax.c     int r;</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1558'>r</a>                1558 src/editor/syntax.c         r = edit_read_syntax_file (edit, pnames, f, vfs_path_as_str (edit-&gt;filename_vpath),</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1562'>r</a>                1562 src/editor/syntax.c         r = edit_read_syntax_file (NULL, pnames, f, NULL, "", NULL);</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1563'>r</a>                1563 src/editor/syntax.c     if (r == -1)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1568'>r</a>                1568 src/editor/syntax.c     else if (r != 0)</span>
+<span class='curline'><a href='../S/src--editor--syntax.c.html#L1572'>r</a>                1572 src/editor/syntax.c                  error_file_name != NULL ? error_file_name : f, r);</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L186'>r</a>                 186 src/filemanager/boxes.c         WRect r = w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L188'>r</a>                 188 src/filemanager/boxes.c         r.y = wd-&gt;y + (wd-&gt;lines - r.lines) / 2;</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L189'>r</a>                 189 src/filemanager/boxes.c         r.x = wd-&gt;x + wd-&gt;cols / 2;</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L191'>r</a>                 191 src/filemanager/boxes.c         return dlg_default_callback (w, NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L337'>r</a>                 337 src/filemanager/boxes.c                 WRadio *r;</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L339'>r</a>                 339 src/filemanager/boxes.c                 r = RADIO (widget_find_by_id (w, panel_list_formats_id));</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L341'>r</a>                 341 src/filemanager/boxes.c                 input_assign_text (in, status_format[r-&gt;sel]);</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L365'>r</a>                 365 src/filemanager/boxes.c         WRect r = w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L368'>r</a>                 368 src/filemanager/boxes.c         r.lines = LINES - 9;</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L369'>r</a>                 369 src/filemanager/boxes.c         r.cols = COLS - 20;</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L370'>r</a>                 370 src/filemanager/boxes.c         dlg_default_callback (w, NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L521'>r</a>                 521 src/filemanager/boxes.c         WRect r = { -1, -1, 0, 40 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L524'>r</a>                 524 src/filemanager/boxes.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L609'>r</a>                 609 src/filemanager/boxes.c         WRect r = { -1, -1, 0, 60 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L612'>r</a>                 612 src/filemanager/boxes.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L677'>r</a>                 677 src/filemanager/boxes.c         WRect r = { -1, -1, 0, 54 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L680'>r</a>                 680 src/filemanager/boxes.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L761'>r</a>                 761 src/filemanager/boxes.c         WRect r = { -1, -1, 0, 60 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L764'>r</a>                 764 src/filemanager/boxes.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L843'>r</a>                 843 src/filemanager/boxes.c         WRect r = { -1, -1, 0, 48 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L846'>r</a>                 846 src/filemanager/boxes.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L938'>r</a>                 938 src/filemanager/boxes.c         WRect r = { -1, -1, 0, 40 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L941'>r</a>                 941 src/filemanager/boxes.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L980'>r</a>                 980 src/filemanager/boxes.c     WRect r = { -1, -1, 0, 46 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L983'>r</a>                 983 src/filemanager/boxes.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1001'>r</a>                1001 src/filemanager/boxes.c     WRect r;</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1016'>r</a>                1016 src/filemanager/boxes.c     rect_init (&amp;r, 2, 2, wd-&gt;rect.lines - 6, wd-&gt;rect.cols - 5);</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1017'>r</a>                1017 src/filemanager/boxes.c     mytree = tree_new (&amp;r, FALSE);</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1086'>r</a>                1086 src/filemanager/boxes.c         WRect r = { -1, -1, 0, 56 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1089'>r</a>                1089 src/filemanager/boxes.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1147'>r</a>                1147 src/filemanager/boxes.c     WRect r = { w-&gt;rect.y + w-&gt;rect.lines - 6, w-&gt;rect.x, 0, w-&gt;rect.cols };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1150'>r</a>                1150 src/filemanager/boxes.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1179'>r</a>                1179 src/filemanager/boxes.c     WRect r = { -1, -1, 0, 64 };</span>
+<span class='curline'><a href='../S/src--filemanager--boxes.c.html#L1182'>r</a>                1182 src/filemanager/boxes.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L358'>r</a>                 358 src/filemanager/chattr.c     WRect r = { y, x, 2, 1 };</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L363'>r</a>                 363 src/filemanager/chattr.c     r.cols = MAX (width, (int) check_attr_num);</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L366'>r</a>                 366 src/filemanager/chattr.c     widget_init (WIDGET (fat), &amp;r, fileattrtext_callback, NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L873'>r</a>                 873 src/filemanager/chattr.c chattrboxes_new (const WRect *r)</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L883'>r</a>                 883 src/filemanager/chattr.c     group_init (cbg, r, chattrboxes_callback, chattrboxes_mouse_callback);</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L889'>r</a>                 889 src/filemanager/chattr.c     for (i = 0; i &lt; r-&gt;lines; i++)</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L961'>r</a>                 961 src/filemanager/chattr.c     WRect r;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L997'>r</a>                 997 src/filemanager/chattr.c         r = dw-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1000'>r</a>                1000 src/filemanager/chattr.c         r.cols = cols + wx * 2;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1001'>r</a>                1001 src/filemanager/chattr.c         r.lines = lines;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1002'>r</a>                1002 src/filemanager/chattr.c         widget_set_size_rect (dw, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1006'>r</a>                1006 src/filemanager/chattr.c     rect_init (&amp;r, y++, wx, checkboxes_lines &gt; 0 ? checkboxes_lines : 1, cols);</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1007'>r</a>                1007 src/filemanager/chattr.c     cb = chattrboxes_new (&amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1039'>r</a>                1039 src/filemanager/chattr.c         r = dw-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1040'>r</a>                1040 src/filemanager/chattr.c         r.lines = lines;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1041'>r</a>                1041 src/filemanager/chattr.c         r.cols = cols;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1042'>r</a>                1042 src/filemanager/chattr.c         widget_set_size_rect (dw, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1054'>r</a>                1054 src/filemanager/chattr.c         r = b-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1055'>r</a>                1055 src/filemanager/chattr.c         r.x = mid - r.cols;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1056'>r</a>                1056 src/filemanager/chattr.c         widget_set_size_rect (b, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1059'>r</a>                1059 src/filemanager/chattr.c         r = b-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1060'>r</a>                1060 src/filemanager/chattr.c         r.x = mid + 1;</span>
+<span class='curline'><a href='../S/src--filemanager--chattr.c.html#L1061'>r</a>                1061 src/filemanager/chattr.c         widget_set_size_rect (b, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L380'>r</a>                 380 src/filemanager/dir.c         int r;</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L387'>r</a>                 387 src/filemanager/dir.c         r = str_key_collate (a-&gt;extension_sort_key, b-&gt;extension_sort_key, case_sensitive);</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L388'>r</a>                 388 src/filemanager/dir.c         if (r != 0)</span>
+<span class='curline'><a href='../S/src--filemanager--dir.c.html#L389'>r</a>                 389 src/filemanager/dir.c             return r * reverse;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L201'>r</a>                 201 src/filemanager/file.c     WRect r;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L210'>r</a>                 210 src/filemanager/file.c         r = dsm-&gt;abort_button-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L211'>r</a>                 211 src/filemanager/file.c         r.y = y;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L212'>r</a>                 212 src/filemanager/file.c         r.x = x;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L213'>r</a>                 213 src/filemanager/file.c         widget_set_size_rect (dsm-&gt;abort_button, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L222'>r</a>                 222 src/filemanager/file.c         r = dsm-&gt;abort_button-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L223'>r</a>                 223 src/filemanager/file.c         r.y = y;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L224'>r</a>                 224 src/filemanager/file.c         r.x = x;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L225'>r</a>                 225 src/filemanager/file.c         widget_set_size_rect (dsm-&gt;abort_button, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L227'>r</a>                 227 src/filemanager/file.c         r = dsm-&gt;skip_button-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L228'>r</a>                 228 src/filemanager/file.c         r.y = y;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L229'>r</a>                 229 src/filemanager/file.c         r.x = x;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L230'>r</a>                 230 src/filemanager/file.c         widget_set_size_rect (dsm-&gt;skip_button, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L541'>r</a>                 541 src/filemanager/file.c         const char *r;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L543'>r</a>                 543 src/filemanager/file.c         r = strrchr (src_path, PATH_SEP);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L544'>r</a>                 544 src/filemanager/file.c         if (r != NULL)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L550'>r</a>                 550 src/filemanager/file.c             slen = r - src_path + 1;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3412'>r</a>                3412 src/filemanager/file.c     WRect r = wd-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3438'>r</a>                3438 src/filemanager/file.c     r.lines = 8;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3439'>r</a>                3439 src/filemanager/file.c     r.cols = ui_width;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3440'>r</a>                3440 src/filemanager/file.c     widget_set_size_rect (wd, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3451'>r</a>                3451 src/filemanager/file.c     WRect r = wd-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3458'>r</a>                3458 src/filemanager/file.c     if (WIDGET (dsm-&gt;count_size)-&gt;rect.cols + 6 &gt; r.cols)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3460'>r</a>                3460 src/filemanager/file.c         r.cols = WIDGET (dsm-&gt;count_size)-&gt;rect.cols + 6;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3461'>r</a>                3461 src/filemanager/file.c         widget_set_size_rect (wd, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L870'>r</a>                 870 src/filemanager/filegui.c     WRect r;</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L992'>r</a>                 992 src/filemanager/filegui.c     r = w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L993'>r</a>                 993 src/filemanager/filegui.c     r.lines = y + 3;</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L994'>r</a>                 994 src/filemanager/filegui.c     r.cols = MAX (COLS * 2 / 3, buttons_width + 6);</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L995'>r</a>                 995 src/filemanager/filegui.c     widget_set_size_rect (w, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1414'>r</a>                1414 src/filemanager/filegui.c         WRect r = { -1, -1, 0, fmd_xlen };</span>
+<span class='curline'><a href='../S/src--filemanager--filegui.c.html#L1417'>r</a>                1417 src/filemanager/filegui.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L228'>r</a>                 228 src/filemanager/find.c     size_t r = 0, w = 0;  // read and write iterators</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L237'>r</a>                 237 src/filemanager/find.c     for (; find_ignore_dirs[r] != NULL; r++)</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L239'>r</a>                 239 src/filemanager/find.c         if (find_ignore_dirs[r][0] == '\0')</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L242'>r</a>                 242 src/filemanager/find.c             MC_PTR_FREE (find_ignore_dirs[r]);</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L246'>r</a>                 246 src/filemanager/find.c         if (r != w)</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L249'>r</a>                 249 src/filemanager/find.c             find_ignore_dirs[w] = find_ignore_dirs[r];</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L250'>r</a>                 250 src/filemanager/find.c             find_ignore_dirs[r] = NULL;</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L408'>r</a>                 408 src/filemanager/find.c find_check_regexp (const char *r)</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L413'>r</a>                 413 src/filemanager/find.c     search = mc_search_new (r, NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L1521'>r</a>                1521 src/filemanager/find.c     WRect r = w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L1523'>r</a>                1523 src/filemanager/find.c     r.lines = LINES - 4;</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L1524'>r</a>                1524 src/filemanager/find.c     r.cols = COLS - 16;</span>
+<span class='curline'><a href='../S/src--filemanager--find.c.html#L1525'>r</a>                1525 src/filemanager/find.c     dlg_default_callback (w, NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--hotlist.c.html#L606'>r</a>                 606 src/filemanager/hotlist.c         WRect r = w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--hotlist.c.html#L608'>r</a>                 608 src/filemanager/hotlist.c         r.lines = LINES - (h == hotlist_dlg ? 2 : 6);</span>
+<span class='curline'><a href='../S/src--filemanager--hotlist.c.html#L609'>r</a>                 609 src/filemanager/hotlist.c         r.cols = COLS - 6;</span>
+<span class='curline'><a href='../S/src--filemanager--hotlist.c.html#L611'>r</a>                 611 src/filemanager/hotlist.c         return dlg_default_callback (w, NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--hotlist.c.html#L1010'>r</a>                1010 src/filemanager/hotlist.c     WRect r = { -1, -1, 0, 64 };</span>
+<span class='curline'><a href='../S/src--filemanager--hotlist.c.html#L1013'>r</a>                1013 src/filemanager/hotlist.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--hotlist.c.html#L1072'>r</a>                1072 src/filemanager/hotlist.c     WRect r = { -1, -1, 0, 64 };</span>
+<span class='curline'><a href='../S/src--filemanager--hotlist.c.html#L1075'>r</a>                1075 src/filemanager/hotlist.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--info.c.html#L368'>r</a>                 368 src/filemanager/info.c info_new (const WRect *r)</span>
+<span class='curline'><a href='../S/src--filemanager--info.c.html#L375'>r</a>                 375 src/filemanager/info.c     widget_init (w, r, info_callback, NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--info.h.html#L21'>r</a>                  21 src/filemanager/info.h WInfo *info_new (const WRect *r);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L633'>r</a>                 633 src/filemanager/layout.c restore_into_right_dir_panel (int idx, gboolean last_was_panel, const WRect *r)</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L645'>r</a>                 645 src/filemanager/layout.c         new_widget = panel_sized_with_dir_new (p_name, r, saved_dir_vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L649'>r</a>                 649 src/filemanager/layout.c         new_widget = panel_sized_new (p_name, r);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L804'>r</a>                 804 src/filemanager/layout.c     const WRect *r = &amp;CONST_WIDGET (mw)-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L816'>r</a>                 816 src/filemanager/layout.c     height = r-&gt;lines - (menubar_visible ? 1 : 0) - (mc_global.message_visible ? 1 : 0)</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L835'>r</a>                 835 src/filemanager/layout.c     rb = *r;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L841'>r</a>                 841 src/filemanager/layout.c     start_y = r-&gt;y + (menubar_visible ? 1 : 0);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L850'>r</a>                 850 src/filemanager/layout.c         widget_set_size (panels[0].widget, start_y, r-&gt;x, panels_layout.top_panel_size,</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L852'>r</a>                 852 src/filemanager/layout.c         widget_set_size (panels[1].widget, start_y + panels_layout.top_panel_size, r-&gt;x,</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L857'>r</a>                 857 src/filemanager/layout.c         widget_set_size (panels[0].widget, start_y, r-&gt;x, height, panels[0].widget-&gt;rect.cols);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L862'>r</a>                 862 src/filemanager/layout.c     widget_set_size (WIDGET (the_hint), height + start_y, r-&gt;x, 1, r-&gt;cols);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L870'>r</a>                 870 src/filemanager/layout.c         end_line = r-&gt;lines - (mc_global.keybar_visible ? 1 : 0) - 1;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L889'>r</a>                 889 src/filemanager/layout.c     rb = *r;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L890'>r</a>                 890 src/filemanager/layout.c     rb.y = r-&gt;lines - 1;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L964'>r</a>                 964 src/filemanager/layout.c     const WRect *r = &amp;mw-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L988'>r</a>                 988 src/filemanager/layout.c     if (r-&gt;cols &gt; 8 &amp;&amp; prompt_width &gt; r-&gt;cols - 8)</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L992'>r</a>                 992 src/filemanager/layout.c         prompt_width = r-&gt;cols - 8;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L997'>r</a>                 997 src/filemanager/layout.c     y = r-&gt;lines - 1 - (mc_global.keybar_visible ? 1 : 0);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L999'>r</a>                 999 src/filemanager/layout.c     widget_set_size (WIDGET (the_prompt), y, r-&gt;x, 1, prompt_width);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1001'>r</a>                1001 src/filemanager/layout.c     widget_set_size (WIDGET (cmdline), y, r-&gt;x + prompt_width, 1, r-&gt;cols - prompt_width);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1097'>r</a>                1097 src/filemanager/layout.c     WRect r = { 0, 0, 0, 0 };</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1122'>r</a>                1122 src/filemanager/layout.c         r = w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1132'>r</a>                1132 src/filemanager/layout.c                 r.cols = md_cols;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1133'>r</a>                1133 src/filemanager/layout.c                 r.x = 0;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1137'>r</a>                1137 src/filemanager/layout.c                 r.cols = md_cols - panels_layout.left_panel_size;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1139'>r</a>                1139 src/filemanager/layout.c                     r.x = panels_layout.left_panel_size;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1157'>r</a>                1157 src/filemanager/layout.c         new_widget = restore_into_right_dir_panel (num, last_was_panel, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1162'>r</a>                1162 src/filemanager/layout.c         new_widget = WIDGET (info_new (&amp;r));</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1166'>r</a>                1166 src/filemanager/layout.c         new_widget = WIDGET (tree_new (&amp;r, TRUE));</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1174'>r</a>                1174 src/filemanager/layout.c         new_widget = WIDGET (mcview_new (&amp;r, TRUE));</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1306'>r</a>                1306 src/filemanager/layout.c         WRect r;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1330'>r</a>                1330 src/filemanager/layout.c         r = panels[0].widget-&gt;rect;</span>
+<span class='curline'><a href='../S/src--filemanager--layout.c.html#L1332'>r</a>                1332 src/filemanager/layout.c         panels[1].widget-&gt;rect = r;</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L310'>r</a>                 310 src/filemanager/panel.c     int i, r, l;</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L318'>r</a>                 318 src/filemanager/panel.c         r = l + 1;</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L324'>r</a>                 324 src/filemanager/panel.c         r = l + 3;</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L329'>r</a>                 329 src/filemanager/panel.c         if (i &gt;= l &amp;&amp; i &lt; r)</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L2557'>r</a>                2557 src/filemanager/panel.c     WRect r = { -1, -1, 0, 50 };</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L2560'>r</a>                2560 src/filemanager/panel.c         .rect = r,</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4484'>r</a>                4484 src/filemanager/panel.c panel_sized_empty_new (const char *panel_name, const WRect *r)</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4493'>r</a>                4493 src/filemanager/panel.c     widget_init (w, r, panel_callback, panel_mouse_callback);</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4571'>r</a>                4571 src/filemanager/panel.c panel_sized_with_dir_new (const char *panel_name, const WRect *r, const vfs_path_t *vpath)</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4577'>r</a>                4577 src/filemanager/panel.c     panel = panel_sized_empty_new (panel_name, r);</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4853'>r</a>                4853 src/filemanager/panel.c     gboolean r;</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4855'>r</a>                4855 src/filemanager/panel.c     r = panel_do_cd_int (panel, new_dir_vpath, cd_type);</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4856'>r</a>                4856 src/filemanager/panel.c     if (r)</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4858'>r</a>                4858 src/filemanager/panel.c     return r;</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4990'>r</a>                4990 src/filemanager/panel.c     const int r = select_charset (-1, -1, panel-&gt;codepage);</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4992'>r</a>                4992 src/filemanager/panel.c     if (r == SELECT_CHARSET_CANCEL)</span>
+<span class='curline'><a href='../S/src--filemanager--panel.c.html#L4995'>r</a>                4995 src/filemanager/panel.c     panel-&gt;codepage = r;</span>
+<span class='curline'><a href='../S/src--filemanager--panel.h.html#L151'>r</a>                 151 src/filemanager/panel.h WPanel *panel_sized_empty_new (const char *panel_name, const WRect *r);</span>
+<span class='curline'><a href='../S/src--filemanager--panel.h.html#L152'>r</a>                 152 src/filemanager/panel.h WPanel *panel_sized_with_dir_new (const char *panel_name, const WRect *r, const vfs_path_t *vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--panel.h.html#L217'>r</a>                 217 src/filemanager/panel.h     WRect r = { 0, 0, 1, 1 };</span>
+<span class='curline'><a href='../S/src--filemanager--panel.h.html#L219'>r</a>                 219 src/filemanager/panel.h     return panel_sized_empty_new (panel_name, &amp;r);</span>
+<span class='curline'><a href='../S/src--filemanager--panel.h.html#L236'>r</a>                 236 src/filemanager/panel.h     WRect r = { 0, 0, 1, 1 };</span>
+<span class='curline'><a href='../S/src--filemanager--panel.h.html#L238'>r</a>                 238 src/filemanager/panel.h     return panel_sized_with_dir_new (panel_name, &amp;r, vpath);</span>
+<span class='curline'><a href='../S/src--filemanager--panel.h.html#L267'>r</a>                 267 src/filemanager/panel.h panel_sized_new (const char *panel_name, const WRect *r)</span>
+<span class='curline'><a href='../S/src--filemanager--panel.h.html#L269'>r</a>                 269 src/filemanager/panel.h     return panel_sized_with_dir_new (panel_name, r, NULL);</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L1278'>r</a>                1278 src/filemanager/tree.c tree_new (const WRect *r, gboolean is_panel)</span>
+<span class='curline'><a href='../S/src--filemanager--tree.c.html#L1286'>r</a>                1286 src/filemanager/tree.c     widget_init (w, r, tree_callback, tree_mouse_callback);</span>
+<span class='curline'><a href='../S/src--filemanager--tree.h.html#L25'>r</a>                  25 src/filemanager/tree.h WTree *tree_new (const WRect *r, gboolean is_panel);</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L484'>r</a>                 484 src/filemanager/treestore.c         tree_store_remove_fn r = (tree_store_remove_fn) p-&gt;hook_fn;</span>
+<span class='curline'><a href='../S/src--filemanager--treestore.c.html#L486'>r</a>                 486 src/filemanager/treestore.c         r (entry, p-&gt;hook_data);</span>
+<span class='curline'><a href='../S/src--help.c.html#L950'>r</a>                 950 src/help.c         WRect r = w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--help.c.html#L953'>r</a>                 953 src/help.c         r.lines = help_lines + 4;</span>
+<span class='curline'><a href='../S/src--help.c.html#L954'>r</a>                 954 src/help.c         r.cols = HELP_WINDOW_WIDTH + 4;</span>
+<span class='curline'><a href='../S/src--help.c.html#L955'>r</a>                 955 src/help.c         dlg_default_callback (w, NULL, MSG_RESIZE, 0, &amp;r);</span>
+<span class='curline'><a href='../S/src--help.c.html#L1115'>r</a>                1115 src/help.c     mousedispatch_new (const WRect *r)</span>
+<span class='curline'><a href='../S/src--help.c.html#L1120'>r</a>                1120 src/help.c         widget_init (w, r, md_callback, help_mouse_callback);</span>
+<span class='curline'><a href='../S/src--help.c.html#L1142'>r</a>                1142 src/help.c         WRect r = { 1, 1, 1, 1 };</span>
+<span class='curline'><a href='../S/src--help.c.html#L1212'>r</a>                1212 src/help.c         r.lines = help_lines;</span>
+<span class='curline'><a href='../S/src--help.c.html#L1213'>r</a>                1213 src/help.c         r.cols = HELP_WINDOW_WIDTH - 2;</span>
+<span class='curline'><a href='../S/src--help.c.html#L1214'>r</a>                1214 src/help.c         md = mousedispatch_new (&amp;r);</span>
+<span class='curline'><a href='../S/src--selcodepage.c.html#L133'>r</a>                 133 src/selcodepage.c     const int r = select_charset (-1, -1, default_source_codepage);</span>
+<span class='curline'><a href='../S/src--selcodepage.c.html#L135'>r</a>                 135 src/selcodepage.c     if (r == SELECT_CHARSET_CANCEL)</span>
+<span class='curline'><a href='../S/src--selcodepage.c.html#L138'>r</a>                 138 src/selcodepage.c     default_source_codepage = r;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1733'>r</a>                1733 src/vfs/ftpfs/ftpfs.c                 int r;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1735'>r</a>                1735 src/vfs/ftpfs/ftpfs.c                 r = strcmp (fe-&gt;name, filename);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1737'>r</a>                1737 src/vfs/ftpfs/ftpfs.c                 if (r == 0)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L1755'>r</a>                1755 src/vfs/ftpfs/ftpfs.c                 if (r &lt; 0)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2120'>r</a>                2120 src/vfs/ftpfs/ftpfs.c     int r;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2131'>r</a>                2131 src/vfs/ftpfs/ftpfs.c     r = ftpfs_command (me, super, WAIT_REPLY, cmd, p);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2135'>r</a>                2135 src/vfs/ftpfs/ftpfs.c         r = COMPLETE;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2136'>r</a>                2136 src/vfs/ftpfs/ftpfs.c     if (r != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2243'>r</a>                2243 src/vfs/ftpfs/ftpfs.c     int r;</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2250'>r</a>                2250 src/vfs/ftpfs/ftpfs.c     r = ftpfs_command (me, super, WAIT_REPLY, "CWD /%s", p);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2253'>r</a>                2253 src/vfs/ftpfs/ftpfs.c     if (r != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2261'>r</a>                2261 src/vfs/ftpfs/ftpfs.c     return r;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L309'>r</a>                 309 src/vfs/shell/shell.c     int r;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L315'>r</a>                 315 src/vfs/shell/shell.c     r = shell_command (me, super, wait_reply, command-&gt;str, command-&gt;len);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L318'>r</a>                 318 src/vfs/shell/shell.c     return r;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L327'>r</a>                 327 src/vfs/shell/shell.c     int r;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L331'>r</a>                 331 src/vfs/shell/shell.c     r = shell_command_va (me, super, wait_reply, scr, vars, ap);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L334'>r</a>                 334 src/vfs/shell/shell.c     return r;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L343'>r</a>                 343 src/vfs/shell/shell.c     int r;</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L347'>r</a>                 347 src/vfs/shell/shell.c     r = shell_command_va (me, super, WAIT_REPLY, scr, vars, ap);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L351'>r</a>                 351 src/vfs/shell/shell.c     if (r != COMPLETE)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar-internal.c.html#L95'>r</a>                  95 src/vfs/tar/tar-internal.c             ssize_t r;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar-internal.c.html#L97'>r</a>                  97 src/vfs/tar/tar-internal.c             r = mc_read (archive-&gt;fd, more, left);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar-internal.c.html#L98'>r</a>                  98 src/vfs/tar/tar-internal.c             if (r == -1)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar-internal.c.html#L101'>r</a>                 101 src/vfs/tar/tar-internal.c             status = (size_t) r;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar-xheader.c.html#L257'>r</a>                 257 src/vfs/tar/tar-xheader.c     struct timespec r;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar-xheader.c.html#L304'>r</a>                 304 src/vfs/tar/tar-xheader.c     r.tv_sec = s;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar-xheader.c.html#L305'>r</a>                 305 src/vfs/tar/tar-xheader.c     r.tv_nsec = ns;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar-xheader.c.html#L306'>r</a>                 306 src/vfs/tar/tar-xheader.c     return r;</span>
+<span class='curline'><a href='../S/src--viewer--actions_cmd.c.html#L603'>r</a>                 603 src/viewer/actions_cmd.c     int r;</span>
+<span class='curline'><a href='../S/src--viewer--actions_cmd.c.html#L611'>r</a>                 611 src/viewer/actions_cmd.c         r = query_dialog (_ ("Quit"), _ ("File was modified. Save with exit?"), D_NORMAL, 3,</span>
+<span class='curline'><a href='../S/src--viewer--actions_cmd.c.html#L619'>r</a>                 619 src/viewer/actions_cmd.c         r = query_dialog (_ ("Quit"), text, D_NORMAL, 2, _ ("&amp;Yes"), _ ("&amp;No"));</span>
+<span class='curline'><a href='../S/src--viewer--actions_cmd.c.html#L623'>r</a>                 623 src/viewer/actions_cmd.c         if (r == -1)</span>
+<span class='curline'><a href='../S/src--viewer--actions_cmd.c.html#L624'>r</a>                 624 src/viewer/actions_cmd.c             r = 1;</span>
+<span class='curline'><a href='../S/src--viewer--actions_cmd.c.html#L627'>r</a>                 627 src/viewer/actions_cmd.c     switch (r)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L554'>r</a>                 554 src/viewer/ascii.c     const WRect *r = &amp;view-&gt;data_area;</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L564'>r</a>                 564 src/viewer/ascii.c     if (!view-&gt;mode_flags.wrap &amp;&amp; (row &lt; 0 || row &gt;= r-&gt;lines) &amp;&amp; linewidth == NULL)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L634'>r</a>                 634 src/viewer/ascii.c         if (view-&gt;mode_flags.wrap &amp;&amp; (off_t) col + charwidth &gt; dpy_text_column + (off_t) r-&gt;cols</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L646'>r</a>                 646 src/viewer/ascii.c         if (row &gt;= 0 &amp;&amp; row &lt; r-&gt;lines)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L649'>r</a>                 649 src/viewer/ascii.c                 &amp;&amp; (off_t) col + charwidth &lt;= dpy_text_column + (off_t) r-&gt;cols)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L653'>r</a>                 653 src/viewer/ascii.c                 widget_gotoyx (view, r-&gt;y + row, r-&gt;x + ((off_t) col - dpy_text_column));</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L679'>r</a>                 679 src/viewer/ascii.c                      i &lt; (off_t) col + charwidth &amp;&amp; i &lt; dpy_text_column + (off_t) r-&gt;cols; i++)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L681'>r</a>                 681 src/viewer/ascii.c                     widget_gotoyx (view, r-&gt;y + row, r-&gt;x + (i - dpy_text_column));</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L685'>r</a>                 685 src/viewer/ascii.c             else if ((off_t) col &lt; dpy_text_column + (off_t) r-&gt;cols</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L686'>r</a>                 686 src/viewer/ascii.c                      &amp;&amp; (off_t) col + charwidth &gt; dpy_text_column + (off_t) r-&gt;cols)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L692'>r</a>                 692 src/viewer/ascii.c                 for (i = col; i &lt; dpy_text_column + (off_t) r-&gt;cols; i++)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L694'>r</a>                 694 src/viewer/ascii.c                     widget_gotoyx (view, r-&gt;y + row, r-&gt;x + (i - dpy_text_column));</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L703'>r</a>                 703 src/viewer/ascii.c         if (!view-&gt;mode_flags.wrap &amp;&amp; (off_t) col &gt;= dpy_text_column + (off_t) r-&gt;cols</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L826'>r</a>                 826 src/viewer/ascii.c     const WRect *r = &amp;view-&gt;data_area;</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L848'>r</a>                 848 src/viewer/ascii.c         for (row = 0; row &lt; r-&gt;lines; row += n)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L860'>r</a>                 860 src/viewer/ascii.c                     mcview_ascii_move_up (view, r-&gt;lines - row);</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L874'>r</a>                 874 src/viewer/ascii.c         while (row &lt; r-&gt;lines)</span>
+<span class='curline'><a href='../S/src--viewer--ascii.c.html#L876'>r</a>                 876 src/viewer/ascii.c             widget_gotoyx (view, r-&gt;y + row, r-&gt;x);</span>
+<span class='curline'><a href='../S/src--viewer--dialogs.c.html#L97'>r</a>                  97 src/viewer/dialogs.c         WRect r = { -1, -1, 0, 58 };</span>
+<span class='curline'><a href='../S/src--viewer--dialogs.c.html#L100'>r</a>                 100 src/viewer/dialogs.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--viewer--dialogs.c.html#L175'>r</a>                 175 src/viewer/dialogs.c         WRect r = { -1, -1, 0, 40 };</span>
+<span class='curline'><a href='../S/src--viewer--dialogs.c.html#L178'>r</a>                 178 src/viewer/dialogs.c             .rect = r,</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L148'>r</a>                 148 src/viewer/display.c     const WRect *r = &amp;view-&gt;status_area;</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L151'>r</a>                 151 src/viewer/display.c     if (r-&gt;lines &lt; 1)</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L155'>r</a>                 155 src/viewer/display.c     tty_draw_hline (WIDGET (view)-&gt;rect.y + r-&gt;y, WIDGET (view)-&gt;rect.x + r-&gt;x, ' ', r-&gt;cols);</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L161'>r</a>                 161 src/viewer/display.c     if (r-&gt;cols &gt; 40)</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L163'>r</a>                 163 src/viewer/display.c         widget_gotoyx (view, r-&gt;y, r-&gt;cols - 32);</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L178'>r</a>                 178 src/viewer/display.c     widget_gotoyx (view, r-&gt;y, r-&gt;x);</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L179'>r</a>                 179 src/viewer/display.c     if (r-&gt;cols &gt; 40)</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L180'>r</a>                 180 src/viewer/display.c         tty_print_string (str_fit_to_term (file_label, r-&gt;cols - 34, J_LEFT_FIT));</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L182'>r</a>                 182 src/viewer/display.c         tty_print_string (str_fit_to_term (file_label, r-&gt;cols - 5, J_LEFT_FIT));</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L183'>r</a>                 183 src/viewer/display.c     if (r-&gt;cols &gt; 26)</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L342'>r</a>                 342 src/viewer/display.c     const WRect *r = &amp;w-&gt;rect;</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L345'>r</a>                 345 src/viewer/display.c     tty_draw_box (r-&gt;y, r-&gt;x, r-&gt;lines, r-&gt;cols, FALSE);</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L351'>r</a>                 351 src/viewer/display.c     widget_gotoyx (w, 0, (r-&gt;cols - str_term_width1 (title) - 2) / 2);</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L374'>r</a>                 374 src/viewer/display.c     const WRect *r = &amp;view-&gt;ruler_area;</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L382'>r</a>                 382 src/viewer/display.c     if (ruler == RULER_NONE || r-&gt;lines &lt; 1)</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L386'>r</a>                 386 src/viewer/display.c     for (c = 0; c &lt; r-&gt;cols; c++)</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L389'>r</a>                 389 src/viewer/display.c         if (line_row &lt; r-&gt;lines)</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L391'>r</a>                 391 src/viewer/display.c             widget_gotoyx (view, r-&gt;y + line_row, r-&gt;x + c);</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L398'>r</a>                 398 src/viewer/display.c             if (nums_row &lt; r-&gt;lines)</span>
+<span class='curline'><a href='../S/src--viewer--display.c.html#L400'>r</a>                 400 src/viewer/display.c                 widget_gotoyx (view, r-&gt;y + nums_row, r-&gt;x + c - 1);</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L99'>r</a>                  99 src/viewer/hex.c     const WRect *r = &amp;view-&gt;data_area;</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L121'>r</a>                 121 src/viewer/hex.c     if (r-&gt;cols == 80)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L123'>r</a>                 123 src/viewer/hex.c     else if (r-&gt;cols &gt; 80)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L148'>r</a>                 148 src/viewer/hex.c     for (; mcview_get_byte (view, from, NULL) &amp;&amp; row &lt; r-&gt;lines; row++)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L159'>r</a>                 159 src/viewer/hex.c             widget_gotoyx (view, r-&gt;y + row, r-&gt;x);</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L161'>r</a>                 161 src/viewer/hex.c             for (i = 0; col &lt; r-&gt;cols &amp;&amp; hex_buff[i] != '\0'; col++, i++)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L273'>r</a>                 273 src/viewer/hex.c             widget_gotoyx (view, r-&gt;y + row, r-&gt;x + col);</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L274'>r</a>                 274 src/viewer/hex.c             if (col &lt; r-&gt;cols)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L279'>r</a>                 279 src/viewer/hex.c             if (col &lt; r-&gt;cols)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L289'>r</a>                 289 src/viewer/hex.c                 if (col &lt; r-&gt;cols)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L298'>r</a>                 298 src/viewer/hex.c                     if (view-&gt;data_area.cols &gt;= 80 &amp;&amp; col &lt; r-&gt;cols)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L305'>r</a>                 305 src/viewer/hex.c                     if (col &lt; r-&gt;cols)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L341'>r</a>                 341 src/viewer/hex.c             if (text_start + bytes &lt; r-&gt;cols)</span>
+<span class='curline'><a href='../S/src--viewer--hex.c.html#L343'>r</a>                 343 src/viewer/hex.c                 widget_gotoyx (view, r-&gt;y + row, r-&gt;x + text_start + bytes);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L87'>r</a>                  87 src/viewer/mcviewer.c     const WRect *r = &amp;view-&gt;data_area;</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L120'>r</a>                 120 src/viewer/mcviewer.c             if (x &lt; r-&gt;cols * 1 / 4)</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L125'>r</a>                 125 src/viewer/mcviewer.c             else if (x &lt; r-&gt;cols * 3 / 4)</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L143'>r</a>                 143 src/viewer/mcviewer.c             if (y &lt; r-&gt;y + r-&gt;lines * 1 / 3)</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L146'>r</a>                 146 src/viewer/mcviewer.c                     mcview_move_up (view, r-&gt;lines / 2);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L152'>r</a>                 152 src/viewer/mcviewer.c             else if (y &lt; r-&gt;y + r-&gt;lines * 2 / 3)</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L160'>r</a>                 160 src/viewer/mcviewer.c                     mcview_move_down (view, r-&gt;lines / 2);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L199'>r</a>                 199 src/viewer/mcviewer.c mcview_new (const WRect *r, gboolean is_panel)</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L207'>r</a>                 207 src/viewer/mcviewer.c     widget_init (w, r, mcview_callback, mcview_mouse_callback);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L246'>r</a>                 246 src/viewer/mcviewer.c     WRect r;</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L256'>r</a>                 256 src/viewer/mcviewer.c     r = vw-&gt;rect;</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L257'>r</a>                 257 src/viewer/mcviewer.c     r.lines--;</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.c.html#L258'>r</a>                 258 src/viewer/mcviewer.c     lc_mcview = mcview_new (&amp;r, FALSE);</span>
+<span class='curline'><a href='../S/src--viewer--mcviewer.h.html#L42'>r</a>                  42 src/viewer/mcviewer.h extern WView *mcview_new (const WRect *r, gboolean is_panel);</span>
+<span class='curline'><a href='../S/src--viewer--move.c.html#L381'>r</a>                 381 src/viewer/move.c     const WRect *r = &amp;view-&gt;data_area;</span>
+<span class='curline'><a href='../S/src--viewer--move.c.html#L387'>r</a>                 387 src/viewer/move.c     widget_gotoyx (view, r-&gt;y + view-&gt;cursor_row, r-&gt;x + col);</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L101'>r</a>                 101 src/viewer/search.c         WRect r;</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L103'>r</a>                 103 src/viewer/search.c         r = wd-&gt;rect;</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L104'>r</a>                 104 src/viewer/search.c         r.cols = MAX (r.cols, lw-&gt;rect.cols + 6);</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L105'>r</a>                 105 src/viewer/search.c         widget_set_size_rect (wd, &amp;r);</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L106'>r</a>                 106 src/viewer/search.c         r = lw-&gt;rect;</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L107'>r</a>                 107 src/viewer/search.c         r.x = wd-&gt;rect.x + (wd-&gt;rect.cols - r.cols) / 2;</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L108'>r</a>                 108 src/viewer/search.c         widget_set_size_rect (lw, &amp;r);</span>
+<span class='curline'><a href='../S/tests--lib--search--regex_replace_esc_seq.c.html#L41'>r</a>                  41 tests/lib/search/regex_replace_esc_seq.c #define test_helper_handle_esc_seq(pos, r, skip, flag)                                             \</span>
+<span class='curline'><a href='../S/tests--lib--search--regex_replace_esc_seq.c.html#L45'>r</a>                  45 tests/lib/search/regex_replace_esc_seq.c             mc_search_regex__replace_handle_esc_seq (replace_str, pos, &amp;skip_len, &amp;ret), r,        \</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L82'>r</a>                  82 tests/lib/widget/group_init_destroy.c     WRect r;</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L85'>r</a>                  85 tests/lib/widget/group_init_destroy.c     rect_init (&amp;r, 0, 0, 20, 20);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L86'>r</a>                  86 tests/lib/widget/group_init_destroy.c     group_init (g, &amp;r, group_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L89'>r</a>                  89 tests/lib/widget/group_init_destroy.c     rect_init (&amp;r, 0, 0, 10, 10);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L90'>r</a>                  90 tests/lib/widget/group_init_destroy.c     group_init (g0, &amp;r, group_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L94'>r</a>                  94 tests/lib/widget/group_init_destroy.c     rect_init (&amp;r, 0, 0, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L95'>r</a>                  95 tests/lib/widget/group_init_destroy.c     widget_init (w0, &amp;r, widget_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L99'>r</a>                  99 tests/lib/widget/group_init_destroy.c     rect_init (&amp;r, 5, 5, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L100'>r</a>                 100 tests/lib/widget/group_init_destroy.c     widget_init (w0, &amp;r, widget_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L104'>r</a>                 104 tests/lib/widget/group_init_destroy.c     rect_init (&amp;r, 10, 10, 10, 10);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L105'>r</a>                 105 tests/lib/widget/group_init_destroy.c     group_init (g0, &amp;r, group_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L109'>r</a>                 109 tests/lib/widget/group_init_destroy.c     rect_init (&amp;r, 10, 10, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L110'>r</a>                 110 tests/lib/widget/group_init_destroy.c     widget_init (w0, &amp;r, widget_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L114'>r</a>                 114 tests/lib/widget/group_init_destroy.c     rect_init (&amp;r, 15, 15, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L115'>r</a>                 115 tests/lib/widget/group_init_destroy.c     widget_init (w0, &amp;r, widget_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L119'>r</a>                 119 tests/lib/widget/group_init_destroy.c     rect_init (&amp;r, 5, 5, 10, 10);</span>
+<span class='curline'><a href='../S/tests--lib--widget--group_init_destroy.c.html#L120'>r</a>                 120 tests/lib/widget/group_init_destroy.c     widget_init (w0, &amp;r, widget_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L38'>r</a>                  38 tests/lib/widget/widget_find_by_id.c     WRect r;</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L41'>r</a>                  41 tests/lib/widget/widget_find_by_id.c     rect_init (&amp;r, 0, 0, 20, 20);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L42'>r</a>                  42 tests/lib/widget/widget_find_by_id.c     group_init (g, &amp;r, NULL, NULL);  // ID = 0</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L45'>r</a>                  45 tests/lib/widget/widget_find_by_id.c     rect_init (&amp;r, 0, 0, 10, 10);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L46'>r</a>                  46 tests/lib/widget/widget_find_by_id.c     group_init (g0, &amp;r, NULL, NULL);  // ID = 1</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L50'>r</a>                  50 tests/lib/widget/widget_find_by_id.c     rect_init (&amp;r, 0, 0, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L51'>r</a>                  51 tests/lib/widget/widget_find_by_id.c     widget_init (w0, &amp;r, widget_default_callback, NULL);  // ID = 2</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L55'>r</a>                  55 tests/lib/widget/widget_find_by_id.c     rect_init (&amp;r, 5, 5, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L56'>r</a>                  56 tests/lib/widget/widget_find_by_id.c     widget_init (w0, &amp;r, widget_default_callback, NULL);  // ID = 3</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L60'>r</a>                  60 tests/lib/widget/widget_find_by_id.c     rect_init (&amp;r, 10, 10, 10, 10);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L61'>r</a>                  61 tests/lib/widget/widget_find_by_id.c     group_init (g0, &amp;r, NULL, NULL);  // ID = 4</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L65'>r</a>                  65 tests/lib/widget/widget_find_by_id.c     rect_init (&amp;r, 10, 10, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L66'>r</a>                  66 tests/lib/widget/widget_find_by_id.c     widget_init (w0, &amp;r, widget_default_callback, NULL);  // ID = 5</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L70'>r</a>                  70 tests/lib/widget/widget_find_by_id.c     rect_init (&amp;r, 15, 15, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L71'>r</a>                  71 tests/lib/widget/widget_find_by_id.c     widget_init (w0, &amp;r, widget_default_callback, NULL);  // ID = 6</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L75'>r</a>                  75 tests/lib/widget/widget_find_by_id.c     rect_init (&amp;r, 5, 5, 10, 10);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_find_by_id.c.html#L76'>r</a>                  76 tests/lib/widget/widget_find_by_id.c     widget_init (w0, &amp;r, widget_default_callback, NULL);  // ID = 7</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L36'>r</a>                  36 tests/lib/widget/widget_make_global_local.c     WRect r;</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L42'>r</a>                  42 tests/lib/widget/widget_make_global_local.c     rect_init (&amp;r, 20, 20, 40, 40);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L43'>r</a>                  43 tests/lib/widget/widget_make_global_local.c     group_init (g0, &amp;r, NULL, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L47'>r</a>                  47 tests/lib/widget/widget_make_global_local.c     rect_init (&amp;r, 1, 1, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L48'>r</a>                  48 tests/lib/widget/widget_make_global_local.c     widget_init (w0, &amp;r, widget_default_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L53'>r</a>                  53 tests/lib/widget/widget_make_global_local.c     rect_init (&amp;r, 5, 5, 30, 30);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L54'>r</a>                  54 tests/lib/widget/widget_make_global_local.c     group_init (g1, &amp;r, NULL, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L58'>r</a>                  58 tests/lib/widget/widget_make_global_local.c     rect_init (&amp;r, 5, 5, 10, 10);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L59'>r</a>                  59 tests/lib/widget/widget_make_global_local.c     widget_init (w1, &amp;r, widget_default_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L64'>r</a>                  64 tests/lib/widget/widget_make_global_local.c     rect_init (&amp;r, 15, 15, 20, 20);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L65'>r</a>                  65 tests/lib/widget/widget_make_global_local.c     group_init (g2, &amp;r, NULL, NULL);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L70'>r</a>                  70 tests/lib/widget/widget_make_global_local.c     rect_init (&amp;r, 15, 15, 5, 5);</span>
+<span class='curline'><a href='../S/tests--lib--widget--widget_make_global_local.c.html#L71'>r</a>                  71 tests/lib/widget/widget_make_global_local.c     widget_init (w2, &amp;r, widget_default_callback, NULL);</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_complete_word_cmd.c.html#L150'>r</a>                 150 tests/src/editor/edit_complete_word_cmd.c     WRect r;</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_complete_word_cmd.c.html#L168'>r</a>                 168 tests/src/editor/edit_complete_word_cmd.c     rect_init (&amp;r, 0, 0, 24, 80);</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_complete_word_cmd.c.html#L171'>r</a>                 171 tests/src/editor/edit_complete_word_cmd.c     test_edit = edit_init (NULL, &amp;r, &amp;arg);</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_insert_column_of_text.c.html#L68'>r</a>                  68 tests/src/editor/edit_insert_column_of_text.c     WRect r;</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_insert_column_of_text.c.html#L77'>r</a>                  77 tests/src/editor/edit_insert_column_of_text.c     rect_init (&amp;r, 0, 0, 24, 80);</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_insert_column_of_text.c.html#L78'>r</a>                  78 tests/src/editor/edit_insert_column_of_text.c     test_edit = edit_init (NULL, &amp;r, NULL);</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_insert_column_of_text.c.html#L119'>r</a>                 119 tests/src/editor/edit_insert_column_of_text.c     GString *r;</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_insert_column_of_text.c.html#L121'>r</a>                 121 tests/src/editor/edit_insert_column_of_text.c     r = g_string_sized_new (finish - start);</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_insert_column_of_text.c.html#L135'>r</a>                 135 tests/src/editor/edit_insert_column_of_text.c             g_string_append_c (r, (gchar) c);</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_insert_column_of_text.c.html#L138'>r</a>                 138 tests/src/editor/edit_insert_column_of_text.c     return r;</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_replace_cmd.c.html#L241'>r</a>                 241 tests/src/editor/edit_replace_cmd.c     WRect r;</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_replace_cmd.c.html#L250'>r</a>                 250 tests/src/editor/edit_replace_cmd.c     rect_init (&amp;r, 0, 0, 24, 80);</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_replace_cmd.c.html#L251'>r</a>                 251 tests/src/editor/edit_replace_cmd.c     test_edit = edit_init (NULL, &amp;r, NULL);</span>
+</pre>
+</body>
+</html>

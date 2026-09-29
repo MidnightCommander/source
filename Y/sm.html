@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>sm</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L517'>sm</a>                517 lib/widget/wtools.c     status_msg_t *sm;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L519'>sm</a>                519 lib/widget/wtools.c     sm = g_try_new (status_msg_t, 1);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L520'>sm</a>                520 lib/widget/wtools.c     status_msg_init (sm, title, delay, init_cb, update_cb, deinit_cb);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L522'>sm</a>                522 lib/widget/wtools.c     return sm;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L533'>sm</a>                533 lib/widget/wtools.c status_msg_destroy (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L535'>sm</a>                535 lib/widget/wtools.c     status_msg_deinit (sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L536'>sm</a>                536 lib/widget/wtools.c     g_free (sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L552'>sm</a>                552 lib/widget/wtools.c status_msg_init (status_msg_t *sm, const char *title, double delay, status_msg_cb init_cb,</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L562'>sm</a>                562 lib/widget/wtools.c     sm-&gt;dlg = dlg_create (TRUE, 0, 0, 7, MIN (MAX (40, COLS / 2), COLS), WPOS_CENTER, FALSE,</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L564'>sm</a>                564 lib/widget/wtools.c     sm-&gt;start = start;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L565'>sm</a>                565 lib/widget/wtools.c     sm-&gt;delay = (gint64) (delay * G_USEC_PER_SEC);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L566'>sm</a>                566 lib/widget/wtools.c     sm-&gt;block = FALSE;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L568'>sm</a>                568 lib/widget/wtools.c     sm-&gt;init = init_cb;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L569'>sm</a>                569 lib/widget/wtools.c     sm-&gt;update = update_cb;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L570'>sm</a>                570 lib/widget/wtools.c     sm-&gt;deinit = deinit_cb;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L572'>sm</a>                572 lib/widget/wtools.c     if (sm-&gt;init != NULL)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L573'>sm</a>                573 lib/widget/wtools.c         sm-&gt;init (sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L575'>sm</a>                575 lib/widget/wtools.c     if (mc_time_elapsed (&amp;start, sm-&gt;delay))</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L578'>sm</a>                578 lib/widget/wtools.c         dlg_init (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L590'>sm</a>                590 lib/widget/wtools.c status_msg_deinit (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L592'>sm</a>                592 lib/widget/wtools.c     if (sm == NULL)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L595'>sm</a>                595 lib/widget/wtools.c     if (sm-&gt;deinit != NULL)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L596'>sm</a>                596 lib/widget/wtools.c         sm-&gt;deinit (sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L599'>sm</a>                599 lib/widget/wtools.c     dlg_run_done (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L600'>sm</a>                600 lib/widget/wtools.c     widget_destroy (WIDGET (sm-&gt;dlg));</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L613'>sm</a>                613 lib/widget/wtools.c status_msg_common_update (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L618'>sm</a>                618 lib/widget/wtools.c     if (sm == NULL)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L622'>sm</a>                622 lib/widget/wtools.c     if (sm-&gt;dlg == NULL)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L625'>sm</a>                625 lib/widget/wtools.c     if (widget_get_state (WIDGET (sm-&gt;dlg), WST_CONSTRUCT))</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L630'>sm</a>                630 lib/widget/wtools.c         gint64 start = sm-&gt;start;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L632'>sm</a>                632 lib/widget/wtools.c         if (mc_time_elapsed (&amp;start, sm-&gt;delay))</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L633'>sm</a>                633 lib/widget/wtools.c             dlg_init (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L639'>sm</a>                639 lib/widget/wtools.c     c = tty_get_event (&amp;event, FALSE, sm-&gt;block);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L645'>sm</a>                645 lib/widget/wtools.c     sm-&gt;dlg-&gt;ret_value = B_ENTER;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L646'>sm</a>                646 lib/widget/wtools.c     dlg_process_event (sm-&gt;dlg, c, &amp;event);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L648'>sm</a>                648 lib/widget/wtools.c     return sm-&gt;dlg-&gt;ret_value;</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L659'>sm</a>                659 lib/widget/wtools.c simple_status_msg_init_cb (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L661'>sm</a>                661 lib/widget/wtools.c     simple_status_msg_t *ssm = SIMPLE_STATUS_MSG (sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L662'>sm</a>                662 lib/widget/wtools.c     Widget *wd = WIDGET (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.c.html#L663'>sm</a>                663 lib/widget/wtools.c     WGroup *wg = GROUP (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.h.html#L22'>sm</a>                 22 lib/widget/wtools.h typedef void (*status_msg_cb) (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.h.html#L23'>sm</a>                 23 lib/widget/wtools.h typedef int (*status_msg_update_cb) (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.h.html#L86'>sm</a>                 86 lib/widget/wtools.h void status_msg_destroy (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.h.html#L87'>sm</a>                 87 lib/widget/wtools.h MC_MOCKABLE void status_msg_init (status_msg_t *sm, const char *title, double delay,</span>
+<span class='curline'><a href='../S/lib--widget--wtools.h.html#L90'>sm</a>                 90 lib/widget/wtools.h MC_MOCKABLE void status_msg_deinit (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.h.html#L91'>sm</a>                 91 lib/widget/wtools.h int status_msg_common_update (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/lib--widget--wtools.h.html#L93'>sm</a>                 93 lib/widget/wtools.h void simple_status_msg_init_cb (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L154'>sm</a>                154 src/editor/edit.c edit_load_status_update_cb (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L156'>sm</a>                156 src/editor/edit.c     simple_status_msg_t *ssm = SIMPLE_STATUS_MSG (sm);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L157'>sm</a>                157 src/editor/edit.c     edit_buffer_read_file_status_msg_t *rsm = (edit_buffer_read_file_status_msg_t *) sm;</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L158'>sm</a>                158 src/editor/edit.c     Widget *wd = WIDGET (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/src--editor--edit.c.html#L180'>sm</a>                180 src/editor/edit.c     return status_msg_common_update (sm);</span>
+<span class='curline'><a href='../S/src--editor--editbuffer.c.html#L694'>sm</a>                694 src/editor/editbuffer.c                        edit_buffer_read_file_status_msg_t *sm, gboolean *aborted)</span>
+<span class='curline'><a href='../S/src--editor--editbuffer.c.html#L700'>sm</a>                700 src/editor/editbuffer.c     status_msg_t *s = STATUS_MSG (sm);</span>
+<span class='curline'><a href='../S/src--editor--editbuffer.c.html#L750'>sm</a>                750 src/editor/editbuffer.c                 if (sm-&gt;buf == NULL)</span>
+<span class='curline'><a href='../S/src--editor--editbuffer.c.html#L751'>sm</a>                751 src/editor/editbuffer.c                     sm-&gt;buf = buf;</span>
+<span class='curline'><a href='../S/src--editor--editbuffer.c.html#L753'>sm</a>                753 src/editor/editbuffer.c                 sm-&gt;loaded = ret;</span>
+<span class='curline'><a href='../S/src--editor--editbuffer.c.html#L783'>sm</a>                783 src/editor/editbuffer.c                 sm-&gt;loaded = ret;</span>
+<span class='curline'><a href='../S/src--editor--editbuffer.h.html#L61'>sm</a>                 61 src/editor/editbuffer.h                              edit_buffer_read_file_status_msg_t *sm, gboolean *aborted);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L606'>sm</a>                606 src/editor/editsearch.c     status_msg_t *sm = STATUS_MSG (user_data);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L608'>sm</a>                608 src/editor/editsearch.c     ((edit_search_status_msg_t *) sm)-&gt;offset = char_offset;</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L610'>sm</a>                610 src/editor/editsearch.c     return (sm-&gt;update (sm) == B_CANCEL ? MC_SEARCH_CB_ABORT : MC_SEARCH_CB_OK);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L616'>sm</a>                616 src/editor/editsearch.c edit_search_status_update_cb (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L618'>sm</a>                618 src/editor/editsearch.c     simple_status_msg_t *ssm = SIMPLE_STATUS_MSG (sm);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L619'>sm</a>                619 src/editor/editsearch.c     edit_search_status_msg_t *esm = (edit_search_status_msg_t *) sm;</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L620'>sm</a>                620 src/editor/editsearch.c     Widget *wd = WIDGET (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.c.html#L642'>sm</a>                642 src/editor/editsearch.c     return status_msg_common_update (sm);</span>
+<span class='curline'><a href='../S/src--editor--editsearch.h.html#L46'>sm</a>                 46 src/editor/editsearch.h int edit_search_status_update_cb (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L198'>sm</a>                198 src/filemanager/file.c     status_msg_t *sm = STATUS_MSG (dsm);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L199'>sm</a>                199 src/filemanager/file.c     Widget *wd = WIDGET (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L631'>sm</a>                631 src/filemanager/file.c     status_msg_t *sm = STATUS_MSG (dsm);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L667'>sm</a>                667 src/filemanager/file.c             if (ret == FILE_CONT &amp;&amp; sm-&gt;update != NULL &amp;&amp; mc_time_elapsed (&amp;timestamp, delay))</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L672'>sm</a>                672 src/filemanager/file.c                 ret = sm-&gt;update (sm);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L694'>sm</a>                694 src/filemanager/file.c panel_compute_totals (const WPanel *panel, dirsize_status_msg_t *sm, size_t *ret_count,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L717'>sm</a>                717 src/filemanager/file.c             status = do_compute_dir_size (p, sm, &amp;dir_count, ret_count, ret_total, stat_func);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3407'>sm</a>               3407 src/filemanager/file.c dirsize_status_init_cb (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3409'>sm</a>               3409 src/filemanager/file.c     dirsize_status_msg_t *dsm = (dirsize_status_msg_t *) sm;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3410'>sm</a>               3410 src/filemanager/file.c     WGroup *gd = GROUP (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3411'>sm</a>               3411 src/filemanager/file.c     Widget *wd = WIDGET (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3447'>sm</a>               3447 src/filemanager/file.c dirsize_status_update_cb (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3449'>sm</a>               3449 src/filemanager/file.c     dirsize_status_msg_t *dsm = (dirsize_status_msg_t *) sm;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3450'>sm</a>               3450 src/filemanager/file.c     Widget *wd = WIDGET (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3471'>sm</a>               3471 src/filemanager/file.c     switch (status_msg_common_update (sm))</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3486'>sm</a>               3486 src/filemanager/file.c dirsize_status_deinit_cb (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3488'>sm</a>               3488 src/filemanager/file.c     (void) sm;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3503'>sm</a>               3503 src/filemanager/file.c compute_dir_size (const vfs_path_t *dirname_vpath, dirsize_status_msg_t *sm, size_t *ret_dir_count,</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3506'>sm</a>               3506 src/filemanager/file.c     return do_compute_dir_size (dirname_vpath, sm, ret_dir_count, ret_marked_count, ret_total,</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L61'>sm</a>                 61 src/filemanager/file.h FileProgressStatus compute_dir_size (const vfs_path_t *dirname_vpath, dirsize_status_msg_t *sm,</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L65'>sm</a>                 65 src/filemanager/file.h void dirsize_status_init_cb (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L66'>sm</a>                 66 src/filemanager/file.h int dirsize_status_update_cb (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/src--filemanager--file.h.html#L67'>sm</a>                 67 src/filemanager/file.h void dirsize_status_deinit_cb (status_msg_t *sm);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L245'>sm</a>                245 src/vfs/tar/tar.c     GArray *sm = (GArray *) inode-&gt;user_data;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L248'>sm</a>                248 src/vfs/tar/tar.c     for (i = 0; i &lt; sm-&gt;len; i++)</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L252'>sm</a>                252 src/vfs/tar/tar.c         sp = &amp;g_array_index (sm, struct sp_array, i);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1118'>sm</a>               1118 src/vfs/tar/tar.c     const GArray *sm = (const GArray *) fh-&gt;ino-&gt;user_data;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1124'>sm</a>               1124 src/vfs/tar/tar.c     chunk_idx = tar_get_sparse_chunk_idx (sm, fh-&gt;pos);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1128'>sm</a>               1128 src/vfs/tar/tar.c         chunk = &amp;g_array_index (sm, struct sp_array, chunk_idx - 1);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1144'>sm</a>               1144 src/vfs/tar/tar.c             chunk = &amp;g_array_index (sm, struct sp_array, -chunk_idx - 1);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1162'>sm</a>               1162 src/vfs/tar/tar.c     const GArray *sm = (const GArray *) fh-&gt;ino-&gt;user_data;</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1167'>sm</a>               1167 src/vfs/tar/tar.c     chunk_idx = tar_get_sparse_chunk_idx (sm, offset);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1172'>sm</a>               1172 src/vfs/tar/tar.c         chunk = &amp;g_array_index (sm, struct sp_array, chunk_idx - 1);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1190'>sm</a>               1190 src/vfs/tar/tar.c             chunk = &amp;g_array_index (sm, struct sp_array, sm-&gt;len - 1);</span>
+<span class='curline'><a href='../S/src--vfs--tar--tar.c.html#L1196'>sm</a>               1196 src/vfs/tar/tar.c             chunk = &amp;g_array_index (sm, struct sp_array, -chunk_idx - 1);</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L82'>sm</a>                 82 src/viewer/search.c mcview_search_status_update_cb (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L84'>sm</a>                 84 src/viewer/search.c     simple_status_msg_t *ssm = SIMPLE_STATUS_MSG (sm);</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L85'>sm</a>                 85 src/viewer/search.c     mcview_search_status_msg_t *vsm = (mcview_search_status_msg_t *) sm;</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L86'>sm</a>                 86 src/viewer/search.c     Widget *wd = WIDGET (sm-&gt;dlg);</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L112'>sm</a>                112 src/viewer/search.c     return status_msg_common_update (sm);</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L479'>sm</a>                479 src/viewer/search.c     status_msg_t *sm = STATUS_MSG (user_data);</span>
+<span class='curline'><a href='../S/src--viewer--search.c.html#L506'>sm</a>                506 src/viewer/search.c     if (do_update &amp;&amp; sm-&gt;update (sm) == B_CANCEL)</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_replace_cmd.c.html#L141'>sm</a>                141 tests/src/editor/edit_replace_cmd.c status_msg_init (status_msg_t *sm, const char *title, double delay, status_msg_cb init_cb,</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_replace_cmd.c.html#L144'>sm</a>                144 tests/src/editor/edit_replace_cmd.c     (void) sm;</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_replace_cmd.c.html#L155'>sm</a>                155 tests/src/editor/edit_replace_cmd.c status_msg_deinit (status_msg_t *sm)</span>
+<span class='curline'><a href='../S/tests--src--editor--edit_replace_cmd.c.html#L157'>sm</a>                157 tests/src/editor/edit_replace_cmd.c     (void) sm;</span>
+</pre>
+</body>
+</html>

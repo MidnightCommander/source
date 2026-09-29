@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>times</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--vfs--interface.c.html#L322'>times</a>             322 lib/vfs/interface.c MC_NAMEOP (utime, (const vfs_path_t *vpath, mc_timesbuf_t *times), (vpath, times))</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L379'>times</a>             379 lib/vfs/utilvfs.c vfs_utime (const char *path, mc_timesbuf_t *times)</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L382'>times</a>             382 lib/vfs/utilvfs.c     return utimensat (AT_FDCWD, path, *times, AT_SYMLINK_NOFOLLOW);</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L384'>times</a>             384 lib/vfs/utilvfs.c     return utime (path, times);</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L391'>times</a>             391 lib/vfs/utilvfs.c vfs_get_timespecs_from_timesbuf (mc_timesbuf_t *times, mc_timespec_t *atime, mc_timespec_t *mtime)</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L394'>times</a>             394 lib/vfs/utilvfs.c     atime-&gt;tv_sec = (*times)[0].tv_sec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L395'>times</a>             395 lib/vfs/utilvfs.c     atime-&gt;tv_nsec = (*times)[0].tv_nsec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L396'>times</a>             396 lib/vfs/utilvfs.c     mtime-&gt;tv_sec = (*times)[1].tv_sec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L397'>times</a>             397 lib/vfs/utilvfs.c     mtime-&gt;tv_nsec = (*times)[1].tv_nsec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L399'>times</a>             399 lib/vfs/utilvfs.c     atime-&gt;tv_sec = times-&gt;actime;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L401'>times</a>             401 lib/vfs/utilvfs.c     mtime-&gt;tv_sec = times-&gt;modtime;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L409'>times</a>             409 lib/vfs/utilvfs.c vfs_get_timesbuf_from_stat (const struct stat *s, mc_timesbuf_t *times)</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L418'>times</a>             418 lib/vfs/utilvfs.c     (*times)[0].tv_sec = s-&gt;st_atim.tv_sec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L419'>times</a>             419 lib/vfs/utilvfs.c     (*times)[0].tv_nsec = s-&gt;st_atim.tv_nsec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L420'>times</a>             420 lib/vfs/utilvfs.c     (*times)[1].tv_sec = s-&gt;st_mtim.tv_sec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L421'>times</a>             421 lib/vfs/utilvfs.c     (*times)[1].tv_nsec = s-&gt;st_mtim.tv_nsec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L424'>times</a>             424 lib/vfs/utilvfs.c     (*times)[0] = s-&gt;st_atimespec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L425'>times</a>             425 lib/vfs/utilvfs.c     (*times)[1] = s-&gt;st_mtimespec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L428'>times</a>             428 lib/vfs/utilvfs.c     (*times)[0].tv_sec = s-&gt;st_atime;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L429'>times</a>             429 lib/vfs/utilvfs.c     (*times)[0].tv_nsec = s-&gt;st_atimensec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L430'>times</a>             430 lib/vfs/utilvfs.c     (*times)[1].tv_sec = s-&gt;st_mtime;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L431'>times</a>             431 lib/vfs/utilvfs.c     (*times)[1].tv_nsec = s-&gt;st_mtimensec;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L436'>times</a>             436 lib/vfs/utilvfs.c     times-&gt;actime = s-&gt;st_atime;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.c.html#L437'>times</a>             437 lib/vfs/utilvfs.c     times-&gt;modtime = s-&gt;st_mtime;</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.h.html#L63'>times</a>              63 lib/vfs/utilvfs.h int vfs_utime (const char *path, mc_timesbuf_t *times);</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.h.html#L64'>times</a>              64 lib/vfs/utilvfs.h void vfs_get_timespecs_from_timesbuf (mc_timesbuf_t *times, mc_timespec_t *atime,</span>
+<span class='curline'><a href='../S/lib--vfs--utilvfs.h.html#L66'>times</a>              66 lib/vfs/utilvfs.h void vfs_get_timesbuf_from_stat (const struct stat *s, mc_timesbuf_t *times);</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L181'>times</a>             181 lib/vfs/vfs.h      int (*utime) (const vfs_path_t *vpath, mc_timesbuf_t *times);</span>
+<span class='curline'><a href='../S/lib--vfs--vfs.h.html#L314'>times</a>             314 lib/vfs/vfs.h  int mc_utime (const vfs_path_t *vpath, mc_timesbuf_t *times);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1283'>times</a>            1283 src/filemanager/file.c                     mc_timesbuf_t times;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1285'>times</a>            1285 src/filemanager/file.c                     vfs_get_timesbuf_from_stat (&amp;src_stat, &amp;times);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L1286'>times</a>            1286 src/filemanager/file.c                     mc_utime (dst_vpath, &amp;times);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2287'>times</a>            2287 src/filemanager/file.c     mc_timesbuf_t times;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2409'>times</a>            2409 src/filemanager/file.c     vfs_get_timesbuf_from_stat (&amp;src_stat, &amp;times);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2437'>times</a>            2437 src/filemanager/file.c                 mc_utime (dst_vpath, &amp;times);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L2541'>times</a>            2541 src/filemanager/file.c             mc_utime (dst_vpath, &amp;times);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3027'>times</a>            3027 src/filemanager/file.c         mc_utime (dst_vpath, &amp;times);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3329'>times</a>            3329 src/filemanager/file.c         mc_timesbuf_t times;</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3336'>times</a>            3336 src/filemanager/file.c         vfs_get_timesbuf_from_stat (&amp;src_stat, &amp;times);</span>
+<span class='curline'><a href='../S/src--filemanager--file.c.html#L3337'>times</a>            3337 src/filemanager/file.c         mc_utime (dst_vpath, &amp;times);</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2747'>times</a>            2747 src/vfs/ftpfs/ftpfs.c ftpfs_utime (const vfs_path_t *vpath, mc_timesbuf_t *times)</span>
+<span class='curline'><a href='../S/src--vfs--ftpfs--ftpfs.c.html#L2753'>times</a>            2753 src/vfs/ftpfs/ftpfs.c     vfs_get_timespecs_from_timesbuf (times, &amp;atime, &amp;mtime);</span>
+<span class='curline'><a href='../S/src--vfs--local--local.c.html#L235'>times</a>             235 src/vfs/local/local.c local_utime (const vfs_path_t *vpath, mc_timesbuf_t *times)</span>
+<span class='curline'><a href='../S/src--vfs--local--local.c.html#L237'>times</a>             237 src/vfs/local/local.c     return vfs_utime (vfs_path_get_last_path_str (vpath), times);</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L353'>times</a>             353 src/vfs/sfs/sfs.c sfs_utime (const vfs_path_t *vpath, mc_timesbuf_t *times)</span>
+<span class='curline'><a href='../S/src--vfs--sfs--sfs.c.html#L355'>times</a>             355 src/vfs/sfs/sfs.c     return vfs_utime (sfs_redirect (vpath), times);</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L335'>times</a>             335 src/vfs/sftpfs/sftpfs.c sftpfs_cb_utime (const vfs_path_t *vpath, mc_timesbuf_t *times)</span>
+<span class='curline'><a href='../S/src--vfs--sftpfs--sftpfs.c.html#L341'>times</a>             341 src/vfs/sftpfs/sftpfs.c     vfs_get_timespecs_from_timesbuf (times, &amp;atime, &amp;mtime);</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1426'>times</a>            1426 src/vfs/shell/shell.c shell_utime (const vfs_path_t *vpath, mc_timesbuf_t *times)</span>
+<span class='curline'><a href='../S/src--vfs--shell--shell.c.html#L1444'>times</a>            1444 src/vfs/shell/shell.c     vfs_get_timespecs_from_timesbuf (times, &amp;atime, &amp;mtime);</span>
+</pre>
+</body>
+</html>
