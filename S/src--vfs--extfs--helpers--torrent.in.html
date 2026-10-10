@@ -1,0 +1,501 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/torrent.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/torrent.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/torrent.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/torrent.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PYTHON@
+<a id='L2' name='L2'></a>"""Torrent Virtual FileSystem for Midnight Commander
+<a id='L3' name='L3'></a> 
+<a id='L4' name='L4'></a>The script requires Midnight Commander 3.1+
+<a id='L5' name='L5'></a>(https://midnight-commander.org), Python 2.7+ (https://www.python.org),
+<a id='L6' name='L6'></a>module eff_bdecode.py (from effbot.org/zone/bencode.htm) is now included
+<a id='L7' name='L7'></a>in the code.
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>For mc 4.7+ just put the script in $HOME/[.local/share/].mc/extfs.d.
+<a id='L10' name='L10'></a>For older versions put it in /usr/[local/][lib|share]/mc/extfs
+<a id='L11' name='L11'></a>and add a line "torrent" to the /usr/[local/][lib|share]/mc/extfs/extfs.ini.
+<a id='L12' name='L12'></a>Make the script executable.
+<a id='L13' name='L13'></a> 
+<a id='L14' name='L14'></a>For mc 4.7+ run this "cd" command in the Midnight Commander (in the "bindings"
+<a id='L15' name='L15'></a>file the command is "%cd"): cd file/torrent://; In older versions it is
+<a id='L16' name='L16'></a>cd file#torrent, where "file" is the name of your torrent metafile.
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>See detailed installation instructions at
+<a id='L19' name='L19'></a>https://phdru.name/Software/mc/torrent_INSTALL.html.
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a>The VFS lists all files and directories from the torrent metafile; all files
+<a id='L22' name='L22'></a>appear empty, of course, but the sizes are shown. Filenames are reencoded from
+<a id='L23' name='L23'></a>the metafile's encoding/codepage to the current locale.
+<a id='L24' name='L24'></a> 
+<a id='L25' name='L25'></a>Along with the files/directories in the torrent metafile the VFS also presents
+<a id='L26' name='L26'></a>meta information - in the form of files in .META directory. The size and
+<a id='L27' name='L27'></a>contents of these files are taken from the corresponding fields in the torrent
+<a id='L28' name='L28'></a>metafile. The script doesn't check if the torrent consists of a .META file or
+<a id='L29' name='L29'></a>directory (quite unlikely).
+<a id='L30' name='L30'></a> 
+<a id='L31' name='L31'></a>Date/time for all directories/files is set to the value of 'creation date'
+<a id='L32' name='L32'></a>field, if it exists; if not date/time is set to the last modification time of
+<a id='L33' name='L33'></a>the torrent file itself.
+<a id='L34' name='L34'></a> 
+<a id='L35' name='L35'></a>The filesystem is, naturally, read-only.
+<a id='L36' name='L36'></a> 
+<a id='L37' name='L37'></a>"""
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a>__version__ = "1.4.1"
+<a id='L40' name='L40'></a>__author__ = "Oleg Broytman &lt;phd@phdru.name&gt;"
+<a id='L41' name='L41'></a>__copyright__ = "Copyright (C) 2010-2025 PhiloSoft Design"
+<a id='L42' name='L42'></a>__license__ = "GPL"
+<a id='L43' name='L43'></a> 
+<a id='L44' name='L44'></a> 
+<a id='L45' name='L45'></a>from datetime import datetime
+<a id='L46' name='L46'></a>from os.path import dirname, getmtime
+<a id='L47' name='L47'></a>import os
+<a id='L48' name='L48'></a>import subprocess
+<a id='L49' name='L49'></a>import sys
+<a id='L50' name='L50'></a>from time import localtime, asctime
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>if 'MC_TEST_EXTFS_LIST_CMD' in os.environ:
+<a id='L53' name='L53'></a>    from time import gmtime as localtime
+<a id='L54' name='L54'></a>else:
+<a id='L55' name='L55'></a>    from time import localtime
+<a id='L56' name='L56'></a> 
+<a id='L57' name='L57'></a>try:
+<a id='L58' name='L58'></a>    import locale
+<a id='L59' name='L59'></a>    use_locale = True
+<a id='L60' name='L60'></a>except ImportError:
+<a id='L61' name='L61'></a>    use_locale = False
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a>if use_locale:
+<a id='L64' name='L64'></a>    # Get the default charset.
+<a id='L65' name='L65'></a>    try:
+<a id='L66' name='L66'></a>        if sys.version_info[:2] &lt; (3, 11):
+<a id='L67' name='L67'></a>            lcAll = locale.getdefaultlocale()
+<a id='L68' name='L68'></a>        else:
+<a id='L69' name='L69'></a>            lcAll = []
+<a id='L70' name='L70'></a>    except locale.Error as err:
+<a id='L71' name='L71'></a>        #print("WARNING:", err, file=sys.stderr)
+<a id='L72' name='L72'></a>        lcAll = []
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>    if len(lcAll) == 2:
+<a id='L75' name='L75'></a>        default_encoding = lcAll[1]
+<a id='L76' name='L76'></a>    else:
+<a id='L77' name='L77'></a>        try:
+<a id='L78' name='L78'></a>            default_encoding = locale.getpreferredencoding()
+<a id='L79' name='L79'></a>        except locale.Error as err:
+<a id='L80' name='L80'></a>            #print("WARNING:", err, file=sys.stderr)
+<a id='L81' name='L81'></a>            default_encoding = sys.getdefaultencoding()
+<a id='L82' name='L82'></a>else:
+<a id='L83' name='L83'></a>    default_encoding = sys.getdefaultencoding()
+<a id='L84' name='L84'></a> 
+<a id='L85' name='L85'></a>if default_encoding is None:
+<a id='L86' name='L86'></a>    default_encoding = "utf-8"
+<a id='L87' name='L87'></a> 
+<a id='L88' name='L88'></a>import logging
+<a id='L89' name='L89'></a>logger = logging.getLogger('torrent-mcextfs')
+<a id='L90' name='L90'></a>log_err_handler = logging.StreamHandler(sys.stderr)
+<a id='L91' name='L91'></a>logger.addHandler(log_err_handler)
+<a id='L92' name='L92'></a>logger.setLevel(logging.INFO)
+<a id='L93' name='L93'></a> 
+<a id='L94' name='L94'></a>if len(sys.argv) &lt; 3:
+<a id='L95' name='L95'></a>    logger.critical("""\
+<a id='L96' name='L96'></a>Torrent Virtual FileSystem for Midnight Commander version %s
+<a id='L97' name='L97'></a>Author: %s
+<a id='L98' name='L98'></a>%s
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>This is not a program. Put the script in $HOME/[.local/share/].mc/extfs.d or
+<a id='L101' name='L101'></a>/usr/[local/][lib|share]/mc/extfs. For more information read the source!""",
+<a id='L102' name='L102'></a>                    __version__, __author__, __copyright__)
+<a id='L103' name='L103'></a>    sys.exit(1)
+<a id='L104' name='L104'></a> 
+<a id='L105' name='L105'></a>locale.setlocale(locale.LC_ALL, '')
+<a id='L106' name='L106'></a> 
+<a id='L107' name='L107'></a>PY3 = (sys.version_info[0] &gt;= 3)
+<a id='L108' name='L108'></a>if PY3:
+<a id='L109' name='L109'></a>    def output(s):
+<a id='L110' name='L110'></a>        sys.stdout.buffer.write(s.encode(default_encoding, 'replace') + b'\n')
+<a id='L111' name='L111'></a>else:
+<a id='L112' name='L112'></a>    def output(s):
+<a id='L113' name='L113'></a>        sys.stdout.write(s + '\n')
+<a id='L114' name='L114'></a> 
+<a id='L115' name='L115'></a># ---------- eff_bdecode.py ----------
+<a id='L116' name='L116'></a># effbot.org/zone/bencode.htm
+<a id='L117' name='L117'></a>#
+<a id='L118' name='L118'></a># Copyright (C) 1995-2013 by Fredrik Lundh
+<a id='L119' name='L119'></a>#
+<a id='L120' name='L120'></a># By obtaining, using, and/or copying this software and/or its associated
+<a id='L121' name='L121'></a># documentation, you agree that you have read, understood, and will comply with
+<a id='L122' name='L122'></a># the following terms and conditions:
+<a id='L123' name='L123'></a>#
+<a id='L124' name='L124'></a># Permission to use, copy, modify, and distribute this software and its
+<a id='L125' name='L125'></a># associated documentation for any purpose and without fee is hereby granted,
+<a id='L126' name='L126'></a># provided that the above copyright notice appears in all copies, and that both
+<a id='L127' name='L127'></a># that copyright notice and this permission notice appear in supporting
+<a id='L128' name='L128'></a># documentation, and that the name of Secret Labs AB or the author not be used
+<a id='L129' name='L129'></a># in advertising or publicity pertaining to distribution of the software
+<a id='L130' name='L130'></a># without specific, written prior permission.
+<a id='L131' name='L131'></a>#
+<a id='L132' name='L132'></a># SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
+<a id='L133' name='L133'></a># SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN
+<a id='L134' name='L134'></a># NO EVENT SHALL SECRET LABS AB OR THE AUTHOR BE LIABLE FOR ANY SPECIAL,
+<a id='L135' name='L135'></a># INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+<a id='L136' name='L136'></a># LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+<a id='L137' name='L137'></a># OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+<a id='L138' name='L138'></a># PERFORMANCE OF THIS SOFTWARE.
+<a id='L139' name='L139'></a> 
+<a id='L140' name='L140'></a>from functools import partial
+<a id='L141' name='L141'></a>import re
+<a id='L142' name='L142'></a> 
+<a id='L143' name='L143'></a> 
+<a id='L144' name='L144'></a>def tokenize(text, match=re.compile(b"([idel])|(\\d+):|(-?\\d+)").match):
+<a id='L145' name='L145'></a>    i = 0
+<a id='L146' name='L146'></a>    while i &lt; len(text):
+<a id='L147' name='L147'></a>        m = match(text, i)
+<a id='L148' name='L148'></a>        s = m.group(m.lastindex)
+<a id='L149' name='L149'></a>        i = m.end()
+<a id='L150' name='L150'></a>        if m.lastindex == 2:
+<a id='L151' name='L151'></a>            yield "s"
+<a id='L152' name='L152'></a>            yield text[i:i+int(s)]
+<a id='L153' name='L153'></a>            i = i + int(s)
+<a id='L154' name='L154'></a>        else:
+<a id='L155' name='L155'></a>            yield s.decode('ascii')
+<a id='L156' name='L156'></a> 
+<a id='L157' name='L157'></a> 
+<a id='L158' name='L158'></a>def decode_item(next_, token):
+<a id='L159' name='L159'></a>    if token == "i":
+<a id='L160' name='L160'></a>        # integer: "i" value "e"
+<a id='L161' name='L161'></a>        data = int(next_())
+<a id='L162' name='L162'></a>        if next_() != "e":
+<a id='L163' name='L163'></a>            raise ValueError
+<a id='L164' name='L164'></a>    elif token == "s":
+<a id='L165' name='L165'></a>        # string: "s" value (virtual tokens)
+<a id='L166' name='L166'></a>        data = next_()
+<a id='L167' name='L167'></a>    elif token == "l" or token == "d":
+<a id='L168' name='L168'></a>        # container: "l" (or "d") values "e"
+<a id='L169' name='L169'></a>        data = []
+<a id='L170' name='L170'></a>        tok = next_()
+<a id='L171' name='L171'></a>        while tok != "e":
+<a id='L172' name='L172'></a>            data.append(decode_item(next_, tok))
+<a id='L173' name='L173'></a>            try:
+<a id='L174' name='L174'></a>                tok = next_()
+<a id='L175' name='L175'></a>            except StopIteration:
+<a id='L176' name='L176'></a>                break
+<a id='L177' name='L177'></a>        if token == "d":
+<a id='L178' name='L178'></a>            data = dict(zip(data[0::2], data[1::2]))
+<a id='L179' name='L179'></a>    else:
+<a id='L180' name='L180'></a>        raise ValueError
+<a id='L181' name='L181'></a>    return data
+<a id='L182' name='L182'></a> 
+<a id='L183' name='L183'></a> 
+<a id='L184' name='L184'></a>def eff_bdecode(text):
+<a id='L185' name='L185'></a>    try:
+<a id='L186' name='L186'></a>        src = tokenize(text)
+<a id='L187' name='L187'></a>        data = decode_item(partial(next, src), next(src))
+<a id='L188' name='L188'></a>        for token in src:  # look for more tokens
+<a id='L189' name='L189'></a>            raise SyntaxError("trailing junk")
+<a id='L190' name='L190'></a>    except (AttributeError, ValueError, StopIteration):
+<a id='L191' name='L191'></a>        raise SyntaxError("syntax error")
+<a id='L192' name='L192'></a>    return data
+<a id='L193' name='L193'></a># ---------- /eff_bdecode.py ----------
+<a id='L194' name='L194'></a> 
+<a id='L195' name='L195'></a> 
+<a id='L196' name='L196'></a>def mctorrent_list():
+<a id='L197' name='L197'></a>    """List the entire VFS"""
+<a id='L198' name='L198'></a> 
+<a id='L199' name='L199'></a>    info = torrent['info']
+<a id='L200' name='L200'></a>    if 'name' not in info and 'name.utf-8' not in info:
+<a id='L201' name='L201'></a>        torrent_error('Unknown name')
+<a id='L202' name='L202'></a> 
+<a id='L203' name='L203'></a>    codepage = torrent.get('codepage', None)
+<a id='L204' name='L204'></a>    encoding = torrent.get('encoding', None)
+<a id='L205' name='L205'></a>    if not encoding and codepage:
+<a id='L206' name='L206'></a>        encoding = str(codepage)
+<a id='L207' name='L207'></a> 
+<a id='L208' name='L208'></a>    name = info['name']
+<a id='L209' name='L209'></a>    name_utf8 = info.get('name.utf-8', None)
+<a id='L210' name='L210'></a> 
+<a id='L211' name='L211'></a>    dt = None
+<a id='L212' name='L212'></a>    if 'files' in info:
+<a id='L213' name='L213'></a>        files = info['files']
+<a id='L214' name='L214'></a>        paths = []
+<a id='L215' name='L215'></a>        for file in files:
+<a id='L216' name='L216'></a>            if 'path' not in file and 'path.utf-8' not in file:
+<a id='L217' name='L217'></a>                torrent_error('Unknown path')
+<a id='L218' name='L218'></a>            if 'length' not in file:
+<a id='L219' name='L219'></a>                torrent_error('Unknown length')
+<a id='L220' name='L220'></a>            if 'path.utf-8' in file:
+<a id='L221' name='L221'></a>                if name_utf8:
+<a id='L222' name='L222'></a>                    path = '/'.join([name_utf8] + file['path.utf-8'])
+<a id='L223' name='L223'></a>                else:
+<a id='L224' name='L224'></a>                    path = '/'.join([name] + file['path.utf-8'])
+<a id='L225' name='L225'></a>            else:
+<a id='L226' name='L226'></a>                if name_utf8:
+<a id='L227' name='L227'></a>                    path = '/'.join([name_utf8] + path)
+<a id='L228' name='L228'></a>                else:
+<a id='L229' name='L229'></a>                    path = '/'.join([name] + file['path'])
+<a id='L230' name='L230'></a>            length = file['length']
+<a id='L231' name='L231'></a>            paths.append((path, length))
+<a id='L232' name='L232'></a>    else:  # One-file torrent
+<a id='L233' name='L233'></a>        if 'length' not in info:
+<a id='L234' name='L234'></a>            torrent_error('Unknown length')
+<a id='L235' name='L235'></a>        length = info['length']
+<a id='L236' name='L236'></a>        if name_utf8:
+<a id='L237' name='L237'></a>            name = name_utf8
+<a id='L238' name='L238'></a>        paths = [(name, length)]
+<a id='L239' name='L239'></a> 
+<a id='L240' name='L240'></a>    meta = []
+<a id='L241' name='L241'></a>    for name in 'announce', 'announce-list', 'codepage', 'comment', \
+<a id='L242' name='L242'></a>                'created by', 'creation date', 'encoding', \
+<a id='L243' name='L243'></a>                'nodes', 'publisher', 'publisher-url':
+<a id='L244' name='L244'></a>        if name == 'comment' and 'comment.utf-8' in torrent:
+<a id='L245' name='L245'></a>            data = torrent['comment.utf-8']
+<a id='L246' name='L246'></a>            meta.append(('.META/' + name, len(data)))
+<a id='L247' name='L247'></a>        elif name in torrent:
+<a id='L248' name='L248'></a>            if name == 'announce-list':
+<a id='L249' name='L249'></a>                data = decode_announce_list(torrent[name])
+<a id='L250' name='L250'></a>            elif name == 'codepage':
+<a id='L251' name='L251'></a>                data = str(torrent[name])
+<a id='L252' name='L252'></a>            elif name == 'creation date':
+<a id='L253' name='L253'></a>                dt = torrent[name]
+<a id='L254' name='L254'></a>                data = decode_datetime_asc(dt)
+<a id='L255' name='L255'></a>                dt = decode_datetime(dt)
+<a id='L256' name='L256'></a>            elif name == 'nodes':
+<a id='L257' name='L257'></a>                data = ['%s:%s' % (host, port) for host, port in torrent[name]]
+<a id='L258' name='L258'></a>                data = '\n'.join(data)
+<a id='L259' name='L259'></a>            else:
+<a id='L260' name='L260'></a>                data = torrent[name]
+<a id='L261' name='L261'></a>            meta.append(('.META/' + name, len(data)))
+<a id='L262' name='L262'></a> 
+<a id='L263' name='L263'></a>    if 'private' in info:
+<a id='L264' name='L264'></a>        meta.append(('.META/private', 1))
+<a id='L265' name='L265'></a> 
+<a id='L266' name='L266'></a>    if 'piece length' in info:
+<a id='L267' name='L267'></a>        meta.append(('.META/piece length', len(str(info['piece length']))))
+<a id='L268' name='L268'></a> 
+<a id='L269' name='L269'></a>    paths += meta
+<a id='L270' name='L270'></a>    dirs = set()
+<a id='L271' name='L271'></a>    for name, size in paths:
+<a id='L272' name='L272'></a>        if '/' in name:
+<a id='L273' name='L273'></a>            dirs.add(dirname(name))
+<a id='L274' name='L274'></a> 
+<a id='L275' name='L275'></a>    if not dt:
+<a id='L276' name='L276'></a>        dt = decode_datetime(getmtime(sys.argv[2]))
+<a id='L277' name='L277'></a> 
+<a id='L278' name='L278'></a>    for name in sorted(dirs):
+<a id='L279' name='L279'></a>        output("dr-xr-xr-x 1 0 0 0 %s %s" % (dt, name))
+<a id='L280' name='L280'></a> 
+<a id='L281' name='L281'></a>    for name, size in sorted(paths):
+<a id='L282' name='L282'></a>        output("-r--r--r-- 1 0 0 %d %s %s" % (size, dt, name))
+<a id='L283' name='L283'></a> 
+<a id='L284' name='L284'></a> 
+<a id='L285' name='L285'></a>def mctorrent_copyout():
+<a id='L286' name='L286'></a>    """Extract a file from the VFS"""
+<a id='L287' name='L287'></a> 
+<a id='L288' name='L288'></a>    torrent_filename = sys.argv[3]
+<a id='L289' name='L289'></a>    real_filename = sys.argv[4]
+<a id='L290' name='L290'></a>    data = None
+<a id='L291' name='L291'></a> 
+<a id='L292' name='L292'></a>    for name in 'announce', 'announce-list', 'codepage', 'comment', \
+<a id='L293' name='L293'></a>                'created by', 'creation date', 'encoding', \
+<a id='L294' name='L294'></a>                'nodes', 'publisher', 'publisher-url':
+<a id='L295' name='L295'></a>        if name == 'comment' and 'comment.utf-8' in torrent:
+<a id='L296' name='L296'></a>            data = torrent['comment.utf-8']
+<a id='L297' name='L297'></a>        elif torrent_filename == '.META/' + name:
+<a id='L298' name='L298'></a>            if name in torrent:
+<a id='L299' name='L299'></a>                if name == 'announce-list':
+<a id='L300' name='L300'></a>                    data = decode_announce_list(torrent[name])
+<a id='L301' name='L301'></a>                elif name == 'codepage':
+<a id='L302' name='L302'></a>                    data = str(torrent[name])
+<a id='L303' name='L303'></a>                elif name == 'creation date':
+<a id='L304' name='L304'></a>                    data = decode_datetime_asc(torrent[name])
+<a id='L305' name='L305'></a>                elif name == 'nodes':
+<a id='L306' name='L306'></a>                    data = ['%s:%s' % (host, port)
+<a id='L307' name='L307'></a>                            for host, port in torrent[name]]
+<a id='L308' name='L308'></a>                    data = '\n'.join(data)
+<a id='L309' name='L309'></a>                else:
+<a id='L310' name='L310'></a>                    data = str(torrent[name])
+<a id='L311' name='L311'></a>            else:
+<a id='L312' name='L312'></a>                torrent_error('Unknown ' + name)
+<a id='L313' name='L313'></a>            break
+<a id='L314' name='L314'></a> 
+<a id='L315' name='L315'></a>    if torrent_filename in ('.META/private', '.META/piece length'):
+<a id='L316' name='L316'></a>        info = torrent['info']
+<a id='L317' name='L317'></a>        if torrent_filename == '.META/private':
+<a id='L318' name='L318'></a>            if 'private' not in info:
+<a id='L319' name='L319'></a>                torrent_error('Private absent')
+<a id='L320' name='L320'></a>        if torrent_filename == '.META/piece length':
+<a id='L321' name='L321'></a>            if 'piece length' not in info:
+<a id='L322' name='L322'></a>                torrent_error('Piece length absent')
+<a id='L323' name='L323'></a>        data = str(info[torrent_filename[len('.META/'):]])
+<a id='L324' name='L324'></a> 
+<a id='L325' name='L325'></a>    if not torrent_filename.startswith('.META/'):
+<a id='L326' name='L326'></a>        data = ''
+<a id='L327' name='L327'></a> 
+<a id='L328' name='L328'></a>    if data is None:
+<a id='L329' name='L329'></a>        torrent_error('Unknown file name')
+<a id='L330' name='L330'></a>    else:
+<a id='L331' name='L331'></a>        outfile = open(real_filename, 'wt')
+<a id='L332' name='L332'></a>        outfile.write(data)
+<a id='L333' name='L333'></a>        outfile.close()
+<a id='L334' name='L334'></a> 
+<a id='L335' name='L335'></a> 
+<a id='L336' name='L336'></a>def mctorrent_copyin():
+<a id='L337' name='L337'></a>    """Put a file to the VFS"""
+<a id='L338' name='L338'></a>    sys.exit("Torrent VFS doesn't support adding/overwriting files "
+<a id='L339' name='L339'></a>             "(read-only filesystem)")
+<a id='L340' name='L340'></a> 
+<a id='L341' name='L341'></a> 
+<a id='L342' name='L342'></a>def mctorrent_rm():
+<a id='L343' name='L343'></a>    """Remove a file from the VFS"""
+<a id='L344' name='L344'></a>    sys.exit("Torrent VFS doesn't support removing files/directories "
+<a id='L345' name='L345'></a>             "(read-only filesystem)")
+<a id='L346' name='L346'></a> 
+<a id='L347' name='L347'></a> 
+<a id='L348' name='L348'></a>mctorrent_rmdir = mctorrent_rm
+<a id='L349' name='L349'></a> 
+<a id='L350' name='L350'></a> 
+<a id='L351' name='L351'></a>def mctorrent_mkdir():
+<a id='L352' name='L352'></a>    """Create a directory in the VFS"""
+<a id='L353' name='L353'></a>    sys.exit("Torrent VFS doesn't support creating directories "
+<a id='L354' name='L354'></a>             "(read-only filesystem)")
+<a id='L355' name='L355'></a> 
+<a id='L356' name='L356'></a> 
+<a id='L357' name='L357'></a>def torrent_error(error_str):
+<a id='L358' name='L358'></a>    logger.critical("Error parsing the torrent metafile: %s", error_str)
+<a id='L359' name='L359'></a>    sys.exit(1)
+<a id='L360' name='L360'></a> 
+<a id='L361' name='L361'></a> 
+<a id='L362' name='L362'></a>def decode_dict(d, encoding):
+<a id='L363' name='L363'></a>    new_d = {}
+<a id='L364' name='L364'></a>    for k in d:
+<a id='L365' name='L365'></a>        v = d[k]
+<a id='L366' name='L366'></a>        k = k.decode(encoding)
+<a id='L367' name='L367'></a>        if isinstance(v, dict):
+<a id='L368' name='L368'></a>            v = decode_dict(v, encoding)
+<a id='L369' name='L369'></a>        elif isinstance(v, list):
+<a id='L370' name='L370'></a>            v = decode_list(v, encoding)
+<a id='L371' name='L371'></a>        elif isinstance(v, bytes):
+<a id='L372' name='L372'></a>            v = v.decode(encoding)
+<a id='L373' name='L373'></a>        new_d[k] = v
+<a id='L374' name='L374'></a>    return new_d
+<a id='L375' name='L375'></a> 
+<a id='L376' name='L376'></a> 
+<a id='L377' name='L377'></a>def decode_list(l, encoding):
+<a id='L378' name='L378'></a>    new_l = []
+<a id='L379' name='L379'></a>    for v in l:
+<a id='L380' name='L380'></a>        if isinstance(v, dict):
+<a id='L381' name='L381'></a>            v = decode_dict(v, encoding)
+<a id='L382' name='L382'></a>        elif isinstance(v, list):
+<a id='L383' name='L383'></a>            v = decode_list(v, encoding)
+<a id='L384' name='L384'></a>        elif isinstance(v, bytes):
+<a id='L385' name='L385'></a>            v = v.decode(encoding)
+<a id='L386' name='L386'></a>        new_l.append(v)
+<a id='L387' name='L387'></a>    return new_l
+<a id='L388' name='L388'></a> 
+<a id='L389' name='L389'></a> 
+<a id='L390' name='L390'></a>def decode_torrent():
+<a id='L391' name='L391'></a>    helper = os.environ.get('MC_TEST_EXTFS_LIST_CMD')
+<a id='L392' name='L392'></a>    try:
+<a id='L393' name='L393'></a>        if helper is not None:
+<a id='L394' name='L394'></a>            data = subprocess.check_output(helper.split())
+<a id='L395' name='L395'></a>        else:
+<a id='L396' name='L396'></a>            torrent_file = open(sys.argv[2], 'rb')
+<a id='L397' name='L397'></a>            data = torrent_file.read()
+<a id='L398' name='L398'></a>            torrent_file.close()
+<a id='L399' name='L399'></a>        torrent = eff_bdecode(data)
+<a id='L400' name='L400'></a>    except IOError as error_str:
+<a id='L401' name='L401'></a>        torrent_error(error_str)
+<a id='L402' name='L402'></a> 
+<a id='L403' name='L403'></a>    del torrent[b'info'][b'pieces']
+<a id='L404' name='L404'></a>    if b'info' not in torrent:
+<a id='L405' name='L405'></a>        torrent_error('Info absent')
+<a id='L406' name='L406'></a> 
+<a id='L407' name='L407'></a>    if PY3:
+<a id='L408' name='L408'></a>        codepage = torrent.get(b'codepage', None)
+<a id='L409' name='L409'></a>        encoding = torrent.get(b'encoding', None)
+<a id='L410' name='L410'></a>        if encoding:
+<a id='L411' name='L411'></a>            encoding = encoding.decode('ascii')
+<a id='L412' name='L412'></a>        elif codepage:
+<a id='L413' name='L413'></a>            encoding = codepage.decode('ascii')
+<a id='L414' name='L414'></a>        else:
+<a id='L415' name='L415'></a>            for encoding in ('ascii', 'utf-8', default_encoding):
+<a id='L416' name='L416'></a>                try:
+<a id='L417' name='L417'></a>                    return decode_dict(torrent, encoding)
+<a id='L418' name='L418'></a>                except UnicodeDecodeError:
+<a id='L419' name='L419'></a>                    pass
+<a id='L420' name='L420'></a>            torrent_error('UnicodeDecodeError')
+<a id='L421' name='L421'></a>        return decode_dict(torrent, encoding)
+<a id='L422' name='L422'></a> 
+<a id='L423' name='L423'></a>    return torrent
+<a id='L424' name='L424'></a> 
+<a id='L425' name='L425'></a> 
+<a id='L426' name='L426'></a>def decode_datetime_asc(dt):
+<a id='L427' name='L427'></a>    try:
+<a id='L428' name='L428'></a>        lt = localtime(float(dt))
+<a id='L429' name='L429'></a>        Y = lt[0]
+<a id='L430' name='L430'></a>        if Y &gt; 9999:
+<a id='L431' name='L431'></a>            raise ValueError
+<a id='L432' name='L432'></a>    except (OSError, ValueError):
+<a id='L433' name='L433'></a>        return datetime.max.ctime()
+<a id='L434' name='L434'></a>    else:
+<a id='L435' name='L435'></a>        return asctime(lt)
+<a id='L436' name='L436'></a> 
+<a id='L437' name='L437'></a> 
+<a id='L438' name='L438'></a>def decode_datetime(dt):
+<a id='L439' name='L439'></a>    try:
+<a id='L440' name='L440'></a>        Y, m, d, H, M = localtime(float(dt))[:5]
+<a id='L441' name='L441'></a>        if Y &gt; 9999:
+<a id='L442' name='L442'></a>            raise ValueError
+<a id='L443' name='L443'></a>    except (OSError, ValueError):
+<a id='L444' name='L444'></a>        Y, m, d, H, M = datetime.max.timetuple()[:5]
+<a id='L445' name='L445'></a>    return "%02d-%02d-%d %02d:%02d" % (m, d, Y, H, M)
+<a id='L446' name='L446'></a> 
+<a id='L447' name='L447'></a> 
+<a id='L448' name='L448'></a>def decode_announce_list(announce):
+<a id='L449' name='L449'></a>    return '\n'.join(a[0] for a in announce if a)
+<a id='L450' name='L450'></a> 
+<a id='L451' name='L451'></a> 
+<a id='L452' name='L452'></a>command = sys.argv[1]
+<a id='L453' name='L453'></a>procname = "mctorrent_" + command
+<a id='L454' name='L454'></a> 
+<a id='L455' name='L455'></a>g = globals()
+<a id='L456' name='L456'></a>if procname not in g:
+<a id='L457' name='L457'></a>    logger.critical("Unknown command %s", command)
+<a id='L458' name='L458'></a>    sys.exit(1)
+<a id='L459' name='L459'></a> 
+<a id='L460' name='L460'></a>torrent = decode_torrent()
+<a id='L461' name='L461'></a> 
+<a id='L462' name='L462'></a>try:
+<a id='L463' name='L463'></a>    g[procname]()
+<a id='L464' name='L464'></a>except SystemExit:
+<a id='L465' name='L465'></a>    raise
+<a id='L466' name='L466'></a>except Exception:
+<a id='L467' name='L467'></a>    logger.exception("Error during run")
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+467 src/vfs/extfs/helpers/torrent.in'  /> */</em>
+</body>
+</html>

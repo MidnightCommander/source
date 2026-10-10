@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tool</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<pre>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L543'>tool</a>              543 lib/strutil/strutilutf8.c utf8_tool_copy_chars_to_end (struct utf8_tool *tool)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L545'>tool</a>              545 lib/strutil/strutilutf8.c     tool-&gt;compose = FALSE;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L547'>tool</a>              547 lib/strutil/strutilutf8.c     while (tool-&gt;checked[0] != '\0')</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L552'>tool</a>              552 lib/strutil/strutilutf8.c         uni = g_utf8_get_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L553'>tool</a>              553 lib/strutil/strutilutf8.c         tool-&gt;compose = tool-&gt;compose || str_unichar_iscombiningmark (uni);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L555'>tool</a>              555 lib/strutil/strutilutf8.c         if (tool-&gt;remain &lt;= left)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L557'>tool</a>              557 lib/strutil/strutilutf8.c         left = g_unichar_to_utf8 (uni, tool-&gt;actual);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L558'>tool</a>              558 lib/strutil/strutilutf8.c         tool-&gt;actual += left;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L559'>tool</a>              559 lib/strutil/strutilutf8.c         tool-&gt;remain -= left;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L560'>tool</a>              560 lib/strutil/strutilutf8.c         tool-&gt;checked = g_utf8_next_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L571'>tool</a>              571 lib/strutil/strutilutf8.c utf8_tool_copy_chars_to (struct utf8_tool *tool, int to_ident)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L573'>tool</a>              573 lib/strutil/strutilutf8.c     tool-&gt;compose = FALSE;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L575'>tool</a>              575 lib/strutil/strutilutf8.c     while (tool-&gt;checked[0] != '\0')</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L581'>tool</a>              581 lib/strutil/strutilutf8.c         uni = g_utf8_get_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L583'>tool</a>              583 lib/strutil/strutilutf8.c             tool-&gt;compose = TRUE;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L589'>tool</a>              589 lib/strutil/strutilutf8.c             if (tool-&gt;ident + w &gt; to_ident)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L594'>tool</a>              594 lib/strutil/strutilutf8.c         if (tool-&gt;remain &lt;= left)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L596'>tool</a>              596 lib/strutil/strutilutf8.c         left = g_unichar_to_utf8 (uni, tool-&gt;actual);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L597'>tool</a>              597 lib/strutil/strutilutf8.c         tool-&gt;actual += left;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L598'>tool</a>              598 lib/strutil/strutilutf8.c         tool-&gt;remain -= left;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L599'>tool</a>              599 lib/strutil/strutilutf8.c         tool-&gt;checked = g_utf8_next_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L600'>tool</a>              600 lib/strutil/strutilutf8.c         tool-&gt;ident += w;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L610'>tool</a>              610 lib/strutil/strutilutf8.c utf8_tool_insert_space (struct utf8_tool *tool, int count)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L614'>tool</a>              614 lib/strutil/strutilutf8.c     if (tool-&gt;remain &lt;= (gsize) count)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L617'>tool</a>              617 lib/strutil/strutilutf8.c     memset (tool-&gt;actual, ' ', count);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L618'>tool</a>              618 lib/strutil/strutilutf8.c     tool-&gt;actual += count;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L619'>tool</a>              619 lib/strutil/strutilutf8.c     tool-&gt;remain -= count;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L627'>tool</a>              627 lib/strutil/strutilutf8.c utf8_tool_insert_char (struct utf8_tool *tool, char ch)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L629'>tool</a>              629 lib/strutil/strutilutf8.c     if (tool-&gt;remain &lt;= 1)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L632'>tool</a>              632 lib/strutil/strutilutf8.c     tool-&gt;actual[0] = ch;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L633'>tool</a>              633 lib/strutil/strutilutf8.c     tool-&gt;actual++;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L634'>tool</a>              634 lib/strutil/strutilutf8.c     tool-&gt;remain--;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L643'>tool</a>              643 lib/strutil/strutilutf8.c utf8_tool_skip_chars_to (struct utf8_tool *tool, int to_ident)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L647'>tool</a>              647 lib/strutil/strutilutf8.c     while (to_ident &gt; tool-&gt;ident &amp;&amp; tool-&gt;checked[0] != '\0')</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L649'>tool</a>              649 lib/strutil/strutilutf8.c         uni = g_utf8_get_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L652'>tool</a>              652 lib/strutil/strutilutf8.c             tool-&gt;ident++;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L654'>tool</a>              654 lib/strutil/strutilutf8.c                 tool-&gt;ident++;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L656'>tool</a>              656 lib/strutil/strutilutf8.c         tool-&gt;checked = g_utf8_next_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L659'>tool</a>              659 lib/strutil/strutilutf8.c     uni = g_utf8_get_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L662'>tool</a>              662 lib/strutil/strutilutf8.c         tool-&gt;checked = g_utf8_next_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L663'>tool</a>              663 lib/strutil/strutilutf8.c         uni = g_utf8_get_char (tool-&gt;checked);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L688'>tool</a>              688 lib/strutil/strutilutf8.c     struct utf8_tool tool;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L692'>tool</a>              692 lib/strutil/strutilutf8.c     tool.checked = pre_form-&gt;text;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L693'>tool</a>              693 lib/strutil/strutilutf8.c     tool.actual = result;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L694'>tool</a>              694 lib/strutil/strutilutf8.c     tool.remain = sizeof (result);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L695'>tool</a>              695 lib/strutil/strutilutf8.c     tool.compose = FALSE;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L703'>tool</a>              703 lib/strutil/strutilutf8.c             tool.ident = (width - pre_form-&gt;width) / 2;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L706'>tool</a>              706 lib/strutil/strutilutf8.c             tool.ident = width - pre_form-&gt;width;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L709'>tool</a>              709 lib/strutil/strutilutf8.c             tool.ident = 0;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L713'>tool</a>              713 lib/strutil/strutilutf8.c         utf8_tool_insert_space (&amp;tool, tool.ident);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L714'>tool</a>              714 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to_end (&amp;tool);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L715'>tool</a>              715 lib/strutil/strutilutf8.c         utf8_tool_insert_space (&amp;tool, width - pre_form-&gt;width - tool.ident);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L719'>tool</a>              719 lib/strutil/strutilutf8.c         tool.ident = 0;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L720'>tool</a>              720 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to (&amp;tool, width / 2);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L721'>tool</a>              721 lib/strutil/strutilutf8.c         utf8_tool_insert_char (&amp;tool, '~');</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L723'>tool</a>              723 lib/strutil/strutilutf8.c         tool.ident = 0;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L724'>tool</a>              724 lib/strutil/strutilutf8.c         utf8_tool_skip_chars_to (&amp;tool, pre_form-&gt;width - width + 1);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L725'>tool</a>              725 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to_end (&amp;tool);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L726'>tool</a>              726 lib/strutil/strutilutf8.c         utf8_tool_insert_space (&amp;tool, width - (pre_form-&gt;width - tool.ident + 1));</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L733'>tool</a>              733 lib/strutil/strutilutf8.c             tool.ident = (width - pre_form-&gt;width) / 2;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L736'>tool</a>              736 lib/strutil/strutilutf8.c             tool.ident = width - pre_form-&gt;width;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L739'>tool</a>              739 lib/strutil/strutilutf8.c             tool.ident = 0;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L743'>tool</a>              743 lib/strutil/strutilutf8.c         utf8_tool_skip_chars_to (&amp;tool, 0);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L744'>tool</a>              744 lib/strutil/strutilutf8.c         utf8_tool_insert_space (&amp;tool, tool.ident);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L745'>tool</a>              745 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to (&amp;tool, width);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L746'>tool</a>              746 lib/strutil/strutilutf8.c         utf8_tool_insert_space (&amp;tool, width - tool.ident);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L749'>tool</a>              749 lib/strutil/strutilutf8.c     tool.actual[0] = '\0';</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L750'>tool</a>              750 lib/strutil/strutilutf8.c     if (tool.compose)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L762'>tool</a>              762 lib/strutil/strutilutf8.c     struct utf8_tool tool;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L774'>tool</a>              774 lib/strutil/strutilutf8.c     tool.checked = pre_form-&gt;text;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L775'>tool</a>              775 lib/strutil/strutilutf8.c     tool.actual = result;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L776'>tool</a>              776 lib/strutil/strutilutf8.c     tool.remain = sizeof (result);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L777'>tool</a>              777 lib/strutil/strutilutf8.c     tool.compose = FALSE;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L780'>tool</a>              780 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to_end (&amp;tool);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L783'>tool</a>              783 lib/strutil/strutilutf8.c         memset (tool.actual, '.', width1);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L784'>tool</a>              784 lib/strutil/strutilutf8.c         tool.actual += width1;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L785'>tool</a>              785 lib/strutil/strutilutf8.c         tool.remain -= width1;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L789'>tool</a>              789 lib/strutil/strutilutf8.c         memset (tool.actual, '.', 3);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L790'>tool</a>              790 lib/strutil/strutilutf8.c         tool.actual += 3;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L791'>tool</a>              791 lib/strutil/strutilutf8.c         tool.remain -= 3;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L793'>tool</a>              793 lib/strutil/strutilutf8.c         tool.ident = 0;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L794'>tool</a>              794 lib/strutil/strutilutf8.c         utf8_tool_skip_chars_to (&amp;tool, pre_form-&gt;width - width1 + 3);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L795'>tool</a>              795 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to_end (&amp;tool);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L798'>tool</a>              798 lib/strutil/strutilutf8.c     tool.actual[0] = '\0';</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L799'>tool</a>              799 lib/strutil/strutilutf8.c     if (tool.compose)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L840'>tool</a>              840 lib/strutil/strutilutf8.c     struct utf8_tool tool;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L844'>tool</a>              844 lib/strutil/strutilutf8.c     tool.checked = pre_form-&gt;text;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L845'>tool</a>              845 lib/strutil/strutilutf8.c     tool.actual = result;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L846'>tool</a>              846 lib/strutil/strutilutf8.c     tool.remain = sizeof (result);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L847'>tool</a>              847 lib/strutil/strutilutf8.c     tool.compose = FALSE;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L849'>tool</a>              849 lib/strutil/strutilutf8.c     tool.ident = -start;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L850'>tool</a>              850 lib/strutil/strutilutf8.c     utf8_tool_skip_chars_to (&amp;tool, 0);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L851'>tool</a>              851 lib/strutil/strutilutf8.c     if (tool.ident &lt; 0)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L852'>tool</a>              852 lib/strutil/strutilutf8.c         tool.ident = 0;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L853'>tool</a>              853 lib/strutil/strutilutf8.c     utf8_tool_insert_space (&amp;tool, tool.ident);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L855'>tool</a>              855 lib/strutil/strutilutf8.c     utf8_tool_copy_chars_to (&amp;tool, width);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L856'>tool</a>              856 lib/strutil/strutilutf8.c     utf8_tool_insert_space (&amp;tool, width - tool.ident);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L858'>tool</a>              858 lib/strutil/strutilutf8.c     tool.actual[0] = '\0';</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L859'>tool</a>              859 lib/strutil/strutilutf8.c     if (tool.compose)</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L871'>tool</a>              871 lib/strutil/strutilutf8.c     struct utf8_tool tool;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L877'>tool</a>              877 lib/strutil/strutilutf8.c     tool.checked = pre_form-&gt;text;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L878'>tool</a>              878 lib/strutil/strutilutf8.c     tool.actual = result;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L879'>tool</a>              879 lib/strutil/strutilutf8.c     tool.remain = sizeof (result);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L880'>tool</a>              880 lib/strutil/strutilutf8.c     tool.compose = FALSE;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L883'>tool</a>              883 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to_end (&amp;tool);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L886'>tool</a>              886 lib/strutil/strutilutf8.c         tool.ident = 0;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L887'>tool</a>              887 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to (&amp;tool, width1 / 2);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L888'>tool</a>              888 lib/strutil/strutilutf8.c         utf8_tool_insert_char (&amp;tool, '~');</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L890'>tool</a>              890 lib/strutil/strutilutf8.c         tool.ident = 0;</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L891'>tool</a>              891 lib/strutil/strutilutf8.c         utf8_tool_skip_chars_to (&amp;tool, pre_form-&gt;width - width1 + 1);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L892'>tool</a>              892 lib/strutil/strutilutf8.c         utf8_tool_copy_chars_to_end (&amp;tool);</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L895'>tool</a>              895 lib/strutil/strutilutf8.c     tool.actual[0] = '\0';</span>
+<span class='curline'><a href='../S/lib--strutil--strutilutf8.c.html#L896'>tool</a>              896 lib/strutil/strutilutf8.c     if (tool.compose)</span>
+</pre>
+</body>
+</html>

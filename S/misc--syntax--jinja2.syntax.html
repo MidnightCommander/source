@@ -1,0 +1,328 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>misc/syntax/jinja2.syntax</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/misc.html'>misc</a>/<a href='../files/misc--syntax.html'>syntax</a>/jinja2.syntax</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/misc.html'>misc</a>/<a href='../files/misc--syntax.html'>syntax</a>/jinja2.syntax</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 misc/syntax/jinja2.syntax'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># Jinja2 template syntax highlighting
+<a id='L2' name='L2'></a>#
+<a id='L3' name='L3'></a># Reference:
+<a id='L4' name='L4'></a>#   https://jinja.palletsprojects.com/en/stable/templates/
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># Highlights the Jinja2 template constructs:
+<a id='L7' name='L7'></a>#   {{ ... }}    output / expression tags
+<a id='L8' name='L8'></a>#   {% ... %}    statement / block tags (if / for / set / block / macro / ...)
+<a id='L9' name='L9'></a>#   {# ... #}    comments
+<a id='L10' name='L10'></a>#   # ...        line comments (typical in config templates)
+<a id='L11' name='L11'></a>#   "..." '...'  strings
+<a id='L12' name='L12'></a>#   numbers
+<a id='L13' name='L13'></a># and colors every builtin filter, test and global function as a builtin name.
+<a id='L14' name='L14'></a> 
+<a id='L15' name='L15'></a>context default
+<a id='L16' name='L16'></a>    # numbers in the template body (engine takes the first matching rule at a
+<a id='L17' name='L17'></a>    # position, so most specific forms go first: decimal+exp, exp, decimal, int)
+<a id='L18' name='L18'></a>    keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\]\{eE\}\{\+-\}\{0123456789\}\[0123456789\] cyan
+<a id='L19' name='L19'></a>    keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\]\{eE\}\{0123456789\}\[0123456789\] cyan
+<a id='L20' name='L20'></a>    keyword whole \{0123456789\}\[0123456789\]\{eE\}\{\+-\}\{0123456789\}\[0123456789\] cyan
+<a id='L21' name='L21'></a>    keyword whole \{0123456789\}\[0123456789\]\{eE\}\{0123456789\}\[0123456789\] cyan
+<a id='L22' name='L22'></a>    keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\] cyan
+<a id='L23' name='L23'></a>    keyword whole \{0123456789\}\[0123456789\] cyan
+<a id='L24' name='L24'></a>    keyword whole \{0123456789\} cyan
+<a id='L25' name='L25'></a> 
+<a id='L26' name='L26'></a>    # jinja2 statement / block tag: {% ... %}
+<a id='L27' name='L27'></a>    context {% %} brightcyan
+<a id='L28' name='L28'></a>        # statement keywords
+<a id='L29' name='L29'></a>        keyword whole if white
+<a id='L30' name='L30'></a>        keyword whole elif white
+<a id='L31' name='L31'></a>        keyword whole else white
+<a id='L32' name='L32'></a>        keyword whole endif white
+<a id='L33' name='L33'></a>        keyword whole for white
+<a id='L34' name='L34'></a>        keyword whole endfor white
+<a id='L35' name='L35'></a>        keyword whole set white
+<a id='L36' name='L36'></a>        keyword whole endset white
+<a id='L37' name='L37'></a>        keyword whole macro white
+<a id='L38' name='L38'></a>        keyword whole endmacro white
+<a id='L39' name='L39'></a>        keyword whole call white
+<a id='L40' name='L40'></a>        keyword whole endcall white
+<a id='L41' name='L41'></a>        keyword whole filter white
+<a id='L42' name='L42'></a>        keyword whole endfilter white
+<a id='L43' name='L43'></a>        keyword whole extends white
+<a id='L44' name='L44'></a>        keyword whole block white
+<a id='L45' name='L45'></a>        keyword whole endblock white
+<a id='L46' name='L46'></a>        keyword whole include white
+<a id='L47' name='L47'></a>        keyword whole import white
+<a id='L48' name='L48'></a>        keyword whole from white
+<a id='L49' name='L49'></a>        keyword whole as white
+<a id='L50' name='L50'></a>        keyword whole raw white
+<a id='L51' name='L51'></a>        keyword whole endraw white
+<a id='L52' name='L52'></a>        keyword whole autoescape white
+<a id='L53' name='L53'></a>        keyword whole endautoescape white
+<a id='L54' name='L54'></a>        keyword whole scoped white
+<a id='L55' name='L55'></a>        keyword whole required white
+<a id='L56' name='L56'></a>        keyword whole recursive white
+<a id='L57' name='L57'></a>        keyword whole ignore white
+<a id='L58' name='L58'></a>        keyword whole missing white
+<a id='L59' name='L59'></a>        keyword whole with white
+<a id='L60' name='L60'></a>        keyword whole without white
+<a id='L61' name='L61'></a>        keyword whole context white
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a>        # operators
+<a id='L64' name='L64'></a>        keyword whole and brightmagenta
+<a id='L65' name='L65'></a>        keyword whole or brightmagenta
+<a id='L66' name='L66'></a>        keyword whole not brightmagenta
+<a id='L67' name='L67'></a>        keyword whole in brightmagenta
+<a id='L68' name='L68'></a>        keyword whole is brightmagenta
+<a id='L69' name='L69'></a> 
+<a id='L70' name='L70'></a>        # literals
+<a id='L71' name='L71'></a>        keyword whole true magenta
+<a id='L72' name='L72'></a>        keyword whole false magenta
+<a id='L73' name='L73'></a>        keyword whole none magenta
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a>        # pipe (filter separator)
+<a id='L76' name='L76'></a>        keyword | brightmagenta
+<a id='L77' name='L77'></a> 
+<a id='L78' name='L78'></a>        # builtin filters
+<a id='L79' name='L79'></a>        keyword whole abs brightgreen
+<a id='L80' name='L80'></a>        keyword whole attr brightgreen
+<a id='L81' name='L81'></a>        keyword whole batch brightgreen
+<a id='L82' name='L82'></a>        keyword whole capitalize brightgreen
+<a id='L83' name='L83'></a>        keyword whole center brightgreen
+<a id='L84' name='L84'></a>        keyword whole default brightgreen
+<a id='L85' name='L85'></a>        keyword whole dictsort brightgreen
+<a id='L86' name='L86'></a>        keyword whole escape brightgreen
+<a id='L87' name='L87'></a>        keyword whole filesizeformat brightgreen
+<a id='L88' name='L88'></a>        keyword whole first brightgreen
+<a id='L89' name='L89'></a>        keyword whole float brightgreen
+<a id='L90' name='L90'></a>        keyword whole forceescape brightgreen
+<a id='L91' name='L91'></a>        keyword whole format brightgreen
+<a id='L92' name='L92'></a>        keyword whole groupby brightgreen
+<a id='L93' name='L93'></a>        keyword whole indent brightgreen
+<a id='L94' name='L94'></a>        keyword whole int brightgreen
+<a id='L95' name='L95'></a>        keyword whole items brightgreen
+<a id='L96' name='L96'></a>        keyword whole join brightgreen
+<a id='L97' name='L97'></a>        keyword whole last brightgreen
+<a id='L98' name='L98'></a>        keyword whole length brightgreen
+<a id='L99' name='L99'></a>        keyword whole list brightgreen
+<a id='L100' name='L100'></a>        keyword whole lower brightgreen
+<a id='L101' name='L101'></a>        keyword whole map brightgreen
+<a id='L102' name='L102'></a>        keyword whole max brightgreen
+<a id='L103' name='L103'></a>        keyword whole min brightgreen
+<a id='L104' name='L104'></a>        keyword whole pprint brightgreen
+<a id='L105' name='L105'></a>        keyword whole random brightgreen
+<a id='L106' name='L106'></a>        keyword whole reject brightgreen
+<a id='L107' name='L107'></a>        keyword whole rejectattr brightgreen
+<a id='L108' name='L108'></a>        keyword whole replace brightgreen
+<a id='L109' name='L109'></a>        keyword whole reverse brightgreen
+<a id='L110' name='L110'></a>        keyword whole round brightgreen
+<a id='L111' name='L111'></a>        keyword whole safe brightgreen
+<a id='L112' name='L112'></a>        keyword whole select brightgreen
+<a id='L113' name='L113'></a>        keyword whole selectattr brightgreen
+<a id='L114' name='L114'></a>        keyword whole slice brightgreen
+<a id='L115' name='L115'></a>        keyword whole sort brightgreen
+<a id='L116' name='L116'></a>        keyword whole string brightgreen
+<a id='L117' name='L117'></a>        keyword whole striptags brightgreen
+<a id='L118' name='L118'></a>        keyword whole sum brightgreen
+<a id='L119' name='L119'></a>        keyword whole title brightgreen
+<a id='L120' name='L120'></a>        keyword whole tojson brightgreen
+<a id='L121' name='L121'></a>        keyword whole trim brightgreen
+<a id='L122' name='L122'></a>        keyword whole truncate brightgreen
+<a id='L123' name='L123'></a>        keyword whole unique brightgreen
+<a id='L124' name='L124'></a>        keyword whole upper brightgreen
+<a id='L125' name='L125'></a>        keyword whole urlencode brightgreen
+<a id='L126' name='L126'></a>        keyword whole urlize brightgreen
+<a id='L127' name='L127'></a>        keyword whole wordcount brightgreen
+<a id='L128' name='L128'></a>        keyword whole wordwrap brightgreen
+<a id='L129' name='L129'></a>        keyword whole xmlattr brightgreen
+<a id='L130' name='L130'></a> 
+<a id='L131' name='L131'></a>        # builtin tests
+<a id='L132' name='L132'></a>        keyword whole boolean yellow
+<a id='L133' name='L133'></a>        keyword whole callable yellow
+<a id='L134' name='L134'></a>        keyword whole defined yellow
+<a id='L135' name='L135'></a>        keyword whole divisibleby yellow
+<a id='L136' name='L136'></a>        keyword whole eq yellow
+<a id='L137' name='L137'></a>        keyword whole escaped yellow
+<a id='L138' name='L138'></a>        keyword whole even yellow
+<a id='L139' name='L139'></a>        keyword whole ge yellow
+<a id='L140' name='L140'></a>        keyword whole gt yellow
+<a id='L141' name='L141'></a>        keyword whole integer yellow
+<a id='L142' name='L142'></a>        keyword whole iterable yellow
+<a id='L143' name='L143'></a>        keyword whole le yellow
+<a id='L144' name='L144'></a>        keyword whole lt yellow
+<a id='L145' name='L145'></a>        keyword whole mapping yellow
+<a id='L146' name='L146'></a>        keyword whole ne yellow
+<a id='L147' name='L147'></a>        keyword whole number yellow
+<a id='L148' name='L148'></a>        keyword whole odd yellow
+<a id='L149' name='L149'></a>        keyword whole sameas yellow
+<a id='L150' name='L150'></a>        keyword whole sequence yellow
+<a id='L151' name='L151'></a>        keyword whole test yellow
+<a id='L152' name='L152'></a>        keyword whole undefined yellow
+<a id='L153' name='L153'></a> 
+<a id='L154' name='L154'></a>        # builtin global functions
+<a id='L155' name='L155'></a>        keyword whole cycler brightblue
+<a id='L156' name='L156'></a>        keyword whole dict brightblue
+<a id='L157' name='L157'></a>        keyword whole joiner brightblue
+<a id='L158' name='L158'></a>        keyword whole lipsum brightblue
+<a id='L159' name='L159'></a>        keyword whole namespace brightblue
+<a id='L160' name='L160'></a>        keyword whole range brightblue
+<a id='L161' name='L161'></a> 
+<a id='L162' name='L162'></a>        # numbers (most specific first, see note in default context)
+<a id='L163' name='L163'></a>        keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\]\{eE\}\{\+-\}\{0123456789\}\[0123456789\] cyan
+<a id='L164' name='L164'></a>        keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\]\{eE\}\{0123456789\}\[0123456789\] cyan
+<a id='L165' name='L165'></a>        keyword whole \{0123456789\}\[0123456789\]\{eE\}\{\+-\}\{0123456789\}\[0123456789\] cyan
+<a id='L166' name='L166'></a>        keyword whole \{0123456789\}\[0123456789\]\{eE\}\{0123456789\}\[0123456789\] cyan
+<a id='L167' name='L167'></a>        keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\] cyan
+<a id='L168' name='L168'></a>        keyword whole \{0123456789\}\[0123456789\] cyan
+<a id='L169' name='L169'></a>        keyword whole \{0123456789\} cyan
+<a id='L170' name='L170'></a> 
+<a id='L171' name='L171'></a>    # jinja2 expression tag: {{ ... }}
+<a id='L172' name='L172'></a>    context {{ }} brightred
+<a id='L173' name='L173'></a>        # operators (incl. inline if-expression)
+<a id='L174' name='L174'></a>        keyword whole and brightmagenta
+<a id='L175' name='L175'></a>        keyword whole or brightmagenta
+<a id='L176' name='L176'></a>        keyword whole not brightmagenta
+<a id='L177' name='L177'></a>        keyword whole in brightmagenta
+<a id='L178' name='L178'></a>        keyword whole is brightmagenta
+<a id='L179' name='L179'></a>        keyword whole if brightgreen
+<a id='L180' name='L180'></a>        keyword whole else brightgreen
+<a id='L181' name='L181'></a> 
+<a id='L182' name='L182'></a>        # literals
+<a id='L183' name='L183'></a>        keyword whole true magenta
+<a id='L184' name='L184'></a>        keyword whole false magenta
+<a id='L185' name='L185'></a>        keyword whole none magenta
+<a id='L186' name='L186'></a> 
+<a id='L187' name='L187'></a>        # pipe (filter separator)
+<a id='L188' name='L188'></a>        keyword | brightmagenta
+<a id='L189' name='L189'></a> 
+<a id='L190' name='L190'></a>        # builtin filters
+<a id='L191' name='L191'></a>        keyword whole abs brightgreen
+<a id='L192' name='L192'></a>        keyword whole attr brightgreen
+<a id='L193' name='L193'></a>        keyword whole batch brightgreen
+<a id='L194' name='L194'></a>        keyword whole capitalize brightgreen
+<a id='L195' name='L195'></a>        keyword whole center brightgreen
+<a id='L196' name='L196'></a>        keyword whole default brightgreen
+<a id='L197' name='L197'></a>        keyword whole dictsort brightgreen
+<a id='L198' name='L198'></a>        keyword whole escape brightgreen
+<a id='L199' name='L199'></a>        keyword whole filesizeformat brightgreen
+<a id='L200' name='L200'></a>        keyword whole first brightgreen
+<a id='L201' name='L201'></a>        keyword whole float brightgreen
+<a id='L202' name='L202'></a>        keyword whole forceescape brightgreen
+<a id='L203' name='L203'></a>        keyword whole format brightgreen
+<a id='L204' name='L204'></a>        keyword whole groupby brightgreen
+<a id='L205' name='L205'></a>        keyword whole indent brightgreen
+<a id='L206' name='L206'></a>        keyword whole int brightgreen
+<a id='L207' name='L207'></a>        keyword whole items brightgreen
+<a id='L208' name='L208'></a>        keyword whole join brightgreen
+<a id='L209' name='L209'></a>        keyword whole last brightgreen
+<a id='L210' name='L210'></a>        keyword whole length brightgreen
+<a id='L211' name='L211'></a>        keyword whole list brightgreen
+<a id='L212' name='L212'></a>        keyword whole lower brightgreen
+<a id='L213' name='L213'></a>        keyword whole map brightgreen
+<a id='L214' name='L214'></a>        keyword whole max brightgreen
+<a id='L215' name='L215'></a>        keyword whole min brightgreen
+<a id='L216' name='L216'></a>        keyword whole pprint brightgreen
+<a id='L217' name='L217'></a>        keyword whole random brightgreen
+<a id='L218' name='L218'></a>        keyword whole reject brightgreen
+<a id='L219' name='L219'></a>        keyword whole rejectattr brightgreen
+<a id='L220' name='L220'></a>        keyword whole replace brightgreen
+<a id='L221' name='L221'></a>        keyword whole reverse brightgreen
+<a id='L222' name='L222'></a>        keyword whole round brightgreen
+<a id='L223' name='L223'></a>        keyword whole safe brightgreen
+<a id='L224' name='L224'></a>        keyword whole select brightgreen
+<a id='L225' name='L225'></a>        keyword whole selectattr brightgreen
+<a id='L226' name='L226'></a>        keyword whole slice brightgreen
+<a id='L227' name='L227'></a>        keyword whole sort brightgreen
+<a id='L228' name='L228'></a>        keyword whole string brightgreen
+<a id='L229' name='L229'></a>        keyword whole striptags brightgreen
+<a id='L230' name='L230'></a>        keyword whole sum brightgreen
+<a id='L231' name='L231'></a>        keyword whole title brightgreen
+<a id='L232' name='L232'></a>        keyword whole tojson brightgreen
+<a id='L233' name='L233'></a>        keyword whole trim brightgreen
+<a id='L234' name='L234'></a>        keyword whole truncate brightgreen
+<a id='L235' name='L235'></a>        keyword whole unique brightgreen
+<a id='L236' name='L236'></a>        keyword whole upper brightgreen
+<a id='L237' name='L237'></a>        keyword whole urlencode brightgreen
+<a id='L238' name='L238'></a>        keyword whole urlize brightgreen
+<a id='L239' name='L239'></a>        keyword whole wordcount brightgreen
+<a id='L240' name='L240'></a>        keyword whole wordwrap brightgreen
+<a id='L241' name='L241'></a>        keyword whole xmlattr brightgreen
+<a id='L242' name='L242'></a> 
+<a id='L243' name='L243'></a>        # builtin tests
+<a id='L244' name='L244'></a>        keyword whole boolean yellow
+<a id='L245' name='L245'></a>        keyword whole callable yellow
+<a id='L246' name='L246'></a>        keyword whole defined yellow
+<a id='L247' name='L247'></a>        keyword whole divisibleby yellow
+<a id='L248' name='L248'></a>        keyword whole eq yellow
+<a id='L249' name='L249'></a>        keyword whole escaped yellow
+<a id='L250' name='L250'></a>        keyword whole even yellow
+<a id='L251' name='L251'></a>        keyword whole ge yellow
+<a id='L252' name='L252'></a>        keyword whole gt yellow
+<a id='L253' name='L253'></a>        keyword whole integer yellow
+<a id='L254' name='L254'></a>        keyword whole iterable yellow
+<a id='L255' name='L255'></a>        keyword whole le yellow
+<a id='L256' name='L256'></a>        keyword whole lt yellow
+<a id='L257' name='L257'></a>        keyword whole mapping yellow
+<a id='L258' name='L258'></a>        keyword whole ne yellow
+<a id='L259' name='L259'></a>        keyword whole number yellow
+<a id='L260' name='L260'></a>        keyword whole odd yellow
+<a id='L261' name='L261'></a>        keyword whole sameas yellow
+<a id='L262' name='L262'></a>        keyword whole sequence yellow
+<a id='L263' name='L263'></a>        keyword whole test yellow
+<a id='L264' name='L264'></a>        keyword whole undefined yellow
+<a id='L265' name='L265'></a> 
+<a id='L266' name='L266'></a>        # builtin global functions
+<a id='L267' name='L267'></a>        keyword whole cycler brightblue
+<a id='L268' name='L268'></a>        keyword whole dict brightblue
+<a id='L269' name='L269'></a>        keyword whole joiner brightblue
+<a id='L270' name='L270'></a>        keyword whole lipsum brightblue
+<a id='L271' name='L271'></a>        keyword whole namespace brightblue
+<a id='L272' name='L272'></a>        keyword whole range brightblue
+<a id='L273' name='L273'></a> 
+<a id='L274' name='L274'></a>        # builtin function
+<a id='L275' name='L275'></a>        keyword whole super yellow
+<a id='L276' name='L276'></a> 
+<a id='L277' name='L277'></a>        # numbers (most specific first, see note in default context)
+<a id='L278' name='L278'></a>        keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\]\{eE\}\{\+-\}\{0123456789\}\[0123456789\] cyan
+<a id='L279' name='L279'></a>        keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\]\{eE\}\{0123456789\}\[0123456789\] cyan
+<a id='L280' name='L280'></a>        keyword whole \{0123456789\}\[0123456789\]\{eE\}\{\+-\}\{0123456789\}\[0123456789\] cyan
+<a id='L281' name='L281'></a>        keyword whole \{0123456789\}\[0123456789\]\{eE\}\{0123456789\}\[0123456789\] cyan
+<a id='L282' name='L282'></a>        keyword whole \{0123456789\}\[0123456789\]\.\{0123456789\}\[0123456789\] cyan
+<a id='L283' name='L283'></a>        keyword whole \{0123456789\}\[0123456789\] cyan
+<a id='L284' name='L284'></a>        keyword whole \{0123456789\} cyan
+<a id='L285' name='L285'></a> 
+<a id='L286' name='L286'></a>    # jinja2 comment: {# ... #}
+<a id='L287' name='L287'></a>    context {# #} brown
+<a id='L288' name='L288'></a> 
+<a id='L289' name='L289'></a>    # line comment: # to end of line
+<a id='L290' name='L290'></a>    context # \n brown
+<a id='L291' name='L291'></a> 
+<a id='L292' name='L292'></a>    # strings
+<a id='L293' name='L293'></a>    context " " green
+<a id='L294' name='L294'></a>    context ' ' green
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+294 misc/syntax/jinja2.syntax'  /> */</em>
+</body>
+</html>

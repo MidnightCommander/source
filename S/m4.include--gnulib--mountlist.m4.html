@@ -1,0 +1,378 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/gnulib/mountlist.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/<a href='../files/m4.include--gnulib.html'>gnulib</a>/mountlist.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/<a href='../files/m4.include--gnulib.html'>gnulib</a>/mountlist.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/gnulib/mountlist.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a># mountlist.m4
+<a id='L2' name='L2'></a># serial 20
+<a id='L3' name='L3'></a>dnl Copyright (C) 2002-2006, 2009-2025 Free Software Foundation, Inc.
+<a id='L4' name='L4'></a>dnl This file is free software; the Free Software Foundation
+<a id='L5' name='L5'></a>dnl gives unlimited permission to copy and/or distribute it,
+<a id='L6' name='L6'></a>dnl with or without modifications, as long as this notice is preserved.
+<a id='L7' name='L7'></a>dnl This file is offered as-is, without any warranty.
+<a id='L8' name='L8'></a> 
+<a id='L9' name='L9'></a>dnl From Jim Meyering.
+<a id='L10' name='L10'></a> 
+<a id='L11' name='L11'></a>AC_PREREQ([2.60])
+<a id='L12' name='L12'></a> 
+<a id='L13' name='L13'></a>AC_DEFUN([gl_MOUNTLIST],
+<a id='L14' name='L14'></a>[
+<a id='L15' name='L15'></a>  AC_REQUIRE([AC_CANONICAL_HOST])
+<a id='L16' name='L16'></a>  AC_CHECK_FUNCS([listmntent])
+<a id='L17' name='L17'></a>  AC_CHECK_HEADERS_ONCE([sys/param.h sys/statvfs.h])
+<a id='L18' name='L18'></a> 
+<a id='L19' name='L19'></a>  # We must include grp.h before ucred.h on OSF V4.0, since ucred.h uses
+<a id='L20' name='L20'></a>  # NGROUPS (as the array dimension for a struct member) without a definition.
+<a id='L21' name='L21'></a>  AC_CHECK_HEADERS([sys/ucred.h], [], [], [#include &lt;grp.h&gt;])
+<a id='L22' name='L22'></a> 
+<a id='L23' name='L23'></a>  AC_CHECK_HEADERS([sys/mount.h], [], [],
+<a id='L24' name='L24'></a>    [AC_INCLUDES_DEFAULT
+<a id='L25' name='L25'></a>     [#if HAVE_SYS_PARAM_H
+<a id='L26' name='L26'></a>       #include &lt;sys/param.h&gt;
+<a id='L27' name='L27'></a>      #endif
+<a id='L28' name='L28'></a>    ]])
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>  AC_CHECK_HEADERS([mntent.h sys/fs_types.h])
+<a id='L31' name='L31'></a>  getfsstat_includes="\
+<a id='L32' name='L32'></a>$ac_includes_default
+<a id='L33' name='L33'></a>#if HAVE_SYS_PARAM_H
+<a id='L34' name='L34'></a># include &lt;sys/param.h&gt; /* needed by powerpc-apple-darwin1.3.7 */
+<a id='L35' name='L35'></a>#endif
+<a id='L36' name='L36'></a>#if HAVE_SYS_UCRED_H
+<a id='L37' name='L37'></a># include &lt;grp.h&gt; /* needed for definition of NGROUPS */
+<a id='L38' name='L38'></a># include &lt;sys/ucred.h&gt; /* needed by powerpc-apple-darwin1.3.7 */
+<a id='L39' name='L39'></a>#endif
+<a id='L40' name='L40'></a>#if HAVE_SYS_MOUNT_H
+<a id='L41' name='L41'></a># include &lt;sys/mount.h&gt;
+<a id='L42' name='L42'></a>#endif
+<a id='L43' name='L43'></a>#if HAVE_SYS_FS_TYPES_H
+<a id='L44' name='L44'></a># include &lt;sys/fs_types.h&gt; /* needed by powerpc-apple-darwin1.3.7 */
+<a id='L45' name='L45'></a>#endif
+<a id='L46' name='L46'></a>"
+<a id='L47' name='L47'></a>  AC_CHECK_MEMBERS([struct fsstat.f_fstypename],,,[$getfsstat_includes])
+<a id='L48' name='L48'></a> 
+<a id='L49' name='L49'></a>  # Determine how to get the list of mounted file systems.
+<a id='L50' name='L50'></a>  ac_list_mounted_fs=
+<a id='L51' name='L51'></a> 
+<a id='L52' name='L52'></a>  # If the getmntent function is available but not in the standard library,
+<a id='L53' name='L53'></a>  # make sure LIBS contains the appropriate -l option.
+<a id='L54' name='L54'></a>  AC_FUNC_GETMNTENT
+<a id='L55' name='L55'></a> 
+<a id='L56' name='L56'></a>  if test -z "$ac_list_mounted_fs"; then
+<a id='L57' name='L57'></a>    # AIX.
+<a id='L58' name='L58'></a>    AC_CACHE_CHECK([for mntctl function and struct vmount],
+<a id='L59' name='L59'></a>      [fu_cv_sys_mounted_vmount],
+<a id='L60' name='L60'></a>      [AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include &lt;fshelp.h&gt;]])],
+<a id='L61' name='L61'></a>         [fu_cv_sys_mounted_vmount=yes],
+<a id='L62' name='L62'></a>         [fu_cv_sys_mounted_vmount=no])])
+<a id='L63' name='L63'></a>    if test $fu_cv_sys_mounted_vmount = yes; then
+<a id='L64' name='L64'></a>      ac_list_mounted_fs=found
+<a id='L65' name='L65'></a>      AC_DEFINE([MOUNTED_VMOUNT], [1],
+<a id='L66' name='L66'></a>        [Define if there is a function named mntctl that can be used to read
+<a id='L67' name='L67'></a>         the list of mounted file systems, and there is a system header file
+<a id='L68' name='L68'></a>         that declares 'struct vmount'.  (AIX)])
+<a id='L69' name='L69'></a>    fi
+<a id='L70' name='L70'></a>  fi
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>  if test $ac_cv_func_getmntent = yes; then
+<a id='L73' name='L73'></a> 
+<a id='L74' name='L74'></a>    # This system has the getmntent function.
+<a id='L75' name='L75'></a>    # Determine whether it's the one-argument variant or the two-argument one.
+<a id='L76' name='L76'></a> 
+<a id='L77' name='L77'></a>    if test -z "$ac_list_mounted_fs"; then
+<a id='L78' name='L78'></a>      # glibc, HP-UX, Cygwin, Android, also (obsolete) 4.3BSD, SunOS.
+<a id='L79' name='L79'></a>      AC_CACHE_CHECK([for one-argument getmntent function],
+<a id='L80' name='L80'></a>        [fu_cv_sys_mounted_getmntent1],
+<a id='L81' name='L81'></a>        [AC_COMPILE_IFELSE(
+<a id='L82' name='L82'></a>           [AC_LANG_PROGRAM([[
+<a id='L83' name='L83'></a>/* SunOS 4.1.x /usr/include/mntent.h needs this for FILE */
+<a id='L84' name='L84'></a>#include &lt;stdio.h&gt;
+<a id='L85' name='L85'></a> 
+<a id='L86' name='L86'></a>#include &lt;mntent.h&gt;
+<a id='L87' name='L87'></a>#if defined __ANDROID__        /* Android */
+<a id='L88' name='L88'></a># undef MOUNTED
+<a id='L89' name='L89'></a># define MOUNTED "/proc/mounts"
+<a id='L90' name='L90'></a>#elif !defined MOUNTED
+<a id='L91' name='L91'></a># if defined _PATH_MOUNTED     /* GNU libc  */
+<a id='L92' name='L92'></a>#  define MOUNTED _PATH_MOUNTED
+<a id='L93' name='L93'></a># endif
+<a id='L94' name='L94'></a># if defined MNT_MNTTAB        /* HP-UX.  */
+<a id='L95' name='L95'></a>#  define MOUNTED MNT_MNTTAB
+<a id='L96' name='L96'></a># endif
+<a id='L97' name='L97'></a>#endif
+<a id='L98' name='L98'></a>]],
+<a id='L99' name='L99'></a>              [[struct mntent *mnt = 0; char *table = MOUNTED;
+<a id='L100' name='L100'></a>                if (sizeof mnt &amp;&amp; sizeof table) return 0;
+<a id='L101' name='L101'></a>              ]])],
+<a id='L102' name='L102'></a>           [fu_cv_sys_mounted_getmntent1=yes],
+<a id='L103' name='L103'></a>           [fu_cv_sys_mounted_getmntent1=no])
+<a id='L104' name='L104'></a>        ])
+<a id='L105' name='L105'></a>      if test $fu_cv_sys_mounted_getmntent1 = yes; then
+<a id='L106' name='L106'></a>        ac_list_mounted_fs=found
+<a id='L107' name='L107'></a>        AC_DEFINE([MOUNTED_GETMNTENT1], [1],
+<a id='L108' name='L108'></a>          [Define if there is a function named getmntent for reading the list
+<a id='L109' name='L109'></a>           of mounted file systems, and that function takes a single argument.
+<a id='L110' name='L110'></a>           (4.3BSD, SunOS, HP-UX)])
+<a id='L111' name='L111'></a>        AC_CHECK_FUNCS([setmntent endmntent hasmntopt])
+<a id='L112' name='L112'></a>      fi
+<a id='L113' name='L113'></a>    fi
+<a id='L114' name='L114'></a> 
+<a id='L115' name='L115'></a>    if test -z "$ac_list_mounted_fs"; then
+<a id='L116' name='L116'></a>      # Solaris &gt;= 8.
+<a id='L117' name='L117'></a>      AC_CACHE_CHECK([for getextmntent function],
+<a id='L118' name='L118'></a>        [fu_cv_sys_mounted_getextmntent],
+<a id='L119' name='L119'></a>        [AC_EGREP_HEADER([getextmntent], [sys/mnttab.h],
+<a id='L120' name='L120'></a>           [fu_cv_sys_mounted_getextmntent=yes],
+<a id='L121' name='L121'></a>           [fu_cv_sys_mounted_getextmntent=no])])
+<a id='L122' name='L122'></a>      if test $fu_cv_sys_mounted_getextmntent = yes; then
+<a id='L123' name='L123'></a>        ac_list_mounted_fs=found
+<a id='L124' name='L124'></a>        AC_DEFINE([MOUNTED_GETEXTMNTENT], [1],
+<a id='L125' name='L125'></a>          [Define if there is a function named getextmntent for reading the list
+<a id='L126' name='L126'></a>           of mounted file systems.  (Solaris)])
+<a id='L127' name='L127'></a>      fi
+<a id='L128' name='L128'></a>    fi
+<a id='L129' name='L129'></a> 
+<a id='L130' name='L130'></a>    if test -z "$ac_list_mounted_fs"; then
+<a id='L131' name='L131'></a>      # Solaris &lt; 8, also (obsolete) SVR4.
+<a id='L132' name='L132'></a>      # Solaris &gt;= 8 has the two-argument getmntent but is already handled above.
+<a id='L133' name='L133'></a>      AC_CACHE_CHECK([for two-argument getmntent function],
+<a id='L134' name='L134'></a>        [fu_cv_sys_mounted_getmntent2],
+<a id='L135' name='L135'></a>        [AC_EGREP_HEADER([getmntent], [sys/mnttab.h],
+<a id='L136' name='L136'></a>           [fu_cv_sys_mounted_getmntent2=yes],
+<a id='L137' name='L137'></a>           [fu_cv_sys_mounted_getmntent2=no])
+<a id='L138' name='L138'></a>        ])
+<a id='L139' name='L139'></a>      if test $fu_cv_sys_mounted_getmntent2 = yes; then
+<a id='L140' name='L140'></a>        ac_list_mounted_fs=found
+<a id='L141' name='L141'></a>        AC_DEFINE([MOUNTED_GETMNTENT2], [1],
+<a id='L142' name='L142'></a>          [Define if there is a function named getmntent for reading the list of
+<a id='L143' name='L143'></a>           mounted file systems, and that function takes two arguments.  (SVR4)])
+<a id='L144' name='L144'></a>        AC_CHECK_FUNCS([hasmntopt])
+<a id='L145' name='L145'></a>      fi
+<a id='L146' name='L146'></a>    fi
+<a id='L147' name='L147'></a> 
+<a id='L148' name='L148'></a>  fi
+<a id='L149' name='L149'></a> 
+<a id='L150' name='L150'></a>  if test -z "$ac_list_mounted_fs"; then
+<a id='L151' name='L151'></a>    # (obsolete) Apple Darwin 1.3.
+<a id='L152' name='L152'></a>    # powerpc-apple-darwin1.3.7 needs sys/param.h sys/ucred.h sys/fs_types.h
+<a id='L153' name='L153'></a> 
+<a id='L154' name='L154'></a>    AC_CACHE_CHECK([for getfsstat function],
+<a id='L155' name='L155'></a>      [fu_cv_sys_mounted_getfsstat],
+<a id='L156' name='L156'></a>      [AC_LINK_IFELSE(
+<a id='L157' name='L157'></a>         [AC_LANG_PROGRAM([[
+<a id='L158' name='L158'></a>#include &lt;sys/types.h&gt;
+<a id='L159' name='L159'></a>#if HAVE_STRUCT_FSSTAT_F_FSTYPENAME
+<a id='L160' name='L160'></a># define FS_TYPE(Ent) ((Ent).f_fstypename)
+<a id='L161' name='L161'></a>#else
+<a id='L162' name='L162'></a># define FS_TYPE(Ent) mnt_names[(Ent).f_type]
+<a id='L163' name='L163'></a>#endif
+<a id='L164' name='L164'></a>$getfsstat_includes
+<a id='L165' name='L165'></a>            ]],
+<a id='L166' name='L166'></a>            [[struct statfs *stats;
+<a id='L167' name='L167'></a>              int numsys = getfsstat ((struct statfs *)0, 0L, MNT_WAIT);
+<a id='L168' name='L168'></a>              char *t = FS_TYPE (*stats);
+<a id='L169' name='L169'></a>            ]])],
+<a id='L170' name='L170'></a>         [fu_cv_sys_mounted_getfsstat=yes],
+<a id='L171' name='L171'></a>         [fu_cv_sys_mounted_getfsstat=no])
+<a id='L172' name='L172'></a>      ])
+<a id='L173' name='L173'></a>    if test $fu_cv_sys_mounted_getfsstat = yes; then
+<a id='L174' name='L174'></a>      ac_list_mounted_fs=found
+<a id='L175' name='L175'></a>      AC_DEFINE([MOUNTED_GETFSSTAT], [1],
+<a id='L176' name='L176'></a>        [Define if there is a function named getfsstat for reading the
+<a id='L177' name='L177'></a>         list of mounted file systems.  (obsolete Darwin)])
+<a id='L178' name='L178'></a>    fi
+<a id='L179' name='L179'></a>  fi
+<a id='L180' name='L180'></a> 
+<a id='L181' name='L181'></a>  if test -z "$ac_list_mounted_fs"; then
+<a id='L182' name='L182'></a>    # (obsolete) SVR3
+<a id='L183' name='L183'></a>    AC_CACHE_CHECK([for FIXME existence of three headers],
+<a id='L184' name='L184'></a>      [fu_cv_sys_mounted_fread_fstyp],
+<a id='L185' name='L185'></a>      [AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
+<a id='L186' name='L186'></a>#include &lt;sys/statfs.h&gt;
+<a id='L187' name='L187'></a>#include &lt;sys/fstyp.h&gt;
+<a id='L188' name='L188'></a>#include &lt;mnttab.h&gt;
+<a id='L189' name='L189'></a>]])],
+<a id='L190' name='L190'></a>         [fu_cv_sys_mounted_fread_fstyp=yes],
+<a id='L191' name='L191'></a>         [fu_cv_sys_mounted_fread_fstyp=no])
+<a id='L192' name='L192'></a>      ])
+<a id='L193' name='L193'></a>    if test $fu_cv_sys_mounted_fread_fstyp = yes; then
+<a id='L194' name='L194'></a>      ac_list_mounted_fs=found
+<a id='L195' name='L195'></a>      AC_DEFINE([MOUNTED_FREAD_FSTYP], [1],
+<a id='L196' name='L196'></a>        [Define if (like SVR2) there is no specific function for reading the
+<a id='L197' name='L197'></a>         list of mounted file systems, and your system has these header files:
+<a id='L198' name='L198'></a>         &lt;sys/fstyp.h&gt; and &lt;sys/statfs.h&gt;.  (SVR3)])
+<a id='L199' name='L199'></a>    fi
+<a id='L200' name='L200'></a>  fi
+<a id='L201' name='L201'></a> 
+<a id='L202' name='L202'></a>  if test -z "$ac_list_mounted_fs"; then
+<a id='L203' name='L203'></a>    # Mac OS X, FreeBSD, NetBSD, OpenBSD, Minix, also (obsolete) 4.4BSD.
+<a id='L204' name='L204'></a>    # We cannot use AC_CHECK_FUNCS([getmntinfo]) here, because at the linker
+<a id='L205' name='L205'></a>    # level the function is sometimes called getmntinfo64 or getmntinfo$INODE64
+<a id='L206' name='L206'></a>    # on Mac OS X, __getmntinfo13 on NetBSD and Minix.
+<a id='L207' name='L207'></a>    AC_CACHE_CHECK([for getmntinfo function],
+<a id='L208' name='L208'></a>      [fu_cv_sys_mounted_getmntinfo],
+<a id='L209' name='L209'></a>      [AC_LINK_IFELSE(
+<a id='L210' name='L210'></a>         [AC_LANG_PROGRAM([[
+<a id='L211' name='L211'></a>#if HAVE_SYS_PARAM_H
+<a id='L212' name='L212'></a># include &lt;sys/param.h&gt;
+<a id='L213' name='L213'></a>#endif
+<a id='L214' name='L214'></a>#include &lt;sys/types.h&gt;
+<a id='L215' name='L215'></a>#if HAVE_SYS_MOUNT_H
+<a id='L216' name='L216'></a># include &lt;sys/mount.h&gt;
+<a id='L217' name='L217'></a>#endif
+<a id='L218' name='L218'></a>#if HAVE_SYS_STATVFS_H
+<a id='L219' name='L219'></a># include &lt;sys/statvfs.h&gt;
+<a id='L220' name='L220'></a>#endif
+<a id='L221' name='L221'></a>#include &lt;stdlib.h&gt;
+<a id='L222' name='L222'></a>            ]],
+<a id='L223' name='L223'></a>            [[int count = getmntinfo (NULL, MNT_WAIT);
+<a id='L224' name='L224'></a>            ]])],
+<a id='L225' name='L225'></a>         [fu_cv_sys_mounted_getmntinfo=yes],
+<a id='L226' name='L226'></a>         [fu_cv_sys_mounted_getmntinfo=no])
+<a id='L227' name='L227'></a>      ])
+<a id='L228' name='L228'></a>    if test $fu_cv_sys_mounted_getmntinfo = yes; then
+<a id='L229' name='L229'></a>      AC_CACHE_CHECK([whether getmntinfo returns statvfs structures],
+<a id='L230' name='L230'></a>        [fu_cv_sys_mounted_getmntinfo2],
+<a id='L231' name='L231'></a>        [AC_COMPILE_IFELSE(
+<a id='L232' name='L232'></a>           [AC_LANG_PROGRAM([[
+<a id='L233' name='L233'></a>#if HAVE_SYS_PARAM_H
+<a id='L234' name='L234'></a># include &lt;sys/param.h&gt;
+<a id='L235' name='L235'></a>#endif
+<a id='L236' name='L236'></a>#include &lt;sys/types.h&gt;
+<a id='L237' name='L237'></a>#if HAVE_SYS_MOUNT_H
+<a id='L238' name='L238'></a># include &lt;sys/mount.h&gt;
+<a id='L239' name='L239'></a>#endif
+<a id='L240' name='L240'></a>#if HAVE_SYS_STATVFS_H
+<a id='L241' name='L241'></a># include &lt;sys/statvfs.h&gt;
+<a id='L242' name='L242'></a>#endif
+<a id='L243' name='L243'></a>extern
+<a id='L244' name='L244'></a>#ifdef __cplusplus
+<a id='L245' name='L245'></a>"C"
+<a id='L246' name='L246'></a>#endif
+<a id='L247' name='L247'></a>int getmntinfo (struct statfs **, int);
+<a id='L248' name='L248'></a>              ]], [[]])],
+<a id='L249' name='L249'></a>           [fu_cv_sys_mounted_getmntinfo2=no],
+<a id='L250' name='L250'></a>           [fu_cv_sys_mounted_getmntinfo2=yes])
+<a id='L251' name='L251'></a>        ])
+<a id='L252' name='L252'></a>      if test $fu_cv_sys_mounted_getmntinfo2 = no; then
+<a id='L253' name='L253'></a>        # Mac OS X, FreeBSD, OpenBSD, also (obsolete) 4.4BSD.
+<a id='L254' name='L254'></a>        ac_list_mounted_fs=found
+<a id='L255' name='L255'></a>        AC_DEFINE([MOUNTED_GETMNTINFO], [1],
+<a id='L256' name='L256'></a>          [Define if there is a function named getmntinfo for reading the
+<a id='L257' name='L257'></a>           list of mounted file systems and it returns an array of
+<a id='L258' name='L258'></a>           'struct statfs'.  (4.4BSD, Darwin)])
+<a id='L259' name='L259'></a>      else
+<a id='L260' name='L260'></a>        # NetBSD, Minix.
+<a id='L261' name='L261'></a>        ac_list_mounted_fs=found
+<a id='L262' name='L262'></a>        AC_DEFINE([MOUNTED_GETMNTINFO2], [1],
+<a id='L263' name='L263'></a>          [Define if there is a function named getmntinfo for reading the
+<a id='L264' name='L264'></a>           list of mounted file systems and it returns an array of
+<a id='L265' name='L265'></a>           'struct statvfs'.  (NetBSD 3.0)])
+<a id='L266' name='L266'></a>      fi
+<a id='L267' name='L267'></a>    fi
+<a id='L268' name='L268'></a>  fi
+<a id='L269' name='L269'></a> 
+<a id='L270' name='L270'></a>  if test -z "$ac_list_mounted_fs"; then
+<a id='L271' name='L271'></a>    # Haiku, also (obsolete) BeOS.
+<a id='L272' name='L272'></a>    AC_CHECK_FUNCS([next_dev fs_stat_dev])
+<a id='L273' name='L273'></a>    AC_CHECK_HEADERS([fs_info.h])
+<a id='L274' name='L274'></a>    AC_CACHE_CHECK([for BEOS mounted file system support functions],
+<a id='L275' name='L275'></a>      [fu_cv_sys_mounted_fs_stat_dev],
+<a id='L276' name='L276'></a>      [if test $ac_cv_header_fs_info_h = yes \
+<a id='L277' name='L277'></a>          &amp;&amp; test $ac_cv_func_next_dev = yes \
+<a id='L278' name='L278'></a>          &amp;&amp; test $ac_cv_func_fs_stat_dev = yes; then
+<a id='L279' name='L279'></a>         fu_cv_sys_mounted_fs_stat_dev=yes
+<a id='L280' name='L280'></a>       else
+<a id='L281' name='L281'></a>         fu_cv_sys_mounted_fs_stat_dev=no
+<a id='L282' name='L282'></a>       fi
+<a id='L283' name='L283'></a>      ])
+<a id='L284' name='L284'></a>    if test $fu_cv_sys_mounted_fs_stat_dev = yes; then
+<a id='L285' name='L285'></a>      ac_list_mounted_fs=found
+<a id='L286' name='L286'></a>      AC_DEFINE([MOUNTED_FS_STAT_DEV], [1],
+<a id='L287' name='L287'></a>        [Define if there are functions named next_dev and fs_stat_dev for
+<a id='L288' name='L288'></a>         reading the list of mounted file systems.  (BeOS)])
+<a id='L289' name='L289'></a>    fi
+<a id='L290' name='L290'></a>  fi
+<a id='L291' name='L291'></a> 
+<a id='L292' name='L292'></a>  if test -z "$ac_list_mounted_fs"; then
+<a id='L293' name='L293'></a>    # Interix / BSD alike statvfs
+<a id='L294' name='L294'></a>    # the code is really interix specific, so make sure, we're on it.
+<a id='L295' name='L295'></a>    case "$host" in
+<a id='L296' name='L296'></a>      *-interix*)
+<a id='L297' name='L297'></a>        AC_CHECK_FUNCS([statvfs])
+<a id='L298' name='L298'></a>        if test $ac_cv_func_statvfs = yes; then
+<a id='L299' name='L299'></a>          ac_list_mounted_fs=found
+<a id='L300' name='L300'></a>          AC_DEFINE([MOUNTED_INTERIX_STATVFS], [1],
+<a id='L301' name='L301'></a>            [Define if we are on interix, and ought to use statvfs plus
+<a id='L302' name='L302'></a>             some special knowledge on where mounted file systems can be
+<a id='L303' name='L303'></a>             found. (Interix)])
+<a id='L304' name='L304'></a>        fi
+<a id='L305' name='L305'></a>        ;;
+<a id='L306' name='L306'></a>    esac
+<a id='L307' name='L307'></a>  fi
+<a id='L308' name='L308'></a> 
+<a id='L309' name='L309'></a>  if test -z "$ac_list_mounted_fs"; then
+<a id='L310' name='L310'></a>    case "$host_os" in
+<a id='L311' name='L311'></a>      mingw* | windows*) ac_list_mounted_fs=found ;;
+<a id='L312' name='L312'></a>    esac
+<a id='L313' name='L313'></a>  fi
+<a id='L314' name='L314'></a> 
+<a id='L315' name='L315'></a>  if test -z "$ac_list_mounted_fs"; then
+<a id='L316' name='L316'></a>    AC_DEFINE([MOUNTED_NOT_PORTED], [1],
+<a id='L317' name='L317'></a>      [Define if we don't know how to determine the list of mounted file systems.])
+<a id='L318' name='L318'></a>  fi
+<a id='L319' name='L319'></a> 
+<a id='L320' name='L320'></a>  if test "$ac_list_mounted_fs" = found; then
+<a id='L321' name='L321'></a>    gl_cv_list_mounted_fs=yes
+<a id='L322' name='L322'></a>  else
+<a id='L323' name='L323'></a>    gl_cv_list_mounted_fs=no
+<a id='L324' name='L324'></a>  fi
+<a id='L325' name='L325'></a>])
+<a id='L326' name='L326'></a> 
+<a id='L327' name='L327'></a># Prerequisites of lib/mountlist.c not done by gl_MOUNTLIST.
+<a id='L328' name='L328'></a>AC_DEFUN([gl_PREREQ_MOUNTLIST_EXTRA],
+<a id='L329' name='L329'></a>[
+<a id='L330' name='L330'></a>  dnl Note gl_MOUNTLIST checks for mntent.h, not sys/mntent.h.
+<a id='L331' name='L331'></a>  AC_CHECK_HEADERS([sys/mntent.h])
+<a id='L332' name='L332'></a>  AC_HEADER_MAJOR()dnl for use of makedev ()
+<a id='L333' name='L333'></a>  gl_FSTYPENAME
+<a id='L334' name='L334'></a>])
+<a id='L335' name='L335'></a> 
+<a id='L336' name='L336'></a># Replace Autoconf's AC_FUNC_GETMNTENT to omit checks that are unnecessary
+<a id='L337' name='L337'></a># nowadays.
+<a id='L338' name='L338'></a>AC_DEFUN([AC_FUNC_GETMNTENT],
+<a id='L339' name='L339'></a>[
+<a id='L340' name='L340'></a>  # getmntent is in the standard C library on most systems, but in -lgen on
+<a id='L341' name='L341'></a>  # Unixware.
+<a id='L342' name='L342'></a>  AC_SEARCH_LIBS([getmntent], [gen])
+<a id='L343' name='L343'></a>  AC_CHECK_FUNCS([getmntent])
+<a id='L344' name='L344'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+344 m4.include/gnulib/mountlist.m4'  /> */</em>
+</body>
+</html>
