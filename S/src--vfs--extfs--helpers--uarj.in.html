@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>src/vfs/extfs/helpers/uarj.in</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uarj.in</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/src.html'>src</a>/<a href='../files/src--vfs.html'>vfs</a>/<a href='../files/src--vfs--extfs.html'>extfs</a>/<a href='../files/src--vfs--extfs--helpers.html'>helpers</a>/uarj.in</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 src/vfs/extfs/helpers/uarj.in'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>#! @PERL@
+<a id='L2' name='L2'></a>#                                                                     
+<a id='L3' name='L3'></a># Written by Viatcheslav Odintsov (2:5020/181)
+<a id='L4' name='L4'></a># (C) 2002 ARJ Software Russia.
+<a id='L5' name='L5'></a>#
+<a id='L6' name='L6'></a># Rewritten by Vadim Kalinnikov &lt;moose@ylsoftware.com&gt;
+<a id='L7' name='L7'></a># (C) 2025
+<a id='L8' name='L8'></a>#
+<a id='L9' name='L9'></a># This is an updated parser for ARJ archives in Midnight Commander. You need
+<a id='L10' name='L10'></a># full ARJ rather than UNARJ. Open-source ARJ v 3.10 for Unix platforms can
+<a id='L11' name='L11'></a># be obtained here:
+<a id='L12' name='L12'></a>#
+<a id='L13' name='L13'></a># - https://www.sourceforge.net/projects/arj/
+<a id='L14' name='L14'></a># - https://arj.sourceforge.net/
+<a id='L15' name='L15'></a> 
+<a id='L16' name='L16'></a>use strict;
+<a id='L17' name='L17'></a>use warnings;
+<a id='L18' name='L18'></a># disabled, because test harness doesn't have it
+<a id='L19' name='L19'></a>#use diagnostics;
+<a id='L20' name='L20'></a> 
+<a id='L21' name='L21'></a> 
+<a id='L22' name='L22'></a>sub mcarjfs_list($) {
+<a id='L23' name='L23'></a>    my $arc = shift;
+<a id='L24' name='L24'></a>    # file information
+<a id='L25' name='L25'></a>    my @fileinfo = stat($arc);
+<a id='L26' name='L26'></a>    # UID/GID from file
+<a id='L27' name='L27'></a>    my $uid = getpwuid($fileinfo[4]) || "root";
+<a id='L28' name='L28'></a>    my $gid = getgrgid($fileinfo[5]) || "root";
+<a id='L29' name='L29'></a> 
+<a id='L30' name='L30'></a>    use Data::Dumper;
+<a id='L31' name='L31'></a> 
+<a id='L32' name='L32'></a>    my $arc_list_cmd = "arj -+ -ja1 v \"$arc\"";
+<a id='L33' name='L33'></a>    $arc_list_cmd = $ENV{MC_TEST_EXTFS_LIST_CMD} if defined $ENV{MC_TEST_EXTFS_LIST_CMD};
+<a id='L34' name='L34'></a>    
+<a id='L35' name='L35'></a>    my @lines = `$arc_list_cmd`;
+<a id='L36' name='L36'></a>    chomp @lines;
+<a id='L37' name='L37'></a>    if ($? != 0) { exit 1; } # arj command error (exit code != 0)
+<a id='L38' name='L38'></a> 
+<a id='L39' name='L39'></a>    my @list;
+<a id='L40' name='L40'></a>    foreach my $line (@lines) {
+<a id='L41' name='L41'></a>        # start next record
+<a id='L42' name='L42'></a>        if ($line =~ m/^[0-9]+\) (.*)/) {
+<a id='L43' name='L43'></a>            # New item
+<a id='L44' name='L44'></a>            push @list, {};
+<a id='L45' name='L45'></a> 
+<a id='L46' name='L46'></a>            # filename
+<a id='L47' name='L47'></a>            $list[-1]-&gt;{filename} = $1;
+<a id='L48' name='L48'></a>            # uid/gid. default values
+<a id='L49' name='L49'></a>            $list[-1]-&gt;{uid} = $uid;
+<a id='L50' name='L50'></a>            $list[-1]-&gt;{gid} = $gid;
+<a id='L51' name='L51'></a>            # size
+<a id='L52' name='L52'></a>            $list[-1]-&gt;{size} = 0;
+<a id='L53' name='L53'></a>            # perm
+<a id='L54' name='L54'></a>            $list[-1]-&gt;{perm} = "----------";
+<a id='L55' name='L55'></a>            # ts
+<a id='L56' name='L56'></a>            $list[-1]-&gt;{ts} = "1970-01-01 00:00:00";
+<a id='L57' name='L57'></a>        }
+<a id='L58' name='L58'></a>        # fileinfo
+<a id='L59' name='L59'></a>        elsif ($line =~ m/^.* (\d+)[\t ]+\d+ \d\.\d{3} (\d{2})-(\d{2})-(\d{2}) (\d{2}:\d{2}:\d{2}) (.{10})/) {
+<a id='L60' name='L60'></a>            # skip if array is empty
+<a id='L61' name='L61'></a>            next if @list == 0;
+<a id='L62' name='L62'></a> 
+<a id='L63' name='L63'></a>            $list[-1]-&gt;{size} = $1;
+<a id='L64' name='L64'></a>            $list[-1]-&gt;{ts} = "$3-$4-$2 $5";
+<a id='L65' name='L65'></a>            $list[-1]-&gt;{perm} = $6;
+<a id='L66' name='L66'></a>        }
+<a id='L67' name='L67'></a>        # Owner
+<a id='L68' name='L68'></a>        elsif ($line =~ m/Owner: (.*)/) {
+<a id='L69' name='L69'></a>            # skip if array is empty
+<a id='L70' name='L70'></a>            next if @list == 0;
+<a id='L71' name='L71'></a> 
+<a id='L72' name='L72'></a>            # maybe "user" or "user/group"
+<a id='L73' name='L73'></a>            my @uinfo = split('/', $1);
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a>            $list[-1]-&gt;{uid} = shift @uinfo || $uid;
+<a id='L76' name='L76'></a>            $list[-1]-&gt;{gid} = shift @uinfo || $gid;
+<a id='L77' name='L77'></a>        }
+<a id='L78' name='L78'></a>        # Symlink
+<a id='L79' name='L79'></a>        elsif ($line =~ m/SymLink -&gt; (.*)/) {
+<a id='L80' name='L80'></a>            # skip if array is empty
+<a id='L81' name='L81'></a>            next if @list == 0;
+<a id='L82' name='L82'></a> 
+<a id='L83' name='L83'></a>            $list[-1]-&gt;{filename} .= " -&gt; $1";
+<a id='L84' name='L84'></a>            $list[-1]-&gt;{perm} =~ s|^.|l|;
+<a id='L85' name='L85'></a>            
+<a id='L86' name='L86'></a>        }
+<a id='L87' name='L87'></a>    }
+<a id='L88' name='L88'></a> 
+<a id='L89' name='L89'></a>    foreach my $item (@list) {
+<a id='L90' name='L90'></a>        printf "%s  1 %s %s %10s %s %s\n",
+<a id='L91' name='L91'></a>            $item-&gt;{perm},
+<a id='L92' name='L92'></a>            $item-&gt;{uid},
+<a id='L93' name='L93'></a>            $item-&gt;{gid},
+<a id='L94' name='L94'></a>            $item-&gt;{size},
+<a id='L95' name='L95'></a>            $item-&gt;{ts},
+<a id='L96' name='L96'></a>            $item-&gt;{filename};
+<a id='L97' name='L97'></a>    }
+<a id='L98' name='L98'></a>}
+<a id='L99' name='L99'></a> 
+<a id='L100' name='L100'></a>sub mcarjfs_copyout($$$)
+<a id='L101' name='L101'></a>{
+<a id='L102' name='L102'></a>    my $arc = shift;
+<a id='L103' name='L103'></a>    my $src = shift;
+<a id='L104' name='L104'></a>    my $dst = shift;
+<a id='L105' name='L105'></a>    system("arj", "-+", "-ja1", "e", "-y", "$arc", "$src", "-jw$dst") == 0 or exit 1;
+<a id='L106' name='L106'></a>}
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a>my $action = shift @ARGV || exit 1;
+<a id='L109' name='L109'></a>my $filename = shift @ARGV || exit 1;
+<a id='L110' name='L110'></a> 
+<a id='L111' name='L111'></a>if ($action eq "list") {
+<a id='L112' name='L112'></a>    mcarjfs_list($filename);
+<a id='L113' name='L113'></a>    exit 0;
+<a id='L114' name='L114'></a>}
+<a id='L115' name='L115'></a>elsif ($action eq "copyout") {
+<a id='L116' name='L116'></a>    my $srcfilename = shift @ARGV || exit 1;
+<a id='L117' name='L117'></a>    my $dstfilename = shift @ARGV || exit 1;
+<a id='L118' name='L118'></a>    mcarjfs_copyout($filename, $srcfilename, $dstfilename);
+<a id='L119' name='L119'></a>    exit 0;
+<a id='L120' name='L120'></a>}
+<a id='L121' name='L121'></a>elsif ($action eq "copyin") {
+<a id='L122' name='L122'></a>    # arj can't add files into subfolders
+<a id='L123' name='L123'></a>    # solutions like "create symlink" from "uzip" are controversial
+<a id='L124' name='L124'></a>    print "copyin not implemented\n";
+<a id='L125' name='L125'></a>    exit 1;
+<a id='L126' name='L126'></a>}
+<a id='L127' name='L127'></a>elsif ($action eq "run") {
+<a id='L128' name='L128'></a>    print "run not implemented\n";
+<a id='L129' name='L129'></a>    exit 1;
+<a id='L130' name='L130'></a>}
+<a id='L131' name='L131'></a>elsif ($action eq "mkdir") {
+<a id='L132' name='L132'></a>    # arj doesn't allow to create subfolders
+<a id='L133' name='L133'></a>    # and doesn't allow to add empty folders
+<a id='L134' name='L134'></a>    print "mkdir not implemented\n";
+<a id='L135' name='L135'></a>    exit 1;
+<a id='L136' name='L136'></a>}
+<a id='L137' name='L137'></a>elsif ($action eq "rmdir") {
+<a id='L138' name='L138'></a>    print "rmdir not implemented\n";
+<a id='L139' name='L139'></a>    exit 1;
+<a id='L140' name='L140'></a>}
+<a id='L141' name='L141'></a>elsif ($action eq "rm") {
+<a id='L142' name='L142'></a>    print "rm not implemented\n";
+<a id='L143' name='L143'></a>    exit 1;
+<a id='L144' name='L144'></a>}
+<a id='L145' name='L145'></a> 
+<a id='L146' name='L146'></a>exit 1;
+<a id='L147' name='L147'></a> 
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+147 src/vfs/extfs/helpers/uarj.in'  /> */</em>
+</body>
+</html>
