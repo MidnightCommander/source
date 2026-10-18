@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>m4.include/mc-with-screen-ncurses.m4</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#TOP'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/m4.include.html'>m4.include</a>/mc-with-screen-ncurses.m4</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/m4.include.html'>m4.include</a>/mc-with-screen-ncurses.m4</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 m4.include/mc-with-screen-ncurses.m4'  /> */</em>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>dnl
+<a id='L2' name='L2'></a>dnl Use the NCurses library.  It can only be requested explicitly,
+<a id='L3' name='L3'></a>dnl so just fail if anything goes wrong.
+<a id='L4' name='L4'></a>dnl
+<a id='L5' name='L5'></a>dnl Search order:
+<a id='L6' name='L6'></a>dnl 1) system path   (adjust by --with-ncurses-libdir=&lt;DIR&gt;, --with-ncurses-includedir=&lt;DIR&gt;)
+<a id='L7' name='L7'></a>dnl 2) pkg-config    (adjust by NCURSES_LIBS, NCURSES_CFLAGS)
+<a id='L8' name='L8'></a>dnl
+<a id='L9' name='L9'></a>dnl Preference:
+<a id='L10' name='L10'></a>dnl ncursesw &gt; ncurses
+<a id='L11' name='L11'></a>dnl
+<a id='L12' name='L12'></a>dnl Rules:
+<a id='L13' name='L13'></a>dnl LIBS can be prepended
+<a id='L14' name='L14'></a>dnl CFLAGS can be appended (compiler optimizations and directives look at the last options)
+<a id='L15' name='L15'></a>dnl CPPFLAGS can be prepended (header search paths options look at the first path)
+<a id='L16' name='L16'></a>dnl
+<a id='L17' name='L17'></a> 
+<a id='L18' name='L18'></a>AC_DEFUN([mc_WITH_NCURSES], [
+<a id='L19' name='L19'></a>    save_LIBS="$LIBS"
+<a id='L20' name='L20'></a>    save_CFLAGS="$CFLAGS"
+<a id='L21' name='L21'></a>    save_CPPFLAGS="$CPPFLAGS"
+<a id='L22' name='L22'></a>    save_MCLIBS="$MCLIBS"
+<a id='L23' name='L23'></a> 
+<a id='L24' name='L24'></a>    AC_MSG_CHECKING([for specific NCurses libdir])
+<a id='L25' name='L25'></a>    AC_ARG_WITH([ncurses-libdir],
+<a id='L26' name='L26'></a>        [AS_HELP_STRING([--with-ncurses-libdir=@&lt;:@DIR@:&gt;@], [Path to NCurses library files])],
+<a id='L27' name='L27'></a>        [AS_IF([test ! -d "$withval"], [AC_MSG_ERROR([NCurses libdir path "$withval" not found])])
+<a id='L28' name='L28'></a>        LIBS="-L$withval $LIBS"
+<a id='L29' name='L29'></a>        LDFLAGS="-L$withval $LIBS"
+<a id='L30' name='L30'></a>        MCLIBS="-L$withval $MCLIBS"],
+<a id='L31' name='L31'></a>        [with_ncurses_libdir=no])
+<a id='L32' name='L32'></a>    AC_MSG_RESULT([$with_ncurses_libdir])
+<a id='L33' name='L33'></a> 
+<a id='L34' name='L34'></a>    AC_MSG_CHECKING([for specific NCurses includedir])
+<a id='L35' name='L35'></a>    AC_ARG_WITH([ncurses-includedir],
+<a id='L36' name='L36'></a>        [AS_HELP_STRING([--with-ncurses-includedir=@&lt;:@DIR@:&gt;@], [Path to NCurses header files])],
+<a id='L37' name='L37'></a>        [AS_IF([test ! -d "$withval"], [AC_MSG_ERROR([NCurses includedir path "$withval" not found])])
+<a id='L38' name='L38'></a>        CFLAGS="$save_CFLAGS -I$withval"],
+<a id='L39' name='L39'></a>        [with_ncurses_includedir=no])
+<a id='L40' name='L40'></a>    AC_MSG_RESULT([$with_ncurses_includedir])
+<a id='L41' name='L41'></a> 
+<a id='L42' name='L42'></a>    dnl
+<a id='L43' name='L43'></a>    dnl Check ncurses library
+<a id='L44' name='L44'></a>    dnl
+<a id='L45' name='L45'></a>    dnl has_colors is specific to ncurses, it's not in the old curses
+<a id='L46' name='L46'></a>    dnl search in default linker path and LDFLAGS -L options
+<a id='L47' name='L47'></a>    AC_SEARCH_LIBS([has_colors], [ncursesw ncurses],
+<a id='L48' name='L48'></a>        [AS_CASE(["$ac_cv_search_has_colors"],
+<a id='L49' name='L49'></a>            ["-lncursesw"], [screen_msg="NCursesw"],
+<a id='L50' name='L50'></a>            ["-lncurses"], [screen_msg="NCurses"],
+<a id='L51' name='L51'></a>            ["none required"], [screen_msg="NCurses static"], dnl or system native? Who knows
+<a id='L52' name='L52'></a>            [AC_MSG_ERROR([Unknown ac_cv_search_has_colors option "$ac_cv_search_has_colors"])])
+<a id='L53' name='L53'></a>        ],
+<a id='L54' name='L54'></a>        dnl 2. Library not found by system path, try pkg-config
+<a id='L55' name='L55'></a>        [PKG_CHECK_MODULES([NCURSES], [ncursesw],
+<a id='L56' name='L56'></a>            [   LIBS="$NCURSES_LIBS $save_LIBS"
+<a id='L57' name='L57'></a>                MCLIBS="$NCURSES_LIBS $save_MCLIBS"
+<a id='L58' name='L58'></a>                CFLAGS="$save_CFLAGS $NCURSES_CFLAGS"
+<a id='L59' name='L59'></a>                screen_msg="NCursesw"
+<a id='L60' name='L60'></a>                AC_CHECK_FUNC([has_colors], [], dnl Always validate pkg-config result
+<a id='L61' name='L61'></a>                    [AC_MSG_ERROR([NCursesw pkg-config insufficient])])
+<a id='L62' name='L62'></a>            ],
+<a id='L63' name='L63'></a>            [PKG_CHECK_MODULES([NCURSES], [ncurses],
+<a id='L64' name='L64'></a>                [   LIBS="$NCURSES_LIBS $save_LIBS"
+<a id='L65' name='L65'></a>                    MCLIBS="$NCURSES_LIBS $save_MCLIBS"
+<a id='L66' name='L66'></a>                    CFLAGS="$save_CFLAGS $NCURSES_CFLAGS"
+<a id='L67' name='L67'></a>                    screen_msg="NCurses"
+<a id='L68' name='L68'></a>                    AC_CHECK_FUNC([has_colors], [], dnl Always validate pkg-config result
+<a id='L69' name='L69'></a>                        [AC_MSG_ERROR([NCurses pkg-config insufficient])])
+<a id='L70' name='L70'></a>                ],
+<a id='L71' name='L71'></a>                [AC_MSG_ERROR([(N)Curses(w) library not found by system path neither pkg-config])])
+<a id='L72' name='L72'></a>            ])
+<a id='L73' name='L73'></a>        ])
+<a id='L74' name='L74'></a> 
+<a id='L75' name='L75'></a>    AC_SEARCH_LIBS([stdscr], [tinfow tinfo], [],
+<a id='L76' name='L76'></a>        dnl 2. Library not found by system path, try pkg-config
+<a id='L77' name='L77'></a>        [PKG_CHECK_MODULES([TINFOW], [tinfow], [],
+<a id='L78' name='L78'></a>            [AC_CHECK_FUNC([stdscr], [], dnl Always validate pkg-config result
+<a id='L79' name='L79'></a>                [AC_MSG_ERROR([Tinfow pkg-config insufficient])])],
+<a id='L80' name='L80'></a>            [PKG_CHECK_MODULES([TINFO], [tinfo],
+<a id='L81' name='L81'></a>                [AC_CHECK_FUNC([stdscr], [], dnl Always validate pkg-config result
+<a id='L82' name='L82'></a>                    [AC_MSG_ERROR([Tinfo pkg-config insufficient])])],
+<a id='L83' name='L83'></a>                [AC_MSG_ERROR([Tinfo(w) library not found by system path neither pkg-config])])
+<a id='L84' name='L84'></a>            ])
+<a id='L85' name='L85'></a>        ])
+<a id='L86' name='L86'></a> 
+<a id='L87' name='L87'></a>    AC_CHECK_FUNC([addwstr],
+<a id='L88' name='L88'></a>        [AC_DEFINE(HAVE_NCURSES_WIDECHAR, 1, [Define if ncurses library has wide characters support])],
+<a id='L89' name='L89'></a>        [AC_MSG_WARN([NCurses(w) library found without wide characters support])])
+<a id='L90' name='L90'></a> 
+<a id='L91' name='L91'></a>    dnl
+<a id='L92' name='L92'></a>    dnl Check ncurses header
+<a id='L93' name='L93'></a>    dnl
+<a id='L94' name='L94'></a>    dnl Set CPPFLAGS to avoid AC_CHECK_HEADERS warning "accepted by the compiler, rejected by the preprocessor!"
+<a id='L95' name='L95'></a>    CPPFLAGS="$CFLAGS"
+<a id='L96' name='L96'></a>    dnl first match wins, using break
+<a id='L97' name='L97'></a>    AC_CHECK_HEADERS([ncursesw/ncurses.h ncursesw/curses.h ncurses/ncurses.h ncurses/curses.h ncurses.h curses.h],
+<a id='L98' name='L98'></a>        [ncurses_h_found=yes; break],
+<a id='L99' name='L99'></a>        [ncurses_h_found=no])
+<a id='L100' name='L100'></a> 
+<a id='L101' name='L101'></a>    AS_IF([test x"$ncurses_h_found" != xyes],
+<a id='L102' name='L102'></a>        [AC_MSG_ERROR([NCurses(w) header file not found])])
+<a id='L103' name='L103'></a> 
+<a id='L104' name='L104'></a>    AC_CHECK_HEADERS([ncursesw/term.h ncurses/term.h term.h],
+<a id='L105' name='L105'></a>        [ncurses_term_h_found=yes; break],
+<a id='L106' name='L106'></a>        [ncurses_term_h_found=no])
+<a id='L107' name='L107'></a> 
+<a id='L108' name='L108'></a>    AS_IF([test x"$ncurses_term_h_found" != xyes],
+<a id='L109' name='L109'></a>        [AC_MSG_ERROR([NCurses(w) term.h header file not found])])
+<a id='L110' name='L110'></a> 
+<a id='L111' name='L111'></a>    dnl If ncurses exports the ESCDELAY variable it should be set to 0
+<a id='L112' name='L112'></a>    dnl or you'll have to press Esc three times to dismiss a dialog box.
+<a id='L113' name='L113'></a>    AC_CACHE_CHECK([for ESCDELAY variable], [mc_cv_ncurses_escdelay],
+<a id='L114' name='L114'></a>        [AC_LINK_IFELSE(
+<a id='L115' name='L115'></a>            [AC_LANG_PROGRAM([[extern int ESCDELAY;]],[[ESCDELAY = 0;]])],
+<a id='L116' name='L116'></a>            [mc_cv_ncurses_escdelay=yes], [mc_cv_ncurses_escdelay=no])
+<a id='L117' name='L117'></a>        ])
+<a id='L118' name='L118'></a> 
+<a id='L119' name='L119'></a>    AS_IF([test x"$mc_cv_ncurses_escdelay" = xyes],
+<a id='L120' name='L120'></a>        [AC_DEFINE([HAVE_ESCDELAY], [1], [Define if NCurses(w) has ESCDELAY variable])])
+<a id='L121' name='L121'></a> 
+<a id='L122' name='L122'></a>    AC_CHECK_FUNCS(resizeterm)
+<a id='L123' name='L123'></a> 
+<a id='L124' name='L124'></a>    AC_DEFINE([HAVE_NCURSES], [1], [Define to use NCurses for screen management])
+<a id='L125' name='L125'></a>    AC_DEFINE_UNQUOTED([NCURSES_LIB_DISPLAYNAME], ["$screen_msg"], [Define NCurses library display name])
+<a id='L126' name='L126'></a>])
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><img class='icon' src='../icons/n_first.png' alt='[first]' /><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+126 m4.include/mc-with-screen-ncurses.m4'  /> */</em>
+</body>
+</html>

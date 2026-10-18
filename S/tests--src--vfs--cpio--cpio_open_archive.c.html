@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<title>tests/src/vfs/cpio/cpio_open_archive.c</title>
+<meta name='robots' content='noindex,nofollow' />
+<meta name='generator' content='GLOBAL-6.6.11' />
+<meta http-equiv='Content-Style-Type' content='text/css' />
+<link rel='stylesheet' type='text/css' href='../style.css' />
+</head>
+<body>
+<!-- beginning of fixed guide -->
+<div id='guide'><ul>
+<li><a href='#L56'><img class='icon' src='../icons/first.png' alt='[^]' /></a></li>
+<li><a href='#L345'><img class='icon' src='../icons/last.png' alt='[v]' /></a></li>
+<li><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a></li>
+<li><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a></li>
+<li><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a></li>
+<li><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a></li>
+<li class='standout'><span><a href='../files/tests.html'>tests</a>/<a href='../files/tests--src.html'>src</a>/<a href='../files/tests--src--vfs.html'>vfs</a>/<a href='../files/tests--src--vfs--cpio.html'>cpio</a>/cpio_open_archive.c</span></li>
+</ul></div>
+<!-- end of fixed guide -->
+<div align='right'>Manual pages: 
+<a href=man/mc.html>mc</a> &bullet; <a href=man/mcdiff.html>mcdiff</a> &bullet; <a href=man/mcedit.html>mcedit</a> &bullet; <a href=man/mcview.html>mcview</a>
+</div>
+<a id='TOP' name='TOP'></a><h2 class='header'><a href='../mains.html'>root</a>/<a href='../files/tests.html'>tests</a>/<a href='../files/tests--src.html'>src</a>/<a href='../files/tests--src--vfs.html'>vfs</a>/<a href='../files/tests--src--vfs--cpio.html'>cpio</a>/cpio_open_archive.c</h2>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><img class='icon' src='../icons/n_top.png' alt='[top]' /><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+1 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<hr />
+<h2 class='header'>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L56' title='Defined at 56.'>message</a></li>
+<li><a href='#L73' title='Defined at 73.'>setup</a></li>
+<li><a href='#L86' title='Defined at 86.'>teardown</a></li>
+<li><a href='#L97' title='Defined at 97.'>pad</a></li>
+<li><a href='#L107' title='Defined at 107.'>append_member</a></li>
+<li><a href='#L191' title='Defined at 191.'>list_archive</a></li>
+<li><a href='#L262' title='Defined at 262.'>START_PARAMETRIZED_TEST</a></li>
+<li><a href='#L308' title='Defined at 308.'>START_PARAMETRIZED_TEST</a></li>
+<li><a href='#L345' title='Defined at 345.'>main</a></li>
+</ol>
+<hr />
+<pre>
+<a id='L1' name='L1'></a>   1 <em class='comment'>/*</em>
+<a id='L2' name='L2'></a>   2 <em class='comment'>   src/vfs/cpio - tests for opening of cpio archives</em>
+<a id='L3' name='L3'></a>   3 <em class='comment'></em>
+<a id='L4' name='L4'></a>   4 <em class='comment'>   Copyright (C) 2026</em>
+<a id='L5' name='L5'></a>   5 <em class='comment'>   Free Software Foundation, Inc.</em>
+<a id='L6' name='L6'></a>   6 <em class='comment'></em>
+<a id='L7' name='L7'></a>   7 <em class='comment'>   Written by:</em>
+<a id='L8' name='L8'></a>   8 <em class='comment'>   Yury V. Zaytsev &lt;yury@shurup.com&gt;, 2026</em>
+<a id='L9' name='L9'></a>   9 <em class='comment'></em>
+<a id='L10' name='L10'></a>  10 <em class='comment'>   This file is part of the Midnight Commander.</em>
+<a id='L11' name='L11'></a>  11 <em class='comment'></em>
+<a id='L12' name='L12'></a>  12 <em class='comment'>   The Midnight Commander is free software: you can redistribute it</em>
+<a id='L13' name='L13'></a>  13 <em class='comment'>   and/or modify it under the terms of the GNU General Public License as</em>
+<a id='L14' name='L14'></a>  14 <em class='comment'>   published by the Free Software Foundation, either version 3 of the License,</em>
+<a id='L15' name='L15'></a>  15 <em class='comment'>   or (at your option) any later version.</em>
+<a id='L16' name='L16'></a>  16 <em class='comment'></em>
+<a id='L17' name='L17'></a>  17 <em class='comment'>   The Midnight Commander is distributed in the hope that it will be useful,</em>
+<a id='L18' name='L18'></a>  18 <em class='comment'>   but WITHOUT ANY WARRANTY; without even the implied warranty of</em>
+<a id='L19' name='L19'></a>  19 <em class='comment'>   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</em>
+<a id='L20' name='L20'></a>  20 <em class='comment'>   GNU General Public License for more details.</em>
+<a id='L21' name='L21'></a>  21 <em class='comment'></em>
+<a id='L22' name='L22'></a>  22 <em class='comment'>   You should have received a copy of the GNU General Public License</em>
+<a id='L23' name='L23'></a>  23 <em class='comment'>   along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.</em>
+<a id='L24' name='L24'></a>  24 <em class='comment'> */</em>
+<a id='L25' name='L25'></a>  25 
+<a id='L26' name='L26'></a>  26 <em class='sharp'>#define</em> <a href='../S/tests--mctest.h.html#L93' title='Referred from 93 in tests/mctest.h.'>TEST_SUITE_NAME</a> "/src/vfs/cpio"
+<a id='L27' name='L27'></a>  27 
+<a id='L28' name='L28'></a>  28 <em class='sharp'>#include</em> "<a href='tests--mctest.h.html'>tests/mctest.h</a>"
+<a id='L29' name='L29'></a>  29 
+<a id='L30' name='L30'></a>  30 <em class='sharp'>#include</em> &lt;stdio.h&gt;   <em class='comment'>// snprintf()</em>
+<a id='L31' name='L31'></a>  31 <em class='sharp'>#include</em> &lt;unistd.h&gt;  <em class='comment'>// unlink(), rmdir()</em>
+<a id='L32' name='L32'></a>  32 
+<a id='L33' name='L33'></a>  33 <em class='sharp'>#include</em> "<a href='lib--strutil.h.html'>lib/strutil.h</a>"
+<a id='L34' name='L34'></a>  34 <em class='sharp'>#include</em> "<a href='src--vfs--local--local.h.html'>src/vfs/local/local.h</a>"
+<a id='L35' name='L35'></a>  35 
+<a id='L36' name='L36'></a>  36 <em class='sharp'>#include</em> "src/vfs/cpio/cpio.c"
+<a id='L37' name='L37'></a>  37 
+<a id='L38' name='L38'></a>  38 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L39' name='L39'></a>  39 
+<a id='L40' name='L40'></a>  40 <strong class='reserved'>typedef</strong> <strong class='reserved'>enum</strong>
+<a id='L41' name='L41'></a>  41 <em class='brace'>{</em>
+<a id='L42' name='L42'></a>  42     <a href='../R/FORMAT_BIN.html' title='Multiple referred from 4 places.'>FORMAT_BIN</a>,
+<a id='L43' name='L43'></a>  43     <a href='../R/FORMAT_OLDC.html' title='Multiple referred from 4 places.'>FORMAT_OLDC</a>,
+<a id='L44' name='L44'></a>  44     <a href='../R/FORMAT_NEWC.html' title='Multiple referred from 4 places.'>FORMAT_NEWC</a>
+<a id='L45' name='L45'></a>  45 <em class='brace'>}</em> <a href='../R/archive_format_t.html' title='Multiple referred from 3 places.'>archive_format_t</a>;
+<a id='L46' name='L46'></a>  46 
+<a id='L47' name='L47'></a>  47 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L48' name='L48'></a>  48 <em class='comment'>/* mocked functions */</em>
+<a id='L49' name='L49'></a>  49 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L50' name='L50'></a>  50 
+<a id='L51' name='L51'></a>  51 <em class='comment'>// text of the last error message, if any</em>
+<a id='L52' name='L52'></a>  52 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> *<a href='../Y/message__text.html' title='Multiple used in 7 places.'>message__text</a> = <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>;
+<a id='L53' name='L53'></a>  53 
+<a id='L54' name='L54'></a>  54 <em class='comment'>/* @Mock */</em>
+<a id='L55' name='L55'></a>  55 <strong class='reserved'>void</strong>
+<a id='L56' name='L56'></a>  56 <a href='../R/message.html' title='Multiple referred from 178 places.'>message</a> (<strong class='reserved'>int</strong> <a href='../Y/flags.html' title='Multiple used in 405 places.'>flags</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/title.html' title='Multiple used in 186 places.'>title</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/text.html' title='Multiple used in 946 places.'>text</a>, ...)
+     <em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><a href='#L73'><img class='icon' src='../icons/right.png' alt='[next]' /></a><img class='icon' src='../icons/n_first.png' alt='[first]' /><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+56 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L57' name='L57'></a>  57 <em class='brace'>{</em>
+<a id='L58' name='L58'></a>  58     <a href='../Y/va_list.html' title='Multiple used in 37 places.'>va_list</a> <a href='../Y/ap.html' title='Multiple used in 75 places.'>ap</a>;
+<a id='L59' name='L59'></a>  59 
+<a id='L60' name='L60'></a>  60     (<strong class='reserved'>void</strong>) <a href='../Y/flags.html' title='Multiple used in 405 places.'>flags</a>;
+<a id='L61' name='L61'></a>  61     (<strong class='reserved'>void</strong>) <a href='../Y/title.html' title='Multiple used in 186 places.'>title</a>;
+<a id='L62' name='L62'></a>  62 
+<a id='L63' name='L63'></a>  63     <a href='../Y/g_free.html' title='Multiple used in 1099 places.'>g_free</a> (<a href='../Y/message__text.html' title='Multiple used in 7 places.'>message__text</a>);
+<a id='L64' name='L64'></a>  64     <a href='../Y/va_start.html' title='Multiple used in 32 places.'>va_start</a> (<a href='../Y/ap.html' title='Multiple used in 75 places.'>ap</a>, <a href='../Y/text.html' title='Multiple used in 946 places.'>text</a>);
+<a id='L65' name='L65'></a>  65     <a href='../Y/message__text.html' title='Multiple used in 7 places.'>message__text</a> = <a href='../Y/g_strdup_vprintf.html' title='Multiple used in 9 places.'>g_strdup_vprintf</a> (<a href='../Y/text.html' title='Multiple used in 946 places.'>text</a>, <a href='../Y/ap.html' title='Multiple used in 75 places.'>ap</a>);
+<a id='L66' name='L66'></a>  66     <a href='../Y/va_end.html' title='Multiple used in 32 places.'>va_end</a> (<a href='../Y/ap.html' title='Multiple used in 75 places.'>ap</a>);
+<a id='L67' name='L67'></a>  67 <em class='brace'>}</em>
+<a id='L68' name='L68'></a>  68 
+<a id='L69' name='L69'></a>  69 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L70' name='L70'></a>  70 
+<a id='L71' name='L71'></a>  71 <em class='comment'>/* @Before */</em>
+<a id='L72' name='L72'></a>  72 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L73' name='L73'></a>  73 <a href='../R/setup.html' title='Multiple referred from 43 places.'>setup</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L56'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L86'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+73 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L74' name='L74'></a>  74 <em class='brace'>{</em>
+<a id='L75' name='L75'></a>  75     <a href='../S/lib--strutil--strutil.c.html#L401' title='Defined at 401 in lib/strutil/strutil.c.'>str_init_strings</a> (<a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>);
+<a id='L76' name='L76'></a>  76 
+<a id='L77' name='L77'></a>  77     <a href='../S/lib--vfs--vfs.c.html#L453' title='Defined at 453 in lib/vfs/vfs.c.'>vfs_init</a> ();
+<a id='L78' name='L78'></a>  78     <a href='../S/src--vfs--local--local.c.html#L508' title='Defined at 508 in src/vfs/local/local.c.'>vfs_init_localfs</a> ();
+<a id='L79' name='L79'></a>  79     <a href='../S/src--vfs--cpio--cpio.c.html#L893' title='Defined at 893 in src/vfs/cpio/cpio.c.'>vfs_init_cpiofs</a> ();
+<a id='L80' name='L80'></a>  80 <em class='brace'>}</em>
+<a id='L81' name='L81'></a>  81 
+<a id='L82' name='L82'></a>  82 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L83' name='L83'></a>  83 
+<a id='L84' name='L84'></a>  84 <em class='comment'>/* @After */</em>
+<a id='L85' name='L85'></a>  85 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L86' name='L86'></a>  86 <a href='../R/teardown.html' title='Multiple referred from 41 places.'>teardown</a> (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L73'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L97'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+86 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L87' name='L87'></a>  87 <em class='brace'>{</em>
+<a id='L88' name='L88'></a>  88     <a href='../S/lib--vfs--vfs.c.html#L485' title='Defined at 485 in lib/vfs/vfs.c.'>vfs_shut</a> ();
+<a id='L89' name='L89'></a>  89     <a href='../S/lib--strutil--strutil.c.html#L432' title='Defined at 432 in lib/strutil/strutil.c.'>str_uninit_strings</a> ();
+<a id='L90' name='L90'></a>  90 
+<a id='L91' name='L91'></a>  91     <a href='../S/lib--util.h.html#L33' title='Defined at 33 in lib/util.h.'>MC_PTR_FREE</a> (<a href='../Y/message__text.html' title='Multiple used in 7 places.'>message__text</a>);
+<a id='L92' name='L92'></a>  92 <em class='brace'>}</em>
+<a id='L93' name='L93'></a>  93 
+<a id='L94' name='L94'></a>  94 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L95' name='L95'></a>  95 
+<a id='L96' name='L96'></a>  96 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L97' name='L97'></a>  97 <a href='../R/pad.html' title='Multiple referred from 9 places.'>pad</a> (<a href='../Y/GByteArray.html' title='Multiple used in 5 places.'>GByteArray</a> *<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/guint.html' title='Multiple used in 33 places.'>guint</a> <a href='../Y/alignment.html' title='Multiple used in 2 places.'>alignment</a>)
+     <em class='comment'>/* <a href='#L86'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L107'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+97 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L98' name='L98'></a>  98 <em class='brace'>{</em>
+<a id='L99' name='L99'></a>  99     <strong class='reserved'>while</strong> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1049 places.'>len</a> % <a href='../Y/alignment.html' title='Multiple used in 2 places.'>alignment</a> != 0)
+<a id='L100' name='L100'></a> 100         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) "", 1);
+<a id='L101' name='L101'></a> 101 <em class='brace'>}</em>
+<a id='L102' name='L102'></a> 102 
+<a id='L103' name='L103'></a> 103 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L104' name='L104'></a> 104 
+<a id='L105' name='L105'></a> 105 <em class='comment'>/* Append an archive member that declares data_size bytes of data, but carries only data_len. */</em>
+<a id='L106' name='L106'></a> 106 <strong class='reserved'>static</strong> <strong class='reserved'>void</strong>
+<a id='L107' name='L107'></a> 107 <a href='../R/append_member.html' title='Multiple referred from 8 places.'>append_member</a> (<a href='../Y/GByteArray.html' title='Multiple used in 5 places.'>GByteArray</a> *<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L45' title='Defined at 45 in tests/src/vfs/cpio/cpio_open_archive.c.'>archive_format_t</a> <a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/name.html' title='Multiple used in 637 places.'>name</a>, <a href='../Y/mode_t.html' title='Multiple used in 99 places.'>mode_t</a> <a href='../Y/mode.html' title='Multiple used in 192 places.'>mode</a>,
+     <em class='comment'>/* <a href='#L97'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L191'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+107 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L108' name='L108'></a> 108                <a href='../Y/guint64.html' title='Multiple used in 2 places.'>guint64</a> <a href='../Y/data_size.html' title='Multiple used in 28 places.'>data_size</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>, <a href='../Y/size_t.html' title='Multiple used in 723 places.'>size_t</a> <a href='../Y/data_len.html' title='Multiple used in 9 places.'>data_len</a>)
+<a id='L109' name='L109'></a> 109 <em class='brace'>{</em>
+<a id='L110' name='L110'></a> 110     <strong class='reserved'>const</strong> <a href='../Y/size_t.html' title='Multiple used in 723 places.'>size_t</a> <a href='../Y/name_size.html' title='Multiple used in 7 places.'>name_size</a> = <a href='../Y/strlen.html' title='Multiple used in 197 places.'>strlen</a> (<a href='../Y/name.html' title='Multiple used in 637 places.'>name</a>) + 1;
+<a id='L111' name='L111'></a> 111     <strong class='reserved'>char</strong> <a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>[128];
+<a id='L112' name='L112'></a> 112 
+<a id='L113' name='L113'></a> 113     <strong class='reserved'>switch</strong> (<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>)
+<a id='L114' name='L114'></a> 114     <em class='brace'>{</em>
+<a id='L115' name='L115'></a> 115     <strong class='reserved'>case</strong> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L42' title='Defined at 42 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_BIN</a>:
+<a id='L116' name='L116'></a> 116     <em class='brace'>{</em>
+<a id='L117' name='L117'></a> 117         <em class='comment'>// host byte order, just as cpio_find_head() expects for CPIO_BIN</em>
+<a id='L118' name='L118'></a> 118         <strong class='reserved'>const</strong> <strong class='reserved'>unsigned</strong> <strong class='reserved'>short</strong> <a href='../Y/h.html' title='Multiple used in 496 places.'>h</a>[13] = <em class='brace'>{</em>
+<a id='L119' name='L119'></a> 119             070707,                                 <em class='comment'>// magic</em>
+<a id='L120' name='L120'></a> 120             0,                                      <em class='comment'>// dev</em>
+<a id='L121' name='L121'></a> 121             1,                                      <em class='comment'>// ino</em>
+<a id='L122' name='L122'></a> 122             (<strong class='reserved'>unsigned</strong> <strong class='reserved'>short</strong>) <a href='../Y/mode.html' title='Multiple used in 192 places.'>mode</a>,                  <em class='comment'>// mode</em>
+<a id='L123' name='L123'></a> 123             0,                                      <em class='comment'>// uid</em>
+<a id='L124' name='L124'></a> 124             0,                                      <em class='comment'>// gid</em>
+<a id='L125' name='L125'></a> 125             1,                                      <em class='comment'>// nlink</em>
+<a id='L126' name='L126'></a> 126             0,                                      <em class='comment'>// rdev</em>
+<a id='L127' name='L127'></a> 127             0,                                      <em class='comment'>// mtime, high</em>
+<a id='L128' name='L128'></a> 128             0,                                      <em class='comment'>// mtime, low</em>
+<a id='L129' name='L129'></a> 129             (<strong class='reserved'>unsigned</strong> <strong class='reserved'>short</strong>) <a href='../Y/name_size.html' title='Multiple used in 7 places.'>name_size</a>,             <em class='comment'>// namesize</em>
+<a id='L130' name='L130'></a> 130             (<strong class='reserved'>unsigned</strong> <strong class='reserved'>short</strong>) (<a href='../Y/data_size.html' title='Multiple used in 28 places.'>data_size</a> &gt;&gt; 16),     <em class='comment'>// filesize, high</em>
+<a id='L131' name='L131'></a> 131             (<strong class='reserved'>unsigned</strong> <strong class='reserved'>short</strong>) (<a href='../Y/data_size.html' title='Multiple used in 28 places.'>data_size</a> &amp; 0xFFFF),  <em class='comment'>// filesize, low</em>
+<a id='L132' name='L132'></a> 132         <em class='brace'>}</em>;
+<a id='L133' name='L133'></a> 133 
+<a id='L134' name='L134'></a> 134         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/h.html' title='Multiple used in 496 places.'>h</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/h.html' title='Multiple used in 496 places.'>h</a>));
+<a id='L135' name='L135'></a> 135         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/name.html' title='Multiple used in 637 places.'>name</a>, <a href='../Y/name_size.html' title='Multiple used in 7 places.'>name_size</a>);
+<a id='L136' name='L136'></a> 136         <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L97' title='Defined at 97 in tests/src/vfs/cpio/cpio_open_archive.c.'>pad</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, 2);
+<a id='L137' name='L137'></a> 137         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>, <a href='../Y/data_len.html' title='Multiple used in 9 places.'>data_len</a>);
+<a id='L138' name='L138'></a> 138         <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L97' title='Defined at 97 in tests/src/vfs/cpio/cpio_open_archive.c.'>pad</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, 2);
+<a id='L139' name='L139'></a> 139         <strong class='reserved'>break</strong>;
+<a id='L140' name='L140'></a> 140     <em class='brace'>}</em>
+<a id='L141' name='L141'></a> 141     <strong class='reserved'>case</strong> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L43' title='Defined at 43 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_OLDC</a>:
+<a id='L142' name='L142'></a> 142         <a href='../Y/snprintf.html' title='Multiple used in 4 places.'>snprintf</a> (<a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>),
+<a id='L143' name='L143'></a> 143                   "070707"       <em class='comment'>// magic</em>
+<a id='L144' name='L144'></a> 144                   "000000"       <em class='comment'>// dev</em>
+<a id='L145' name='L145'></a> 145                   "000001"       <em class='comment'>// ino</em>
+<a id='L146' name='L146'></a> 146                   "%06o"         <em class='comment'>// mode</em>
+<a id='L147' name='L147'></a> 147                   "000000"       <em class='comment'>// uid</em>
+<a id='L148' name='L148'></a> 148                   "000000"       <em class='comment'>// gid</em>
+<a id='L149' name='L149'></a> 149                   "000001"       <em class='comment'>// nlink</em>
+<a id='L150' name='L150'></a> 150                   "000000"       <em class='comment'>// rdev</em>
+<a id='L151' name='L151'></a> 151                   "00000000000"  <em class='comment'>// mtime</em>
+<a id='L152' name='L152'></a> 152                   "%06o"         <em class='comment'>// namesize</em>
+<a id='L153' name='L153'></a> 153                   "%011llo",     <em class='comment'>// filesize</em>
+<a id='L154' name='L154'></a> 154                   (<strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong>) <a href='../Y/mode.html' title='Multiple used in 192 places.'>mode</a>, (<strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong>) <a href='../Y/name_size.html' title='Multiple used in 7 places.'>name_size</a>, (<strong class='reserved'>unsigned</strong> <strong class='reserved'>long</strong> <strong class='reserved'>long</strong>) <a href='../Y/data_size.html' title='Multiple used in 28 places.'>data_size</a>);
+<a id='L155' name='L155'></a> 155         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>, <a href='../Y/strlen.html' title='Multiple used in 197 places.'>strlen</a> (<a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>));
+<a id='L156' name='L156'></a> 156         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/name.html' title='Multiple used in 637 places.'>name</a>, <a href='../Y/name_size.html' title='Multiple used in 7 places.'>name_size</a>);
+<a id='L157' name='L157'></a> 157         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>, <a href='../Y/data_len.html' title='Multiple used in 9 places.'>data_len</a>);
+<a id='L158' name='L158'></a> 158         <strong class='reserved'>break</strong>;
+<a id='L159' name='L159'></a> 159     <strong class='reserved'>case</strong> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L44' title='Defined at 44 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_NEWC</a>:
+<a id='L160' name='L160'></a> 160         <a href='../Y/snprintf.html' title='Multiple used in 4 places.'>snprintf</a> (<a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>),
+<a id='L161' name='L161'></a> 161                   "070701"     <em class='comment'>// magic</em>
+<a id='L162' name='L162'></a> 162                   "00000001"   <em class='comment'>// ino</em>
+<a id='L163' name='L163'></a> 163                   "%08X"       <em class='comment'>// mode</em>
+<a id='L164' name='L164'></a> 164                   "00000000"   <em class='comment'>// uid</em>
+<a id='L165' name='L165'></a> 165                   "00000000"   <em class='comment'>// gid</em>
+<a id='L166' name='L166'></a> 166                   "00000001"   <em class='comment'>// nlink</em>
+<a id='L167' name='L167'></a> 167                   "00000000"   <em class='comment'>// mtime</em>
+<a id='L168' name='L168'></a> 168                   "%08llX"     <em class='comment'>// filesize</em>
+<a id='L169' name='L169'></a> 169                   "00000000"   <em class='comment'>// devmajor</em>
+<a id='L170' name='L170'></a> 170                   "00000000"   <em class='comment'>// devminor</em>
+<a id='L171' name='L171'></a> 171                   "00000000"   <em class='comment'>// rdevmajor</em>
+<a id='L172' name='L172'></a> 172                   "00000000"   <em class='comment'>// rdevminor</em>
+<a id='L173' name='L173'></a> 173                   "%08X"       <em class='comment'>// namesize</em>
+<a id='L174' name='L174'></a> 174                   "00000000",  <em class='comment'>// check</em>
+<a id='L175' name='L175'></a> 175                   (<strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong>) <a href='../Y/mode.html' title='Multiple used in 192 places.'>mode</a>, (<strong class='reserved'>unsigned</strong> <strong class='reserved'>long</strong> <strong class='reserved'>long</strong>) <a href='../Y/data_size.html' title='Multiple used in 28 places.'>data_size</a>, (<strong class='reserved'>unsigned</strong> <strong class='reserved'>int</strong>) <a href='../Y/name_size.html' title='Multiple used in 7 places.'>name_size</a>);
+<a id='L176' name='L176'></a> 176         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>, <a href='../Y/strlen.html' title='Multiple used in 197 places.'>strlen</a> (<a href='../Y/header.html' title='Multiple used in 104 places.'>header</a>));
+<a id='L177' name='L177'></a> 177         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/name.html' title='Multiple used in 637 places.'>name</a>, <a href='../Y/name_size.html' title='Multiple used in 7 places.'>name_size</a>);
+<a id='L178' name='L178'></a> 178         <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L97' title='Defined at 97 in tests/src/vfs/cpio/cpio_open_archive.c.'>pad</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, 4);
+<a id='L179' name='L179'></a> 179         <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, (<strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> *) <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>, <a href='../Y/data_len.html' title='Multiple used in 9 places.'>data_len</a>);
+<a id='L180' name='L180'></a> 180         <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L97' title='Defined at 97 in tests/src/vfs/cpio/cpio_open_archive.c.'>pad</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, 4);
+<a id='L181' name='L181'></a> 181         <strong class='reserved'>break</strong>;
+<a id='L182' name='L182'></a> 182     <strong class='reserved'>default</strong>:
+<a id='L183' name='L183'></a> 183         <a href='../Y/g_assert_not_reached.html' title='Multiple used in 6 places.'>g_assert_not_reached</a> ();
+<a id='L184' name='L184'></a> 184     <em class='brace'>}</em>
+<a id='L185' name='L185'></a> 185 <em class='brace'>}</em>
+<a id='L186' name='L186'></a> 186 
+<a id='L187' name='L187'></a> 187 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L188' name='L188'></a> 188 
+<a id='L189' name='L189'></a> 189 <em class='comment'>/* Write the archive into a temporary directory and list it through the cpio VFS. */</em>
+<a id='L190' name='L190'></a> 190 <strong class='reserved'>static</strong> <strong class='reserved'>char</strong> **
+<a id='L191' name='L191'></a> 191 <a href='../R/list_archive.html' title='Multiple referred from 2 places.'>list_archive</a> (<a href='../Y/GByteArray.html' title='Multiple used in 5 places.'>GByteArray</a> *<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<a href='../Y/link_name.html' title='Multiple used in 30 places.'>link_name</a>, <strong class='reserved'>char</strong> *<a href='../Y/link_target.html' title='Multiple used in 18 places.'>link_target</a>, <a href='../Y/size_t.html' title='Multiple used in 723 places.'>size_t</a> <a href='../Y/target_size.html' title='Multiple used in 2 places.'>target_size</a>)
+     <em class='comment'>/* <a href='#L107'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L262'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+191 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L192' name='L192'></a> 192 <em class='brace'>{</em>
+<a id='L193' name='L193'></a> 193     <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <a href='../Y/guint8.html' title='Multiple used in 12 places.'>guint8</a> <a href='../Y/zero_block.html' title='Multiple used in 2 places.'>zero_block</a>[512] = <em class='brace'>{</em> 0 <em class='brace'>}</em>;
+<a id='L194' name='L194'></a> 194     <strong class='reserved'>char</strong> *<a href='../Y/dir.html' title='Multiple used in 472 places.'>dir</a>;
+<a id='L195' name='L195'></a> 195     <strong class='reserved'>char</strong> *<a href='../Y/path.html' title='Multiple used in 444 places.'>path</a>;
+<a id='L196' name='L196'></a> 196     <strong class='reserved'>char</strong> *<a href='../Y/archive_path.html' title='Multiple used in 4 places.'>archive_path</a>;
+<a id='L197' name='L197'></a> 197     <a href='../S/lib--vfs--path.h.html#L31' title='Defined at 31 in lib/vfs/path.h.'>vfs_path_t</a> *<a href='../Y/vpath.html' title='Multiple used in 972 places.'>vpath</a>;
+<a id='L198' name='L198'></a> 198     <a href='../Y/DIR.html' title='Multiple used in 28 places.'>DIR</a> *<a href='../Y/d.html' title='Multiple used in 194 places.'>d</a>;
+<a id='L199' name='L199'></a> 199     <strong class='reserved'>struct</strong> <a href='../S/lib--vfs--vfs.h.html#L213' title='Defined at 213 in lib/vfs/vfs.h.'>vfs_dirent</a> *<a href='../Y/de.html' title='Multiple used in 8 places.'>de</a>;
+<a id='L200' name='L200'></a> 200     <a href='../Y/GPtrArray.html' title='Multiple used in 95 places.'>GPtrArray</a> *<a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>;
+<a id='L201' name='L201'></a> 201 
+<a id='L202' name='L202'></a> 202     <em class='comment'>// a zero block after the members, as written by cpio(1)</em>
+<a id='L203' name='L203'></a> 203     <a href='../Y/g_byte_array_append.html' title='Multiple used in 11 places.'>g_byte_array_append</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/zero_block.html' title='Multiple used in 2 places.'>zero_block</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/zero_block.html' title='Multiple used in 2 places.'>zero_block</a>));
+<a id='L204' name='L204'></a> 204 
+<a id='L205' name='L205'></a> 205     <a href='../Y/dir.html' title='Multiple used in 472 places.'>dir</a> = <a href='../Y/g_dir_make_tmp.html' title='Multiple used in 5 places.'>g_dir_make_tmp</a> ("mctest-XXXXXX", <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>);
+<a id='L206' name='L206'></a> 206     <a href='../S/tests--mctest.h.html#L42' title='Defined at 42 in tests/mctest.h.'>mctest_assert_not_null</a> (<a href='../Y/dir.html' title='Multiple used in 472 places.'>dir</a>);
+<a id='L207' name='L207'></a> 207     <a href='../Y/path.html' title='Multiple used in 444 places.'>path</a> = <a href='../Y/g_build_filename.html' title='Multiple used in 34 places.'>g_build_filename</a> (<a href='../Y/dir.html' title='Multiple used in 472 places.'>dir</a>, "test.cpio", (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>);
+<a id='L208' name='L208'></a> 208     <a href='../S/tests--mctest.h.html#L48' title='Defined at 48 in tests/mctest.h.'>mctest_assert_true</a> (
+<a id='L209' name='L209'></a> 209         <a href='../Y/g_file_set_contents.html' title='Multiple used in 3 places.'>g_file_set_contents</a> (<a href='../Y/path.html' title='Multiple used in 444 places.'>path</a>, (<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *) <a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>-&gt;<a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>, (<a href='../Y/gssize.html' title='Multiple used in 5 places.'>gssize</a>) <a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>-&gt;<a href='../Y/len.html' title='Multiple used in 1049 places.'>len</a>, <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>));
+<a id='L210' name='L210'></a> 210 
+<a id='L211' name='L211'></a> 211     <a href='../Y/archive_path.html' title='Multiple used in 4 places.'>archive_path</a> = <a href='../Y/g_strconcat.html' title='Multiple used in 67 places.'>g_strconcat</a> (<a href='../Y/path.html' title='Multiple used in 444 places.'>path</a>, <a href='../S/lib--unixcompat.h.html#L114' title='Defined at 114 in lib/unixcompat.h.'>PATH_SEP_STR</a> "ucpio" <a href='../S/lib--vfs--path.h.html#L6' title='Defined at 6 in lib/vfs/path.h.'>VFS_PATH_URL_DELIMITER</a>, (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>);
+<a id='L212' name='L212'></a> 212     <a href='../Y/vpath.html' title='Multiple used in 972 places.'>vpath</a> = <a href='../S/lib--vfs--path.c.html#L721' title='Defined at 721 in lib/vfs/path.c.'>vfs_path_from_str</a> (<a href='../Y/archive_path.html' title='Multiple used in 4 places.'>archive_path</a>);
+<a id='L213' name='L213'></a> 213     <a href='../Y/d.html' title='Multiple used in 194 places.'>d</a> = <a href='../S/lib--vfs--interface.c.html#L476' title='Defined at 476 in lib/vfs/interface.c.'>mc_opendir</a> (<a href='../Y/vpath.html' title='Multiple used in 972 places.'>vpath</a>);
+<a id='L214' name='L214'></a> 214     <a href='../S/tests--mctest.h.html#L42' title='Defined at 42 in tests/mctest.h.'>mctest_assert_not_null</a> (<a href='../Y/d.html' title='Multiple used in 194 places.'>d</a>);
+<a id='L215' name='L215'></a> 215 
+<a id='L216' name='L216'></a> 216     <a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a> = <a href='../Y/g_ptr_array_new.html' title='Multiple used in 9 places.'>g_ptr_array_new</a> ();
+<a id='L217' name='L217'></a> 217     <strong class='reserved'>while</strong> ((<a href='../Y/de.html' title='Multiple used in 8 places.'>de</a> = <a href='../S/lib--vfs--interface.c.html#L517' title='Defined at 517 in lib/vfs/interface.c.'>mc_readdir</a> (<a href='../Y/d.html' title='Multiple used in 194 places.'>d</a>)) != <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>)
+<a id='L218' name='L218'></a> 218         <a href='../Y/g_ptr_array_add.html' title='Multiple used in 59 places.'>g_ptr_array_add</a> (<a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>, <a href='../Y/g_strdup.html' title='Multiple used in 398 places.'>g_strdup</a> (<a href='../Y/de.html' title='Multiple used in 8 places.'>de</a>-&gt;<a href='../Y/d_name.html' title='Multiple used in 46 places.'>d_name</a>));
+<a id='L219' name='L219'></a> 219     <a href='../Y/g_ptr_array_add.html' title='Multiple used in 59 places.'>g_ptr_array_add</a> (<a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>, <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>);
+<a id='L220' name='L220'></a> 220     <a href='../S/lib--vfs--interface.c.html#L557' title='Defined at 557 in lib/vfs/interface.c.'>mc_closedir</a> (<a href='../Y/d.html' title='Multiple used in 194 places.'>d</a>);
+<a id='L221' name='L221'></a> 221 
+<a id='L222' name='L222'></a> 222     <strong class='reserved'>if</strong> (<a href='../Y/link_target.html' title='Multiple used in 18 places.'>link_target</a> != <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>)
+<a id='L223' name='L223'></a> 223     <em class='brace'>{</em>
+<a id='L224' name='L224'></a> 224         <a href='../S/lib--vfs--path.h.html#L31' title='Defined at 31 in lib/vfs/path.h.'>vfs_path_t</a> *<a href='../Y/link_vpath.html' title='Multiple used in 4 places.'>link_vpath</a>;
+<a id='L225' name='L225'></a> 225         <a href='../Y/ssize_t.html' title='Multiple used in 183 places.'>ssize_t</a> <a href='../Y/len.html' title='Multiple used in 1049 places.'>len</a>;
+<a id='L226' name='L226'></a> 226 
+<a id='L227' name='L227'></a> 227         <a href='../Y/link_vpath.html' title='Multiple used in 4 places.'>link_vpath</a> = <a href='../S/lib--vfs--path.c.html#L1256' title='Defined at 1256 in lib/vfs/path.c.'>vfs_path_append_new</a> (<a href='../Y/vpath.html' title='Multiple used in 972 places.'>vpath</a>, <a href='../Y/link_name.html' title='Multiple used in 30 places.'>link_name</a>, (<strong class='reserved'>char</strong> *) <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>);
+<a id='L228' name='L228'></a> 228         <a href='../Y/len.html' title='Multiple used in 1049 places.'>len</a> = <a href='../Y/mc_readlink.html' title='Multiple used in 6 places.'>mc_readlink</a> (<a href='../Y/link_vpath.html' title='Multiple used in 4 places.'>link_vpath</a>, <a href='../Y/link_target.html' title='Multiple used in 18 places.'>link_target</a>, <a href='../Y/target_size.html' title='Multiple used in 2 places.'>target_size</a> - 1);
+<a id='L229' name='L229'></a> 229         <a href='../Y/link_target.html' title='Multiple used in 18 places.'>link_target</a>[<a href='../Y/MAX.html' title='Multiple used in 125 places.'>MAX</a> (<a href='../Y/len.html' title='Multiple used in 1049 places.'>len</a>, 0)] = '\0';
+<a id='L230' name='L230'></a> 230         <a href='../S/lib--vfs--path.c.html#L917' title='Defined at 917 in lib/vfs/path.c.'>vfs_path_free</a> (<a href='../Y/link_vpath.html' title='Multiple used in 4 places.'>link_vpath</a>, <a href='../Y/TRUE.html' title='Multiple used in 2095 places.'>TRUE</a>);
+<a id='L231' name='L231'></a> 231     <em class='brace'>}</em>
+<a id='L232' name='L232'></a> 232 
+<a id='L233' name='L233'></a> 233     <a href='../S/lib--vfs--path.c.html#L917' title='Defined at 917 in lib/vfs/path.c.'>vfs_path_free</a> (<a href='../Y/vpath.html' title='Multiple used in 972 places.'>vpath</a>, <a href='../Y/TRUE.html' title='Multiple used in 2095 places.'>TRUE</a>);
+<a id='L234' name='L234'></a> 234     <a href='../Y/g_free.html' title='Multiple used in 1099 places.'>g_free</a> (<a href='../Y/archive_path.html' title='Multiple used in 4 places.'>archive_path</a>);
+<a id='L235' name='L235'></a> 235     <a href='../Y/unlink.html' title='Multiple used in 28 places.'>unlink</a> (<a href='../Y/path.html' title='Multiple used in 444 places.'>path</a>);
+<a id='L236' name='L236'></a> 236     <a href='../Y/g_free.html' title='Multiple used in 1099 places.'>g_free</a> (<a href='../Y/path.html' title='Multiple used in 444 places.'>path</a>);
+<a id='L237' name='L237'></a> 237     <a href='../Y/rmdir.html' title='Multiple used in 15 places.'>rmdir</a> (<a href='../Y/dir.html' title='Multiple used in 472 places.'>dir</a>);
+<a id='L238' name='L238'></a> 238     <a href='../Y/g_free.html' title='Multiple used in 1099 places.'>g_free</a> (<a href='../Y/dir.html' title='Multiple used in 472 places.'>dir</a>);
+<a id='L239' name='L239'></a> 239 
+<a id='L240' name='L240'></a> 240     <strong class='reserved'>return</strong> (<strong class='reserved'>char</strong> **) <a href='../Y/g_ptr_array_free.html' title='Multiple used in 42 places.'>g_ptr_array_free</a> (<a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>, <a href='../Y/FALSE.html' title='Multiple used in 1787 places.'>FALSE</a>);
+<a id='L241' name='L241'></a> 241 <em class='brace'>}</em>
+<a id='L242' name='L242'></a> 242 
+<a id='L243' name='L243'></a> 243 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L244' name='L244'></a> 244 
+<a id='L245' name='L245'></a> 245 <em class='comment'>/* @DataSource("test_cpio_symlink_size_ds") */</em>
+<a id='L246' name='L246'></a> 246 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../R/test_cpio_symlink_size_ds.html' title='Multiple referred from 3 places.'>test_cpio_symlink_size_ds</a>
+<a id='L247' name='L247'></a> 247 <em class='brace'>{</em>
+<a id='L248' name='L248'></a> 248     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L45' title='Defined at 45 in tests/src/vfs/cpio/cpio_open_archive.c.'>archive_format_t</a> <a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>;
+<a id='L249' name='L249'></a> 249     <a href='../Y/guint64.html' title='Multiple used in 2 places.'>guint64</a> <a href='../Y/link_size.html' title='Multiple used in 3 places.'>link_size</a>;
+<a id='L250' name='L250'></a> 250 <em class='brace'>}</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L246' title='Defined at 246 in tests/src/vfs/cpio/cpio_open_archive.c.'>test_cpio_symlink_size_ds</a>[] = <em class='brace'>{</em>
+<a id='L251' name='L251'></a> 251     <em class='comment'>// the sizes that made g_malloc() abort or, with 32-bit size_t, wrap to g_malloc (0) (#5084)</em>
+<a id='L252' name='L252'></a> 252     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L42' title='Defined at 42 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_BIN</a>, 0xFFFFFFFF <em class='brace'>}</em>,
+<a id='L253' name='L253'></a> 253     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L44' title='Defined at 44 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_NEWC</a>, 0xFFFFFFFF <em class='brace'>}</em>,
+<a id='L254' name='L254'></a> 254     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L43' title='Defined at 43 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_OLDC</a>, 077777777777 <em class='brace'>}</em>,
+<a id='L255' name='L255'></a> 255     <em class='comment'>// longer than any path, but with the data actually present</em>
+<a id='L256' name='L256'></a> 256     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L42' title='Defined at 42 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_BIN</a>, <a href='../D/MC_MAXPATHLEN.html' title='Multiple defined in 2 places.'>MC_MAXPATHLEN</a> + 1 <em class='brace'>}</em>,
+<a id='L257' name='L257'></a> 257     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L44' title='Defined at 44 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_NEWC</a>, <a href='../D/MC_MAXPATHLEN.html' title='Multiple defined in 2 places.'>MC_MAXPATHLEN</a> + 1 <em class='brace'>}</em>,
+<a id='L258' name='L258'></a> 258     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L43' title='Defined at 43 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_OLDC</a>, <a href='../D/MC_MAXPATHLEN.html' title='Multiple defined in 2 places.'>MC_MAXPATHLEN</a> + 1 <em class='brace'>}</em>,
+<a id='L259' name='L259'></a> 259 <em class='brace'>}</em>;
+<a id='L260' name='L260'></a> 260 
+<a id='L261' name='L261'></a> 261 <em class='comment'>/* @Test(dataSource = "test_cpio_symlink_size_ds") */</em>
+<a id='L262' name='L262'></a> 262 START_PARAMETRIZED_TEST (<a href='../Y/test_cpio_symlink_size.html' title='Multiple used in 2 places.'>test_cpio_symlink_size</a>, <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L246' title='Defined at 246 in tests/src/vfs/cpio/cpio_open_archive.c.'>test_cpio_symlink_size_ds</a>)
+     <em class='comment'>/* <a href='#L191'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L308'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+262 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L263' name='L263'></a> 263 <em class='brace'>{</em>
+<a id='L264' name='L264'></a> 264     <a href='../Y/GByteArray.html' title='Multiple used in 5 places.'>GByteArray</a> *<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>;
+<a id='L265' name='L265'></a> 265     <strong class='reserved'>char</strong> *<a href='../Y/filler.html' title='Multiple used in 4 places.'>filler</a>;
+<a id='L266' name='L266'></a> 266     <a href='../Y/size_t.html' title='Multiple used in 723 places.'>size_t</a> <a href='../Y/filler_len.html' title='Multiple used in 4 places.'>filler_len</a>;
+<a id='L267' name='L267'></a> 267     <strong class='reserved'>char</strong> **<a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>;
+<a id='L268' name='L268'></a> 268 
+<a id='L269' name='L269'></a> 269     <em class='comment'>// given: a symlink, the target of which is too long, between two files</em>
+<a id='L270' name='L270'></a> 270     <a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a> = <a href='../Y/g_byte_array_new.html' title='Multiple used in 2 places.'>g_byte_array_new</a> ();
+<a id='L271' name='L271'></a> 271     <a href='../Y/filler_len.html' title='Multiple used in 4 places.'>filler_len</a> = <a href='../D/MC_MAXPATHLEN.html' title='Multiple defined in 2 places.'>MC_MAXPATHLEN</a> + 1;
+<a id='L272' name='L272'></a> 272     <a href='../Y/filler.html' title='Multiple used in 4 places.'>filler</a> = <a href='../Y/g_strnfill.html' title='Multiple used in 3 places.'>g_strnfill</a> (<a href='../Y/filler_len.html' title='Multiple used in 4 places.'>filler_len</a>, 'x');
+<a id='L273' name='L273'></a> 273     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L107' title='Defined at 107 in tests/src/vfs/cpio/cpio_open_archive.c.'>append_member</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, "a", <a href='../Y/S_IFREG.html' title='Multiple used in 14 places.'>S_IFREG</a> | 0644, 6, "hello\n", 6);
+<a id='L274' name='L274'></a> 274     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L107' title='Defined at 107 in tests/src/vfs/cpio/cpio_open_archive.c.'>append_member</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, "link", <a href='../Y/S_IFLNK.html' title='Multiple used in 9 places.'>S_IFLNK</a> | 0777, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/link_size.html' title='Multiple used in 3 places.'>link_size</a>, <a href='../Y/filler.html' title='Multiple used in 4 places.'>filler</a>,
+<a id='L275' name='L275'></a> 275                    <a href='../Y/MIN.html' title='Multiple used in 83 places.'>MIN</a> (<a href='../Y/filler_len.html' title='Multiple used in 4 places.'>filler_len</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/link_size.html' title='Multiple used in 3 places.'>link_size</a>));
+<a id='L276' name='L276'></a> 276     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L107' title='Defined at 107 in tests/src/vfs/cpio/cpio_open_archive.c.'>append_member</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, "z", <a href='../Y/S_IFREG.html' title='Multiple used in 14 places.'>S_IFREG</a> | 0644, 6, "hello\n", 6);
+<a id='L277' name='L277'></a> 277     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L107' title='Defined at 107 in tests/src/vfs/cpio/cpio_open_archive.c.'>append_member</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, "TRAILER!!!", 0, 0, "", 0);
+<a id='L278' name='L278'></a> 278 
+<a id='L279' name='L279'></a> 279     <em class='comment'>// when</em>
+<a id='L280' name='L280'></a> 280     <a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a> = <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L191' title='Defined at 191 in tests/src/vfs/cpio/cpio_open_archive.c.'>list_archive</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>, <a href='../Y/NULL.html' title='Multiple used in 5529 places.'>NULL</a>, 0);
+<a id='L281' name='L281'></a> 281 
+<a id='L282' name='L282'></a> 282     <em class='comment'>// then: the archive is reported as corrupted, and the symlink is not added to the tree</em>
+<a id='L283' name='L283'></a> 283     <a href='../S/tests--mctest.h.html#L42' title='Defined at 42 in tests/mctest.h.'>mctest_assert_not_null</a> (<a href='../Y/message__text.html' title='Multiple used in 7 places.'>message__text</a>);
+<a id='L284' name='L284'></a> 284     <a href='../S/tests--mctest.h.html#L48' title='Defined at 48 in tests/mctest.h.'>mctest_assert_true</a> (<a href='../Y/g_str_has_prefix.html' title='Multiple used in 5 places.'>g_str_has_prefix</a> (<a href='../Y/message__text.html' title='Multiple used in 7 places.'>message__text</a>, "Corrupted cpio header"));
+<a id='L285' name='L285'></a> 285     <a href='../S/tests--mctest.h.html#L48' title='Defined at 48 in tests/mctest.h.'>mctest_assert_true</a> (<a href='../Y/g_strv_contains.html' title='Multiple used in 2 places.'>g_strv_contains</a> ((<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> *) <a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>, "a"));
+<a id='L286' name='L286'></a> 286     <a href='../S/tests--mctest.h.html#L54' title='Defined at 54 in tests/mctest.h.'>mctest_assert_false</a> (<a href='../Y/g_strv_contains.html' title='Multiple used in 2 places.'>g_strv_contains</a> ((<strong class='reserved'>const</strong> <strong class='reserved'>char</strong> *<strong class='reserved'>const</strong> *) <a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>, "link"));
+<a id='L287' name='L287'></a> 287 
+<a id='L288' name='L288'></a> 288     <em class='comment'>// cleanup</em>
+<a id='L289' name='L289'></a> 289     <a href='../Y/g_strfreev.html' title='Multiple used in 55 places.'>g_strfreev</a> (<a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>);
+<a id='L290' name='L290'></a> 290     <a href='../Y/g_free.html' title='Multiple used in 1099 places.'>g_free</a> (<a href='../Y/filler.html' title='Multiple used in 4 places.'>filler</a>);
+<a id='L291' name='L291'></a> 291     <a href='../Y/g_byte_array_free.html' title='Multiple used in 2 places.'>g_byte_array_free</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/TRUE.html' title='Multiple used in 2095 places.'>TRUE</a>);
+<a id='L292' name='L292'></a> 292 <em class='brace'>}</em>
+<a id='L293' name='L293'></a> 293 <a href='../S/tests--mctest.h.html#L72' title='Defined at 72 in tests/mctest.h.'>END_PARAMETRIZED_TEST</a>
+<a id='L294' name='L294'></a> 294 
+<a id='L295' name='L295'></a> 295 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L296' name='L296'></a> 296 
+<a id='L297' name='L297'></a> 297 <em class='comment'>/* @DataSource("test_cpio_symlink_long_target_ds") */</em>
+<a id='L298' name='L298'></a> 298 <strong class='reserved'>static</strong> <strong class='reserved'>const</strong> <strong class='reserved'>struct</strong> <a href='../R/test_cpio_symlink_long_target_ds.html' title='Multiple referred from 3 places.'>test_cpio_symlink_long_target_ds</a>
+<a id='L299' name='L299'></a> 299 <em class='brace'>{</em>
+<a id='L300' name='L300'></a> 300     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L45' title='Defined at 45 in tests/src/vfs/cpio/cpio_open_archive.c.'>archive_format_t</a> <a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>;
+<a id='L301' name='L301'></a> 301 <em class='brace'>}</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L298' title='Defined at 298 in tests/src/vfs/cpio/cpio_open_archive.c.'>test_cpio_symlink_long_target_ds</a>[] = <em class='brace'>{</em>
+<a id='L302' name='L302'></a> 302     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L42' title='Defined at 42 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_BIN</a> <em class='brace'>}</em>,
+<a id='L303' name='L303'></a> 303     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L44' title='Defined at 44 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_NEWC</a> <em class='brace'>}</em>,
+<a id='L304' name='L304'></a> 304     <em class='brace'>{</em> <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L43' title='Defined at 43 in tests/src/vfs/cpio/cpio_open_archive.c.'>FORMAT_OLDC</a> <em class='brace'>}</em>,
+<a id='L305' name='L305'></a> 305 <em class='brace'>}</em>;
+<a id='L306' name='L306'></a> 306 
+<a id='L307' name='L307'></a> 307 <em class='comment'>/* @Test(dataSource = "test_cpio_symlink_long_target_ds") */</em>
+<a id='L308' name='L308'></a> 308 START_PARAMETRIZED_TEST (<a href='../Y/test_cpio_symlink_long_target.html' title='Multiple used in 2 places.'>test_cpio_symlink_long_target</a>, <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L298' title='Defined at 298 in tests/src/vfs/cpio/cpio_open_archive.c.'>test_cpio_symlink_long_target_ds</a>)
+     <em class='comment'>/* <a href='#L262'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><a href='#L345'><img class='icon' src='../icons/right.png' alt='[next]' /></a><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+308 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L309' name='L309'></a> 309 <em class='brace'>{</em>
+<a id='L310' name='L310'></a> 310     <a href='../Y/GByteArray.html' title='Multiple used in 5 places.'>GByteArray</a> *<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>;
+<a id='L311' name='L311'></a> 311     <strong class='reserved'>char</strong> *<a href='../Y/target.html' title='Multiple used in 41 places.'>target</a>;
+<a id='L312' name='L312'></a> 312     <strong class='reserved'>char</strong> <a href='../Y/link_target.html' title='Multiple used in 18 places.'>link_target</a>[<a href='../D/MC_MAXPATHLEN.html' title='Multiple defined in 2 places.'>MC_MAXPATHLEN</a> + 1];
+<a id='L313' name='L313'></a> 313     <strong class='reserved'>char</strong> **<a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>;
+<a id='L314' name='L314'></a> 314     <strong class='reserved'>char</strong> *<a href='../Y/joined.html' title='Multiple used in 4 places.'>joined</a>;
+<a id='L315' name='L315'></a> 315 
+<a id='L316' name='L316'></a> 316     <em class='comment'>// given: a symlink with a long target that a Linux file system can hold, between two files</em>
+<a id='L317' name='L317'></a> 317     <a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a> = <a href='../Y/g_byte_array_new.html' title='Multiple used in 2 places.'>g_byte_array_new</a> ();
+<a id='L318' name='L318'></a> 318     <a href='../Y/target.html' title='Multiple used in 41 places.'>target</a> = <a href='../Y/g_strnfill.html' title='Multiple used in 3 places.'>g_strnfill</a> (2000, 'd');
+<a id='L319' name='L319'></a> 319     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L107' title='Defined at 107 in tests/src/vfs/cpio/cpio_open_archive.c.'>append_member</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, "a", <a href='../Y/S_IFREG.html' title='Multiple used in 14 places.'>S_IFREG</a> | 0644, 6, "hello\n", 6);
+<a id='L320' name='L320'></a> 320     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L107' title='Defined at 107 in tests/src/vfs/cpio/cpio_open_archive.c.'>append_member</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, "link", <a href='../Y/S_IFLNK.html' title='Multiple used in 9 places.'>S_IFLNK</a> | 0777, <a href='../Y/strlen.html' title='Multiple used in 197 places.'>strlen</a> (<a href='../Y/target.html' title='Multiple used in 41 places.'>target</a>), <a href='../Y/target.html' title='Multiple used in 41 places.'>target</a>,
+<a id='L321' name='L321'></a> 321                    <a href='../Y/strlen.html' title='Multiple used in 197 places.'>strlen</a> (<a href='../Y/target.html' title='Multiple used in 41 places.'>target</a>));
+<a id='L322' name='L322'></a> 322     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L107' title='Defined at 107 in tests/src/vfs/cpio/cpio_open_archive.c.'>append_member</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, "z", <a href='../Y/S_IFREG.html' title='Multiple used in 14 places.'>S_IFREG</a> | 0644, 6, "hello\n", 6);
+<a id='L323' name='L323'></a> 323     <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L107' title='Defined at 107 in tests/src/vfs/cpio/cpio_open_archive.c.'>append_member</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/data.html' title='Multiple used in 944 places.'>data</a>-&gt;<a href='../Y/format.html' title='Multiple used in 137 places.'>format</a>, "TRAILER!!!", 0, 0, "", 0);
+<a id='L324' name='L324'></a> 324 
+<a id='L325' name='L325'></a> 325     <em class='comment'>// when</em>
+<a id='L326' name='L326'></a> 326     <a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a> = <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L191' title='Defined at 191 in tests/src/vfs/cpio/cpio_open_archive.c.'>list_archive</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, "link", <a href='../Y/link_target.html' title='Multiple used in 18 places.'>link_target</a>, <strong class='reserved'>sizeof</strong> (<a href='../Y/link_target.html' title='Multiple used in 18 places.'>link_target</a>));
+<a id='L327' name='L327'></a> 327 
+<a id='L328' name='L328'></a> 328     <em class='comment'>// then: all members are listed and the symlink target is read completely</em>
+<a id='L329' name='L329'></a> 329     <a href='../Y/joined.html' title='Multiple used in 4 places.'>joined</a> = g_strjoinv (" ", <a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>);
+<a id='L330' name='L330'></a> 330     <a href='../S/tests--mctest.h.html#L36' title='Defined at 36 in tests/mctest.h.'>mctest_assert_null</a> (<a href='../Y/message__text.html' title='Multiple used in 7 places.'>message__text</a>);
+<a id='L331' name='L331'></a> 331     <a href='../S/tests--mctest.h.html#L17' title='Defined at 17 in tests/mctest.h.'>mctest_assert_str_eq</a> (<a href='../Y/joined.html' title='Multiple used in 4 places.'>joined</a>, "a link z");
+<a id='L332' name='L332'></a> 332     <a href='../S/tests--mctest.h.html#L17' title='Defined at 17 in tests/mctest.h.'>mctest_assert_str_eq</a> (<a href='../Y/link_target.html' title='Multiple used in 18 places.'>link_target</a>, <a href='../Y/target.html' title='Multiple used in 41 places.'>target</a>);
+<a id='L333' name='L333'></a> 333 
+<a id='L334' name='L334'></a> 334     <em class='comment'>// cleanup</em>
+<a id='L335' name='L335'></a> 335     <a href='../Y/g_free.html' title='Multiple used in 1099 places.'>g_free</a> (<a href='../Y/joined.html' title='Multiple used in 4 places.'>joined</a>);
+<a id='L336' name='L336'></a> 336     <a href='../Y/g_strfreev.html' title='Multiple used in 55 places.'>g_strfreev</a> (<a href='../Y/listing.html' title='Multiple used in 14 places.'>listing</a>);
+<a id='L337' name='L337'></a> 337     <a href='../Y/g_free.html' title='Multiple used in 1099 places.'>g_free</a> (<a href='../Y/target.html' title='Multiple used in 41 places.'>target</a>);
+<a id='L338' name='L338'></a> 338     <a href='../Y/g_byte_array_free.html' title='Multiple used in 2 places.'>g_byte_array_free</a> (<a href='../Y/archive.html' title='Multiple used in 203 places.'>archive</a>, <a href='../Y/TRUE.html' title='Multiple used in 2095 places.'>TRUE</a>);
+<a id='L339' name='L339'></a> 339 <em class='brace'>}</em>
+<a id='L340' name='L340'></a> 340 <a href='../S/tests--mctest.h.html#L72' title='Defined at 72 in tests/mctest.h.'>END_PARAMETRIZED_TEST</a>
+<a id='L341' name='L341'></a> 341 
+<a id='L342' name='L342'></a> 342 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+<a id='L343' name='L343'></a> 343 
+<a id='L344' name='L344'></a> 344 <strong class='reserved'>int</strong>
+<a id='L345' name='L345'></a> 345 main (<strong class='reserved'>void</strong>)
+     <em class='comment'>/* <a href='#L308'><img class='icon' src='../icons/left.png' alt='[previous]' /></a><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><img class='icon' src='../icons/n_last.png' alt='[last]' /><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><a href='#BOTTOM'><img class='icon' src='../icons/bottom.png' alt='[bottom]' /></a><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+345 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+<a id='L346' name='L346'></a> 346 <em class='brace'>{</em>
+<a id='L347' name='L347'></a> 347     <a href='../Y/TCase.html' title='Multiple used in 71 places.'>TCase</a> *<a href='../Y/tc_core.html' title='Multiple used in 377 places.'>tc_core</a>;
+<a id='L348' name='L348'></a> 348 
+<a id='L349' name='L349'></a> 349     <a href='../Y/tc_core.html' title='Multiple used in 377 places.'>tc_core</a> = <a href='../Y/tcase_create.html' title='Multiple used in 70 places.'>tcase_create</a> ("Core");
+<a id='L350' name='L350'></a> 350 
+<a id='L351' name='L351'></a> 351     <a href='../Y/tcase_add_checked_fixture.html' title='Multiple used in 43 places.'>tcase_add_checked_fixture</a> (<a href='../Y/tc_core.html' title='Multiple used in 377 places.'>tc_core</a>, <a href='../D/setup.html' title='Multiple defined in 37 places.'>setup</a>, <a href='../D/teardown.html' title='Multiple defined in 37 places.'>teardown</a>);
+<a id='L352' name='L352'></a> 352 
+<a id='L353' name='L353'></a> 353     <em class='comment'>// Add new tests here: ***************</em>
+<a id='L354' name='L354'></a> 354     <a href='../S/tests--mctest.h.html#L12' title='Defined at 12 in tests/mctest.h.'>mctest_add_parameterized_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 377 places.'>tc_core</a>, <a href='../Y/test_cpio_symlink_size.html' title='Multiple used in 2 places.'>test_cpio_symlink_size</a>, <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L246' title='Defined at 246 in tests/src/vfs/cpio/cpio_open_archive.c.'>test_cpio_symlink_size_ds</a>);
+<a id='L355' name='L355'></a> 355     <a href='../S/tests--mctest.h.html#L12' title='Defined at 12 in tests/mctest.h.'>mctest_add_parameterized_test</a> (<a href='../Y/tc_core.html' title='Multiple used in 377 places.'>tc_core</a>, <a href='../Y/test_cpio_symlink_long_target.html' title='Multiple used in 2 places.'>test_cpio_symlink_long_target</a>,
+<a id='L356' name='L356'></a> 356                                    <a href='../S/tests--src--vfs--cpio--cpio_open_archive.c.html#L298' title='Defined at 298 in tests/src/vfs/cpio/cpio_open_archive.c.'>test_cpio_symlink_long_target_ds</a>);
+<a id='L357' name='L357'></a> 357     <em class='comment'>// ***********************************</em>
+<a id='L358' name='L358'></a> 358 
+<a id='L359' name='L359'></a> 359     <strong class='reserved'>return</strong> <a href='../S/tests--mctest.h.html#L87' title='Defined at 87 in tests/mctest.h.'>mctest_run_all</a> (<a href='../Y/tc_core.html' title='Multiple used in 377 places.'>tc_core</a>);
+<a id='L360' name='L360'></a> 360 <em class='brace'>}</em>
+<a id='L361' name='L361'></a> 361 
+<a id='L362' name='L362'></a> 362 <em class='comment'>/* --------------------------------------------------------------------------------------------- */</em>
+</pre>
+<hr />
+<a id='BOTTOM' name='BOTTOM'></a>
+<em class='comment'>/* <img class='icon' src='../icons/n_left.png' alt='[previous]' /><img class='icon' src='../icons/n_right.png' alt='[next]' /><a href='#L56'><img class='icon' src='../icons/first.png' alt='[first]' /></a><a href='#L345'><img class='icon' src='../icons/last.png' alt='[last]' /></a><a href='#TOP'><img class='icon' src='../icons/top.png' alt='[top]' /></a><img class='icon' src='../icons/n_bottom.png' alt='[bottom]' /><a href='../mains.html'><img class='icon' src='../icons/index.png' alt='[index]' /></a><a href='../help.html'><img class='icon' src='../icons/help.png' alt='[help]' /></a>&nbsp;<input type='text' readonly onfocus='this.select();' value='+362 tests/src/vfs/cpio/cpio_open_archive.c'  /> */</em>
+</body>
+</html>
